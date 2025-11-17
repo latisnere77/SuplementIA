@@ -14,7 +14,7 @@ export const runtime = 'nodejs';
 
 const PORTAL_API_URL =
   process.env.PORTAL_API_URL ||
-  'https://4u55roa15e.execute-api.us-east-1.amazonaws.com/portal/recommend';
+  'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging/portal/recommend';
 
 const PORTAL_QUIZZES_TABLE =
   process.env.PORTAL_QUIZZES_TABLE || 'ankosoft-portal-quizzes-staging';
