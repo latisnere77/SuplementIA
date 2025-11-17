@@ -5,9 +5,8 @@
 
 'use client';
 
-// Force dynamic rendering - this page requires search params
-// Note: revalidate is not needed for client components
-export const dynamic = 'force-dynamic';
+// This is a client component that requires search params
+// No need for dynamic export - client components are dynamic by default
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';

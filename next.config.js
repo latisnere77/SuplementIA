@@ -2,8 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Skip static optimization for dynamic routes
-  output: 'standalone',
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
@@ -17,6 +15,10 @@ const nextConfig = {
       'lucide-react',
       'framer-motion',
     ],
+  },
+  // Skip static generation for dynamic routes
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
   },
 }
 
