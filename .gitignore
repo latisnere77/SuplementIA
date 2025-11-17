@@ -58,3 +58,5 @@ infrastructure/lambda/*/*.zip
 response.json
 deploy.log
 deployment-outputs.json
+route*.ts
+route.config.ts
