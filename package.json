@@ -1,0 +1,37 @@
+{
+  "name": "suplementia",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SuplementIA - Evidence-based health supplement recommendations",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^14.2.33",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "typescript": "^5.0.0",
+    "tailwindcss": "^3.4.15",
+    "postcss": "^8.4.0",
+    "autoprefixer": "^10.4.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.553.0",
+    "amazon-cognito-identity-js": "^7.0.0",
+    "@aws-sdk/client-dynamodb": "^3.932.0",
+    "@aws-sdk/lib-dynamodb": "^3.932.0",
+    "stripe": "^17.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.9",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.2.33"
+  }
+}

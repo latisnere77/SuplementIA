@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Portal Check-in Schedule Table - DynamoDB with TTL for automatic check-in reminders'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: staging
+    AllowedValues:
+      - staging
+      - production
+    Description: Environment name
+
+Resources:
+  PortalCheckinScheduleTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'ankosoft-portal-checkin-schedule-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      
+      AttributeDefinitions:
+        - AttributeName: checkin_schedule_id
+          AttributeType: S
+        - AttributeName: recommendation_id
+          AttributeType: S
+      
+      KeySchema:
+        - AttributeName: checkin_schedule_id
+          KeyType: HASH
+      
+      GlobalSecondaryIndexes:
+        - IndexName: recommendation_id-index
+          KeySchema:
+            - AttributeName: recommendation_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: false
+      
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+      
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      
+      StreamSpecification:
+        StreamViewType: OLD_IMAGE
+      
+      Tags:
+        - Key: Project
+          Value: AnkoSoft
+        - Key: Component
+          Value: EducationPortal
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  PortalCheckinScheduleTableName:
+    Description: Portal Check-in Schedule Table Name
+    Value: !Ref PortalCheckinScheduleTable
+    Export:
+      Name: !Sub '${AWS::StackName}-PortalCheckinScheduleTable'
+
