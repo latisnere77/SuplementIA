@@ -139,7 +139,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
               </button>
 
               <p className="text-center text-sm text-gray-600">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <button
                   type="button"
                   onClick={() => setMode('signup')}
@@ -231,7 +231,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
           {mode === 'verify' && (
             <div className="space-y-4">
               <p className="text-gray-600">
-                We've sent a verification code to {email}. Please enter it below.
+                We&apos;ve sent a verification code to {email}. Please enter it below.
               </p>
               <input
                 type="text"

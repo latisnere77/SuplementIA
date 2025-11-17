@@ -24,7 +24,8 @@ function loadCognito() {
   }
   
   try {
-    // Use dynamic require to avoid SSR issues
+    // Use dynamic import to avoid SSR issues and ESLint errors
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cognitoModule = require('amazon-cognito-identity-js');
     if (cognitoModule) {
       CognitoUserPool = cognitoModule.CognitoUserPool;

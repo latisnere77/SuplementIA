@@ -120,14 +120,14 @@ export function getMockRecommendation(category: string): MockRecommendation {
         researchSpanYears: 12,
         ingredients: [
           { name: 'Omega-3 DHA', grade: 'A', studyCount: 76, rctCount: 34 },
-          { name: 'Lion\'s Mane', grade: 'B', studyCount: 45, rctCount: 18 },
+          { name: 'Lion&apos;s Mane', grade: 'B', studyCount: 45, rctCount: 18 },
           { name: 'Bacopa Monnieri', grade: 'B', studyCount: 38, rctCount: 15 },
           { name: 'Rhodiola Rosea', grade: 'B', studyCount: 30, rctCount: 12 },
         ],
       },
       ingredients: [
         { name: 'Omega-3 DHA', grade: 'A', adjustedDose: '1000mg/día', adjustmentReason: 'Dosis optimizada para función cognitiva' },
-        { name: 'Lion\'s Mane', grade: 'B', adjustedDose: '500mg/día', adjustmentReason: 'Extracto estandarizado para mejor absorción' },
+        { name: 'Lion&apos;s Mane', grade: 'B', adjustedDose: '500mg/día', adjustmentReason: 'Extracto estandarizado para mejor absorción' },
       ],
       products: [
         {
@@ -146,7 +146,7 @@ export function getMockRecommendation(category: string): MockRecommendation {
           name: 'Focus Stack Completo',
           price: 380,
           currency: 'MXN',
-          contains: ['Omega-3 DHA 1000mg', 'Lion\'s Mane 500mg', 'Bacopa 300mg'],
+          contains: ['Omega-3 DHA 1000mg', 'Lion&apos;s Mane 500mg', 'Bacopa 300mg'],
           whereToBuy: 'Amazon México',
           affiliateLink: 'https://amazon.com.mx/dp/example',
           description: 'Combinación sinérgica de nootrópicos respaldados por ciencia',
@@ -157,7 +157,7 @@ export function getMockRecommendation(category: string): MockRecommendation {
           name: 'ANKONERE Cognitive Pro',
           price: 520,
           currency: 'MXN',
-          contains: ['Omega-3 DHA 1200mg', 'Lion\'s Mane 600mg', 'Bacopa 400mg', 'Rhodiola 300mg', 'Fosfatidilserina'],
+          contains: ['Omega-3 DHA 1200mg', 'Lion&apos;s Mane 600mg', 'Bacopa 400mg', 'Rhodiola 300mg', 'Fosfatidilserina'],
           whereToBuy: 'ANKONERE Direct',
           directLink: 'https://ankonere.com/product/cognitive-pro',
           description: 'Fórmula premium para máximo rendimiento cognitivo, optimizada para altitud y clima LATAM',
