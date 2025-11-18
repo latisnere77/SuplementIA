@@ -1,33 +1,23 @@
 /**
  * Portal Recommendation API Route
  * Gets recommendation details by ID
+ * 
+ * This route proxies requests to the backend Lambda which has access to DynamoDB.
+ * The frontend should NOT access DynamoDB directly.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { getMockRecommendation } from '@/lib/portal/mockData';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const PORTAL_RECOMMENDATIONS_TABLE =
-  process.env.PORTAL_RECOMMENDATIONS_TABLE || 'ankosoft-portal-recommendations-staging';
+const PORTAL_API_URL =
+  process.env.PORTAL_API_URL ||
+  'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging';
 
-// Check if we're in demo mode (only if explicitly disabled)
-// 'staging' table is still a valid table, not demo mode
-const isDemoMode = process.env.PORTAL_RECOMMENDATIONS_TABLE === 'DISABLED' || process.env.PORTAL_RECOMMENDATIONS_TABLE === 'false';
-
-// Initialize DynamoDB client with explicit credentials if available
-// Vercel Serverless Functions need AWS credentials in environment variables
-const dynamodbClient = new DynamoDBClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-  // Credentials are automatically picked up from environment variables:
-  // AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN (optional)
-  // If not set, AWS SDK will try to use IAM role (if available)
-});
-
-const dynamodb = DynamoDBDocumentClient.from(dynamodbClient);
+// Check if we're in demo mode (only if API URL is explicitly disabled)
+const isDemoMode = process.env.PORTAL_API_URL === 'DISABLED' || process.env.PORTAL_API_URL === 'false';
 
 export async function GET(
   request: NextRequest,
@@ -87,112 +77,97 @@ export async function GET(
       );
     }
 
-    // PRODUCTION MODE: Get recommendation from DynamoDB
-    console.log(`🔍 Looking up recommendation: ${recommendationId} in table: ${PORTAL_RECOMMENDATIONS_TABLE}`);
+    // PRODUCTION MODE: Get recommendation from backend Lambda
+    // The backend Lambda has access to DynamoDB, so we proxy the request
+    console.log(`🔍 Looking up recommendation: ${recommendationId} via backend API`);
+    console.log(`🔍 Backend URL: ${PORTAL_API_URL}`);
     
     try {
-      const quizId = request.nextUrl.searchParams.get('quiz_id') || '';
-      
-      let recommendation: any = null;
-      
-      // If we have quiz_id, use GetCommand (most efficient)
-      if (quizId) {
-        console.log(`🔍 Using GetCommand with quiz_id: ${quizId}`);
-        const result = await dynamodb.send(
-          new GetCommand({
-            TableName: PORTAL_RECOMMENDATIONS_TABLE,
-            Key: {
-              recommendation_id: recommendationId,
-              quiz_id: quizId,
-            },
-          })
-        );
-        recommendation = result.Item;
-      } else {
-        // If no quiz_id, use ScanCommand with FilterExpression (same as backend)
-        // This is necessary because the table has a composite key (recommendation_id + quiz_id)
-        console.log(`🔍 Using ScanCommand to find recommendation (no quiz_id provided)`);
-        const scanResult = await dynamodb.send(
-          new ScanCommand({
-            TableName: PORTAL_RECOMMENDATIONS_TABLE,
-            FilterExpression: 'recommendation_id = :recId',
-            ExpressionAttributeValues: {
-              ':recId': recommendationId,
-            },
-          })
-        );
-        
-        if (scanResult.Items && scanResult.Items.length > 0) {
-          recommendation = scanResult.Items[0];
-          console.log(`✅ Found recommendation using ScanCommand (scanned ${scanResult.ScannedCount || 0} items)`);
-        } else {
-          console.warn(`⚠️  ScanCommand found 0 items (scanned ${scanResult.ScannedCount || 0} items)`);
-        }
-      }
+      // Call backend status endpoint which returns the full recommendation when ready
+      const statusUrl = `${PORTAL_API_URL}/portal/status/${recommendationId}`;
+      console.log(`🔗 Calling backend: ${statusUrl}`);
 
-      if (!recommendation) {
-        console.error(`❌ Recommendation not found in DynamoDB: ${recommendationId}`);
-        
-        // Return error instead of falling back to mock
+      const statusResponse = await fetch(statusUrl, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+        signal: AbortSignal.timeout(10000), // 10s timeout
+      });
+
+      console.log(`📥 Backend response status: ${statusResponse.status}`);
+
+      if (!statusResponse.ok) {
+        const errorText = await statusResponse.text();
+        console.error(`❌ Backend API error: ${statusResponse.status}`);
+        console.error(`❌ Error response: ${errorText.substring(0, 500)}`);
+
+        // If 404, the recommendation doesn't exist
+        if (statusResponse.status === 404) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Recommendation not found',
+              message: `No recommendation found with ID: ${recommendationId}`,
+              recommendationId,
+            },
+            { status: 404 }
+          );
+        }
+
+        // Other errors
         return NextResponse.json(
           {
             success: false,
-            error: 'Recommendation not found',
-            message: `No recommendation found with ID: ${recommendationId}`,
-            recommendationId,
+            error: 'Backend API error',
+            message: `Backend returned ${statusResponse.status}: ${errorText.substring(0, 200)}`,
+            status: statusResponse.status,
           },
-          { status: 404 }
+          { status: statusResponse.status }
         );
       }
-      console.log(`✅ Recommendation found in DynamoDB`);
 
+      const statusData = await statusResponse.json();
+      console.log(`✅ Backend response received:`, {
+        status: statusData.status,
+        hasRecommendation: !!statusData.recommendation,
+      });
+
+      // The backend returns the recommendation in the status response when status is 'completed'
+      if (statusData.status === 'completed' && statusData.recommendation) {
+        return NextResponse.json(
+          {
+            success: true,
+            recommendation: statusData.recommendation,
+          },
+          { status: 200 }
+        );
+      }
+
+      // If status is 'processing' or 'failed', return the status
       return NextResponse.json(
         {
           success: true,
-          recommendation,
+          status: statusData.status,
+          progress: statusData.progress,
+          progressMessage: statusData.progressMessage,
+          recommendation: statusData.recommendation || null,
         },
         { status: 200 }
       );
-    } catch (dbError: any) {
-      console.error('❌ DynamoDB error:', dbError.name, dbError.message);
-      console.error('Stack:', dbError.stack);
-      console.error('Error details:', {
-        name: dbError.name,
-        message: dbError.message,
-        code: dbError.code,
-        statusCode: dbError.$metadata?.httpStatusCode,
-        requestId: dbError.$metadata?.requestId,
-        tableName: PORTAL_RECOMMENDATIONS_TABLE,
-        hasCredentials: !!(process.env.AWS_ACCESS_KEY_ID || process.env.AWS_SECRET_ACCESS_KEY),
-      });
-      
-      // Provide more specific error messages
-      let errorMessage = dbError.message;
-      let statusCode = 500;
-      
-      if (dbError.name === 'UnrecognizedClientException' || dbError.name === 'InvalidSignatureException') {
-        errorMessage = 'AWS credentials not configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in Vercel environment variables.';
-        statusCode = 503; // Service Unavailable
-      } else if (dbError.name === 'AccessDeniedException' || dbError.name === 'UnauthorizedOperation') {
-        errorMessage = 'Insufficient permissions to access DynamoDB. Please check IAM permissions.';
-        statusCode = 403; // Forbidden
-      } else if (dbError.name === 'ResourceNotFoundException') {
-        errorMessage = `DynamoDB table not found: ${PORTAL_RECOMMENDATIONS_TABLE}`;
-        statusCode = 503; // Service Unavailable
-      }
+    } catch (apiError: any) {
+      console.error('❌ Backend API call failed:', apiError.name, apiError.message);
+      console.error('Stack:', apiError.stack);
       
       // Return error instead of falling back to mock
       return NextResponse.json(
         {
           success: false,
-          error: 'Database error',
-          message: errorMessage,
-          errorType: dbError.name,
-          errorCode: dbError.code,
-          tableName: PORTAL_RECOMMENDATIONS_TABLE,
-          recommendationId,
+          error: 'Backend API call failed',
+          message: apiError.message,
+          errorType: apiError.name,
         },
-        { status: statusCode }
+        { status: 503 } // Service Unavailable
       );
     }
   } catch (error: any) {
