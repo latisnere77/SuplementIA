@@ -21,10 +21,11 @@ const isDemoMode = process.env.PORTAL_API_URL === 'DISABLED' || process.env.PORT
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const recommendationId = params.id;
+    const { id } = await params;
+    const recommendationId = id;
 
     if (!recommendationId) {
       return NextResponse.json(

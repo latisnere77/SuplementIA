@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { BookOpen, Users, TrendingUp, Calendar, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import { IngredientBadges } from './IngredientBadges';
 
 interface EvidenceSummary {
   totalStudies: number;
@@ -20,6 +21,12 @@ interface EvidenceSummary {
     grade: 'A' | 'B' | 'C';
     studyCount: number;
     rctCount: number;
+    evidenceGrade?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
+    evidenceConfidence?: number;
+    synergy_score?: number;
+    synergy_partner_count?: number;
+    ml_boost?: number;
+    clinical_evidence_strength?: number;
   }>;
 }
 
@@ -98,13 +105,27 @@ export default function EvidenceAnalysisPanel({
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-3 mb-2 flex-wrap">
                   <h4 className="text-lg font-semibold text-gray-900">{ingredient.name}</h4>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold border ${GRADE_COLORS[ingredient.grade]}`}
                   >
                     {t('evidence.grade')} {ingredient.grade}
                   </span>
+                  {/* Badges with real data */}
+                  <IngredientBadges 
+                    ingredient={{
+                      evidenceGrade: ingredient.evidenceGrade || ingredient.grade,
+                      evidenceConfidence: ingredient.evidenceConfidence,
+                      synergy_score: ingredient.synergy_score,
+                      synergy_partner_count: ingredient.synergy_partner_count,
+                      ml_boost: ingredient.ml_boost,
+                      clinical_evidence_strength: ingredient.clinical_evidence_strength,
+                      studyCount: ingredient.studyCount,
+                      rctCount: ingredient.rctCount,
+                    }}
+                    size="sm"
+                  />
                 </div>
                 <p className="text-sm text-gray-600 mb-2">{t(`evidence.grade.${ingredient.grade.toLowerCase()}` as any)}</p>
                 <div className="flex items-center gap-4 text-sm text-gray-600">

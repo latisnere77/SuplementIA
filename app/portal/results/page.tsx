@@ -107,34 +107,57 @@ function ResultsPageContent() {
       if (recommendationId) {
         // Fetch existing recommendation
         try {
+          console.log(`🔍 Fetching recommendation: ${recommendationId}`);
           const response = await fetch(`/api/portal/recommendation/${recommendationId}`);
           const data = await response.json();
-          if (data.success) {
+          
+          if (!response.ok) {
+            const errorMessage = data.message || data.error || `Failed to load recommendation: ${response.status}`;
+            console.error('❌ Failed to load recommendation:', errorMessage);
+            setError(errorMessage);
+            setIsLoading(false);
+            return;
+          }
+          
+          if (data.success && data.recommendation) {
+            console.log('✅ Recommendation loaded:', {
+              id: data.recommendation.recommendation_id,
+              category: data.recommendation.category,
+            });
             setRecommendation(data.recommendation);
           } else {
-            setError(data.error || 'Failed to load recommendation');
+            const errorMessage = data.error || data.message || 'Failed to load recommendation';
+            console.error('❌ Invalid response:', errorMessage);
+            setError(errorMessage);
           }
         } catch (err: any) {
-          setError(err.message);
+          console.error('❌ Fetch error:', err);
+          setError(err.message || 'Failed to load recommendation');
         } finally {
           setIsLoading(false);
         }
       } else if (query) {
         // Generate new recommendation from search query
         try {
-          // Map query to category (simplified - in production, use NLP)
-          // Support both English and Spanish
+          // Smart detection: ingredient vs category
+          // Categories are typically action/goal words, ingredients are typically noun compounds
+          const normalizedQuery = query.toLowerCase().trim();
+          
+          // Known categories (action/goal words)
           const categoryMap: Record<string, string> = {
-            // English
+            // English - Categories (goals/actions)
             'muscle': 'muscle-gain',
             'muscle gain': 'muscle-gain',
             'build muscle': 'muscle-gain',
             'gain muscle': 'muscle-gain',
+            'exercise': 'muscle-gain',
+            'workout': 'muscle-gain',
             'cognitive': 'cognitive',
             'memory': 'cognitive',
             'focus': 'cognitive',
             'brain': 'cognitive',
             'sleep': 'sleep',
+            'insomnia': 'sleep',
             'immune': 'immune',
             'immunity': 'immune',
             'heart': 'heart',
@@ -142,27 +165,45 @@ function ResultsPageContent() {
             'fat loss': 'fat-loss',
             'weight loss': 'fat-loss',
             'lose weight': 'fat-loss',
-            // Spanish
+            'skin': 'skin',
+            'hair': 'hair',
+            'digestion': 'digestion',
+            'energy': 'energy',
+            // Spanish - Categories
             'musculo': 'muscle-gain',
             'ganar musculo': 'muscle-gain',
             'construir musculo': 'muscle-gain',
             'músculo': 'muscle-gain',
+            'ejercicio': 'muscle-gain',
             'cognitivo': 'cognitive',
             'memoria': 'cognitive',
             'enfoque': 'cognitive',
             'cerebro': 'cognitive',
             'sueño': 'sleep',
             'dormir': 'sleep',
+            'insomnio': 'sleep',
             'inmune': 'immune',
             'inmunidad': 'immune',
             'corazón': 'heart',
             'perder peso': 'fat-loss',
             'bajar de peso': 'fat-loss',
             'grasa': 'fat-loss',
+            'piel': 'skin',
+            'cabello': 'hair',
+            'digestión': 'digestion',
+            'energía': 'energy',
           };
-
-          const normalizedQuery = query.toLowerCase().trim();
-          const category = categoryMap[normalizedQuery] || 'muscle-gain';
+          
+          // Check if query matches a known category
+          const matchedCategory = categoryMap[normalizedQuery];
+          
+          // If not a category, treat as ingredient search
+          // Ingredients are typically: single words, compound words, or scientific names
+          const isIngredientSearch = !matchedCategory;
+          
+          // For ingredient searches, pass the query directly (backend will handle it)
+          // For category searches, use the mapped category
+          const category = matchedCategory || normalizedQuery;
 
           const response = await fetch('/api/portal/quiz', {
             method: 'POST',
@@ -177,36 +218,126 @@ function ResultsPageContent() {
 
           if (!response.ok) {
             const errorText = await response.text();
-            console.error('API Error:', response.status, errorText);
-            setError(`Error ${response.status}: ${errorText || 'Failed to generate recommendation'}`);
+            console.error('❌ API Error:', response.status, errorText);
+            let errorMessage = `Backend error: ${response.status}`;
+            try {
+              const errorData = JSON.parse(errorText);
+              errorMessage = errorData.message || errorData.error || errorMessage;
+            } catch {
+              errorMessage = errorText || errorMessage;
+            }
+            setError(errorMessage);
             setIsLoading(false);
             return;
           }
 
           const data = await response.json();
-          console.log('API Response:', data);
+          console.log('✅ API Response received:', {
+            success: data.success,
+            status: response.status,
+            hasRecommendation: !!data.recommendation,
+            hasRecommendationId: !!data.recommendation_id,
+            demo: data.demo,
+          });
           
+          // ASYNC PATTERN: Backend returned 202 with recommendation_id - start polling
+          if (response.status === 202 && data.recommendation_id) {
+            console.log('🔄 Starting async polling for recommendation:', data.recommendation_id);
+            
+            // Update URL immediately with recommendation ID
+            if (typeof window !== 'undefined') {
+              const newUrl = `/portal/results?id=${data.recommendation_id}`;
+              const currentUrl = window.location.pathname + window.location.search;
+              if (currentUrl !== newUrl) {
+                router.push(newUrl);
+              }
+            }
+            
+            // Start polling for status
+            const pollInterval = parseInt(data.pollInterval || '3') * 1000; // Convert to ms
+            const maxPollTime = 180000; // 3 minutes max
+            const startTime = Date.now();
+            
+            const pollStatus = async () => {
+              try {
+                const statusResponse = await fetch(`/api/portal/status/${data.recommendation_id}`);
+                const statusData = await statusResponse.json();
+                
+                console.log('📊 Polling status:', {
+                  status: statusData.status,
+                  progress: statusData.progress,
+                  message: statusData.progressMessage,
+                });
+                
+                if (statusData.status === 'completed' && statusData.recommendation) {
+                  console.log('✅ Recommendation completed:', {
+                    id: statusData.recommendation.recommendation_id,
+                    category: statusData.recommendation.category,
+                  });
+                  setRecommendation(statusData.recommendation);
+                  setIsLoading(false);
+                  return; // Stop polling
+                } else if (statusData.status === 'failed') {
+                  console.error('❌ Recommendation failed:', statusData.error);
+                  setError(statusData.error || 'Failed to generate recommendation');
+                  setIsLoading(false);
+                  return; // Stop polling
+                } else if (statusData.status === 'processing') {
+                  // Continue polling if we haven't exceeded max time
+                  if (Date.now() - startTime < maxPollTime) {
+                    setTimeout(pollStatus, pollInterval);
+                  } else {
+                    console.error('❌ Polling timeout');
+                    setError('La recomendación está tardando más de lo esperado. Por favor, intenta de nuevo.');
+                    setIsLoading(false);
+                  }
+                }
+              } catch (pollError: any) {
+                console.error('❌ Polling error:', pollError);
+                // Continue polling on error (might be transient)
+                if (Date.now() - startTime < maxPollTime) {
+                  setTimeout(pollStatus, pollInterval);
+                } else {
+                  setError('Error al verificar el estado de la recomendación');
+                  setIsLoading(false);
+                }
+              }
+            };
+            
+            // Start polling after initial delay
+            setTimeout(pollStatus, pollInterval);
+            return; // Don't set isLoading to false yet - we're polling
+          }
+          
+          // LEGACY SYNC PATTERN: Backend returned recommendation directly
           if (data.success && data.recommendation) {
             // Validate recommendation structure
             if (!data.recommendation.recommendation_id) {
-              data.recommendation.recommendation_id = `rec_${Date.now()}`;
+              data.recommendation.recommendation_id = `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             }
             if (!data.recommendation.quiz_id) {
               data.recommendation.quiz_id = data.quiz_id || `quiz_${Date.now()}`;
             }
             
+            console.log('✅ Recommendation received:', {
+              id: data.recommendation.recommendation_id,
+              category: data.recommendation.category,
+              ingredientsCount: data.recommendation.ingredients?.length || 0,
+            });
+            
             setRecommendation(data.recommendation);
-            // Update URL with recommendation ID (use push instead of replace to avoid navigation issues)
+            // Update URL with recommendation ID
             if (data.recommendation.recommendation_id && typeof window !== 'undefined') {
               const newUrl = `/portal/results?id=${data.recommendation.recommendation_id}`;
-              // Only update URL if it's different to avoid infinite loops
               const currentUrl = window.location.pathname + window.location.search;
               if (currentUrl !== newUrl) {
                 router.push(newUrl);
               }
             }
           } else {
-            setError(data.error || 'Failed to generate recommendation');
+            const errorMessage = data.error || data.message || 'Failed to generate recommendation';
+            console.error('❌ Invalid API response:', errorMessage);
+            setError(errorMessage);
           }
         } catch (err: any) {
           console.error('Fetch error:', err);
@@ -237,9 +368,15 @@ function ResultsPageContent() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center max-w-md px-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('common.loading')}</p>
+          <p className="text-gray-600 text-lg font-medium mb-2">{t('common.loading')}</p>
+          <p className="text-gray-500 text-sm">
+            Analizando evidencia científica y generando recomendaciones personalizadas...
+          </p>
+          <p className="text-gray-400 text-xs mt-4">
+            Esto puede tomar 60-120 segundos
+          </p>
         </div>
       </div>
     );
