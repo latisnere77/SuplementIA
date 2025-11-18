@@ -1,20 +1,19 @@
 /**
  * Portal Referral API Route
  * Tracks referral links and conversions
+ * 
+ * This route proxies requests to the backend Lambda which has access to DynamoDB.
+ * The frontend should NOT access DynamoDB directly.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const PORTAL_REFERRALS_TABLE =
-  process.env.PORTAL_REFERRALS_TABLE || 'ankosoft-portal-referrals-staging';
-
-const dynamodb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-1' }));
+const PORTAL_API_URL =
+  process.env.PORTAL_API_URL ||
+  'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging';
 
 /**
  * POST /api/portal/referral - Create or track referral
@@ -24,111 +23,66 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, referrer_user_id, referred_user_id, referral_id } = body;
 
-    if (action === 'create') {
-      // Create new referral link
-      if (!referrer_user_id) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'referrer_user_id is required',
-          },
-          { status: 400 }
-        );
-      }
-
-      const newReferralId = `ref_${Date.now()}_${randomUUID().substring(0, 8)}`;
-
-      await dynamodb.send(
-        new PutCommand({
-          TableName: PORTAL_REFERRALS_TABLE,
-          Item: {
-            referral_id: newReferralId,
-            referrer_user_id,
-            referred_user_id: null,
-            status: 'pending',
-            created_at: Math.floor(Date.now() / 1000),
-          },
-        })
-      );
-
-      return NextResponse.json(
-        {
-          success: true,
-          referral_id: newReferralId,
-          referral_link: `${request.nextUrl.origin}/portal/quiz?ref=${newReferralId}`,
-        },
-        { status: 200 }
-      );
-    } else if (action === 'track') {
-      // Track referral conversion (when referred user subscribes)
-      if (!referral_id || !referred_user_id) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'referral_id and referred_user_id are required',
-          },
-          { status: 400 }
-        );
-      }
-
-      // Get referral record
-      const result = await dynamodb.send(
-        new GetCommand({
-          TableName: PORTAL_REFERRALS_TABLE,
-          Key: {
-            referral_id,
-            referrer_user_id: body.referrer_user_id || '', // Need to get this from referral record
-          },
-        })
-      );
-
-      if (!result.Item) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Referral not found',
-          },
-          { status: 404 }
-        );
-      }
-
-      // Update referral status
-      await dynamodb.send(
-        new UpdateCommand({
-          TableName: PORTAL_REFERRALS_TABLE,
-          Key: {
-            referral_id,
-            referrer_user_id: result.Item.referrer_user_id,
-          },
-          UpdateExpression: 'SET #status = :converted, referred_user_id = :referred, converted_at = :convertedAt',
-          ExpressionAttributeNames: {
-            '#status': 'status',
-          },
-          ExpressionAttributeValues: {
-            ':converted': 'converted',
-            ':referred': referred_user_id,
-            ':convertedAt': Math.floor(Date.now() / 1000),
-          },
-        })
-      );
-
-      return NextResponse.json(
-        {
-          success: true,
-          message: 'Referral conversion tracked',
-          referral_id,
-        },
-        { status: 200 }
-      );
-    } else {
+    // Validate required fields
+    if (action === 'create' && !referrer_user_id) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid action. Use "create" or "track"',
+          error: 'referrer_user_id is required',
         },
         { status: 400 }
       );
     }
+
+    if (action === 'track' && (!referral_id || !referred_user_id)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'referral_id and referred_user_id are required',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Call backend Lambda
+    const backendUrl = `${PORTAL_API_URL}/portal/referral`;
+    console.log(`🔗 Calling backend: ${backendUrl}`);
+
+    const backendResponse = await fetch(backendUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000), // 10s timeout
+    });
+
+    if (!backendResponse.ok) {
+      const errorText = await backendResponse.text();
+      console.error(`❌ Backend API error: ${backendResponse.status}`);
+      console.error(`❌ Error response: ${errorText.substring(0, 500)}`);
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Backend API error',
+          message: `Backend returned ${backendResponse.status}: ${errorText.substring(0, 200)}`,
+          status: backendResponse.status,
+        },
+        { status: backendResponse.status }
+      );
+    }
+
+    const responseData = await backendResponse.json();
+    console.log(`✅ Backend response received`);
+
+    // Add referral_link for 'create' action
+    if (action === 'create' && responseData.referral_id) {
+      responseData.referral_link = `${request.nextUrl.origin}/portal/quiz?ref=${responseData.referral_id}`;
+    }
+
+    return NextResponse.json(responseData, { status: 200 });
   } catch (error: any) {
     console.error('❌ Portal referral API error:', error);
 
@@ -160,27 +114,38 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Query referrals by referrer_user_id (using GSI)
-    const { QueryCommand } = await import('@aws-sdk/lib-dynamodb');
-    const result = await dynamodb.send(
-      new QueryCommand({
-        TableName: PORTAL_REFERRALS_TABLE,
-        IndexName: 'referrer_user_id-index',
-        KeyConditionExpression: 'referrer_user_id = :referrer',
-        ExpressionAttributeValues: {
-          ':referrer': referrerUserId,
-        },
-      })
-    );
+    // Call backend Lambda
+    const backendUrl = `${PORTAL_API_URL}/portal/referral?referrer_user_id=${encodeURIComponent(referrerUserId)}`;
+    console.log(`🔗 Calling backend: ${backendUrl}`);
 
-    return NextResponse.json(
-      {
-        success: true,
-        referrals: result.Items || [],
-        count: result.Items?.length || 0,
+    const backendResponse = await fetch(backendUrl, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
       },
-      { status: 200 }
-    );
+      signal: AbortSignal.timeout(10000), // 10s timeout
+    });
+
+    if (!backendResponse.ok) {
+      const errorText = await backendResponse.text();
+      console.error(`❌ Backend API error: ${backendResponse.status}`);
+      console.error(`❌ Error response: ${errorText.substring(0, 500)}`);
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Backend API error',
+          message: `Backend returned ${backendResponse.status}: ${errorText.substring(0, 200)}`,
+          status: backendResponse.status,
+        },
+        { status: backendResponse.status }
+      );
+    }
+
+    const responseData = await backendResponse.json();
+    console.log(`✅ Backend response received`);
+
+    return NextResponse.json(responseData, { status: 200 });
   } catch (error: any) {
     console.error('❌ Portal referral GET API error:', error);
 
