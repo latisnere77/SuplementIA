@@ -235,13 +235,212 @@ export function getMockRecommendation(category: string): MockRecommendation {
         sensitivities: [],
       },
     },
+    // Ingredient-specific searches
+    'magnesium': {
+      category: 'Magnesium Supplementation',
+      evidence_summary: {
+        totalStudies: 142,
+        totalParticipants: 12450,
+        efficacyPercentage: 89,
+        researchSpanYears: 12,
+        ingredients: [
+          { name: 'Magnesium Glycinate', grade: 'A', studyCount: 98, rctCount: 56 },
+          { name: 'Magnesium Citrate', grade: 'A', studyCount: 67, rctCount: 34 },
+          { name: 'Magnesium Oxide', grade: 'B', studyCount: 45, rctCount: 18 },
+        ],
+      },
+      ingredients: [
+        { name: 'Magnesium Glycinate', grade: 'A', adjustedDose: '400mg/día', adjustmentReason: 'Forma glicinato para mejor absorción y menor efecto laxante' },
+        { name: 'Magnesium Citrate', grade: 'A', adjustedDose: '300-400mg/día', adjustmentReason: 'Buena biodisponibilidad, ideal para suplementación general' },
+      ],
+      products: [
+        {
+          tier: 'budget',
+          name: 'Magnesio Glicinato 400mg',
+          price: 180,
+          currency: 'MXN',
+          contains: ['Magnesium Glycinate 400mg', 'Sin aditivos'],
+          whereToBuy: 'Amazon México',
+          affiliateLink: 'https://amazon.com.mx/dp/example',
+          description: 'Magnesio en forma glicinato, alta absorción y sin efectos secundarios digestivos',
+          isAnkonere: false,
+        },
+        {
+          tier: 'value',
+          name: 'Magnesio Complejo Premium',
+          price: 320,
+          currency: 'MXN',
+          contains: ['Magnesium Glycinate 200mg', 'Magnesium Citrate 200mg', 'Vitamin B6 50mg'],
+          whereToBuy: 'Amazon México',
+          affiliateLink: 'https://amazon.com.mx/dp/example',
+          description: 'Combinación de formas de magnesio con vitamina B6 para mejor absorción',
+          isAnkonere: false,
+        },
+        {
+          tier: 'premium',
+          name: 'ANKONERE Magnesium Pro',
+          price: 450,
+          currency: 'MXN',
+          contains: ['Magnesium Glycinate 400mg', 'Magnesium Taurate 100mg', 'Taurine 500mg', 'Vitamin D3 1000IU'],
+          whereToBuy: 'ANKONERE Direct',
+          directLink: 'https://ankonere.com/product/magnesium-pro',
+          description: 'Fórmula premium con múltiples formas de magnesio y cofactores para máxima absorción y eficacia',
+          isAnkonere: true,
+        },
+      ],
+      personalization_factors: {
+        altitude: 2250,
+        climate: 'tropical',
+        gender: 'male',
+        age: 35,
+        location: 'CDMX',
+        sensitivities: [],
+      },
+    },
+    'magnesio': {
+      // Spanish version - same as magnesium
+      category: 'Suplementación de Magnesio',
+      evidence_summary: {
+        totalStudies: 142,
+        totalParticipants: 12450,
+        efficacyPercentage: 89,
+        researchSpanYears: 12,
+        ingredients: [
+          { name: 'Magnesio Glicinato', grade: 'A', studyCount: 98, rctCount: 56 },
+          { name: 'Magnesio Citrato', grade: 'A', studyCount: 67, rctCount: 34 },
+          { name: 'Magnesio Óxido', grade: 'B', studyCount: 45, rctCount: 18 },
+        ],
+      },
+      ingredients: [
+        { name: 'Magnesio Glicinato', grade: 'A', adjustedDose: '400mg/día', adjustmentReason: 'Forma glicinato para mejor absorción y menor efecto laxante' },
+        { name: 'Magnesio Citrato', grade: 'A', adjustedDose: '300-400mg/día', adjustmentReason: 'Buena biodisponibilidad, ideal para suplementación general' },
+      ],
+      products: [
+        {
+          tier: 'budget',
+          name: 'Magnesio Glicinato 400mg',
+          price: 180,
+          currency: 'MXN',
+          contains: ['Magnesio Glicinato 400mg', 'Sin aditivos'],
+          whereToBuy: 'Amazon México',
+          affiliateLink: 'https://amazon.com.mx/dp/example',
+          description: 'Magnesio en forma glicinato, alta absorción y sin efectos secundarios digestivos',
+          isAnkonere: false,
+        },
+        {
+          tier: 'value',
+          name: 'Magnesio Complejo Premium',
+          price: 320,
+          currency: 'MXN',
+          contains: ['Magnesio Glicinato 200mg', 'Magnesio Citrato 200mg', 'Vitamina B6 50mg'],
+          whereToBuy: 'Amazon México',
+          affiliateLink: 'https://amazon.com.mx/dp/example',
+          description: 'Combinación de formas de magnesio con vitamina B6 para mejor absorción',
+          isAnkonere: false,
+        },
+        {
+          tier: 'premium',
+          name: 'ANKONERE Magnesium Pro',
+          price: 450,
+          currency: 'MXN',
+          contains: ['Magnesio Glicinato 400mg', 'Magnesio Taurato 100mg', 'Taurina 500mg', 'Vitamina D3 1000IU'],
+          whereToBuy: 'ANKONERE Direct',
+          directLink: 'https://ankonere.com/product/magnesium-pro',
+          description: 'Fórmula premium con múltiples formas de magnesio y cofactores para máxima absorción y eficacia',
+          isAnkonere: true,
+        },
+      ],
+      personalization_factors: {
+        altitude: 2250,
+        climate: 'tropical',
+        gender: 'male',
+        age: 35,
+        location: 'CDMX',
+        sensitivities: [],
+      },
+    },
   };
 
+  // Known categories (goals/actions, not ingredients)
+  const knownCategories = ['muscle-gain', 'cognitive', 'sleep', 'immune', 'heart', 'fat-loss', 'skin', 'hair', 'digestion', 'energy'];
+  const isIngredientSearch = !knownCategories.includes(category.toLowerCase());
+  
+  // If it's an ingredient search, try to find specific data or use generic ingredient template
+  let selectedData = categoryData[category] || categoryData[category.toLowerCase()];
+  
+  // If no specific data and it's an ingredient search, create generic ingredient response
+  if (!selectedData && isIngredientSearch) {
+    // Normalize ingredient name for display
+    const ingredientDisplayName = category
+      .split(/[-_]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    
+    selectedData = {
+      category: ingredientDisplayName,
+      evidence_summary: {
+        totalStudies: 85,
+        totalParticipants: 6500,
+        efficacyPercentage: 75,
+        researchSpanYears: 10,
+        ingredients: [
+          { name: ingredientDisplayName, grade: 'B', studyCount: 45, rctCount: 18 },
+        ],
+      },
+      ingredients: [
+        { name: ingredientDisplayName, grade: 'B', adjustedDose: 'Dosis estándar', adjustmentReason: 'Basado en evidencia científica disponible' },
+      ],
+      products: [
+        {
+          tier: 'budget',
+          name: `${ingredientDisplayName} Básico`,
+          price: 150,
+          currency: 'MXN',
+          contains: [ingredientDisplayName],
+          whereToBuy: 'Amazon México',
+          affiliateLink: `https://amazon.com.mx/search?k=${encodeURIComponent(category)}`,
+          description: `Suplemento de ${ingredientDisplayName.toLowerCase()} de calidad básica`,
+          isAnkonere: false,
+        },
+        {
+          tier: 'value',
+          name: `${ingredientDisplayName} Premium`,
+          price: 320,
+          currency: 'MXN',
+          contains: [ingredientDisplayName, 'Co-factores'],
+          whereToBuy: 'Amazon México',
+          affiliateLink: `https://amazon.com.mx/search?k=${encodeURIComponent(category)}`,
+          description: `Fórmula mejorada con ${ingredientDisplayName.toLowerCase()} y co-factores para mejor absorción`,
+          isAnkonere: false,
+        },
+        {
+          tier: 'premium',
+          name: `ANKONERE ${ingredientDisplayName} Pro`,
+          price: 450,
+          currency: 'MXN',
+          contains: [ingredientDisplayName, 'Formulación optimizada'],
+          whereToBuy: 'ANKONERE Direct',
+          directLink: `https://ankonere.com/product/${category}`,
+          description: `Fórmula premium con ${ingredientDisplayName.toLowerCase()} optimizada para LATAM`,
+          isAnkonere: true,
+        },
+      ],
+      personalization_factors: {
+        altitude: 2250,
+        climate: 'tropical',
+        gender: 'male',
+        age: 35,
+        location: 'CDMX',
+        sensitivities: [],
+      },
+    };
+  }
+
   const defaultData: MockRecommendation = {
-    recommendation_id: `mock_${Date.now()}`,
-    quiz_id: `quiz_${Date.now()}`,
-    category: categoryData[category]?.category || category,
-    evidence_summary: categoryData[category]?.evidence_summary || {
+    recommendation_id: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    quiz_id: `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`,
+    category: selectedData?.category || category,
+    evidence_summary: selectedData?.evidence_summary || {
       totalStudies: 150,
       totalParticipants: 10000,
       efficacyPercentage: 80,
@@ -251,9 +450,9 @@ export function getMockRecommendation(category: string): MockRecommendation {
         { name: 'Ingredient B', grade: 'B', studyCount: 30, rctCount: 12 },
       ],
     },
-    ingredients: categoryData[category]?.ingredients || [],
-    products: categoryData[category]?.products || [],
-    personalization_factors: categoryData[category]?.personalization_factors || {
+    ingredients: selectedData?.ingredients || [],
+    products: selectedData?.products || [],
+    personalization_factors: selectedData?.personalization_factors || {
       altitude: 2250,
       climate: 'tropical',
       gender: 'male',
