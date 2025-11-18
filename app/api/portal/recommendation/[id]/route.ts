@@ -8,6 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getMockRecommendation } from '@/lib/portal/mockData';
+import { portalLogger } from '@/lib/portal/api-logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -23,15 +24,38 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const requestId = crypto.randomUUID();
+  let recommendationId: string | undefined;
+  
   try {
     const { id } = await params;
-    const recommendationId = id;
+    recommendationId = id;
+
+    portalLogger.logRequest({
+      requestId,
+      endpoint: '/api/portal/recommendation/[id]',
+      method: 'GET',
+      recommendationId,
+      userAgent: request.headers.get('user-agent'),
+      referer: request.headers.get('referer'),
+    });
 
     if (!recommendationId) {
+      portalLogger.logError(
+        new Error('Missing recommendation ID'),
+        {
+          requestId,
+          endpoint: '/api/portal/recommendation/[id]',
+          method: 'GET',
+          statusCode: 400,
+        }
+      );
+      
       return NextResponse.json(
         {
           success: false,
           error: 'Recommendation ID is required',
+          requestId,
         },
         { status: 400 }
       );
@@ -80,28 +104,56 @@ export async function GET(
 
     // PRODUCTION MODE: Get recommendation from backend Lambda
     // The backend Lambda has access to DynamoDB, so we proxy the request
-    console.log(`🔍 Looking up recommendation: ${recommendationId} via backend API`);
-    console.log(`🔍 Backend URL: ${PORTAL_API_URL}`);
+    const statusUrl = `${PORTAL_API_URL}/portal/status/${recommendationId}`;
+    const backendCallStart = Date.now();
+    
+    portalLogger.logBackendCall(statusUrl, 'GET', {
+      requestId,
+      recommendationId,
+    });
     
     try {
-      // Call backend status endpoint which returns the full recommendation when ready
-      const statusUrl = `${PORTAL_API_URL}/portal/status/${recommendationId}`;
-      console.log(`🔗 Calling backend: ${statusUrl}`);
-
       const statusResponse = await fetch(statusUrl, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
+          'User-Agent': 'SuplementIA-Portal-API/1.0',
+          'X-Request-ID': requestId,
         },
         signal: AbortSignal.timeout(10000), // 10s timeout
       });
 
-      console.log(`📥 Backend response status: ${statusResponse.status}`);
+      const backendResponseTime = Date.now() - backendCallStart;
+      
+      portalLogger.logBackendResponse(statusUrl, statusResponse.status, backendResponseTime, {
+        requestId,
+        recommendationId,
+        headers: Object.fromEntries(statusResponse.headers.entries()),
+      });
 
       if (!statusResponse.ok) {
         const errorText = await statusResponse.text();
-        console.error(`❌ Backend API error: ${statusResponse.status}`);
-        console.error(`❌ Error response: ${errorText.substring(0, 500)}`);
+        let errorData: any;
+        
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { raw: errorText.substring(0, 500) };
+        }
+
+        const error = new Error(`Backend API returned ${statusResponse.status}`);
+        (error as any).statusCode = statusResponse.status;
+        (error as any).response = errorData;
+
+        portalLogger.logError(error, {
+          requestId,
+          recommendationId,
+          endpoint: '/api/portal/recommendation/[id]',
+          method: 'GET',
+          statusCode: statusResponse.status,
+          backendUrl: statusUrl,
+          backendResponse: errorData,
+        });
 
         // If 404, the recommendation doesn't exist
         if (statusResponse.status === 404) {
@@ -111,6 +163,7 @@ export async function GET(
               error: 'Recommendation not found',
               message: `No recommendation found with ID: ${recommendationId}`,
               recommendationId,
+              requestId,
             },
             { status: 404 }
           );
@@ -121,16 +174,24 @@ export async function GET(
           {
             success: false,
             error: 'Backend API error',
-            message: `Backend returned ${statusResponse.status}: ${errorText.substring(0, 200)}`,
+            message: `Backend returned ${statusResponse.status}: ${errorData.message || errorText.substring(0, 200)}`,
             status: statusResponse.status,
+            requestId,
+            backendError: errorData,
           },
           { status: statusResponse.status }
         );
       }
 
       const statusData = await statusResponse.json();
-      console.log(`✅ Backend response received:`, {
-        status: statusData.status,
+
+      portalLogger.logSuccess({
+        requestId,
+        recommendationId,
+        endpoint: '/api/portal/recommendation/[id]',
+        method: 'GET',
+        statusCode: 200,
+        recommendationStatus: statusData.status,
         hasRecommendation: !!statusData.recommendation,
       });
 
@@ -140,6 +201,7 @@ export async function GET(
           {
             success: true,
             recommendation: statusData.recommendation,
+            requestId,
           },
           { status: 200 }
         );
@@ -153,12 +215,20 @@ export async function GET(
           progress: statusData.progress,
           progressMessage: statusData.progressMessage,
           recommendation: statusData.recommendation || null,
+          requestId,
         },
         { status: 200 }
       );
     } catch (apiError: any) {
-      console.error('❌ Backend API call failed:', apiError.name, apiError.message);
-      console.error('Stack:', apiError.stack);
+      portalLogger.logError(apiError, {
+        requestId,
+        recommendationId,
+        endpoint: '/api/portal/recommendation/[id]',
+        method: 'GET',
+        statusCode: 503,
+        backendUrl: statusUrl,
+        errorType: apiError.name,
+      });
       
       // Return error instead of falling back to mock
       return NextResponse.json(
@@ -167,18 +237,28 @@ export async function GET(
           error: 'Backend API call failed',
           message: apiError.message,
           errorType: apiError.name,
+          requestId,
+          backendUrl: statusUrl,
         },
         { status: 503 } // Service Unavailable
       );
     }
   } catch (error: any) {
-    console.error('❌ Portal recommendation API error:', error);
+    portalLogger.logError(error, {
+      requestId,
+      recommendationId,
+      endpoint: '/api/portal/recommendation/[id]',
+      method: 'GET',
+      statusCode: 500,
+    });
 
     return NextResponse.json(
       {
         success: false,
         error: 'Internal server error',
         message: error.message,
+        requestId,
+        errorType: error.name,
       },
       { status: 500 }
     );
