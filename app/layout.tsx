@@ -3,6 +3,11 @@ import "./globals.css";
 export const metadata = {
   title: "SuplementIA - Evidence-Based Health Solutions",
   description: "Find what the science says about supplements and interventions for your health goals",
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
