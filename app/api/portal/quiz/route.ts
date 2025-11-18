@@ -4,8 +4,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { randomUUID } from 'crypto';
 import { getMockRecommendation } from '@/lib/portal/mockData';
 
@@ -16,13 +14,10 @@ const PORTAL_API_URL =
   process.env.PORTAL_API_URL ||
   'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging/portal/recommend';
 
-const PORTAL_QUIZZES_TABLE =
-  process.env.PORTAL_QUIZZES_TABLE || 'ankosoft-portal-quizzes-staging';
-
-// Check if we're in demo mode (no API URL configured or using default staging)
-const isDemoMode = !process.env.PORTAL_API_URL || process.env.PORTAL_API_URL.includes('staging');
-
-const dynamodb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-1' }));
+// Check if we're in demo mode (only if API URL is explicitly disabled)
+// Note: 'staging' in URL is OK - it's still a valid backend endpoint
+// We have a default URL, so demo mode should only activate if explicitly disabled
+const isDemoMode = process.env.PORTAL_API_URL === 'DISABLED' || process.env.PORTAL_API_URL === 'false';
 
 /**
  * Helper: Detect altitude from location
@@ -86,30 +81,8 @@ export async function POST(request: NextRequest) {
     const altitude = detectAltitude(finalLocation);
     const climate = detectClimate(finalLocation);
 
-    // Save quiz to DynamoDB
-    try {
-      await dynamodb.send(
-        new PutCommand({
-          TableName: PORTAL_QUIZZES_TABLE,
-          Item: {
-            user_id: body.user_id || 'anonymous',
-            quiz_id: quizId,
-            category,
-            age: parseInt(finalAge.toString()),
-            gender: finalGender,
-            location: finalLocation,
-            altitude,
-            climate,
-            sensitivities,
-            created_at: Math.floor(Date.now() / 1000),
-            ttl: Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60, // 1 year TTL
-          },
-        })
-      );
-    } catch (dbError: any) {
-      console.warn('⚠️  Failed to save quiz to DynamoDB:', dbError.message);
-      // Continue even if DB save fails
-    }
+    // Note: Quiz data is sent to backend Lambda which can save it if needed
+    // The frontend no longer accesses DynamoDB directly
 
     // DEMO MODE: Use mock data if backend is not configured
     if (isDemoMode) {
@@ -131,6 +104,17 @@ export async function POST(request: NextRequest) {
     }
 
     // PRODUCTION MODE: Call Lambda to generate recommendation
+    console.log(`🔗 Calling backend API: ${PORTAL_API_URL}`);
+    console.log(`📤 Request payload:`, {
+      category,
+      age: parseInt(finalAge.toString()),
+      gender: finalGender,
+      location: finalLocation,
+      altitude,
+      climate,
+      quiz_id: quizId,
+    });
+    
     try {
       const recommendationResponse = await fetch(PORTAL_API_URL, {
         method: 'POST',
@@ -148,58 +132,94 @@ export async function POST(request: NextRequest) {
           sensitivities,
           quiz_id: quizId,
         }),
-        signal: AbortSignal.timeout(30000), // 30s timeout
+        signal: AbortSignal.timeout(15000), // 15s timeout (allows for cold start and network latency)
       });
+
+      console.log(`📥 Backend response status: ${recommendationResponse.status}`);
 
       if (!recommendationResponse.ok) {
         const errorText = await recommendationResponse.text();
-        console.error(`Portal API error: ${recommendationResponse.status} ${errorText}`);
+        console.error(`❌ Portal API error: ${recommendationResponse.status}`);
+        console.error(`❌ Error response: ${errorText.substring(0, 500)}`);
 
-        // Fallback to mock data if API fails
-        console.log('⚠️  API failed, falling back to mock data');
-        const mockRecommendation = getMockRecommendation(category);
-        
+        // Return error instead of falling back to mock
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Backend API error',
+            message: `Backend returned ${recommendationResponse.status}: ${errorText.substring(0, 200)}`,
+            status: recommendationResponse.status,
+          },
+          { status: recommendationResponse.status }
+        );
+      }
+
+      const responseData = await recommendationResponse.json();
+      console.log(`✅ Backend response received:`, {
+        status: responseData.status,
+        recommendationId: responseData.recommendation_id,
+      });
+
+      // ASYNC PATTERN: Backend returns 202 with recommendation_id for polling
+      if (recommendationResponse.status === 202 && responseData.recommendation_id) {
         return NextResponse.json(
           {
             success: true,
             quiz_id: quizId,
-            recommendation: {
-              ...mockRecommendation,
-              quiz_id: quizId,
-            },
-            demo: true,
+            recommendation_id: responseData.recommendation_id,
+            status: 'processing',
+            message: responseData.message || 'Recomendación en proceso',
+            statusUrl: responseData.statusUrl || `/api/portal/status/${responseData.recommendation_id}`,
+            estimatedTime: responseData.estimatedTime || '60-120 segundos',
+            pollInterval: responseData.pollInterval || '3 segundos',
+          },
+          { status: 202 }
+        );
+      }
+
+      // LEGACY SYNC PATTERN: If backend returns recommendation directly (backward compatibility)
+      if (responseData.recommendation) {
+        // Ensure recommendation_id is set
+        if (!responseData.recommendation.recommendation_id) {
+          responseData.recommendation.recommendation_id = `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+
+        return NextResponse.json(
+          {
+            success: true,
+            quiz_id: quizId,
+            recommendation: responseData.recommendation,
           },
           { status: 200 }
         );
       }
 
-      const recommendationData = await recommendationResponse.json();
-
+      // Invalid response
+      console.error('❌ Backend response missing recommendation_id or recommendation field');
+      console.error('Response:', JSON.stringify(responseData, null, 2));
+      
       return NextResponse.json(
         {
-          success: true,
-          quiz_id: quizId,
-          recommendation: recommendationData.recommendation,
+          success: false,
+          error: 'Invalid backend response',
+          message: 'Backend response does not contain recommendation_id or recommendation field',
+          backendResponse: responseData,
         },
-        { status: 200 }
+        { status: 500 }
       );
     } catch (apiError: any) {
-      console.error('⚠️  API call failed, using mock data:', apiError.message);
+      console.error('❌ API call failed:', apiError.name, apiError.message);
+      console.error('Stack:', apiError.stack);
       
-      // Fallback to mock data
-      const mockRecommendation = getMockRecommendation(category);
-      
+      // Return error instead of falling back to mock
       return NextResponse.json(
         {
-          success: true,
-          quiz_id: quizId,
-          recommendation: {
-            ...mockRecommendation,
-            quiz_id: quizId,
-          },
-          demo: true,
+          success: false,
+          error: 'Backend API call failed',
+          message: apiError.message,
+          errorType: apiError.name,
         },
-        { status: 200 }
+        { status: 503 } // Service Unavailable
       );
     }
   } catch (error: any) {
