@@ -18,7 +18,16 @@ const PORTAL_RECOMMENDATIONS_TABLE =
 // 'staging' table is still a valid table, not demo mode
 const isDemoMode = process.env.PORTAL_RECOMMENDATIONS_TABLE === 'DISABLED' || process.env.PORTAL_RECOMMENDATIONS_TABLE === 'false';
 
-const dynamodb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-1' }));
+// Initialize DynamoDB client with explicit credentials if available
+// Vercel Serverless Functions need AWS credentials in environment variables
+const dynamodbClient = new DynamoDBClient({
+  region: process.env.AWS_REGION || 'us-east-1',
+  // Credentials are automatically picked up from environment variables:
+  // AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN (optional)
+  // If not set, AWS SDK will try to use IAM role (if available)
+});
+
+const dynamodb = DynamoDBDocumentClient.from(dynamodbClient);
 
 export async function GET(
   request: NextRequest,
@@ -147,16 +156,43 @@ export async function GET(
     } catch (dbError: any) {
       console.error('❌ DynamoDB error:', dbError.name, dbError.message);
       console.error('Stack:', dbError.stack);
+      console.error('Error details:', {
+        name: dbError.name,
+        message: dbError.message,
+        code: dbError.code,
+        statusCode: dbError.$metadata?.httpStatusCode,
+        requestId: dbError.$metadata?.requestId,
+        tableName: PORTAL_RECOMMENDATIONS_TABLE,
+        hasCredentials: !!(process.env.AWS_ACCESS_KEY_ID || process.env.AWS_SECRET_ACCESS_KEY),
+      });
+      
+      // Provide more specific error messages
+      let errorMessage = dbError.message;
+      let statusCode = 500;
+      
+      if (dbError.name === 'UnrecognizedClientException' || dbError.name === 'InvalidSignatureException') {
+        errorMessage = 'AWS credentials not configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in Vercel environment variables.';
+        statusCode = 503; // Service Unavailable
+      } else if (dbError.name === 'AccessDeniedException' || dbError.name === 'UnauthorizedOperation') {
+        errorMessage = 'Insufficient permissions to access DynamoDB. Please check IAM permissions.';
+        statusCode = 403; // Forbidden
+      } else if (dbError.name === 'ResourceNotFoundException') {
+        errorMessage = `DynamoDB table not found: ${PORTAL_RECOMMENDATIONS_TABLE}`;
+        statusCode = 503; // Service Unavailable
+      }
       
       // Return error instead of falling back to mock
       return NextResponse.json(
         {
           success: false,
           error: 'Database error',
-          message: dbError.message,
+          message: errorMessage,
           errorType: dbError.name,
+          errorCode: dbError.code,
+          tableName: PORTAL_RECOMMENDATIONS_TABLE,
+          recommendationId,
         },
-        { status: 500 }
+        { status: statusCode }
       );
     }
   } catch (error: any) {
