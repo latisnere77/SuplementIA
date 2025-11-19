@@ -103,41 +103,152 @@ function ResultsPageContent() {
   const recommendationId = searchParams.get('id');
 
   useEffect(() => {
-    const fetchRecommendation = async () => {
-      if (recommendationId) {
-        // Fetch existing recommendation
-        try {
-          console.log(`🔍 Fetching recommendation: ${recommendationId}`);
-          const response = await fetch(`/api/portal/recommendation/${recommendationId}`);
-          const data = await response.json();
+    let pollingInterval: NodeJS.Timeout | null = null;
+    let isMounted = true;
+
+    const fetchRecommendation = async (retryCount = 0): Promise<boolean> => {
+      if (!recommendationId) return false;
+
+      // Retry logic with exponential backoff
+      const maxRetries = 3;
+      const baseDelay = 1000; // 1 second
+      const retryDelay = Math.min(baseDelay * Math.pow(2, retryCount), 10000); // Max 10s
+
+      try {
+        // Add timeout to frontend fetch (35s to allow for 30s backend timeout + overhead)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000);
+        
+        console.log(`🔍 [${retryCount + 1}/${maxRetries + 1}] Fetching recommendation: ${recommendationId}`);
+        const response = await fetch(`/api/portal/recommendation/${recommendationId}`, {
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Failed to load recommendation' }));
+          console.error('❌ Invalid response:', {
+            status: response.status,
+            error: errorData,
+            attempt: retryCount + 1,
+          });
           
-          if (!response.ok) {
-            const errorMessage = data.message || data.error || `Failed to load recommendation: ${response.status}`;
-            console.error('❌ Failed to load recommendation:', errorMessage);
+          // Retry on 503 errors (service unavailable)
+          if (response.status === 503 && retryCount < maxRetries) {
+            console.log(`🔄 Retrying after ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            return fetchRecommendation(retryCount + 1);
+          }
+          
+          // Better error messages for specific cases
+          let errorMessage = errorData.error || errorData.message || `Failed to load recommendation (${response.status})`;
+          if (response.status === 503 && errorData.isTimeout) {
+            errorMessage = 'El servicio está tardando más de lo esperado. Por favor, intenta de nuevo en un momento.';
+          } else if (response.status === 503) {
+            errorMessage = 'El servicio no está disponible temporalmente. Por favor, intenta de nuevo en un momento.';
+          } else if (response.status === 404) {
+            errorMessage = 'Recomendación no encontrada. Por favor, genera una nueva recomendación.';
+          }
+          
+          if (isMounted) {
             setError(errorMessage);
             setIsLoading(false);
-            return;
           }
-          
-          if (data.success && data.recommendation) {
-            console.log('✅ Recommendation loaded:', {
-              id: data.recommendation.recommendation_id,
-              category: data.recommendation.category,
-            });
+          return false;
+        }
+        
+        const data = await response.json();
+        
+        console.log('📊 API Response:', {
+          success: data.success,
+          hasRecommendation: !!data.recommendation,
+          status: data.status,
+          keys: Object.keys(data),
+        });
+        
+        // Handle recommendation data - check multiple possible formats
+        if (data.recommendation) {
+          if (isMounted) {
             setRecommendation(data.recommendation);
-          } else {
-            const errorMessage = data.error || data.message || 'Failed to load recommendation';
-            console.error('❌ Invalid response:', errorMessage);
-            setError(errorMessage);
+            setIsLoading(false);
           }
-        } catch (err: any) {
-          console.error('❌ Fetch error:', err);
-          setError(err.message || 'Failed to load recommendation');
-        } finally {
+          return true; // Success
+        }
+        
+        // Handle processing status - start polling
+        if (data.success && data.status === 'processing') {
+          console.log('🔄 Recommendation is processing, starting polling...');
+          if (isMounted) {
+            setIsLoading(true); // Keep loading state
+            setError(null); // Clear any previous errors
+
+            // Start polling every 3 seconds
+            if (!pollingInterval) {
+              pollingInterval = setInterval(async () => {
+                if (isMounted) {
+                  const polled = await fetchRecommendation(0);
+                  if (polled && pollingInterval) {
+                    clearInterval(pollingInterval);
+                    pollingInterval = null;
+                  }
+                }
+              }, 3000); // Poll every 3 seconds
+            }
+          }
+          return false; // Still processing
+        }
+        
+        // Handle errors
+        if (!data.success) {
+          console.error('❌ API returned error:', data);
+          if (isMounted) {
+            setError(data.error || data.message || 'Failed to load recommendation');
+            setIsLoading(false);
+          }
+          return false;
+        }
+        
+        // Fallback: if we got here, something unexpected happened
+        console.error('❌ Invalid response format:', data);
+        if (isMounted) {
+          setError(data.error || data.message || 'Invalid response format from server');
           setIsLoading(false);
         }
-      } else if (query) {
-        // Generate new recommendation from search query
+        return false;
+      } catch (err: any) {
+        console.error('❌ Failed to load recommendation:', err);
+
+        // Retry on network errors (but not on abort/timeout)
+        if (err.name !== 'AbortError' && err.name !== 'TimeoutError' && retryCount < maxRetries) {
+          console.log(`🔄 Retrying after ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          return fetchRecommendation(retryCount + 1);
+        }
+
+        // Better error messages for specific error types
+        let errorMessage = 'Failed to load recommendation';
+        if (err.name === 'AbortError' || err.name === 'TimeoutError') {
+          errorMessage = 'La solicitud tardó demasiado tiempo. Por favor, intenta de nuevo.';
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+
+        if (isMounted) {
+          setError(errorMessage);
+          setIsLoading(false);
+        }
+        return false;
+      }
+    };
+
+    // Handle different scenarios
+    if (recommendationId) {
+      // Initial fetch for existing recommendation
+      fetchRecommendation(0);
+    } else if (query) {
+      // Generate new recommendation from search query
+      const generateRecommendation = async () => {
         try {
           // Smart detection: ingredient vs category
           // Categories are typically action/goal words, ingredients are typically noun compounds
@@ -337,21 +448,36 @@ function ResultsPageContent() {
           } else {
             const errorMessage = data.error || data.message || 'Failed to generate recommendation';
             console.error('❌ Invalid API response:', errorMessage);
-            setError(errorMessage);
+            if (isMounted) {
+              setError(errorMessage);
+              setIsLoading(false);
+            }
           }
         } catch (err: any) {
           console.error('Fetch error:', err);
-          setError(err.message || 'An unexpected error occurred');
-        } finally {
-          setIsLoading(false);
+          if (isMounted) {
+            setError(err.message || 'An unexpected error occurred');
+            setIsLoading(false);
+          }
         }
-      } else {
+      };
+
+      generateRecommendation();
+    } else {
+      if (isMounted) {
         setError('No search query or recommendation ID provided');
         setIsLoading(false);
       }
-    };
+    }
 
-    fetchRecommendation();
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+    };
   }, [query, recommendationId, router]);
 
   const handleBuyClick = (product: any) => {
