@@ -113,6 +113,10 @@ export async function GET(
     });
     
     try {
+      // Log the exact URL being called for debugging
+      console.log(`🔗 [DEBUG] Calling backend URL: ${statusUrl}`);
+      console.log(`🔗 [DEBUG] PORTAL_API_URL env: ${process.env.PORTAL_API_URL || 'using default'}`);
+      
       const statusResponse = await fetch(statusUrl, {
         method: 'GET',
         headers: {
@@ -120,8 +124,14 @@ export async function GET(
           'User-Agent': 'SuplementIA-Portal-API/1.0',
           'X-Request-ID': requestId,
         },
+        // Force HTTP/1.1 to avoid potential API Gateway issues with HTTP/2
+        // @ts-ignore - Next.js fetch options
+        keepalive: false,
         signal: AbortSignal.timeout(10000), // 10s timeout
       });
+      
+      console.log(`📥 [DEBUG] Backend response status: ${statusResponse.status}`);
+      console.log(`📥 [DEBUG] Backend response headers:`, Object.fromEntries(statusResponse.headers.entries()));
 
       const backendResponseTime = Date.now() - backendCallStart;
       
