@@ -10,13 +10,14 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import EvidenceAnalysisPanel from '@/components/portal/EvidenceAnalysisPanel';
+import EvidenceAnalysisPanelNew from '@/components/portal/EvidenceAnalysisPanelNew';
 import PersonalizationExplanation from '@/components/portal/PersonalizationExplanation';
 import ProductRecommendationsGrid from '@/components/portal/ProductRecommendationsGrid';
 import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
+import { transformEvidenceToNew } from '@/lib/portal/evidence-transformer';
 
 interface Recommendation {
   recommendation_id: string;
@@ -554,9 +555,15 @@ function ResultsPageContent() {
           </p>
         </div>
 
-        {/* Evidence Analysis */}
+        {/* Evidence Analysis - NUEVO DISEÑO VISUAL */}
         <div className="mb-8">
-          <EvidenceAnalysisPanel evidenceSummary={recommendation.evidence_summary} />
+          <EvidenceAnalysisPanelNew
+            evidenceSummary={transformEvidenceToNew(
+              recommendation.evidence_summary,
+              recommendation.category
+            )}
+            supplementName={recommendation.category}
+          />
         </div>
 
         {/* Personalization */}
