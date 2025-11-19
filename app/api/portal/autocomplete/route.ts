@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSuggestions, type Language, type AutocompleteSuggestion } from '@/lib/portal/autocomplete-suggestions';
+import { getSuggestions, type Language, type AutocompleteSuggestion } from '@/lib/portal/autocomplete-suggestions-fuzzy';
 import * as Sentry from '@sentry/nextjs';
 
 // Configuración de runtime
