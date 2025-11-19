@@ -125,7 +125,7 @@ export async function GET(
           'X-Request-ID': requestId,
         },
         // Force HTTP/1.1 to avoid potential API Gateway issues with HTTP/2
-        // @ts-ignore - Next.js fetch options
+        // @ts-expect-error - Next.js fetch options (keepalive is valid but not in types)
         keepalive: false,
         signal: AbortSignal.timeout(10000), // 10s timeout
       });
