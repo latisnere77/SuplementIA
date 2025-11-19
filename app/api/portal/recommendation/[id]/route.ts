@@ -124,9 +124,6 @@ export async function GET(
           'User-Agent': 'SuplementIA-Portal-API/1.0',
           'X-Request-ID': requestId,
         },
-        // Force HTTP/1.1 to avoid potential API Gateway issues with HTTP/2
-        // @ts-expect-error - Next.js fetch options (keepalive is valid but not in types)
-        keepalive: false,
         signal: AbortSignal.timeout(10000), // 10s timeout
       });
       
