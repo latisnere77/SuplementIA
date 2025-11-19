@@ -31,6 +31,14 @@ export default function PortalPage() {
     limit: 5,
   });
 
+  // DEBUG: Ver qué sugerencias tenemos
+  console.log('[PortalPage] Autocomplete state:', {
+    searchQuery,
+    suggestionsCount: suggestions.length,
+    isLoadingSuggestions,
+    suggestions: suggestions.map(s => s.text)
+  });
+
   const placeholders = language === 'es' 
     ? [
         t('portal.search.placeholder'),
@@ -281,51 +289,61 @@ export default function PortalPage() {
                     </div>
                   )}
 
-                  {/* Autocomplete Dropdown */}
-                  <Transition
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                    afterLeave={() => setSearchQuery('')}
-                  >
-                    <Combobox.Options className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-96 overflow-y-auto py-2">
-                      {suggestions.length === 0 && searchQuery !== '' ? (
-                        <div className="px-4 py-3 text-sm text-gray-500">
-                          {t('autocomplete.no.results')}
-                        </div>
-                      ) : (
-                        suggestions.map((suggestion) => (
-                          <Combobox.Option
-                            key={suggestion.text}
-                            value={suggestion.text}
-                            className={({ active }) =>
-                              cn(
-                                'relative cursor-pointer select-none py-3 px-4 transition-colors',
-                                active ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-white dark:bg-gray-800'
-                              )
-                            }
-                          >
-                            {({ active }) => (
-                              <div className="flex items-center gap-3">
-                                {/* Icon based on type */}
-                                {suggestion.type === 'category' ? (
-                                  <TrendingUp className={cn('h-4 w-4', active ? 'text-blue-600' : 'text-gray-400')} />
-                                ) : (
-                                  <Search className={cn('h-4 w-4', active ? 'text-blue-600' : 'text-gray-400')} />
-                                )}
+                  {/* Autocomplete Dropdown - Solo se muestra cuando hay query Y (hay sugerencias O está cargando) */}
+                  {searchQuery.length >= 2 && (
+                    <Transition
+                      as={Fragment}
+                      show={searchQuery.length >= 2}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
+                      <Combobox.Options
+                        static
+                        className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-96 overflow-y-auto py-2"
+                      >
+                        {isLoadingSuggestions ? (
+                          <div className="px-4 py-3 flex items-center gap-3 text-gray-500">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                            <span className="text-sm">{t('autocomplete.loading')}</span>
+                          </div>
+                        ) : suggestions.length === 0 ? (
+                          <div className="px-4 py-3 text-sm text-gray-500">
+                            {t('autocomplete.no.results')}
+                          </div>
+                        ) : (
+                          suggestions.map((suggestion) => (
+                            <Combobox.Option
+                              key={suggestion.text}
+                              value={suggestion.text}
+                              className={({ active }) =>
+                                cn(
+                                  'relative cursor-pointer select-none py-3 px-4 transition-colors',
+                                  active ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-white dark:bg-gray-800'
+                                )
+                              }
+                            >
+                              {({ active }) => (
+                                <div className="flex items-center gap-3">
+                                  {/* Icon based on type */}
+                                  {suggestion.type === 'category' ? (
+                                    <TrendingUp className={cn('h-4 w-4', active ? 'text-blue-600' : 'text-gray-400')} />
+                                  ) : (
+                                    <Search className={cn('h-4 w-4', active ? 'text-blue-600' : 'text-gray-400')} />
+                                  )}
 
-                                {/* Suggestion text */}
-                                <span className={cn('text-sm font-medium truncate', active ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100')}>
-                                  {suggestion.text}
-                                </span>
-                              </div>
-                            )}
-                          </Combobox.Option>
-                        ))
-                      )}
-                    </Combobox.Options>
-                  </Transition>
+                                  {/* Suggestion text */}
+                                  <span className={cn('text-sm font-medium truncate', active ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100')}>
+                                    {suggestion.text}
+                                  </span>
+                                </div>
+                              )}
+                            </Combobox.Option>
+                          ))
+                        )}
+                      </Combobox.Options>
+                    </Transition>
+                  )}
                 </div>
               </Combobox>
             </motion.div>
