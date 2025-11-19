@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useAutocomplete } from '@/lib/portal/useAutocomplete';
+import { validateSupplementQuery } from '@/lib/portal/query-validator';
 
 export default function PortalPage() {
   const { t, language, setLanguage } = useTranslation();
@@ -24,6 +25,7 @@ export default function PortalPage() {
   const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Hook de autocomplete con debouncing
   const { suggestions, isLoading: isLoadingSuggestions } = useAutocomplete(searchQuery, {
@@ -143,6 +145,17 @@ export default function PortalPage() {
 
   const handleSearch = (query: string) => {
     if (!query?.trim()) return;
+
+    // VALIDACIÓN DE GUARDRAILS
+    const validation = validateSupplementQuery(query.trim());
+
+    if (!validation.valid) {
+      setValidationError(validation.error || 'Búsqueda inválida');
+      return;
+    }
+
+    // Limpiar error previo y proceder
+    setValidationError(null);
     setIsLoading(true);
     router.push(`/portal/results?q=${encodeURIComponent(query.trim())}`);
   };
@@ -346,6 +359,39 @@ export default function PortalPage() {
                   )}
                 </div>
               </Combobox>
+
+              {/* Validation Error Message */}
+              <AnimatePresence>
+                {validationError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"
+                  >
+                    <div className="flex items-start gap-2">
+                      <svg className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-red-800 dark:text-red-200">{validationError}</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                          Intenta buscar: ashwagandha, omega-3, vitamin-d, magnesium, sleep, cognitive
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setValidationError(null)}
+                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 p-1"
+                      >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           </div>
         </div>

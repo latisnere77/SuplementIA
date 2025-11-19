@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { getMockRecommendation } from '@/lib/portal/mockData';
 import { portalLogger } from '@/lib/portal/api-logger';
+import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -86,6 +87,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // GUARDRAILS: Validate query content
+    const validation = validateSupplementQuery(category);
+    if (!validation.valid) {
+      portalLogger.logError({
+        requestId,
+        error: 'Query validation failed',
+        category,
+        validationError: validation.error,
+        severity: validation.severity,
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: validation.error,
+          suggestion: validation.suggestion,
+          severity: validation.severity,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize category for safety
+    const sanitizedCategory = sanitizeQuery(category);
+
     // Use defaults if not provided (search-first approach)
     const finalAge = age || 35;
     const finalGender = gender || 'male';
@@ -104,8 +130,8 @@ export async function POST(request: NextRequest) {
     // DEMO MODE: Use mock data if backend is not configured
     if (isDemoMode) {
       console.log('🎭 Demo mode: Using mock recommendation data');
-      const mockRecommendation = getMockRecommendation(category);
-      
+      const mockRecommendation = getMockRecommendation(sanitizedCategory);
+
       return NextResponse.json(
         {
           success: true,
@@ -122,13 +148,13 @@ export async function POST(request: NextRequest) {
 
     // PRODUCTION MODE: Call Lambda to generate recommendation
     const backendCallStart = Date.now();
-    
+
     portalLogger.logBackendCall(QUIZ_API_URL, 'POST', {
       requestId,
       quizId,
-      category,
+      category: sanitizedCategory,
     });
-    
+
     try {
       const recommendationResponse = await fetch(QUIZ_API_URL, {
         headers: {
@@ -139,7 +165,7 @@ export async function POST(request: NextRequest) {
         },
         method: 'POST',
         body: JSON.stringify({
-          category,
+          category: sanitizedCategory,
           age: parseInt(finalAge.toString()),
           gender: finalGender,
           location: finalLocation,
@@ -152,11 +178,11 @@ export async function POST(request: NextRequest) {
       });
 
       const backendResponseTime = Date.now() - backendCallStart;
-      
+
       portalLogger.logBackendResponse(QUIZ_API_URL, recommendationResponse.status, backendResponseTime, {
         requestId,
         quizId,
-        category,
+        category: sanitizedCategory,
       });
 
       if (!recommendationResponse.ok) {
