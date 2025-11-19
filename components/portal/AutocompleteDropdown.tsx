@@ -8,7 +8,7 @@
 import { useEffect, useRef } from 'react';
 import { Search, TrendingUp, Folder } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-import type { AutocompleteSuggestion } from '@/lib/portal/autocomplete-suggestions';
+import type { AutocompleteSuggestion } from '@/lib/portal/autocomplete-suggestions-fuzzy';
 
 interface AutocompleteDropdownProps {
   suggestions: AutocompleteSuggestion[];
@@ -69,7 +69,7 @@ export function AutocompleteDropdown({
     switch (type) {
       case 'category':
         return Folder;
-      case 'popular':
+      case 'condition':
         return TrendingUp;
       default:
         return Search;
@@ -81,8 +81,8 @@ export function AutocompleteDropdown({
     switch (type) {
       case 'category':
         return t('autocomplete.categories');
-      case 'popular':
-        return t('autocomplete.popular');
+      case 'condition':
+        return 'Condition'; // Simple string, no translation needed
       default:
         return '';
     }
@@ -150,8 +150,8 @@ export function AutocompleteDropdown({
                     {suggestion.text}
                   </div>
 
-                  {/* Tipo de sugerencia (category/popular) */}
-                  {suggestion.type !== 'keyword' && (
+                  {/* Tipo de sugerencia (category/condition) */}
+                  {suggestion.type !== 'supplement' && (
                     <div className="text-xs text-gray-500 truncate">
                       {getTypeLabel(suggestion.type)}
                     </div>

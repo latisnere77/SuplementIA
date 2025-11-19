@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-import type { AutocompleteSuggestion } from './autocomplete-suggestions';
+import type { AutocompleteSuggestion } from './autocomplete-suggestions-fuzzy';
 
 interface UseAutocompleteOptions {
   debounceMs?: number;
