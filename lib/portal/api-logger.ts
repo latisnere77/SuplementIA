@@ -3,16 +3,8 @@
  * Structured logging for portal API endpoints with error tracking
  */
 
-// Sentry is optional - we'll check if it's available at runtime
-// This avoids build-time errors if Sentry is not installed
-function getSentry() {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('@sentry/nextjs');
-  } catch {
-    return null;
-  }
-}
+// Sentry is now installed - import it directly
+import * as Sentry from '@sentry/nextjs';
 
 export interface LogContext {
   recommendationId?: string;
@@ -43,19 +35,17 @@ class PortalAPILogger {
     // eslint-disable-next-line no-console
     console.log('📥 [PORTAL API] Request:', JSON.stringify(logData, null, 2));
     
-    // Add Sentry breadcrumb if available
-    const Sentry = getSentry();
-    if (Sentry?.addBreadcrumb) {
-      try {
-        Sentry.addBreadcrumb({
-          category: 'portal.api.request',
-          message: `Portal API Request: ${context.method} ${context.endpoint}`,
-          level: 'info',
-          data: context,
-        });
-      } catch {
-        // Ignore Sentry errors
-      }
+    // Add Sentry breadcrumb
+    try {
+      Sentry.addBreadcrumb({
+        category: 'portal.api.request',
+        message: `Portal API Request: ${context.method} ${context.endpoint}`,
+        level: 'info',
+        data: context,
+      });
+    } catch (error) {
+      // Ignore Sentry errors (shouldn't happen, but safe fallback)
+      console.warn('Sentry breadcrumb failed:', error);
     }
   }
 
@@ -74,18 +64,15 @@ class PortalAPILogger {
     // eslint-disable-next-line no-console
     console.log('✅ [PORTAL API] Success:', JSON.stringify(logData, null, 2));
     
-    const Sentry = getSentry();
-    if (Sentry?.addBreadcrumb) {
-      try {
-        Sentry.addBreadcrumb({
-          category: 'portal.api.success',
-          message: `Portal API Success: ${context.endpoint}`,
-          level: 'info',
-          data: { ...context, duration },
-        });
-      } catch {
-        // Ignore Sentry errors
-      }
+    try {
+      Sentry.addBreadcrumb({
+        category: 'portal.api.success',
+        message: `Portal API Success: ${context.endpoint}`,
+        level: 'info',
+        data: { ...context, duration },
+      });
+    } catch (error) {
+      console.warn('Sentry breadcrumb failed:', error);
     }
   }
 
@@ -111,39 +98,36 @@ class PortalAPILogger {
     // eslint-disable-next-line no-console
     console.error('❌ [PORTAL API] Error:', JSON.stringify(errorData, null, 2));
     
-    // Capture in Sentry with full context if available
-    const Sentry = getSentry();
-    if (Sentry?.withScope) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Sentry.withScope((scope: any) => {
-          scope.setTag('portal.api', 'true');
-          scope.setTag('endpoint', context.endpoint || 'unknown');
-          scope.setTag('method', context.method || 'unknown');
-          scope.setContext('request', {
-            recommendationId: context.recommendationId,
-            quizId: context.quizId,
-            userId: context.userId,
-            endpoint: context.endpoint,
-            method: context.method,
-            duration,
-          });
-          scope.setContext('error', {
-            name: error?.name,
-            message: error?.message,
-            stack: error?.stack,
-            statusCode: context.statusCode,
-          });
-          
-          if (error instanceof Error) {
-            Sentry.captureException(error);
-          } else {
-            Sentry.captureMessage(`Portal API Error: ${error?.message || String(error)}`, 'error');
-          }
+    // Capture in Sentry with full context
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      Sentry.withScope((scope: any) => {
+        scope.setTag('portal.api', 'true');
+        scope.setTag('endpoint', context.endpoint || 'unknown');
+        scope.setTag('method', context.method || 'unknown');
+        scope.setContext('request', {
+          recommendationId: context.recommendationId,
+          quizId: context.quizId,
+          userId: context.userId,
+          endpoint: context.endpoint,
+          method: context.method,
+          duration,
         });
-      } catch {
-        // Ignore Sentry errors
-      }
+        scope.setContext('error', {
+          name: error?.name,
+          message: error?.message,
+          stack: error?.stack,
+          statusCode: context.statusCode,
+        });
+        
+        if (error instanceof Error) {
+          Sentry.captureException(error);
+        } else {
+          Sentry.captureMessage(`Portal API Error: ${error?.message || String(error)}`, 'error');
+        }
+      });
+    } catch (sentryError) {
+      console.warn('Sentry error capture failed:', sentryError);
     }
   }
 
@@ -162,18 +146,15 @@ class PortalAPILogger {
     // eslint-disable-next-line no-console
     console.log('🔗 [PORTAL API] Backend Call:', JSON.stringify(logData, null, 2));
     
-    const Sentry = getSentry();
-    if (Sentry?.addBreadcrumb) {
-      try {
-        Sentry.addBreadcrumb({
-          category: 'portal.api.backend',
-          message: `Backend API Call: ${method} ${url}`,
-          level: 'info',
-          data: { url, method, ...context },
-        });
-      } catch {
-        // Ignore Sentry errors
-      }
+    try {
+      Sentry.addBreadcrumb({
+        category: 'portal.api.backend',
+        message: `Backend API Call: ${method} ${url}`,
+        level: 'info',
+        data: { url, method, ...context },
+      });
+    } catch (error) {
+      console.warn('Sentry breadcrumb failed:', error);
     }
   }
 
@@ -196,18 +177,15 @@ class PortalAPILogger {
     // eslint-disable-next-line no-console
     console.log(`${emoji} [PORTAL API] Backend Response:`, JSON.stringify(logData, null, 2));
     
-    const Sentry = getSentry();
-    if (Sentry?.addBreadcrumb) {
-      try {
-        Sentry.addBreadcrumb({
-          category: 'portal.api.backend',
-          message: `Backend Response: ${status} ${url}`,
-          level,
-          data: { url, status, responseTime, ...context },
-        });
-      } catch {
-        // Ignore Sentry errors
-      }
+    try {
+      Sentry.addBreadcrumb({
+        category: 'portal.api.backend',
+        message: `Backend Response: ${status} ${url}`,
+        level,
+        data: { url, status, responseTime, ...context },
+      });
+    } catch (error) {
+      console.warn('Sentry breadcrumb failed:', error);
     }
   }
 }
