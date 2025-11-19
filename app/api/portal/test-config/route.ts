@@ -8,19 +8,15 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const PORTAL_API_URL =
-  process.env.PORTAL_API_URL ||
-  'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging';
+import { PORTAL_API_URL } from '@/lib/portal/api-config';
 
 export async function GET(request: NextRequest) {
   const testId = 'rec_test_123';
-  const baseUrl = PORTAL_API_URL.endsWith('/') ? PORTAL_API_URL.slice(0, -1) : PORTAL_API_URL;
-  const testUrl = `${baseUrl}/portal/status/${testId}`;
+  const testUrl = `${PORTAL_API_URL}/portal/status/${testId}`;
 
   try {
     console.log(`🧪 [TEST] Testing API Gateway connection`);
     console.log(`🧪 [TEST] PORTAL_API_URL: ${PORTAL_API_URL}`);
-    console.log(`🧪 [TEST] Base URL (normalized): ${baseUrl}`);
     console.log(`🧪 [TEST] Full test URL: ${testUrl}`);
 
     const response = await fetch(testUrl, {
@@ -52,8 +48,7 @@ export async function GET(request: NextRequest) {
       },
       config: {
         portalApiUrl: PORTAL_API_URL,
-        baseUrl,
-        normalized: baseUrl !== PORTAL_API_URL,
+        rawEnv: process.env.PORTAL_API_URL || 'not set',
       },
     });
   } catch (error: any) {
@@ -65,7 +60,7 @@ export async function GET(request: NextRequest) {
       test: {
         url: testUrl,
         portalApiUrl: PORTAL_API_URL,
-        baseUrl,
+        rawEnv: process.env.PORTAL_API_URL || 'not set',
       },
     }, { status: 500 });
   }

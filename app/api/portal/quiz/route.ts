@@ -11,9 +11,10 @@ import { portalLogger } from '@/lib/portal/api-logger';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const PORTAL_API_URL =
-  process.env.PORTAL_API_URL ||
-  'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging/portal/recommend';
+import { PORTAL_API_URL } from '@/lib/portal/api-config';
+
+// Quiz endpoint uses /portal/recommend path
+const QUIZ_API_URL = `${PORTAL_API_URL}/portal/recommend`;
 
 // Check if we're in demo mode (only if API URL is explicitly disabled)
 // Note: 'staging' in URL is OK - it's still a valid backend endpoint
@@ -122,14 +123,14 @@ export async function POST(request: NextRequest) {
     // PRODUCTION MODE: Call Lambda to generate recommendation
     const backendCallStart = Date.now();
     
-    portalLogger.logBackendCall(PORTAL_API_URL, 'POST', {
+    portalLogger.logBackendCall(QUIZ_API_URL, 'POST', {
       requestId,
       quizId,
       category,
     });
     
     try {
-      const recommendationResponse = await fetch(PORTAL_API_URL, {
+      const recommendationResponse = await fetch(QUIZ_API_URL, {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
@@ -152,7 +153,7 @@ export async function POST(request: NextRequest) {
 
       const backendResponseTime = Date.now() - backendCallStart;
       
-      portalLogger.logBackendResponse(PORTAL_API_URL, recommendationResponse.status, backendResponseTime, {
+      portalLogger.logBackendResponse(QUIZ_API_URL, recommendationResponse.status, backendResponseTime, {
         requestId,
         quizId,
         category,
@@ -178,7 +179,7 @@ export async function POST(request: NextRequest) {
           endpoint: '/api/portal/quiz',
           method: 'POST',
           statusCode: recommendationResponse.status,
-          backendUrl: PORTAL_API_URL,
+          backendUrl: QUIZ_API_URL,
           backendResponse: errorData,
         });
 
@@ -263,7 +264,7 @@ export async function POST(request: NextRequest) {
         endpoint: '/api/portal/quiz',
         method: 'POST',
         statusCode: 503,
-        backendUrl: PORTAL_API_URL,
+        backendUrl: QUIZ_API_URL,
         errorType: apiError.name,
       });
       
@@ -275,7 +276,7 @@ export async function POST(request: NextRequest) {
           message: apiError.message,
           errorType: apiError.name,
           requestId,
-          backendUrl: PORTAL_API_URL,
+          backendUrl: QUIZ_API_URL,
         },
         { status: 503 } // Service Unavailable
       );

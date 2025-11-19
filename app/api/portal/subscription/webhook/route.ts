@@ -13,9 +13,7 @@ export const runtime = 'nodejs';
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
-const PORTAL_API_URL =
-  process.env.PORTAL_API_URL ||
-  'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging';
+import { PORTAL_API_URL } from '@/lib/portal/api-config';
 
 export async function POST(request: NextRequest) {
   try {

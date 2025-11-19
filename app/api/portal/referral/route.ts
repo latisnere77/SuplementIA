@@ -12,9 +12,7 @@ import { portalLogger } from '@/lib/portal/api-logger';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const PORTAL_API_URL =
-  process.env.PORTAL_API_URL ||
-  'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging';
+import { PORTAL_API_URL } from '@/lib/portal/api-config';
 
 /**
  * POST /api/portal/referral - Create or track referral

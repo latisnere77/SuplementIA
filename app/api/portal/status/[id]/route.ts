@@ -9,9 +9,7 @@ import { portalLogger } from '@/lib/portal/api-logger';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const PORTAL_API_URL =
-  process.env.PORTAL_API_URL ||
-  'https://epmozzfkq4.execute-api.us-east-1.amazonaws.com/staging';
+import { PORTAL_API_URL } from '@/lib/portal/api-config';
 
 export async function GET(
   request: NextRequest,
@@ -55,9 +53,7 @@ export async function GET(
     }
 
     // Call backend status endpoint
-    // Ensure no double slashes in URL
-    const baseUrl = PORTAL_API_URL.endsWith('/') ? PORTAL_API_URL.slice(0, -1) : PORTAL_API_URL;
-    const statusUrl = `${baseUrl}/portal/status/${recommendationId}`;
+    const statusUrl = `${PORTAL_API_URL}/portal/status/${recommendationId}`;
     const backendCallStart = Date.now();
     
     portalLogger.logBackendCall(statusUrl, 'GET', {
