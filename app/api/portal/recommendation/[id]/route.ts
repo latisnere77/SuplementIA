@@ -104,7 +104,9 @@ export async function GET(
 
     // PRODUCTION MODE: Get recommendation from backend Lambda
     // The backend Lambda has access to DynamoDB, so we proxy the request
-    const statusUrl = `${PORTAL_API_URL}/portal/status/${recommendationId}`;
+    // Ensure no double slashes in URL
+    const baseUrl = PORTAL_API_URL.endsWith('/') ? PORTAL_API_URL.slice(0, -1) : PORTAL_API_URL;
+    const statusUrl = `${baseUrl}/portal/status/${recommendationId}`;
     const backendCallStart = Date.now();
     
     portalLogger.logBackendCall(statusUrl, 'GET', {

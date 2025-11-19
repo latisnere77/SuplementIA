@@ -55,7 +55,9 @@ export async function GET(
     }
 
     // Call backend status endpoint
-    const statusUrl = `${PORTAL_API_URL}/portal/status/${recommendationId}`;
+    // Ensure no double slashes in URL
+    const baseUrl = PORTAL_API_URL.endsWith('/') ? PORTAL_API_URL.slice(0, -1) : PORTAL_API_URL;
+    const statusUrl = `${baseUrl}/portal/status/${recommendationId}`;
     const backendCallStart = Date.now();
     
     portalLogger.logBackendCall(statusUrl, 'GET', {
