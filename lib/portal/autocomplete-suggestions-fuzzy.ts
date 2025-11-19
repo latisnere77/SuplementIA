@@ -3,7 +3,7 @@
  * Replaces hardcoded suggestions with fuzzy search over supplements database
  */
 
-import Fuse from 'fuse.js';
+import Fuse, { IFuseOptions } from 'fuse.js';
 import type { SupplementEntry } from './supplements-database';
 import { SUPPLEMENTS_DATABASE } from './supplements-database';
 
@@ -23,7 +23,7 @@ export interface AutocompleteSuggestion {
  * - distance: 100 = how far to search for a match
  * - keys: fields to search in (name, aliases, healthConditions)
  */
-const fuseOptions: Fuse.IFuseOptions<SupplementEntry> = {
+const fuseOptions: IFuseOptions<SupplementEntry> = {
   keys: [
     { name: 'name', weight: 0.5 },           // Name has highest weight
     { name: 'aliases', weight: 0.3 },        // Aliases are important for typos
