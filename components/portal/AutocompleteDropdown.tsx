@@ -39,6 +39,9 @@ export function AutocompleteDropdown({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLButtonElement>(null);
 
+  // DEBUG: Log cuando el componente se renderiza
+  console.log('[AutocompleteDropdown] Rendering:', { suggestions: suggestions.length, isLoading });
+
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
