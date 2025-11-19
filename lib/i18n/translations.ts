@@ -171,6 +171,12 @@ export const translations = {
     'share.link.label': 'Your referral link:',
     'share.text': 'Check out this evidence-based health recommendation I found!',
 
+    // Autocomplete
+    'autocomplete.no.results': 'No suggestions found',
+    'autocomplete.loading': 'Loading suggestions...',
+    'autocomplete.categories': 'Categories',
+    'autocomplete.popular': 'Popular Searches',
+
     // Common
     'common.loading': 'Loading...',
     'common.error': 'Error',
@@ -346,6 +352,12 @@ export const translations = {
     'share.copied': '¡Copiado!',
     'share.link.label': 'Tu enlace de referido:',
     'share.text': '¡Mira esta recomendación de salud basada en evidencia que encontré!',
+
+    // Autocomplete
+    'autocomplete.no.results': 'No se encontraron sugerencias',
+    'autocomplete.loading': 'Cargando sugerencias...',
+    'autocomplete.categories': 'Categorías',
+    'autocomplete.popular': 'Búsquedas Populares',
 
     // Common
     'common.loading': 'Cargando...',
