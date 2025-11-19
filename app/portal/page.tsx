@@ -15,6 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { useAutocomplete } from '@/lib/portal/useAutocomplete';
+import { AutocompleteDropdown } from '@/components/portal/AutocompleteDropdown';
 
 export default function PortalPage() {
   const { t, language, setLanguage } = useTranslation();
@@ -22,6 +24,14 @@ export default function PortalPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+
+  // Hook de autocomplete con debouncing
+  const { suggestions, isLoading: isLoadingSuggestions } = useAutocomplete(searchQuery, {
+    debounceMs: 300,
+    limit: 5,
+  });
 
   const placeholders = language === 'es' 
     ? [
@@ -147,6 +157,45 @@ export default function PortalPage() {
     router.push(`/portal/results?q=${encodeURIComponent(term)}`);
   };
 
+  // Manejar navegación con teclado en autocomplete
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showAutocomplete || suggestions.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev =>
+          prev < suggestions.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
+        break;
+      case 'Enter':
+        if (selectedIndex >= 0) {
+          e.preventDefault();
+          const selected = suggestions[selectedIndex];
+          setSearchQuery(selected.text);
+          router.push(`/portal/results?q=${encodeURIComponent(selected.text)}`);
+          setShowAutocomplete(false);
+          setIsLoading(false);
+        }
+        break;
+      case 'Escape':
+        setShowAutocomplete(false);
+        setSelectedIndex(-1);
+        break;
+    }
+  };
+
+  // Manejar selección de sugerencia con click
+  const handleSuggestionSelect = (suggestion: { text: string }) => {
+    setSearchQuery(suggestion.text);
+    router.push(`/portal/results?q=${encodeURIComponent(suggestion.text)}`);
+    setShowAutocomplete(false);
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Hero Section */}
@@ -236,10 +285,21 @@ export default function PortalPage() {
                 <Input
                   type="search"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowAutocomplete(true);
+                    setSelectedIndex(-1);
+                  }}
+                  onKeyDown={handleKeyDown}
+                  onFocus={() => {
+                    if (searchQuery.length >= 2) {
+                      setShowAutocomplete(true);
+                    }
+                  }}
                   className="h-14 pl-12 pr-4 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus-visible:ring-primary/30 focus-visible:border-primary shadow-lg"
                   placeholder=""
                   disabled={isLoading}
+                  autoComplete="off"
                 />
                 <div className="absolute inset-0 flex items-center pl-12 pointer-events-none">
                   <AnimatePresence mode="wait">
@@ -257,10 +317,24 @@ export default function PortalPage() {
                     )}
                   </AnimatePresence>
                 </div>
-                {isLoading && (
+                {(isLoading || isLoadingSuggestions) && (
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
                   </div>
+                )}
+
+                {/* Autocomplete Dropdown */}
+                {showAutocomplete && suggestions.length > 0 && (
+                  <AutocompleteDropdown
+                    suggestions={suggestions}
+                    selectedIndex={selectedIndex}
+                    isLoading={isLoadingSuggestions}
+                    onSelect={handleSuggestionSelect}
+                    onClose={() => {
+                      setShowAutocomplete(false);
+                      setSelectedIndex(-1);
+                    }}
+                  />
                 )}
               </div>
             </motion.form>
