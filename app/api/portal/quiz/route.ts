@@ -90,13 +90,15 @@ export async function POST(request: NextRequest) {
     // GUARDRAILS: Validate query content
     const validation = validateSupplementQuery(category);
     if (!validation.valid) {
-      portalLogger.logError({
-        requestId,
-        error: 'Query validation failed',
-        category,
-        validationError: validation.error,
-        severity: validation.severity,
-      });
+      portalLogger.logError(
+        new Error('Query validation failed'),
+        {
+          requestId,
+          category,
+          validationError: validation.error,
+          severity: validation.severity,
+        }
+      );
 
       return NextResponse.json(
         {
