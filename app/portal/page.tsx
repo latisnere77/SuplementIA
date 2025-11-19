@@ -5,27 +5,25 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Heart, Shield, TrendingUp, Users, BookOpen, Globe, ChevronRight, Star, Dumbbell, Brain, Moon } from 'lucide-react';
+import { Search, Heart, Shield, TrendingUp, Users, BookOpen, Globe, ChevronRight, Star, Dumbbell, Brain, Moon, Check } from 'lucide-react';
+import { Combobox, Transition } from '@headlessui/react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useAutocomplete } from '@/lib/portal/useAutocomplete';
-import { AutocompleteDropdown } from '@/components/portal/AutocompleteDropdown';
 
 export default function PortalPage() {
   const { t, language, setLanguage } = useTranslation();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [showAutocomplete, setShowAutocomplete] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   // Hook de autocomplete con debouncing
   const { suggestions, isLoading: isLoadingSuggestions } = useAutocomplete(searchQuery, {
@@ -135,17 +133,10 @@ export default function PortalPage() {
     },
   ];
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-
+  const handleSearch = (query: string) => {
+    if (!query?.trim()) return;
     setIsLoading(true);
-    try {
-      router.push(`/portal/results?q=${encodeURIComponent(searchQuery.trim())}`);
-    } catch (error) {
-      console.error('Search error:', error);
-      setIsLoading(false);
-    }
+    router.push(`/portal/results?q=${encodeURIComponent(query.trim())}`);
   };
 
   const handleCategoryClick = (categoryId: string) => {
@@ -155,45 +146,6 @@ export default function PortalPage() {
   const handlePopularSearch = (term: string) => {
     setSearchQuery(term);
     router.push(`/portal/results?q=${encodeURIComponent(term)}`);
-  };
-
-  // Manejar navegación con teclado en autocomplete
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showAutocomplete || suggestions.length === 0) return;
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setSelectedIndex(prev =>
-          prev < suggestions.length - 1 ? prev + 1 : prev
-        );
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
-        break;
-      case 'Enter':
-        if (selectedIndex >= 0) {
-          e.preventDefault();
-          const selected = suggestions[selectedIndex];
-          setSearchQuery(selected.text);
-          router.push(`/portal/results?q=${encodeURIComponent(selected.text)}`);
-          setShowAutocomplete(false);
-          setIsLoading(false);
-        }
-        break;
-      case 'Escape':
-        setShowAutocomplete(false);
-        setSelectedIndex(-1);
-        break;
-    }
-  };
-
-  // Manejar selección de sugerencia con click
-  const handleSuggestionSelect = (suggestion: { text: string }) => {
-    setSearchQuery(suggestion.text);
-    router.push(`/portal/results?q=${encodeURIComponent(suggestion.text)}`);
-    setShowAutocomplete(false);
   };
 
   return (
@@ -272,72 +224,111 @@ export default function PortalPage() {
               {t('portal.subtitle')}
             </motion.p>
 
-            {/* Search Bar */}
-            <motion.form
+            {/* Search Bar with Autocomplete */}
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.9 }}
-              onSubmit={handleSearch}
               className="relative max-w-2xl mx-auto"
             >
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400" />
-                <Input
-                  type="search"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setShowAutocomplete(true);
-                    setSelectedIndex(-1);
-                  }}
-                  onKeyDown={handleKeyDown}
-                  onFocus={() => {
-                    if (searchQuery.length >= 2) {
-                      setShowAutocomplete(true);
-                    }
-                  }}
-                  className="h-14 pl-12 pr-4 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus-visible:ring-primary/30 focus-visible:border-primary shadow-lg"
-                  placeholder=""
-                  disabled={isLoading}
-                  autoComplete="off"
-                />
-                <div className="absolute inset-0 flex items-center pl-12 pointer-events-none">
-                  <AnimatePresence mode="wait">
-                    {!searchQuery && (
-                      <motion.p
-                        key={currentPlaceholder}
-                        initial={{ y: 5, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -15, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'linear' }}
-                        className="text-gray-500 dark:text-gray-400 text-base truncate"
-                      >
-                        {placeholders[currentPlaceholder]}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </div>
-                {(isLoading || isLoadingSuggestions) && (
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
-                  </div>
-                )}
+              <Combobox
+                value={selectedSuggestion}
+                onChange={(value) => {
+                  if (value) {
+                    handleSearch(value);
+                  }
+                }}
+              >
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400 z-10 pointer-events-none" />
 
-                {/* Autocomplete Dropdown */}
-                {showAutocomplete && suggestions.length > 0 && (
-                  <AutocompleteDropdown
-                    suggestions={suggestions}
-                    selectedIndex={selectedIndex}
-                    isLoading={isLoadingSuggestions}
-                    onSelect={handleSuggestionSelect}
-                    onClose={() => {
-                      setShowAutocomplete(false);
-                      setSelectedIndex(-1);
+                  <Combobox.Input
+                    className="h-14 w-full pl-12 pr-4 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && searchQuery && suggestions.length === 0) {
+                        e.preventDefault();
+                        handleSearch(searchQuery);
+                      }
                     }}
+                    displayValue={() => searchQuery}
+                    placeholder=""
+                    autoComplete="off"
                   />
-                )}
-              </div>
-            </motion.form>
+
+                  {/* Animated Placeholder */}
+                  <div className="absolute inset-0 flex items-center pl-12 pointer-events-none">
+                    <AnimatePresence mode="wait">
+                      {!searchQuery && (
+                        <motion.p
+                          key={currentPlaceholder}
+                          initial={{ y: 5, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: -15, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: 'linear' }}
+                          className="text-gray-500 dark:text-gray-400 text-base truncate"
+                        >
+                          {placeholders[currentPlaceholder]}
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Loading Spinner */}
+                  {(isLoading || isLoadingSuggestions) && (
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                    </div>
+                  )}
+
+                  {/* Autocomplete Dropdown */}
+                  <Transition
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                    afterLeave={() => setSearchQuery('')}
+                  >
+                    <Combobox.Options className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-96 overflow-y-auto py-2">
+                      {suggestions.length === 0 && searchQuery !== '' ? (
+                        <div className="px-4 py-3 text-sm text-gray-500">
+                          {t('autocomplete.no.results')}
+                        </div>
+                      ) : (
+                        suggestions.map((suggestion) => (
+                          <Combobox.Option
+                            key={suggestion.text}
+                            value={suggestion.text}
+                            className={({ active }) =>
+                              cn(
+                                'relative cursor-pointer select-none py-3 px-4 transition-colors',
+                                active ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-white dark:bg-gray-800'
+                              )
+                            }
+                          >
+                            {({ active }) => (
+                              <div className="flex items-center gap-3">
+                                {/* Icon based on type */}
+                                {suggestion.type === 'category' ? (
+                                  <TrendingUp className={cn('h-4 w-4', active ? 'text-blue-600' : 'text-gray-400')} />
+                                ) : (
+                                  <Search className={cn('h-4 w-4', active ? 'text-blue-600' : 'text-gray-400')} />
+                                )}
+
+                                {/* Suggestion text */}
+                                <span className={cn('text-sm font-medium truncate', active ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100')}>
+                                  {suggestion.text}
+                                </span>
+                              </div>
+                            )}
+                          </Combobox.Option>
+                        ))
+                      )}
+                    </Combobox.Options>
+                  </Transition>
+                </div>
+              </Combobox>
+            </motion.div>
           </div>
         </div>
       </div>
