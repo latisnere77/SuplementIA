@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { getMockRecommendation } from '@/lib/portal/mockData';
+import { portalLogger } from '@/lib/portal/api-logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -53,10 +54,25 @@ function detectClimate(location: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = crypto.randomUUID();
+  let quizId: string | undefined;
+  
   try {
     const body = await request.json();
 
     const { category, age, gender, location, sensitivities = [] } = body;
+
+    portalLogger.logRequest({
+      requestId,
+      endpoint: '/api/portal/quiz',
+      method: 'POST',
+      category,
+      age,
+      gender,
+      location,
+      userAgent: request.headers.get('user-agent'),
+      referer: request.headers.get('referer'),
+    });
 
     // Validate required fields (category is minimum required for search-first approach)
     if (!category) {
@@ -75,7 +91,7 @@ export async function POST(request: NextRequest) {
     const finalLocation = location || 'CDMX';
 
     // Generate quiz ID
-    const quizId = `quiz_${Date.now()}_${randomUUID().substring(0, 8)}`;
+    quizId = `quiz_${Date.now()}_${randomUUID().substring(0, 8)}`;
 
     // Auto-detect altitude and climate
     const altitude = detectAltitude(finalLocation);
@@ -104,24 +120,23 @@ export async function POST(request: NextRequest) {
     }
 
     // PRODUCTION MODE: Call Lambda to generate recommendation
-    console.log(`🔗 Calling backend API: ${PORTAL_API_URL}`);
-    console.log(`📤 Request payload:`, {
+    const backendCallStart = Date.now();
+    
+    portalLogger.logBackendCall(PORTAL_API_URL, 'POST', {
+      requestId,
+      quizId,
       category,
-      age: parseInt(finalAge.toString()),
-      gender: finalGender,
-      location: finalLocation,
-      altitude,
-      climate,
-      quiz_id: quizId,
     });
     
     try {
       const recommendationResponse = await fetch(PORTAL_API_URL, {
-        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
+          'User-Agent': 'SuplementIA-Portal-API/1.0',
+          'X-Request-ID': requestId,
         },
+        method: 'POST',
         body: JSON.stringify({
           category,
           age: parseInt(finalAge.toString()),
@@ -135,29 +150,62 @@ export async function POST(request: NextRequest) {
         signal: AbortSignal.timeout(15000), // 15s timeout (allows for cold start and network latency)
       });
 
-      console.log(`📥 Backend response status: ${recommendationResponse.status}`);
+      const backendResponseTime = Date.now() - backendCallStart;
+      
+      portalLogger.logBackendResponse(PORTAL_API_URL, recommendationResponse.status, backendResponseTime, {
+        requestId,
+        quizId,
+        category,
+      });
 
       if (!recommendationResponse.ok) {
         const errorText = await recommendationResponse.text();
-        console.error(`❌ Portal API error: ${recommendationResponse.status}`);
-        console.error(`❌ Error response: ${errorText.substring(0, 500)}`);
+        let errorData: any;
+        
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { raw: errorText.substring(0, 500) };
+        }
+
+        const error = new Error(`Backend API returned ${recommendationResponse.status}`);
+        (error as any).statusCode = recommendationResponse.status;
+        (error as any).response = errorData;
+
+        portalLogger.logError(error, {
+          requestId,
+          quizId,
+          endpoint: '/api/portal/quiz',
+          method: 'POST',
+          statusCode: recommendationResponse.status,
+          backendUrl: PORTAL_API_URL,
+          backendResponse: errorData,
+        });
 
         // Return error instead of falling back to mock
         return NextResponse.json(
           {
             success: false,
             error: 'Backend API error',
-            message: `Backend returned ${recommendationResponse.status}: ${errorText.substring(0, 200)}`,
+            message: `Backend returned ${recommendationResponse.status}: ${errorData.message || errorText.substring(0, 200)}`,
             status: recommendationResponse.status,
+            requestId,
+            backendError: errorData,
           },
           { status: recommendationResponse.status }
         );
       }
 
       const responseData = await recommendationResponse.json();
-      console.log(`✅ Backend response received:`, {
-        status: responseData.status,
+
+      portalLogger.logSuccess({
+        requestId,
+        quizId,
+        endpoint: '/api/portal/quiz',
+        method: 'POST',
+        statusCode: recommendationResponse.status,
         recommendationId: responseData.recommendation_id,
+        status: responseData.status,
       });
 
       // ASYNC PATTERN: Backend returns 202 with recommendation_id for polling
@@ -172,6 +220,7 @@ export async function POST(request: NextRequest) {
             statusUrl: responseData.statusUrl || `/api/portal/status/${responseData.recommendation_id}`,
             estimatedTime: responseData.estimatedTime || '60-120 segundos',
             pollInterval: responseData.pollInterval || '3 segundos',
+            requestId,
           },
           { status: 202 }
         );
@@ -208,8 +257,15 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     } catch (apiError: any) {
-      console.error('❌ API call failed:', apiError.name, apiError.message);
-      console.error('Stack:', apiError.stack);
+      portalLogger.logError(apiError, {
+        requestId,
+        quizId,
+        endpoint: '/api/portal/quiz',
+        method: 'POST',
+        statusCode: 503,
+        backendUrl: PORTAL_API_URL,
+        errorType: apiError.name,
+      });
       
       // Return error instead of falling back to mock
       return NextResponse.json(
@@ -218,18 +274,28 @@ export async function POST(request: NextRequest) {
           error: 'Backend API call failed',
           message: apiError.message,
           errorType: apiError.name,
+          requestId,
+          backendUrl: PORTAL_API_URL,
         },
         { status: 503 } // Service Unavailable
       );
     }
   } catch (error: any) {
-    console.error('❌ Portal quiz API error:', error);
+    portalLogger.logError(error, {
+      requestId,
+      quizId,
+      endpoint: '/api/portal/quiz',
+      method: 'POST',
+      statusCode: 500,
+    });
 
     return NextResponse.json(
       {
         success: false,
         error: 'Internal server error',
         message: error.message,
+        requestId,
+        errorType: error.name,
       },
       { status: 500 }
     );
