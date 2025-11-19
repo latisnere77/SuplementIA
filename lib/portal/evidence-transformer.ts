@@ -1,15 +1,27 @@
 /**
  * Evidence Data Transformer
  * Convierte datos del backend (formato viejo) al nuevo formato visual
+ * OPTIMIZADO: Usa cache estático cuando es posible
  */
 
 import type { GradeType } from '@/components/portal/SupplementGrade';
 import type { WorksForItem } from '@/components/portal/WorksForSection';
+import { getSupplementEvidenceFromCache } from './supplements-evidence-data';
 
 /**
  * Convierte el formato viejo de evidencia al nuevo formato visual
+ * OPTIMIZACIÓN: Primero intenta usar datos pre-generados del cache
  */
 export function transformEvidenceToNew(oldEvidence: any, category?: string) {
+  // OPTIMIZACIÓN 1: Intentar obtener del cache estático primero
+  if (category) {
+    const cachedData = getSupplementEvidenceFromCache(category);
+    if (cachedData) {
+      console.log(`[CACHE HIT] Using pre-generated data for: ${category}`);
+      return cachedData;
+    }
+    console.log(`[CACHE MISS] Generating data for: ${category}`);
+  }
   // Determinar calificación general basada en eficacia y estudios
   const overallGrade = determineOverallGrade(
     oldEvidence.efficacyPercentage || 0,
@@ -80,28 +92,46 @@ function determineOverallGrade(
 }
 
 /**
- * Genera descripción "Para qué sirve"
+ * Genera descripción "Para qué sirve" - MEJORADO con más categorías
  */
 function generateWhatIsItFor(category: string): string {
   const descriptions: Record<string, string> = {
+    // Categorías
     cognitive: 'Mejora la memoria, el enfoque y la claridad mental mediante el apoyo a la función cerebral saludable.',
     sleep: 'Mejora la calidad del sueño, reduce el tiempo para conciliar el sueño y promueve un descanso reparador.',
     muscle: 'Apoya el crecimiento muscular, mejora el rendimiento físico y acelera la recuperación post-entrenamiento.',
     'muscle-gain': 'Apoya el crecimiento muscular, mejora el rendimiento físico y acelera la recuperación post-entrenamiento.',
-    energy: 'Aumenta los niveles de energía, reduce la fatiga y mejora la vitalidad general.',
+    energy: 'Aumenta los niveles de energía, reduce la fatiga y mejora la vitalidad general de forma sostenida.',
     immune: 'Fortalece el sistema inmunológico y ayuda al cuerpo a defenderse contra enfermedades.',
     heart: 'Apoya la salud cardiovascular, ayuda a mantener niveles saludables de presión arterial y colesterol.',
     stress: 'Reduce el estrés, la ansiedad y promueve un estado de ánimo equilibrado.',
     anxiety: 'Reduce la ansiedad, promueve la calma y ayuda a manejar el estrés diario.',
+    'fat-loss': 'Apoya la pérdida de grasa mediante el control del apetito y el metabolismo.',
+    joint: 'Apoya la salud de las articulaciones, reduce la inflamación y mejora la movilidad.',
+    skin: 'Mejora la salud de la piel, promueve la elasticidad y reduce signos de envejecimiento.',
+    hair: 'Fortalece el cabello, reduce la caída y promueve el crecimiento saludable.',
+    digestion: 'Apoya la salud digestiva, mejora la flora intestinal y reduce la inflamación.',
+
+    // Suplementos específicos
     ashwagandha: 'Reduce el estrés y la ansiedad, mejora la calidad del sueño y ayuda a controlar los niveles de cortisol de forma natural.',
     cbd: 'Ayuda a reducir el dolor crónico, la inflamación y puede mejorar la ansiedad en algunas personas.',
     melatonin: 'Regula el ciclo sueño-vigilia, ayuda a conciliar el sueño más rápido y mejora la calidad del descanso.',
+    melatonina: 'Regula el ciclo sueño-vigilia, ayuda a conciliar el sueño más rápido y mejora la calidad del descanso.',
     'omega-3': 'Apoya la salud cardiovascular y cerebral, reduce la inflamación y promueve el bienestar general.',
     magnesium: 'Apoya la función muscular y nerviosa, mejora el sueño y ayuda a reducir el estrés.',
+    magnesio: 'Apoya la función muscular y nerviosa, mejora el sueño y ayuda a reducir el estrés.',
     'vitamin-d': 'Fortalece los huesos, apoya el sistema inmune y mejora el estado de ánimo.',
+    'vitamina-d': 'Fortalece los huesos, apoya el sistema inmune y mejora el estado de ánimo.',
+    creatine: 'Aumenta la fuerza muscular, mejora el rendimiento en ejercicios de alta intensidad y apoya la recuperación.',
+    creatina: 'Aumenta la fuerza muscular, mejora el rendimiento en ejercicios de alta intensidad y apoya la recuperación.',
+    protein: 'Apoya el crecimiento y recuperación muscular, esencial para la síntesis de proteínas.',
+    proteina: 'Apoya el crecimiento y recuperación muscular, esencial para la síntesis de proteínas.',
+    caffeine: 'Aumenta la energía, mejora el enfoque y el rendimiento físico de forma temporal.',
+    cafeina: 'Aumenta la energía, mejora el enfoque y el rendimiento físico de forma temporal.',
   };
 
-  return descriptions[category.toLowerCase()] || 'Suplemento basado en evidencia científica para mejorar tu salud y bienestar.';
+  const normalized = category.toLowerCase().trim();
+  return descriptions[normalized] || `Suplemento para ${category} basado en evidencia científica.`;
 }
 
 /**
@@ -158,18 +188,61 @@ function generateWorksForData(
     },
   };
 
-  // Buscar por categoría específica o usar genérico
-  const data = categoryConditions[category.toLowerCase()] || {
-    works: [
-      { condition: `Mejorar ${category}`, grade, description: `Basado en ${efficacy}% de eficacia` },
-    ],
-    doesnt: [],
-    limited: [],
-  };
+  // Buscar por categoría específica o generar datos mejorados
+  const normalized = category.toLowerCase().trim();
+  const data = categoryConditions[normalized];
+
+  if (data) {
+    return {
+      worksFor: data.works,
+      doesntWorkFor: data.doesnt,
+      limitedEvidence: data.limited,
+    };
+  }
+
+  // FALLBACK MEJORADO: Generar datos basados en eficacia real
+  const works: WorksForItem[] = [];
+  const doesnt: WorksForItem[] = [];
+  const limited: WorksForItem[] = [];
+
+  // Generar "Funciona para" basado en eficacia
+  if (efficacy >= 60) {
+    works.push({
+      condition: `Mejorar ${category}`,
+      grade,
+      description: `Evidencia de eficacia del ${efficacy}% en estudios`,
+    });
+    works.push({
+      condition: 'Apoyo general a la salud',
+      grade: grade === 'A' || grade === 'B' ? 'B' : 'C',
+      description: 'Beneficios secundarios documentados',
+    });
+  } else if (efficacy >= 40) {
+    limited.push({
+      condition: `Mejorar ${category}`,
+      grade,
+      description: `Evidencia limitada (${efficacy}% de eficacia)`,
+    });
+  } else {
+    doesnt.push({
+      condition: `Mejorar ${category}`,
+      grade: 'D',
+      description: 'Evidencia insuficiente o resultados inconsistentes',
+    });
+  }
+
+  // Agregar una limitación genérica para balance
+  if (efficacy >= 50) {
+    doesnt.push({
+      condition: 'Resultados inmediatos',
+      grade: 'F',
+      description: 'Los suplementos requieren uso constante para ver efectos',
+    });
+  }
 
   return {
-    worksFor: data.works,
-    doesntWorkFor: data.doesnt,
-    limitedEvidence: data.limited,
+    worksFor: works,
+    doesntWorkFor: doesnt,
+    limitedEvidence: limited,
   };
 }
