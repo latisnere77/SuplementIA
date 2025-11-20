@@ -34,9 +34,9 @@ export default function PortalHeader() {
             {/* Logo */}
             <button
               onClick={() => router.push('/portal')}
-              className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+              className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
             >
-              AnkoSoft Portal
+              SuplementAI
             </button>
 
             {/* Navigation */}

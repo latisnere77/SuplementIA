@@ -206,18 +206,6 @@ export default function PortalPage() {
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.3 }}
-            >
-              <Badge className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300">
-                <Globe className="h-3 w-3" />
-                <span className="text-sm">AnkoSoft Portal</span>
-              </Badge>
-            </motion.div>
-
             {/* Title */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}

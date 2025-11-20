@@ -15,6 +15,7 @@ import PersonalizationExplanation from '@/components/portal/PersonalizationExpla
 import ProductRecommendationsGrid from '@/components/portal/ProductRecommendationsGrid';
 import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
+import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { transformEvidenceToNew } from '@/lib/portal/evidence-transformer';
@@ -563,6 +564,19 @@ function ResultsPageContent() {
               recommendation.category
             )}
             supplementName={recommendation.category}
+          />
+        </div>
+
+        {/* Scientific Studies from PubMed */}
+        <div className="mb-8">
+          <ScientificStudiesPanel
+            supplementName={recommendation.category}
+            maxStudies={5}
+            filters={{
+              rctOnly: false,
+              yearFrom: 2010,
+            }}
+            autoLoad={false}
           />
         </div>
 

@@ -128,8 +128,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<Autocomple
       }
     }
 
-    // 6. Obtener sugerencias
-    const suggestions = getSuggestions(query, lang, limit);
+    // 6. Obtener sugerencias (con PubMed fallback)
+    const suggestions = await getSuggestions(query, lang, limit);
 
     // 7. Logging de éxito
     const duration = Date.now() - startTime;
