@@ -1,0 +1,159 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Suplementia Cache Service - DynamoDB cache for enriched content
+
+Parameters:
+  Environment:
+    Type: String
+    Default: staging
+    AllowedValues:
+      - dev
+      - staging
+      - production
+    Description: Environment name
+
+  TableName:
+    Type: String
+    Default: suplementia-enriched-content
+    Description: DynamoDB table name for cache
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 512
+    Runtime: nodejs20.x
+    Tracing: Active  # Enable X-Ray
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref TableName
+        XRAY_ENABLED: 'true'
+        LOG_LEVEL: info
+
+Resources:
+  # DynamoDB Table for cache
+  CacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref TableName
+      BillingMode: PAY_PER_REQUEST  # On-demand pricing
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        Enabled: true
+        AttributeName: ttl
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      Tags:
+        - Key: Project
+          Value: Suplementia
+        - Key: Module
+          Value: CacheService
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Lambda Function
+  CacheServiceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub suplementia-cache-service-${Environment}
+      CodeUri: ./dist
+      Handler: index.handler
+      Description: Cache service for enriched supplement content
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CacheTable
+        - AWSXRayDaemonWriteAccess
+      Events:
+        GetCache:
+          Type: Api
+          Properties:
+            Path: /cache/{supplementId}
+            Method: GET
+        PutCache:
+          Type: Api
+          Properties:
+            Path: /cache/{supplementId}
+            Method: PUT
+        DeleteCache:
+          Type: Api
+          Properties:
+            Path: /cache/{supplementId}
+            Method: DELETE
+        OptionsCache:
+          Type: Api
+          Properties:
+            Path: /cache/{supplementId}
+            Method: OPTIONS
+      Tags:
+        Project: Suplementia
+        Module: CacheService
+        Environment: !Ref Environment
+
+  # CloudWatch Log Group
+  CacheServiceLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/suplementia-cache-service-${Environment}
+      RetentionInDays: 30
+
+  # CloudWatch Alarms
+  CacheServiceErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub suplementia-cache-service-errors-${Environment}
+      AlarmDescription: Alert when cache service has errors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref CacheServiceFunction
+      TreatMissingData: notBreaching
+
+  CacheServiceThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub suplementia-cache-service-throttles-${Environment}
+      AlarmDescription: Alert when cache service is throttled
+      MetricName: Throttles
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref CacheServiceFunction
+      TreatMissingData: notBreaching
+
+Outputs:
+  CacheServiceApi:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/cache
+
+  CacheTableName:
+    Description: DynamoDB table name
+    Value: !Ref CacheTable
+    Export:
+      Name: !Sub ${AWS::StackName}-CacheTableName
+
+  CacheFunctionArn:
+    Description: Cache Service Lambda ARN
+    Value: !GetAtt CacheServiceFunction.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-CacheFunctionArn

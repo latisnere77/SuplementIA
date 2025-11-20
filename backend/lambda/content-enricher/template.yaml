@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Suplementia Content Enricher - Generate enriched content using Bedrock
+
+Parameters:
+  Environment:
+    Type: String
+    Default: staging
+    AllowedValues:
+      - dev
+      - staging
+      - production
+    Description: Environment name
+
+  CacheServiceUrl:
+    Type: String
+    Default: ''
+    Description: URL of Cache Service API (optional)
+
+  BedrockModelId:
+    Type: String
+    Default: 'anthropic.claude-3-sonnet-20240229-v1:0'
+    Description: Bedrock model ID to use
+
+Globals:
+  Function:
+    Timeout: 30  # Bedrock can take time
+    MemorySize: 1024
+    Runtime: nodejs20.x
+    Tracing: Active  # Enable X-Ray
+    Environment:
+      Variables:
+        BEDROCK_MODEL_ID: !Ref BedrockModelId
+        CACHE_SERVICE_URL: !Ref CacheServiceUrl
+        XRAY_ENABLED: 'true'
+        LOG_LEVEL: info
+        MAX_TOKENS: '4096'
+        TEMPERATURE: '0.3'
+
+Resources:
+  # Lambda Function
+  ContentEnricherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub suplementia-content-enricher-${Environment}
+      CodeUri: ./dist
+      Handler: index.handler
+      Description: Generate enriched supplement content using Bedrock
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: '*'
+        - AWSXRayDaemonWriteAccess
+      Events:
+        PostEnrich:
+          Type: Api
+          Properties:
+            Path: /enrich
+            Method: POST
+        GetEnrich:
+          Type: Api
+          Properties:
+            Path: /enrich
+            Method: GET
+        OptionsEnrich:
+          Type: Api
+          Properties:
+            Path: /enrich
+            Method: OPTIONS
+      Tags:
+        Project: Suplementia
+        Module: ContentEnricher
+        Environment: !Ref Environment
+
+  # CloudWatch Log Group
+  ContentEnricherLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/suplementia-content-enricher-${Environment}
+      RetentionInDays: 30
+
+  # CloudWatch Alarms
+  ContentEnricherErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub suplementia-content-enricher-errors-${Environment}
+      AlarmDescription: Alert when content enricher has errors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ContentEnricherFunction
+      TreatMissingData: notBreaching
+
+  ContentEnricherDurationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub suplementia-content-enricher-duration-${Environment}
+      AlarmDescription: Alert when content enricher is slow
+      MetricName: Duration
+      Namespace: AWS/Lambda
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 20000  # 20 seconds
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ContentEnricherFunction
+      TreatMissingData: notBreaching
+
+Outputs:
+  ContentEnricherApi:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/enrich
+
+  ContentEnricherFunctionArn:
+    Description: Content Enricher Lambda ARN
+    Value: !GetAtt ContentEnricherFunction.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-ContentEnricherFunctionArn
