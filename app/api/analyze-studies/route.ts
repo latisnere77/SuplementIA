@@ -124,6 +124,60 @@ export async function POST(request: NextRequest) {
       ? JSON.parse(lambdaFunctionResponse.body)
       : lambdaFunctionResponse;
 
+    // Transform Lambda response to match StudyAnalysis interface
+    // Lambda returns: whatIsIt, primaryUses, etc.
+    // Frontend expects: whatIsItFor, overallGrade, worksFor, etc.
+    if (lambdaData.success && lambdaData.data) {
+      const lambdaContent = lambdaData.data as any;
+
+      // Compute overallGrade from best evidenceGrade in worksFor conditions
+      const getBestGrade = (items: any[] = []): 'A' | 'B' | 'C' | 'D' | 'F' => {
+        if (!items || items.length === 0) return 'C';
+        const grades = items.map(item => item.evidenceGrade || 'C');
+        // A is best, F is worst
+        if (grades.includes('A')) return 'A';
+        if (grades.includes('B')) return 'B';
+        if (grades.includes('C')) return 'C';
+        if (grades.includes('D')) return 'D';
+        return 'F';
+      };
+
+      // Map worksFor format: Lambda uses evidenceGrade, frontend expects grade
+      const mapConditions = (items: any[] = []) => items.map((item: any) => ({
+        condition: item.condition,
+        grade: item.evidenceGrade || 'C',
+        description: item.magnitude || item.notes || item.description || '',
+      }));
+
+      // Map the Lambda schema to StudyAnalysis schema
+      lambdaData.data = {
+        overallGrade: getBestGrade(lambdaContent.worksFor),
+        whatIsItFor: lambdaContent.whatIsIt || lambdaContent.whatIsItFor,
+        worksFor: mapConditions(lambdaContent.worksFor),
+        doesntWorkFor: mapConditions(lambdaContent.doesntWorkFor),
+        limitedEvidence: mapConditions(lambdaContent.limitedEvidence),
+        keyFindings: lambdaContent.primaryUses || lambdaContent.keyFindings || [],
+        studyCount: {
+          total: lambdaContent.worksFor?.[0]?.studyCount || 0,
+          rct: lambdaContent.worksFor?.[0]?.rctCount || 0,
+          metaAnalysis: lambdaContent.worksFor?.[0]?.metaAnalysis ? 1 : 0,
+        },
+        dosage: lambdaContent.dosage,
+        sideEffects: lambdaContent.safety?.sideEffects ? {
+          common: lambdaContent.safety.sideEffects.map((e: any) => e.effect),
+          rare: [],
+          severity: lambdaContent.safety.overallRating === 'Generally Safe' ? 'Generally mild' : 'Moderate',
+          notes: lambdaContent.safety.notes,
+        } : undefined,
+        interactions: lambdaContent.safety?.interactions ? {
+          medications: lambdaContent.safety.interactions,
+          supplements: [],
+        } : undefined,
+        contraindications: lambdaContent.safety?.contraindications,
+        mechanisms: lambdaContent.mechanisms,
+      };
+    }
+
     console.log(
       JSON.stringify({
         level: 'info',
