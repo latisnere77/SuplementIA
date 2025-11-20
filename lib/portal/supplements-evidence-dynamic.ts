@@ -109,6 +109,11 @@ export async function generateRichEvidenceData(
   // STEP 3: Format as rich data
   const richData = formatAsRichData(supplementName, analysis, studies);
 
+  // STEP 4: Save to DynamoDB cache (async, non-blocking)
+  saveToDynamicCache(supplementName, richData).catch(err => {
+    console.error(`[CACHE SAVE ERROR] Failed to save ${supplementName}:`, err);
+  });
+
   // Report final step
   onProgress?.({
     step: 4,
@@ -355,24 +360,28 @@ export async function checkDynamicCache(
 
 /**
  * Save generated data to cache
- * Would save to DynamoDB in production
+ * Uses dynamodb-cache service for real cache storage
  */
 export async function saveToDynamicCache(
   supplementName: string,
   data: GeneratedEvidenceData
 ): Promise<void> {
-  // In production:
-  // await dynamoDB.put({
-  //   TableName: 'supplements-evidence-cache',
-  //   Item: {
-  //     supplement: supplementName,
-  //     data,
-  //     generatedAt: new Date().toISOString(),
-  //     ttl: Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 days
-  //   }
-  // });
+  try {
+    const { saveCachedEvidence } = await import('@/lib/services/dynamodb-cache');
 
-  console.log(`[CACHE] Would save to DynamoDB: ${supplementName}`);
+    await saveCachedEvidence(supplementName, data, {
+      studyQuality: data.studyQuality,
+      studyCount: data.sources.length,
+      rctCount: data.ingredients[0]?.rctCount || 0,
+      metaAnalysisCount: 0, // Could extract from sources if needed
+      pubmedIds: data.sources,
+    });
+
+    console.log(`[CACHE SAVED] Successfully saved ${supplementName} to DynamoDB`);
+  } catch (error) {
+    console.error(`[CACHE SAVE FAILED] ${supplementName}:`, error);
+    throw error;
+  }
 }
 
 function isCacheValid(generatedAt: Date): boolean {
