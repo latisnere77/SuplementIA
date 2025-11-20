@@ -115,7 +115,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Parsear la respuesta del Lambda
-    const lambdaData: LambdaResponse = await lambdaResponse.json();
+    // Lambda Function URL returns { statusCode, headers, body: "stringified json" }
+    // So we need to parse the outer response first, then parse the body
+    const lambdaFunctionResponse = await lambdaResponse.json();
+
+    // If the response has a body field (Function URL format), parse it
+    const lambdaData: LambdaResponse = typeof lambdaFunctionResponse.body === 'string'
+      ? JSON.parse(lambdaFunctionResponse.body)
+      : lambdaFunctionResponse;
 
     console.log(
       JSON.stringify({
@@ -126,6 +133,8 @@ export async function POST(request: NextRequest) {
         duration,
         bedrockDuration: lambdaData.data?.metadata?.bedrockDuration,
         cached: lambdaData.data?.metadata?.cached,
+        grade: lambdaData.data?.overallGrade,
+        worksForCount: lambdaData.data?.worksFor?.length || 0,
         timestamp: new Date().toISOString(),
       })
     );
