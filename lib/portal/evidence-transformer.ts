@@ -130,7 +130,6 @@ function generateWhatIsItFor(category: string): string {
     cafeina: 'Aumenta la energía, mejora el enfoque y el rendimiento físico de forma temporal.',
     hemp: 'Derivado del cáñamo, puede ayudar con el dolor crónico, la inflamación y algunos síntomas de ansiedad.',
     'hemp seed': 'Rico en proteínas y ácidos grasos omega, apoya la salud cardiovascular y digestiva.',
-    cbd: 'Ayuda a reducir el dolor crónico, la inflamación y puede mejorar la ansiedad en algunas personas.',
     rhodiola: 'Adaptógeno que ayuda a reducir la fatiga, mejora el rendimiento mental y físico bajo estrés.',
     'rhodiola rosea': 'Adaptógeno que ayuda a reducir la fatiga, mejora el rendimiento mental y físico bajo estrés.',
     turmeric: 'Poderoso antiinflamatorio natural, apoya la salud articular y puede mejorar la función cognitiva.',
