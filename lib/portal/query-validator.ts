@@ -238,22 +238,44 @@ export function validateSupplementQuery(query: string): ValidationResult {
     if (hasValidTerm) break;
   }
 
-  // 5. VALIDACIÓN HEURÍSTICA - Si no está en lista blanca, aplicar heurística
+  // 5. VALIDACIÓN HEURÍSTICA - PERMISIVA: Confiar en sistema inteligente
   if (!hasValidTerm) {
-    // Permitir queries que parezcan ingredientes/suplementos
-    // (palabras científicas, compuestos, etc.)
-    const looksLikeIngredient =
-      /^[a-z]{4,}(-[a-z]{2,})?$/i.test(normalized) || // palabra-palabra
-      /acid|ine|ate|ol$/i.test(normalized) || // terminaciones científicas
-      /extract|extracto|powder|polvo/i.test(normalized); // formatos comunes
+    // Nueva filosofía: Permitir casi todo que parezca un suplemento legítimo
+    // Solo bloquear si es CLARAMENTE no relacionado con suplementos
 
+    const looksLikeIngredient =
+      // Palabras con letras (mínimo 3 chars)
+      /^[a-z]{3,}(-[a-z]{2,})*$/i.test(normalized) ||
+
+      // Terminaciones científicas comunes
+      /acid|ine|ate|ol|um|in|an|en$/i.test(normalized) ||
+
+      // Formatos de suplementos
+      /extract|extracto|powder|polvo|oil|aceite|berry|root|raiz|leaf|hoja|seed|semilla/i.test(normalized) ||
+
+      // Palabras compuestas (ej: "lion's mane", "st john's wort")
+      /[a-z]+['']?s?\s+[a-z]+/i.test(normalized) ||
+
+      // Nombres científicos (dos palabras con mayúscula)
+      /^[A-Z][a-z]+\s+[a-z]+$/i.test(query) ||
+
+      // Múltiples palabras (ej: "bacopa monnieri", "lion mane")
+      words.length >= 2 && words.every(w => w.length >= 3);
+
+    // SOLO rechazar si definitivamente NO parece un suplemento
     if (!looksLikeIngredient) {
-      return {
-        valid: false,
-        error: 'No reconocemos este suplemento. ¿Estás buscando un suplemento alimenticio?',
-        severity: 'warning',
-        suggestion: 'Suplementos comunes: ashwagandha, omega-3, vitamin-d, magnesium, creatine, melatonin',
-      };
+      // Permitir de todos modos si es una palabra simple de 4+ caracteres
+      // (confiamos en el sistema inteligente para manejar el resto)
+      const isSimpleWord = /^[a-z]{4,}$/i.test(normalized);
+
+      if (!isSimpleWord) {
+        return {
+          valid: false,
+          error: 'No reconocemos este término. ¿Estás buscando un suplemento o categoría de salud?',
+          severity: 'warning',
+          suggestion: 'Ejemplos: ashwagandha, omega-3, vitamin-d, sleep, cognitive, muscle-gain',
+        };
+      }
     }
   }
 
