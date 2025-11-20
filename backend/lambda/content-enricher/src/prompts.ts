@@ -2,6 +2,8 @@
  * Prompt templates for Bedrock (Claude)
  */
 
+import { PubMedStudy } from './types';
+
 export const ENRICHMENT_PROMPT_TEMPLATE = `Actúa como un experto en farmacología, nutrición y evidencia científica con PhD en estas áreas.
 
 Tu tarea es analizar el suplemento "{supplementName}" y generar un reporte completo y preciso basado ÚNICAMENTE en evidencia científica publicada en revistas peer-reviewed.
@@ -12,6 +14,8 @@ CONTEXTO:
 - Audiencia: Personas en Latinoamérica (LATAM) buscando información confiable sobre suplementos
 - Objetivo: Proporcionar información clara, precisa y basada en evidencia
 
+{studiesContext}
+
 INSTRUCCIONES CRÍTICAS:
 1. Basate SOLO en evidencia científica publicada (estudios RCT, meta-análisis, revisiones sistemáticas)
 2. Si no hay suficiente evidencia para algo, indícalo claramente como "limitedEvidence" o "doesntWorkFor"
@@ -21,6 +25,7 @@ INSTRUCCIONES CRÍTICAS:
 6. Sé conservador en tus afirmaciones - mejor subestimar que exagerar
 7. Incluye detalles prácticos: dosis exactas, timing, duración
 8. Menciona efectos secundarios y contraindicaciones importantes
+9. {studiesInstruction}
 
 ESTRUCTURA REQUERIDA (Responde ÚNICAMENTE con JSON válido, sin markdown):
 
@@ -146,15 +151,65 @@ IMPORTANTE:
 Responde ÚNICAMENTE con el JSON, sin texto antes o después, sin markdown code blocks.`;
 
 /**
- * Build prompt with supplement-specific data
+ * Build studies context from real PubMed data
+ */
+function buildStudiesContext(studies: PubMedStudy[]): string {
+  if (!studies || studies.length === 0) {
+    return '';
+  }
+
+  const studiesText = studies.map((study, idx) => {
+    const participantsText = study.participants ? ` | Participantes: ${study.participants}` : '';
+    const journalText = study.journal ? ` | Journal: ${study.journal}` : '';
+
+    return `
+ESTUDIO ${idx + 1}:
+Título: ${study.title}
+Tipo: ${study.studyType || 'No especificado'}
+Año: ${study.year}
+PMID: ${study.pmid}${participantsText}${journalText}
+Autores: ${study.authors.slice(0, 3).join(', ')}${study.authors.length > 3 ? ' et al.' : ''}
+
+Abstract:
+${study.abstract.substring(0, 1000)}${study.abstract.length > 1000 ? '...' : ''}
+
+URL: ${study.pubmedUrl}
+`;
+  }).join('\n---\n');
+
+  return `
+ESTUDIOS CIENTÍFICOS REALES DE PUBMED (${studies.length} estudios):
+
+Tienes acceso a ${studies.length} estudios científicos REALES y VERIFICABLES desde PubMed.
+Usa ÚNICAMENTE estos estudios como base para tu análisis.
+
+${studiesText}
+`;
+}
+
+/**
+ * Build prompt with supplement-specific data and optional studies
  */
 export function buildEnrichmentPrompt(
   supplementName: string,
-  category: string = 'general'
+  category: string = 'general',
+  studies?: PubMedStudy[]
 ): string {
+  const hasStudies = studies && studies.length > 0;
+
+  const studiesContext = hasStudies
+    ? buildStudiesContext(studies!)
+    : 'NOTA: No se proporcionaron estudios específicos de PubMed. Usa tu conocimiento general basado en la literatura científica publicada.';
+
+  const studiesInstruction = hasStudies
+    ? `IMPORTANTE: Tienes ${studies!.length} estudios reales de PubMed arriba. DEBES basar tu análisis ÚNICAMENTE en estos estudios. Cita los PMIDs en keyStudies.`
+    : 'Usa tu conocimiento de la literatura científica, pero sé conservador en tus afirmaciones.';
+
   return ENRICHMENT_PROMPT_TEMPLATE
     .replace(/{supplementName}/g, supplementName)
-    .replace(/{category}/g, category);
+    .replace(/{category}/g, category)
+    .replace(/{studiesContext}/g, studiesContext)
+    .replace(/{studiesInstruction}/g, studiesInstruction);
 }
 
 /**

@@ -80,7 +80,7 @@ export async function getFromCache(
       return null;
     }
 
-    const data = await response.json();
+    const data = await response.json() as any;
 
     if (data.success && data.data) {
       console.log(
@@ -92,7 +92,7 @@ export async function getFromCache(
       );
 
       // Return cached data even if stale (it's still useful)
-      return data.data;
+      return data.data as EnrichedContent;
     }
 
     return null;

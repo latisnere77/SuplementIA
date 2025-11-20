@@ -35,7 +35,7 @@ export async function handler(
   const segment = config.xrayEnabled ? AWSXRay.getSegment() : null;
   const subsegment = segment?.addNewSubsegment?.('content-enricher');
 
-  const requestId = context.requestId;
+  const requestId = context.awsRequestId;
   const startTime = Date.now();
 
   try {
@@ -56,7 +56,7 @@ export async function handler(
       return createErrorResponse(400, 'Missing request body or query parameters', requestId);
     }
 
-    const { supplementId, category, forceRefresh } = request;
+    const { supplementId, category, forceRefresh, studies } = request;
 
     // Validate supplementId
     if (!supplementId || supplementId.trim().length === 0) {
@@ -69,6 +69,8 @@ export async function handler(
       subsegment.addAnnotation('module', 'content-enricher');
       subsegment.addAnnotation('version', '1.0.0');
       subsegment.addAnnotation('forceRefresh', forceRefresh || false);
+      subsegment.addAnnotation('studiesProvided', studies?.length || 0);
+      subsegment.addAnnotation('hasRealData', !!(studies && studies.length > 0));
     }
 
     // Log request
@@ -79,18 +81,18 @@ export async function handler(
         supplementId,
         category,
         forceRefresh,
+        studiesProvided: studies?.length || 0,
+        hasRealData: studies && studies.length > 0,
         timestamp: new Date().toISOString(),
       })
     );
 
     // Try cache first (unless forceRefresh)
     let enrichedContent;
-    let fromCache = false;
 
     if (!forceRefresh) {
       enrichedContent = await getFromCache(supplementId);
       if (enrichedContent) {
-        fromCache = true;
         subsegment?.addAnnotation('cacheHit', true);
 
         const duration = Date.now() - startTime;
@@ -133,12 +135,14 @@ export async function handler(
         requestId,
         supplementId,
         reason: forceRefresh ? 'force_refresh' : 'cache_miss',
+        studiesProvided: studies?.length || 0,
       })
     );
 
     const { content, metadata: bedrockMetadata } = await generateEnrichedContent(
       supplementId,
-      category || 'general'
+      category || 'general',
+      studies // Pass real PubMed studies to Claude
     );
 
     enrichedContent = content;

@@ -5,7 +5,7 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import AWSXRay from 'aws-xray-sdk-core';
 import { config } from './config';
-import { BedrockRequest, BedrockResponse, EnrichedContent } from './types';
+import { BedrockRequest, BedrockResponse, EnrichedContent, PubMedStudy } from './types';
 import { buildEnrichmentPrompt, validateEnrichedContent } from './prompts';
 
 // Initialize Bedrock client
@@ -21,18 +21,29 @@ const client = config.xrayEnabled
  */
 export async function generateEnrichedContent(
   supplementId: string,
-  category: string = 'general'
+  category: string = 'general',
+  studies?: PubMedStudy[]
 ): Promise<{
   content: EnrichedContent;
   metadata: {
     tokensUsed: number;
     duration: number;
+    studiesProvided: number;
   };
 }> {
   const startTime = Date.now();
 
-  // Build prompt
-  const prompt = buildEnrichmentPrompt(supplementId, category);
+  // Build prompt with optional studies
+  const prompt = buildEnrichmentPrompt(supplementId, category, studies);
+
+  console.log(
+    JSON.stringify({
+      operation: 'BuildPrompt',
+      supplementId,
+      studiesProvided: studies?.length || 0,
+      hasRealData: studies && studies.length > 0,
+    })
+  );
 
   // Prepare Bedrock request
   const bedrockRequest: BedrockRequest = {
@@ -123,6 +134,7 @@ export async function generateEnrichedContent(
     metadata: {
       tokensUsed,
       duration,
+      studiesProvided: studies?.length || 0,
     },
   };
 }

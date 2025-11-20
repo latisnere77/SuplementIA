@@ -1,0 +1,11 @@
+# Requirements for Lambda Backend with Intelligent Evidence System
+# Para usar con lambda_function_INTEGRATED.py
+
+# HTTP requests (necesario para llamar a los endpoints de enriquecimiento)
+requests==2.31.0
+
+# AWS SDK (viene incluido en el runtime de Lambda, pero listado para desarrollo local)
+boto3>=1.28.0
+
+# Opcional: Para desarrollo local
+# python-dotenv==1.0.0

@@ -2,10 +2,27 @@
  * Type definitions for Content Enricher
  */
 
+/**
+ * PubMed Study from studies-fetcher Lambda
+ */
+export interface PubMedStudy {
+  pmid: string;
+  title: string;
+  abstract: string;
+  authors: string[];
+  year: number;
+  journal?: string;
+  studyType?: 'randomized controlled trial' | 'meta-analysis' | 'systematic review' | 'clinical trial' | 'review';
+  participants?: number;
+  doi?: string;
+  pubmedUrl: string;
+}
+
 export interface EnrichmentRequest {
   supplementId: string;
   category?: string;
   forceRefresh?: boolean;
+  studies?: PubMedStudy[]; // Real PubMed studies from studies-fetcher
 }
 
 export interface EnrichedContent {
