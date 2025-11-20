@@ -4,65 +4,79 @@
 
 import { PubMedStudy } from './types';
 
-export const ENRICHMENT_PROMPT_TEMPLATE = `Actúa como un experto en farmacología, nutrición y evidencia científica con PhD en estas áreas.
+export const ENRICHMENT_PROMPT_TEMPLATE = `Actúa como un experto WORLD-CLASS en farmacología, nutrición y evidencia científica con PhD en estas áreas, especializado en análisis tipo Examine.com.
 
-Tu tarea es analizar el suplemento "{supplementName}" y generar un reporte completo y preciso basado ÚNICAMENTE en evidencia científica publicada en revistas peer-reviewed.
+Tu tarea es analizar el suplemento "{supplementName}" y generar un reporte EXTREMADAMENTE DETALLADO Y COMPLETO basado ÚNICAMENTE en evidencia científica publicada en revistas peer-reviewed.
 
 CONTEXTO:
 - Suplemento: {supplementName}
 - Categoría: {category}
 - Audiencia: Personas en Latinoamérica (LATAM) buscando información confiable sobre suplementos
-- Objetivo: Proporcionar información clara, precisa y basada en evidencia
+- Objetivo: Proporcionar información ULTRA-DETALLADA, precisa y basada en evidencia que RIVALICE con Examine.com
 
 {studiesContext}
 
-INSTRUCCIONES CRÍTICAS:
+INSTRUCCIONES CRÍTICAS - LEE CUIDADOSAMENTE:
 1. Basate SOLO en evidencia científica publicada (estudios RCT, meta-análisis, revisiones sistemáticas)
-2. Si no hay suficiente evidencia para algo, indícalo claramente como "limitedEvidence" o "doesntWorkFor"
-3. NO inventes datos, estudios o referencias
-4. Usa terminología clara y accesible (evita jerga médica excesiva)
-5. Prioriza meta-análisis y RCTs sobre estudios observacionales
-6. Sé conservador en tus afirmaciones - mejor subestimar que exagerar
-7. Incluye detalles prácticos: dosis exactas, timing, duración
-8. Menciona efectos secundarios y contraindicaciones importantes
-9. {studiesInstruction}
+2. SÉ EXTREMADAMENTE DETALLADO - Incluye NÚMEROS EXACTOS, PORCENTAJES, TAMAÑOS DE EFECTO
+3. Para CADA "worksFor", incluye:
+   - Effect size EXACTO (ej: "Aumenta fuerza muscular 8-15%", "Reduce cortisol 27.9%")
+   - Metodología del estudio (ej: "Meta-análisis de 150+ RCTs", "Estudio doble-ciego con 500 participantes")
+   - Número de participantes TOTAL
+   - Magnitud del efecto: Small, Moderate, Large, o Very Large
+4. NO inventes datos, estudios o referencias
+5. Usa terminología clara pero ESPECÍFICA (incluye números y estadísticas)
+6. Prioriza meta-análisis y RCTs sobre estudios observacionales
+7. Sé conservador pero COMPLETO - mejor subestimar que exagerar, pero incluye TODOS los detalles disponibles
+8. Incluye detalles prácticos ESPECÍFICOS: dosis exactas con rangos, timing preciso, duración mínima
+9. Menciona efectos secundarios con FRECUENCIA (ej: "10-15% de usuarios", "Raro <1%")
+10. {studiesInstruction}
 
 ESTRUCTURA REQUERIDA (Responde ÚNICAMENTE con JSON válido, sin markdown):
 
 {
-  "whatIsIt": "Descripción clara en 2-3 oraciones de qué es este suplemento, su origen (planta, compuesto sintético, etc.) y usos tradicionales o modernos más comunes.",
+  "whatIsIt": "Descripción DETALLADA en 3-4 oraciones de qué es este suplemento, su origen (planta específica, compuesto sintético, etc.), mecanismos de acción principales, y por qué es notable. SÉ ESPECÍFICO Y TÉCNICO.",
 
   "primaryUses": [
-    "Uso principal 1 (el más respaldado por evidencia)",
-    "Uso principal 2",
-    "Uso principal 3"
+    "Uso principal 1 con NÚMEROS (ej: Reducir estrés y ansiedad - reduce cortisol 27.9% en promedio)",
+    "Uso principal 2 con DATOS ESPECÍFICOS",
+    "Uso principal 3 con EVIDENCIA CUANTITATIVA"
   ],
 
   "mechanisms": [
     {
-      "name": "Nombre del mecanismo de acción principal",
-      "description": "Explicación clara y concisa de CÓMO funciona este mecanismo a nivel biológico (ej: modula receptores X, inhibe enzima Y)",
+      "name": "Nombre ESPECÍFICO del mecanismo (ej: Modulación de receptores GABA-A, Inhibición de 5-alfa-reductasa)",
+      "description": "Explicación DETALLADA de CÓMO funciona este mecanismo a nivel molecular/celular. Incluye receptores específicos, enzimas, vías de señalización. Mínimo 2-3 oraciones técnicas pero claras.",
       "evidenceLevel": "strong|moderate|weak|preliminary",
-      "studyCount": número_estimado_de_estudios
+      "studyCount": número_estimado_de_estudios_que_respaldan_este_mecanismo
     }
   ],
 
   "worksFor": [
     {
-      "condition": "Condición o beneficio específico (ej: Reducción de estrés y ansiedad)",
+      "condition": "Condición o beneficio MUY ESPECÍFICO (ej: Aumento de fuerza muscular en entrenamiento de resistencia)",
       "evidenceGrade": "A|B|C|D",
-      "effectSize": "Strong|Moderate|Weak|Minimal",
-      "studyCount": número_estimado_de_estudios,
+      "effectSize": "Very Large|Large|Moderate|Small|Minimal",
+      "magnitude": "DESCRIPCIÓN NUMÉRICA EXACTA del efecto (ej: Aumenta 8-15% en fuerza máxima, Reduce 25-30% en tiempo de recuperación)",
+      "studyCount": número_total_de_estudios,
+      "rctCount": número_de_RCTs,
       "metaAnalysis": true|false,
-      "notes": "Detalles ESPECÍFICOS: dosis utilizada en estudios, duración mínima para ver efectos, población estudiada (ej: adultos sanos, personas con deficiencia), magnitud del efecto (ej: reducción de 27% en cortisol)"
+      "totalParticipants": número_total_aproximado_de_participantes_en_todos_los_estudios,
+      "notes": "Detalles ULTRA-ESPECÍFICOS: 
+        - Dosis exacta utilizada (ej: 3-5g/día)
+        - Duración mínima para ver efectos (ej: 4-8 semanas)
+        - Población estudiada (ej: adultos sanos 18-65 años, personas con deficiencia)
+        - Magnitud del efecto con NÚMEROS (ej: reducción de 27% en cortisol, aumento de 12% en VO2max)
+        - Contexto importante (ej: efecto mayor en personas con niveles bajos iniciales)"
     }
   ],
 
   "doesntWorkFor": [
     {
-      "condition": "Condición para la que NO hay evidencia suficiente o la evidencia es negativa",
-      "evidenceGrade": "D",
-      "notes": "Explicación breve de por qué no funciona o por qué falta evidencia"
+      "condition": "Condición para la que NO hay evidencia suficiente o la evidencia es NEGATIVA",
+      "evidenceGrade": "D|F",
+      "studyCount": número_de_estudios_que_no_mostraron_efecto,
+      "notes": "Explicación ESPECÍFICA de por qué no funciona con DATOS (ej: 8 RCTs no mostraron diferencia significativa vs placebo, p>0.05)"
     }
   ],
 
@@ -70,83 +84,114 @@ ESTRUCTURA REQUERIDA (Responde ÚNICAMENTE con JSON válido, sin markdown):
     {
       "condition": "Condición con evidencia preliminar prometedora pero insuficiente",
       "evidenceGrade": "C",
-      "notes": "Explicación de qué falta (más estudios, RCTs, población más grande, etc.)"
+      "studyCount": número_de_estudios_preliminares,
+      "notes": "Explicación DETALLADA de qué falta (ej: Solo 3 estudios pequeños (n<50), se necesitan RCTs grandes, población más diversa, etc.)"
     }
   ],
 
   "dosage": {
-    "standard": "Rango de dosis estándar según evidencia (ej: 300-600mg/día)",
-    "timing": "Cuándo tomar para mejor eficacia (ej: Mañana con el desayuno, Noche antes de dormir, No importa)",
-    "duration": "Duración mínima para ver efectos según estudios (ej: 8-12 semanas para efectos completos)",
+    "standard": "Rango de dosis ESPECÍFICO según evidencia con UNIDADES EXACTAS (ej: 300-600mg/día de extracto estandarizado, 3-5g/día de monohidrato)",
+    "effectiveDose": "Dosis MÍNIMA efectiva documentada (ej: 300mg/día para efectos ansiolíticos)",
+    "optimalDose": "Dosis ÓPTIMA según meta-análisis (ej: 500mg/día mostró mejores resultados)",
+    "maxSafeDose": "Dosis máxima segura documentada (ej: Hasta 1200mg/día sin efectos adversos significativos)",
+    "timing": "CUÁNDO tomar para mejor eficacia con RAZÓN (ej: Mañana con el desayuno para mejor absorción, Noche antes de dormir para aprovechar pico de cortisol, Timing no crítico según estudios)",
+    "duration": "Duración ESPECÍFICA para ver efectos según estudios (ej: Efectos iniciales en 2-4 semanas, efectos completos en 8-12 semanas, uso continuo seguro hasta 6 meses documentado)",
     "forms": [
       {
-        "form": "Nombre de la forma específica (ej: KSM-66, Sensoril, Extracto acuoso)",
-        "description": "Por qué esta forma es relevante (ej: Estandarizado al 5% withanólidos, usado en mayoría de estudios)",
-        "recommended": true|false
+        "form": "Nombre EXACTO de la forma (ej: KSM-66®, Sensoril®, Extracto acuoso 10:1, Monohidrato micronizado)",
+        "description": "Por qué esta forma es relevante con DATOS (ej: Estandarizado al 5% withanólidos, usado en 78% de estudios clínicos, biodisponibilidad 40% mayor)",
+        "recommended": true|false,
+        "studyCount": número_de_estudios_con_esta_forma
       }
     ],
     "stacksWith": [
-      "Nombre de suplemento con buena sinergia documentada",
-      "Otro suplemento sinérgico"
-    ]
+      "Nombre de suplemento con sinergia DOCUMENTADA (incluye breve razón, ej: L-Teanina - potencia efectos calmantes sin sedación)"
+    ],
+    "notes": "Consideraciones IMPORTANTES sobre dosificación (ej: Tomar con grasas aumenta absorción 30%, dividir dosis mejora tolerancia, ciclado no necesario según evidencia)"
   },
 
   "safety": {
     "overallRating": "Generally Safe|Caution Required|Insufficient Data",
+    "safetyScore": "Puntuación 1-10 basada en evidencia (10 = extremadamente seguro)",
     "sideEffects": [
       {
-        "effect": "Efecto secundario específico",
-        "frequency": "Common|Occasional|Rare",
+        "effect": "Efecto secundario ESPECÍFICO (ej: Malestar gastrointestinal leve, Somnolencia diurna)",
+        "frequency": "PORCENTAJE o DESCRIPCIÓN CUANTITATIVA (ej: 10-15% de usuarios, Raro <1%, Común en dosis >600mg)",
         "severity": "Mild|Moderate|Severe",
-        "notes": "Contexto adicional si es relevante (ej: solo en dosis >600mg/día)"
+        "notes": "Contexto DETALLADO (ej: Solo en dosis >600mg/día, Desaparece después de 1-2 semanas, Más común con estómago vacío)"
       }
     ],
     "contraindications": [
-      "Embarazo y lactancia",
-      "Condición médica específica",
-      "Uso de cierto tipo de medicamento"
+      "Embarazo y lactancia (falta evidencia de seguridad)",
+      "Condición médica ESPECÍFICA con RAZÓN (ej: Hipotiroidismo - puede reducir TSH)",
+      "Uso de medicamento ESPECÍFICO (ej: Sedantes benzodiacepínicos - efecto aditivo)"
     ],
     "interactions": [
       {
-        "medication": "Tipo de medicamento (ej: Sedantes, Anticoagulantes)",
+        "medication": "Tipo o nombre ESPECÍFICO de medicamento (ej: Benzodiazepinas, Warfarina, Inhibidores de la bomba de protones)",
         "severity": "Mild|Moderate|Severe",
-        "description": "Descripción clara de la interacción y el riesgo"
+        "mechanism": "CÓMO ocurre la interacción (ej: Potenciación de efectos GABAérgicos, Inhibición de CYP3A4)",
+        "description": "Descripción CLARA del riesgo con RECOMENDACIÓN (ej: Puede potenciar sedación. Reducir dosis de sedante o evitar combinación. Consultar médico.)"
       }
-    ]
+    ],
+    "longTermSafety": "Datos de seguridad a largo plazo con DURACIÓN ESPECÍFICA (ej: Uso continuo seguro hasta 6 meses documentado en RCTs, Estudios de 12+ meses muestran perfil de seguridad favorable)",
+    "pregnancyCategory": "Avoid|Caution|Insufficient Data",
+    "notes": "Notas IMPORTANTES de seguridad (ej: No reportes de toxicidad hepática en estudios clínicos, Perfil de seguridad superior a medicamentos ansiolíticos)"
   },
 
   "keyStudies": [
     {
-      "pmid": "ID de PubMed del estudio (solo si conoces con certeza)",
-      "title": "Título del estudio",
+      "pmid": "ID de PubMed EXACTO (solo si conoces con certeza, sino omite)",
+      "title": "Título COMPLETO del estudio",
       "year": año_del_estudio,
       "studyType": "RCT|Meta-analysis|Systematic Review|Observational",
-      "participants": número_de_participantes,
+      "participants": número_EXACTO_de_participantes,
+      "duration": "Duración del estudio (ej: 8 semanas, 6 meses)",
+      "dose": "Dosis utilizada en el estudio",
       "findings": [
-        "Hallazgo clave 1 con datos específicos",
-        "Hallazgo clave 2 con datos específicos"
-      ]
+        "Hallazgo clave 1 con DATOS NUMÉRICOS ESPECÍFICOS (ej: Reducción de 27.9% en cortisol vs placebo, p<0.001)",
+        "Hallazgo clave 2 con ESTADÍSTICAS (ej: Aumento de 15% en fuerza máxima, IC 95%: 12-18%)"
+      ],
+      "quality": "High|Moderate|Low (basado en diseño, tamaño muestral, metodología)"
     }
+  ],
+
+  "practicalRecommendations": [
+    "Recomendación práctica 1 basada en evidencia (ej: Comenzar con dosis baja (300mg) y aumentar gradualmente)",
+    "Recomendación práctica 2 (ej: Tomar consistentemente a la misma hora para mejores resultados)",
+    "Recomendación práctica 3 (ej: Esperar mínimo 4-6 semanas antes de evaluar eficacia)"
   ]
 }
 
-GUÍA DE EVIDENCE GRADES:
-- Grade A: Múltiples RCTs de alta calidad + meta-análisis, efecto consistente
-- Grade B: Varios RCTs con resultados mixtos pero mayormente positivos
-- Grade C: Pocos RCTs o evidencia preliminar prometedora
-- Grade D: Sin evidencia o evidencia negativa
+GUÍA DE EVIDENCE GRADES (SÉ ESTRICTO):
+- Grade A: Múltiples RCTs de alta calidad (n>100 cada uno) + meta-análisis, efecto consistente y grande
+- Grade B: Varios RCTs (n>50) con resultados mayormente positivos, efecto moderado
+- Grade C: Pocos RCTs o evidencia preliminar, efecto pequeño o inconsistente
+- Grade D: Sin evidencia robusta, solo estudios observacionales o in vitro
+- Grade F: Evidencia negativa - estudios muestran NO efecto
+
+GUÍA DE EFFECT SIZE (SÉ PRECISO):
+- Very Large: >50% de mejora, Cohen's d >1.2, efecto clínicamente muy significativo
+- Large: 30-50% de mejora, Cohen's d 0.8-1.2, efecto clínicamente significativo
+- Moderate: 15-30% de mejora, Cohen's d 0.5-0.8, efecto notable
+- Small: 5-15% de mejora, Cohen's d 0.2-0.5, efecto detectable
+- Minimal: <5% de mejora, Cohen's d <0.2, efecto marginal
 
 GUÍA DE EVIDENCE LEVELS (mechanisms):
-- strong: Mecanismo bien establecido con múltiples estudios in vitro, in vivo, y humanos
-- moderate: Mecanismo propuesto con evidencia parcial
-- weak: Mecanismo teórico con evidencia limitada
-- preliminary: Hipótesis sin confirmación robusta
+- strong: Mecanismo BIEN ESTABLECIDO con múltiples estudios in vitro, in vivo, Y humanos. Consenso científico.
+- moderate: Mecanismo propuesto con evidencia parcial en humanos, respaldado por estudios preclínicos
+- weak: Mecanismo teórico con evidencia limitada, principalmente estudios in vitro
+- preliminary: Hipótesis sin confirmación robusta, especulativo
 
-IMPORTANTE:
-- Si no conoces con certeza un PMID, omite ese campo
+IMPORTANTE - CALIDAD SOBRE CANTIDAD:
+- Si no conoces con certeza un PMID, OMITE ese campo
 - Si no hay suficientes estudios para "keyStudies", devuelve array vacío []
-- Si algo no está documentado, mejor omitir que inventar
-- Redondea studyCount a números realistas (no pongas 0 si hay algo de evidencia, pon "1-3" como número bajo)
+- Si algo no está documentado, mejor OMITIR que inventar
+- Redondea studyCount a números realistas (si hay poca evidencia, pon 1-3, no 0)
+- PRIORIZA NÚMEROS Y DATOS ESPECÍFICOS en todas las descripciones
+- Incluye RANGOS cuando sea apropiado (ej: "8-15%", "300-600mg")
+
+RECUERDA: Este análisis será usado por personas para tomar decisiones de salud. SÉ PRECISO, DETALLADO Y HONESTO.
 
 Responde ÚNICAMENTE con el JSON, sin texto antes o después, sin markdown code blocks.`;
 

@@ -27,6 +27,34 @@ export interface StudyAnalysis {
     rct: number;
     metaAnalysis: number;
   };
+  // NEW FIELDS for rich content
+  dosage?: {
+    effectiveDose: string;
+    commonDose: string;
+    timing: string;
+    notes?: string;
+  };
+  sideEffects?: {
+    common: string[];
+    rare: string[];
+    severity: 'Generally mild' | 'Moderate' | 'Severe' | 'None reported';
+    notes?: string;
+  };
+  interactions?: {
+    medications: Array<{
+      medication: string;
+      severity: 'Mild' | 'Moderate' | 'Severe';
+      description: string;
+    }>;
+    supplements: string[];
+    foods?: string;
+  };
+  contraindications?: string[];
+  mechanisms?: Array<{
+    name: string;
+    description: string;
+    evidenceLevel: 'strong' | 'moderate' | 'weak';
+  }>;
 }
 
 // ====================================
@@ -159,59 +187,119 @@ Publication Types: ${study.publicationTypes.join(', ')}
 Abstract: ${truncateAbstract(study.abstract, 300)}
 `).join('\n---\n');
 
-  return `You are a medical research analyst specializing in evidence-based supplement analysis.
+  return `You are a world-class medical research analyst specializing in evidence-based supplement analysis, following Examine.com's rigorous methodology.
 
-Your task is to analyze PubMed studies about "${supplementName}" and provide a structured evidence summary following Examine.com's methodology.
+Your task is to analyze PubMed studies about "${supplementName}" and provide a COMPREHENSIVE, DETAILED evidence summary that would rival Examine.com's quality.
 
-IMPORTANT GUIDELINES:
-1. Grade based on EVIDENCE QUALITY and CONSISTENCY (not just quantity)
-2. Be specific with effect sizes (e.g., "reduces X by 25%")
-3. Include study counts for credibility (e.g., "Meta-analysis of 24 RCTs")
-4. Distinguish between deficiency correction vs enhancement in healthy people
-5. Be conservative - only claim what studies actually show
-6. Never invent data - if unclear, use "Limited evidence"
+CRITICAL INSTRUCTIONS:
+1. Be EXTREMELY DETAILED - this is NOT a summary, but a complete analysis
+2. Include SPECIFIC NUMBERS, PERCENTAGES, and EFFECT SIZES whenever possible
+3. For each "worksFor" item, provide detailed evidence including:
+   - Exact effect size (e.g., "Increases muscle strength by 8-15%")
+   - Study methodology (e.g., "Meta-analysis of 150+ RCTs")
+   - Number of participants (e.g., "12,000+ participants")
+   - Magnitude labels: "Small", "Moderate", "Large", or "Very Large"
+4. Be conservative but thorough - cite what studies actually show
+5. Include practical dosing information from studies
+6. Mention safety data and potential side effects
+7. Note any important interactions or contraindications
 
 GRADING CRITERIA:
-- Grade A: Multiple high-quality RCTs + meta-analyses, large effect sizes, consistent results
-- Grade B: Several RCTs with mostly consistent results, moderate effect sizes
-- Grade C: Limited RCTs or inconsistent results, small effect sizes
+- Grade A: Multiple high-quality RCTs + meta-analyses, large/consistent effect sizes
+- Grade B: Several RCTs, mostly consistent results, moderate effects
+- Grade C: Limited RCTs, mixed results, or small effects
 - Grade D: Only observational studies or very weak evidence
-- Grade F: No credible evidence or proven ineffective
+- Grade F: No credible evidence OR proven ineffective
 
 STUDIES TO ANALYZE:
 ${studiesText}
 
-Provide your analysis in the following JSON format:
+Provide your analysis in this EXPANDED JSON format with ALL fields populated:
 {
   "overallGrade": "A" | "B" | "C" | "D" | "F",
-  "whatIsItFor": "1-2 sentence primary purpose with specific mechanisms",
+  "whatIsItFor": "2-3 sentences explaining primary purpose, mechanisms of action, and what makes this supplement notable. Be specific and informative.",
+  
   "worksFor": [
     {
-      "condition": "Specific condition/benefit",
-      "grade": "A-F",
-      "description": "Effect size + evidence (e.g., 'Reduces incidence 25% (RR 0.75). Meta-analysis of 24 RCTs with 4,567 participants.')"
+      "condition": "Specific condition or benefit (e.g., 'Increasing muscle strength and power')",
+      "grade": "A" | "B" | "C",
+      "magnitude": "Small" | "Moderate" | "Large" | "Very Large",
+      "description": "DETAILED description with exact numbers. Format: '[Effect size]. [Quality of evidence]. [Study counts and participant numbers].' 
+      Example: 'Increases muscle strength by 8-15% in resistance training. Magnitude: Large. Meta-analysis of 150+ studies with 6,000+ participants.'",
+      "studyCount": 10,
+      "hasMetaAnalysis": true,
+      "notes": "Optional: Any important nuances, populations where it works best, or timing considerations"
     }
   ],
+  
   "doesntWorkFor": [
     {
-      "condition": "What it doesn't work for",
-      "grade": "D-F",
-      "description": "Why not (e.g., 'No significant effect in 8 RCTs')"
+      "condition": "What it doesn't work for (be specific)",
+      "grade": "D" | "F",
+      "description": "Clear explanation of why it doesn't work, with study evidence"
     }
   ],
+  
   "limitedEvidence": [
     {
       "condition": "Promising but needs more research",
       "grade": "C",
-      "description": "Current state of evidence"
+      "description": "Current state with study count (e.g., '8 studies show promise but need larger trials')"
     }
   ],
+  
+  "dosage": {
+    "effectiveDose": "Evidence-based effective dose (e.g., '3-5g/day for maintenance' or '20g/day for 5-7 days loading phase')",
+    "commonDose": "Most commonly used dose in studies",
+    "timing": "When to take it (e.g., 'Timing not critical' or 'Best with meals' or 'Pre/post workout')",
+    "notes": "Any important dosing considerations from studies"
+  },
+  
+  "sideEffects": {
+    "common": ["List of common side effects with frequency if known, e.g., 'Water retention (1-2kg, expected)' or 'Mild GI discomfort if high doses'"],
+    "rare": ["Rare side effects if any"],
+    "severity": "Generally mild" | "Moderate" | "Severe" | "None reported",
+    "notes": "Important safety information from studies"
+  },
+  
+  "interactions": {
+    "medications": [
+      {
+        "medication": "Specific medication or class",
+        "severity": "Mild" | "Moderate" | "Severe",
+        "description": "Nature of interaction"
+      }
+    ],
+    "supplements": ["Other supplements it stacks well with or conflicts with"],
+    "foods": "Any food interactions (e.g., 'Best absorbed with fats' or 'No food interactions known')"
+  },
+  
+  "contraindications": [
+    "Clear contraindications from studies (e.g., 'Pregnancy/breastfeeding', 'Kidney disease', etc.)"
+  ],
+  
+  "mechanisms": [
+    {
+      "name": "Primary mechanism (e.g., 'Increases phosphocreatine stores')",
+      "description": "How it works at a biological level",
+      "evidenceLevel": "strong" | "moderate" | "weak"
+    }
+  ],
+  
   "keyFindings": [
-    "Important finding 1",
-    "Important finding 2",
-    "Important safety/dosage note"
+    "Most important finding 1 with numbers",
+    "Most important finding 2 with numbers",
+    "Safety/tolerance finding",
+    "Practical recommendation based on evidence"
   ]
 }
+
+IMPORTANT: 
+- Make "worksFor" section VERY DETAILED with at least 3-6 items if evidence exists
+- Include EXACT percentages and effect sizes
+- Mention study quality (RCTs, meta-analyses, participant counts)
+- Be as thorough as Examine.com - users rely on this for health decisions
+- If limited studies exist, be honest but still provide what information is available
 
 RESPOND WITH ONLY THE JSON, NO OTHER TEXT.`;
 }
@@ -294,6 +382,12 @@ function parseBedrockResponse(
         rct: rctCount,
         metaAnalysis: metaAnalysisCount,
       },
+      // NEW FIELDS - include if present
+      dosage: parsed.dosage || undefined,
+      sideEffects: parsed.sideEffects || undefined,
+      interactions: parsed.interactions || undefined,
+      contraindications: parsed.contraindications || undefined,
+      mechanisms: parsed.mechanisms || undefined,
     };
   } catch (error) {
     console.error('[PARSER ERROR] Failed to parse Bedrock response:', error);

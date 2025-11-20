@@ -53,14 +53,38 @@ interface EvidenceSummaryNew {
     safetyEstablished: boolean;
   };
 
-  // Rich data (optional - from supplements-evidence-rich.ts)
+  // NEW: Structured rich data from Bedrock
   dosage?: {
-    effective: string;
-    common: string;
-    timing?: string;
+    effectiveDose: string;
+    commonDose: string;
+    timing: string;
+    notes?: string;
   };
-  sideEffects?: string[];
-  interactions?: string[];
+
+  sideEffects?: {
+    common: string[];
+    rare: string[];
+    severity: 'Generally mild' | 'Moderate' | 'Severe' | 'None reported';
+    notes?: string;
+  };
+
+  interactions?: {
+    medications: Array<{
+      medication: string;
+      severity: 'Mild' | 'Moderate' | 'Severe';
+      description: string;
+    }>;
+    supplements: string[];
+    foods?: string;
+  };
+
+  contraindications?: string[];
+
+  mechanisms?: Array<{
+    name: string;
+    description: string;
+    evidenceLevel: 'strong' | 'moderate' | 'weak';
+  }>;
 }
 
 interface EvidenceAnalysisPanelNewProps {
@@ -192,7 +216,7 @@ export default function EvidenceAnalysisPanelNew({
                 Dosis Efectiva
               </h4>
               <p className="text-lg text-blue-800">
-                {evidenceSummary.dosage.effective}
+                {evidenceSummary.dosage.effectiveDose}
               </p>
             </div>
 
@@ -201,7 +225,7 @@ export default function EvidenceAnalysisPanelNew({
                 Dosis Común
               </h4>
               <p className="text-lg text-green-800">
-                {evidenceSummary.dosage.common}
+                {evidenceSummary.dosage.commonDose}
               </p>
             </div>
 
@@ -215,48 +239,172 @@ export default function EvidenceAnalysisPanelNew({
                 </p>
               </div>
             )}
+
+            {evidenceSummary.dosage.notes && (
+              <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                <p className="text-sm text-gray-700">
+                  <strong>Nota:</strong> {evidenceSummary.dosage.notes}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* Side Effects */}
-      {evidenceSummary.sideEffects && evidenceSummary.sideEffects.length > 0 && (
+      {evidenceSummary.sideEffects && (evidenceSummary.sideEffects.common.length > 0 || evidenceSummary.sideEffects.rare.length > 0) && (
         <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Efectos Secundarios Posibles
           </h2>
-          <ul className="space-y-3">
-            {evidenceSummary.sideEffects.map((effect, index) => (
-              <li key={index} className="flex items-start gap-3">
-                <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></span>
-                <span className="text-gray-700 text-base">{effect}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 text-sm text-gray-600 italic">
-            Nota: Los efectos secundarios son generalmente leves y poco frecuentes.
-          </p>
+
+          {evidenceSummary.sideEffects.common.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Comunes:</h3>
+              <ul className="space-y-3">
+                {evidenceSummary.sideEffects.common.map((effect, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></span>
+                    <span className="text-gray-700 text-base">{effect}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {evidenceSummary.sideEffects.rare.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Raros:</h3>
+              <ul className="space-y-3">
+                {evidenceSummary.sideEffects.rare.map((effect, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="inline-block w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></span>
+                    <span className="text-gray-700 text-base">{effect}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="mt-4 bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+            <p className="text-sm font-medium text-gray-700">
+              <strong>Severidad:</strong> {evidenceSummary.sideEffects.severity}
+            </p>
+            {evidenceSummary.sideEffects.notes && (
+              <p className="mt-2 text-sm text-gray-600 italic">
+                {evidenceSummary.sideEffects.notes}
+              </p>
+            )}
+          </div>
         </div>
       )}
 
       {/* Drug Interactions */}
-      {evidenceSummary.interactions && evidenceSummary.interactions.length > 0 && (
+      {evidenceSummary.interactions && (evidenceSummary.interactions.medications.length > 0 || evidenceSummary.interactions.supplements.length > 0) && (
         <div className="bg-white rounded-xl border-2 border-red-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <Shield className="h-6 w-6 text-red-600" />
             Interacciones con Medicamentos
           </h2>
+
+          {evidenceSummary.interactions.medications.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Medicamentos:</h3>
+              <div className="space-y-4">
+                {evidenceSummary.interactions.medications.map((interaction, index) => (
+                  <div key={index} className={`border-2 rounded-lg p-4 ${interaction.severity === 'Severe' ? 'border-red-300 bg-red-50' :
+                      interaction.severity === 'Moderate' ? 'border-orange-300 bg-orange-50' :
+                        'border-yellow-300 bg-yellow-50'
+                    }`}>
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">{interaction.medication}</h4>
+                      <span className={`text-xs font-bold px-2 py-1 rounded ${interaction.severity === 'Severe' ? 'bg-red-200 text-red-800' :
+                          interaction.severity === 'Moderate' ? 'bg-orange-200 text-orange-800' :
+                            'bg-yellow-200 text-yellow-800'
+                        }`}>
+                        {interaction.severity}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700">{interaction.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {evidenceSummary.interactions.supplements.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Suplementos:</h3>
+              <ul className="space-y-2">
+                {evidenceSummary.interactions.supplements.map((supplement, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                    <span className="text-gray-700 text-base">{supplement}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {evidenceSummary.interactions.foods && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Alimentos:</h3>
+              <p className="text-gray-700">{evidenceSummary.interactions.foods}</p>
+            </div>
+          )}
+
+          <p className="mt-4 text-sm text-red-700 font-medium">
+            ⚠️ Consulta con tu médico si estás tomando alguno de estos medicamentos.
+          </p>
+        </div>
+      )}
+
+      {/* Contraindications */}
+      {evidenceSummary.contraindications && evidenceSummary.contraindications.length > 0 && (
+        <div className="bg-white rounded-xl border-2 border-red-300 p-6 md:p-8 shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <Shield className="h-6 w-6 text-red-600" />
+            Contraindicaciones
+          </h2>
           <ul className="space-y-3">
-            {evidenceSummary.interactions.map((interaction, index) => (
+            {evidenceSummary.contraindications.map((contraindication, index) => (
               <li key={index} className="flex items-start gap-3">
-                <span className="inline-block w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></span>
-                <span className="text-gray-700 text-base">{interaction}</span>
+                <span className="inline-block w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700 text-base">{contraindication}</span>
               </li>
             ))}
           </ul>
           <p className="mt-4 text-sm text-red-700 font-medium">
-            ⚠️ Consulta con tu médico si estás tomando alguno de estos medicamentos.
+            ⚠️ No uses este suplemento en estas condiciones sin supervisión médica.
           </p>
+        </div>
+      )}
+
+      {/* Mechanisms */}
+      {evidenceSummary.mechanisms && evidenceSummary.mechanisms.length > 0 && (
+        <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Mecanismos de Acción
+          </h2>
+          <div className="space-y-4">
+            {evidenceSummary.mechanisms.map((mechanism, index) => (
+              <div key={index} className={`border-2 rounded-lg p-4 ${mechanism.evidenceLevel === 'strong' ? 'border-green-300 bg-green-50' :
+                  mechanism.evidenceLevel === 'moderate' ? 'border-blue-300 bg-blue-50' :
+                    'border-gray-300 bg-gray-50'
+                }`}>
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-semibold text-gray-900">{mechanism.name}</h4>
+                  <span className={`text-xs font-bold px-2 py-1 rounded ${mechanism.evidenceLevel === 'strong' ? 'bg-green-200 text-green-800' :
+                      mechanism.evidenceLevel === 'moderate' ? 'bg-blue-200 text-blue-800' :
+                        'bg-gray-200 text-gray-800'
+                    }`}>
+                    {mechanism.evidenceLevel}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-700">{mechanism.description}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

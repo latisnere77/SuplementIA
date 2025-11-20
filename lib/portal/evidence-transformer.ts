@@ -127,6 +127,12 @@ export async function transformEvidenceToNew(
     limitedEvidence,
     ingredients,
     qualityBadges,
+    // NEW: Pass through rich data from dynamic generation
+    dosage: undefined,
+    sideEffects: undefined,
+    interactions: undefined,
+    contraindications: undefined,
+    mechanisms: undefined,
   };
 }
 

@@ -31,6 +31,34 @@ interface GeneratedEvidenceData extends SupplementEvidenceData {
   sources: string[]; // PMIDs for verification
   generatedAt: Date;
   studyQuality: 'high' | 'medium' | 'low';
+  // NEW FIELDS from Bedrock
+  dosage?: {
+    effectiveDose: string;
+    commonDose: string;
+    timing: string;
+    notes?: string;
+  };
+  sideEffects?: {
+    common: string[];
+    rare: string[];
+    severity: 'Generally mild' | 'Moderate' | 'Severe' | 'None reported';
+    notes?: string;
+  };
+  interactions?: {
+    medications: Array<{
+      medication: string;
+      severity: 'Mild' | 'Moderate' | 'Severe';
+      description: string;
+    }>;
+    supplements: string[];
+    foods?: string;
+  };
+  contraindications?: string[];
+  mechanisms?: Array<{
+    name: string;
+    description: string;
+    evidenceLevel: 'strong' | 'moderate' | 'weak';
+  }>;
 }
 
 // ====================================
@@ -161,19 +189,8 @@ async function searchSupplementStudies(
 // STEP 2: AI ANALYSIS
 // ====================================
 
-interface StudyAnalysis {
-  overallGrade: GradeType;
-  whatIsItFor: string;
-  worksFor: WorksForItem[];
-  doesntWorkFor: WorksForItem[];
-  limitedEvidence: WorksForItem[];
-  keyFindings: string[];
-  studyCount: {
-    total: number;
-    rct: number;
-    metaAnalysis: number;
-  };
-}
+// Import StudyAnalysis from bedrock-analyzer (has all fields including dosage, sideEffects, etc.)
+import type { StudyAnalysis } from '@/lib/services/bedrock-analyzer';
 
 /**
  * Analyze PubMed studies using AI (Bedrock/Claude)
@@ -249,6 +266,13 @@ function formatAsRichData(
         description: `Based on ${analysis.studyCount.total} peer-reviewed studies`,
       },
     ],
+
+    // NEW FIELDS: Pass through rich data from Bedrock
+    dosage: analysis.dosage,
+    sideEffects: analysis.sideEffects,
+    interactions: analysis.interactions,
+    contraindications: analysis.contraindications,
+    mechanisms: analysis.mechanisms,
 
     // Additional metadata
     sources: studies.map(s => s.pmid),
