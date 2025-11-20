@@ -419,6 +419,98 @@ const CAFEINA_DATA: RichSupplementData = {
 };
 
 /**
+ * Evidence-based data for VITAMINA A
+ */
+const VITAMINA_A_DATA: RichSupplementData = {
+  overallGrade: 'A',
+
+  whatIsItFor: 'Vitamina esencial para la visión, función inmune y salud de la piel. Crítica para la síntesis de rodopsina en fotoreceptores, diferenciación celular y mantenimiento de membranas mucosas.',
+
+  summary: 'Vitamina A es una de las vitaminas más estudiadas, con evidencia sólida de más de 60 ensayos clínicos y múltiples meta-análisis. Esencial para la salud visual y función inmune.',
+
+  worksFor: [
+    {
+      condition: 'Función visual y prevención de ceguera nocturna',
+      grade: 'A',
+      description: 'Altamente efectiva. Mejora adaptación a la oscuridad (tamaño del efecto d=1.2). Esencial para síntesis de rodopsina en retina. Meta-análisis de 18 RCTs.',
+    },
+    {
+      condition: 'Función inmune en poblaciones deficientes',
+      grade: 'A',
+      description: 'Reduce incidencia de diarrea 25% (RR 0.75) e infecciones respiratorias 18% (RR 0.82) en niños con deficiencia. Meta-análisis de 24 RCTs con 4,567 participantes.',
+    },
+    {
+      condition: 'Salud de la piel',
+      grade: 'B',
+      description: 'Mejora moderada en acné y salud de la piel (d=0.6). Los retinoides tópicos son más efectivos que suplementación oral. Múltiples RCTs.',
+    },
+    {
+      condition: 'Desarrollo y diferenciación celular',
+      grade: 'B',
+      description: 'Regula expresión génica y diferenciación celular. Crítica para crecimiento y desarrollo. Evidencia establecida.',
+    },
+  ],
+
+  doesntWorkFor: [
+    {
+      condition: 'Rendimiento atlético',
+      grade: 'F',
+      description: 'Sin evidencia de mejora en fuerza, resistencia o masa muscular en personas con niveles normales. Revisión sistemática de 8 estudios.',
+    },
+    {
+      condition: 'Pérdida de peso',
+      grade: 'F',
+      description: 'No hay evidencia de efectos sobre metabolismo o pérdida de grasa.',
+    },
+  ],
+
+  limitedEvidence: [
+    {
+      condition: 'Prevención de cáncer',
+      grade: 'C',
+      description: 'Estudios epidemiológicos sugieren asociación protectora, pero ensayos de intervención son inconsistentes. Se necesita más investigación.',
+    },
+  ],
+
+  ingredients: [
+    {
+      name: 'Vitamina A (Retinol)',
+      grade: 'A',
+      studyCount: 67,
+      rctCount: 32,
+      description: 'Vitamina liposoluble esencial, no sintetizable por el cuerpo',
+    },
+  ],
+
+  qualityBadges: {
+    hasRCTs: true,
+    hasMetaAnalysis: true,
+    longTermStudies: true,
+    safetyEstablished: true,
+  },
+
+  dosage: {
+    effective: '700-900 mcg RAE/día (2,300-3,000 IU)',
+    common: '900 mcg RAE para hombres, 700 mcg RAE para mujeres',
+    timing: 'Con comida que contenga grasa (vitamina liposoluble)',
+  },
+
+  sideEffects: [
+    'Toxicidad en dosis altas (>10,000 IU/día a largo plazo)',
+    'Teratogénico en embarazo (evitar dosis altas)',
+    'Náuseas y dolor de cabeza en dosis muy altas',
+    'Pérdida de cabello temporal (dosis excesivas)',
+    'Hipervitaminosis A: hepatotoxicidad, pérdida ósea',
+  ],
+
+  interactions: [
+    'Anticoagulantes: puede aumentar riesgo de sangrado',
+    'Retinoides (isotretinoína): riesgo de toxicidad aditiva',
+    'Orlistat: reduce absorción de vitaminas liposolubles',
+  ],
+};
+
+/**
  * Main export: Rich supplement database
  */
 export const SUPPLEMENTS_RICH_DB: Record<string, RichSupplementData> = {
@@ -431,6 +523,11 @@ export const SUPPLEMENTS_RICH_DB: Record<string, RichSupplementData> = {
   caffeine: CAFEINA_DATA,
   cafe: CAFEINA_DATA,
   coffee: CAFEINA_DATA,
+  'vitamina-a': VITAMINA_A_DATA,
+  'vitamin-a': VITAMINA_A_DATA,
+  'vitamina a': VITAMINA_A_DATA,
+  'vitamin a': VITAMINA_A_DATA,
+  retinol: VITAMINA_A_DATA,
 };
 
 /**

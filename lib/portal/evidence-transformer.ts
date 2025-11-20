@@ -1,7 +1,7 @@
 /**
  * Evidence Data Transformer
  * Convierte datos del backend (formato viejo) al nuevo formato visual
- * OPTIMIZADO: Usa cache estático cuando es posible
+ * OPTIMIZADO: Sistema de 3 niveles - Static → DynamoDB → Dynamic Generation
  */
 
 import type { GradeType } from '@/components/portal/SupplementGrade';
@@ -11,26 +11,79 @@ import { getRichSupplementData } from './supplements-evidence-rich';
 
 /**
  * Convierte el formato viejo de evidencia al nuevo formato visual
- * OPTIMIZACIÓN: Primero intenta usar datos ricos de alta calidad, luego cache, luego genera
+ * OPTIMIZACIÓN: Sistema de 3 niveles para máxima cobertura
+ *
+ * LEVEL 1: Static cache (pre-curated, instant)
+ * LEVEL 2: DynamoDB cache (previously generated, ~420ms)
+ * LEVEL 3: Dynamic generation (PubMed + Bedrock, ~12s first time)
+ *
+ * @param oldEvidence - Legacy evidence data (fallback)
+ * @param category - Supplement name
+ * @param onProgress - Optional callback for progress updates
  */
-export function transformEvidenceToNew(oldEvidence: any, category?: string) {
-  // PRIORIDAD 1: Intentar obtener datos ricos (estilo Examine.com)
+export async function transformEvidenceToNew(
+  oldEvidence: any,
+  category?: string,
+  onProgress?: (update: {
+    step: number;
+    totalSteps: number;
+    message: string;
+    percentage: number;
+    phase: 'searching' | 'analyzing' | 'caching' | 'complete';
+  }) => void
+) {
+  // NIVEL 1: Intentar obtener datos ricos curados (estilo Examine.com)
   if (category) {
     const richData = getRichSupplementData(category);
     if (richData) {
-      console.log(`[RICH DATA HIT] Using high-quality evidence for: ${category}`);
+      console.log(`[LEVEL 1 HIT] Static cache for: ${category}`);
       return richData;
     }
   }
 
-  // PRIORIDAD 2: Intentar obtener del cache estático
+  // NIVEL 2: Intentar obtener de DynamoDB cache (datos generados previamente)
+  if (category) {
+    try {
+      const { getCachedEvidence } = await import('@/lib/services/dynamodb-cache');
+      const cachedData = await getCachedEvidence(category);
+      if (cachedData) {
+        console.log(`[LEVEL 2 HIT] DynamoDB cache for: ${category}`);
+        return cachedData;
+      }
+      console.log(`[LEVEL 2 MISS] Not in DynamoDB for: ${category}`);
+    } catch (error) {
+      console.warn(`[LEVEL 2 ERROR] DynamoDB unavailable for ${category}:`, error);
+      // Continue to next level
+    }
+  }
+
+  // NIVEL 3: Generar dinámicamente con PubMed + Bedrock
+  if (category) {
+    try {
+      console.log(`[LEVEL 3] Starting dynamic generation for: ${category}`);
+      const { generateRichEvidenceData } = await import('./supplements-evidence-dynamic');
+
+      // Pass progress callback to dynamic generator
+      const dynamicData = await generateRichEvidenceData(category, onProgress);
+
+      console.log(`[LEVEL 3 SUCCESS] Generated Grade ${dynamicData.overallGrade} for: ${category}`);
+      return dynamicData;
+    } catch (error) {
+      console.error(`[LEVEL 3 ERROR] Dynamic generation failed for ${category}:`, error);
+      // Fall through to generic template
+    }
+  }
+
+  // FALLBACK: Generar template genérico (solo si todo lo demás falla)
+  console.log(`[FALLBACK] Using generic template for: ${category}`);
+
+  // PRIORIDAD LEGACY: Intentar obtener del cache estático viejo
   if (category) {
     const cachedData = getSupplementEvidenceFromCache(category);
     if (cachedData) {
-      console.log(`[CACHE HIT] Using pre-generated data for: ${category}`);
+      console.log(`[LEGACY CACHE HIT] Using pre-generated data for: ${category}`);
       return cachedData;
     }
-    console.log(`[CACHE MISS] Generating fallback data for: ${category}`);
   }
   // Determinar calificación general basada en eficacia y estudios
   const overallGrade = determineOverallGrade(

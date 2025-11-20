@@ -16,6 +16,7 @@ import ProductRecommendationsGrid from '@/components/portal/ProductRecommendatio
 import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
 import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
+import GenerationProgress from '@/components/portal/GenerationProgress';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { transformEvidenceToNew } from '@/lib/portal/evidence-transformer';
@@ -74,6 +75,14 @@ function ResultsPageContent() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
+  const [transformedEvidence, setTransformedEvidence] = useState<any>(null);
+  const [generationProgress, setGenerationProgress] = useState<{
+    step: number;
+    totalSteps: number;
+    message: string;
+    percentage: number;
+    phase: 'searching' | 'analyzing' | 'caching' | 'complete';
+  } | null>(null);
 
   // Check subscription status
   useEffect(() => {
@@ -103,6 +112,43 @@ function ResultsPageContent() {
 
   const query = searchParams.get('q');
   const recommendationId = searchParams.get('id');
+
+  // Transform evidence data when recommendation changes
+  useEffect(() => {
+    if (!recommendation) {
+      setTransformedEvidence(null);
+      setGenerationProgress(null);
+      return;
+    }
+
+    const transformEvidence = async () => {
+      try {
+        // Pass progress callback
+        const transformed = await transformEvidenceToNew(
+          recommendation.evidence_summary,
+          recommendation.category,
+          (progress) => {
+            // Update progress state in real-time
+            setGenerationProgress(progress);
+          }
+        );
+        setTransformedEvidence(transformed);
+        // Clear progress when complete
+        setTimeout(() => setGenerationProgress(null), 500);
+      } catch (error) {
+        console.error('Failed to transform evidence:', error);
+        setGenerationProgress(null);
+        // Fallback to direct transformation (generic)
+        const transformed = await transformEvidenceToNew(
+          recommendation.evidence_summary,
+          recommendation.category
+        );
+        setTransformedEvidence(transformed);
+      }
+    };
+
+    transformEvidence();
+  }, [recommendation]);
 
   useEffect(() => {
     let pollingInterval: NodeJS.Timeout | null = null;
@@ -493,7 +539,18 @@ function ResultsPageContent() {
     }
   };
 
-  if (isLoading) {
+  // Show progress component if we have progress updates
+  if (generationProgress) {
+    return (
+      <GenerationProgress
+        progress={generationProgress}
+        supplementName={recommendation?.category}
+      />
+    );
+  }
+
+  // Show generic loading if still loading recommendation
+  if (isLoading || (recommendation && !transformedEvidence)) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md px-4">
@@ -559,10 +616,7 @@ function ResultsPageContent() {
         {/* Evidence Analysis - NUEVO DISEÑO VISUAL */}
         <div className="mb-8">
           <EvidenceAnalysisPanelNew
-            evidenceSummary={transformEvidenceToNew(
-              recommendation.evidence_summary,
-              recommendation.category
-            )}
+            evidenceSummary={transformedEvidence}
             supplementName={recommendation.category}
           />
         </div>

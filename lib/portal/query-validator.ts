@@ -57,9 +57,13 @@ const VALID_SUPPLEMENTS = new Set([
   'garlic', 'ajo', 'green-tea', 'te-verde',
   'black-pepper', 'pimienta-negra', 'cinnamon', 'canela',
   'valerian', 'valeriana', 'chamomile', 'manzanilla',
-  'echinacea', 'milk-thistle', 'cardo-mariano',
+  'echinacea', 'milk-thistle', 'cardo-mariano', 'cardo-santo',
   'saw-palmetto', 'ginkgo-biloba', 'st-johns-wort',
   'elderberry', 'sauco', 'astragalus', 'astragalo',
+
+  // Superfoods y frutas medicinales
+  'camu-camu', 'camu', 'acai', 'goji', 'noni',
+  'mangosteen', 'acerola', 'guarana', 'yerba-mate',
 
   // Probióticos y prebióticos
   'probiotics', 'probioticos', 'prebiotics', 'prebioticos',
