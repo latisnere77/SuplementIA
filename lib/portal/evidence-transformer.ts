@@ -7,20 +7,30 @@
 import type { GradeType } from '@/components/portal/SupplementGrade';
 import type { WorksForItem } from '@/components/portal/WorksForSection';
 import { getSupplementEvidenceFromCache } from './supplements-evidence-data';
+import { getRichSupplementData } from './supplements-evidence-rich';
 
 /**
  * Convierte el formato viejo de evidencia al nuevo formato visual
- * OPTIMIZACIÓN: Primero intenta usar datos pre-generados del cache
+ * OPTIMIZACIÓN: Primero intenta usar datos ricos de alta calidad, luego cache, luego genera
  */
 export function transformEvidenceToNew(oldEvidence: any, category?: string) {
-  // OPTIMIZACIÓN 1: Intentar obtener del cache estático primero
+  // PRIORIDAD 1: Intentar obtener datos ricos (estilo Examine.com)
+  if (category) {
+    const richData = getRichSupplementData(category);
+    if (richData) {
+      console.log(`[RICH DATA HIT] Using high-quality evidence for: ${category}`);
+      return richData;
+    }
+  }
+
+  // PRIORIDAD 2: Intentar obtener del cache estático
   if (category) {
     const cachedData = getSupplementEvidenceFromCache(category);
     if (cachedData) {
       console.log(`[CACHE HIT] Using pre-generated data for: ${category}`);
       return cachedData;
     }
-    console.log(`[CACHE MISS] Generating data for: ${category}`);
+    console.log(`[CACHE MISS] Generating fallback data for: ${category}`);
   }
   // Determinar calificación general basada en eficacia y estudios
   const overallGrade = determineOverallGrade(

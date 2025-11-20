@@ -35,6 +35,7 @@ interface EvidenceSummaryNew {
 
   // Descripción clara (lo que importa)
   whatIsItFor: string;
+  summary?: string; // Rich data summary
 
   // Funciona vs No funciona
   worksFor: WorksForItem[];
@@ -51,6 +52,15 @@ interface EvidenceSummaryNew {
     longTermStudies: boolean;
     safetyEstablished: boolean;
   };
+
+  // Rich data (optional - from supplements-evidence-rich.ts)
+  dosage?: {
+    effective: string;
+    common: string;
+    timing?: string;
+  };
+  sideEffects?: string[];
+  interactions?: string[];
 }
 
 interface EvidenceAnalysisPanelNewProps {
@@ -169,6 +179,86 @@ export default function EvidenceAnalysisPanelNew({
         doesntWorkFor={evidenceSummary.doesntWorkFor}
         limitedEvidence={evidenceSummary.limitedEvidence}
       />
+
+      {/* Dosage Information */}
+      {evidenceSummary.dosage && (
+        <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Dosificación Recomendada
+          </h2>
+          <div className="space-y-4">
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-blue-900 mb-2">
+                Dosis Efectiva
+              </h4>
+              <p className="text-lg text-blue-800">
+                {evidenceSummary.dosage.effective}
+              </p>
+            </div>
+
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-green-900 mb-2">
+                Dosis Común
+              </h4>
+              <p className="text-lg text-green-800">
+                {evidenceSummary.dosage.common}
+              </p>
+            </div>
+
+            {evidenceSummary.dosage.timing && (
+              <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-purple-900 mb-2">
+                  Momento de Toma
+                </h4>
+                <p className="text-lg text-purple-800">
+                  {evidenceSummary.dosage.timing}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Side Effects */}
+      {evidenceSummary.sideEffects && evidenceSummary.sideEffects.length > 0 && (
+        <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Efectos Secundarios Posibles
+          </h2>
+          <ul className="space-y-3">
+            {evidenceSummary.sideEffects.map((effect, index) => (
+              <li key={index} className="flex items-start gap-3">
+                <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700 text-base">{effect}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm text-gray-600 italic">
+            Nota: Los efectos secundarios son generalmente leves y poco frecuentes.
+          </p>
+        </div>
+      )}
+
+      {/* Drug Interactions */}
+      {evidenceSummary.interactions && evidenceSummary.interactions.length > 0 && (
+        <div className="bg-white rounded-xl border-2 border-red-200 p-6 md:p-8 shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <Shield className="h-6 w-6 text-red-600" />
+            Interacciones con Medicamentos
+          </h2>
+          <ul className="space-y-3">
+            {evidenceSummary.interactions.map((interaction, index) => (
+              <li key={index} className="flex items-start gap-3">
+                <span className="inline-block w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700 text-base">{interaction}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm text-red-700 font-medium">
+            ⚠️ Consulta con tu médico si estás tomando alguno de estos medicamentos.
+          </p>
+        </div>
+      )}
 
       {/* Ingredientes (Opcional - colapsable) */}
       {evidenceSummary.ingredients.length > 0 && (
