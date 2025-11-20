@@ -45,14 +45,22 @@ export function AutocompleteDropdown({
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        onClose();
+      const target = event.target as Node;
+
+      // No cerrar si el click fue dentro del dropdown
+      if (dropdownRef.current && dropdownRef.current.contains(target)) {
+        console.log('[AutocompleteDropdown] Click inside dropdown, not closing');
+        return;
       }
+
+      // Cerrar solo si el click fue fuera
+      console.log('[AutocompleteDropdown] Click outside dropdown, closing');
+      onClose();
     };
 
-    // Usar 'click' en lugar de 'mousedown' para permitir que onClick se ejecute primero
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    // Usar 'click' con un pequeño delay para dar tiempo al onClick del botón
+    document.addEventListener('click', handleClickOutside, true); // true = capture phase
+    return () => document.removeEventListener('click', handleClickOutside, true);
   }, [onClose]);
 
   // Scroll automático al item seleccionado con teclado
@@ -123,7 +131,16 @@ export function AutocompleteDropdown({
             <li key={`${suggestion.text}-${index}`}>
               <button
                 ref={isSelected ? selectedItemRef : null}
-                onClick={() => onSelect(suggestion)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('[AutocompleteDropdown] Clicked suggestion:', suggestion.text);
+                  onSelect(suggestion);
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
                 className={`
                   w-full px-4 py-3 text-left flex items-center gap-3 transition-all
                   ${

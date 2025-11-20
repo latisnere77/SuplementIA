@@ -128,10 +128,74 @@ function generateWhatIsItFor(category: string): string {
     proteina: 'Apoya el crecimiento y recuperación muscular, esencial para la síntesis de proteínas.',
     caffeine: 'Aumenta la energía, mejora el enfoque y el rendimiento físico de forma temporal.',
     cafeina: 'Aumenta la energía, mejora el enfoque y el rendimiento físico de forma temporal.',
+    hemp: 'Derivado del cáñamo, puede ayudar con el dolor crónico, la inflamación y algunos síntomas de ansiedad.',
+    'hemp seed': 'Rico en proteínas y ácidos grasos omega, apoya la salud cardiovascular y digestiva.',
+    cbd: 'Ayuda a reducir el dolor crónico, la inflamación y puede mejorar la ansiedad en algunas personas.',
+    rhodiola: 'Adaptógeno que ayuda a reducir la fatiga, mejora el rendimiento mental y físico bajo estrés.',
+    'rhodiola rosea': 'Adaptógeno que ayuda a reducir la fatiga, mejora el rendimiento mental y físico bajo estrés.',
+    turmeric: 'Poderoso antiinflamatorio natural, apoya la salud articular y puede mejorar la función cognitiva.',
+    curcuma: 'Poderoso antiinflamatorio natural, apoya la salud articular y puede mejorar la función cognitiva.',
+    ginseng: 'Aumenta la energía, mejora la función cognitiva y apoya el sistema inmunológico.',
+    'ginkgo biloba': 'Mejora la circulación cerebral, apoya la memoria y puede ayudar con síntomas de ansiedad.',
+    spirulina: 'Superalimento rico en proteínas, antioxidantes y nutrientes esenciales para la salud general.',
+    collagen: 'Apoya la salud de la piel, articulaciones y huesos, mejora la elasticidad y reduce arrugas.',
+    colageno: 'Apoya la salud de la piel, articulaciones y huesos, mejora la elasticidad y reduce arrugas.',
   };
 
   const normalized = category.toLowerCase().trim();
-  return descriptions[normalized] || `Suplemento para ${category} basado en evidencia científica.`;
+
+  // Si no encontramos descripción específica, generar una más inteligente
+  if (descriptions[normalized]) {
+    return descriptions[normalized];
+  }
+
+  // Fallback más inteligente para suplementos desconocidos
+  return `Suplemento natural que puede ofrecer beneficios para la salud. La evidencia científica está en evaluación.`;
+}
+
+/**
+ * Genera un propósito legible para una categoría o suplemento
+ */
+function generateCategoryPurpose(category: string): string {
+  const purposes: Record<string, string> = {
+    // Categorías
+    cognitive: 'Mejorar función cognitiva y memoria',
+    sleep: 'Mejorar calidad del sueño',
+    muscle: 'Aumentar masa muscular y fuerza',
+    'muscle-gain': 'Aumentar masa muscular y fuerza',
+    energy: 'Aumentar niveles de energía',
+    immune: 'Fortalecer sistema inmunológico',
+    heart: 'Apoyar salud cardiovascular',
+    stress: 'Reducir estrés y ansiedad',
+    anxiety: 'Reducir ansiedad',
+    'fat-loss': 'Apoyar pérdida de grasa',
+    joint: 'Mejorar salud articular',
+    skin: 'Mejorar salud de la piel',
+    hair: 'Fortalecer el cabello',
+    digestion: 'Mejorar digestión',
+
+    // Suplementos específicos
+    hemp: 'Reducir dolor e inflamación',
+    cbd: 'Aliviar dolor crónico y ansiedad',
+    ashwagandha: 'Reducir estrés y mejorar sueño',
+    rhodiola: 'Mejorar rendimiento físico y mental',
+    melatonin: 'Regular ciclo de sueño',
+    melatonina: 'Regular ciclo de sueño',
+    creatine: 'Aumentar fuerza y rendimiento',
+    creatina: 'Aumentar fuerza y rendimiento',
+    protein: 'Apoyar crecimiento muscular',
+    proteina: 'Apoyar crecimiento muscular',
+    magnesium: 'Mejorar sueño y función muscular',
+    magnesio: 'Mejorar sueño y función muscular',
+    'omega-3': 'Apoyar salud cardiovascular y cerebral',
+    turmeric: 'Reducir inflamación',
+    curcuma: 'Reducir inflamación',
+    collagen: 'Mejorar salud de piel y articulaciones',
+    colageno: 'Mejorar salud de piel y articulaciones',
+  };
+
+  const normalized = category.toLowerCase().trim();
+  return purposes[normalized] || `Beneficios potenciales de ${category}`;
 }
 
 /**
@@ -205,27 +269,29 @@ function generateWorksForData(
   const doesnt: WorksForItem[] = [];
   const limited: WorksForItem[] = [];
 
-  // Generar "Funciona para" basado en eficacia
+  // Generar condiciones más inteligentes basadas en eficacia
+  const categoryPurpose = generateCategoryPurpose(category);
+
   if (efficacy >= 60) {
     works.push({
-      condition: `Mejorar ${category}`,
+      condition: categoryPurpose,
       grade,
       description: `Evidencia de eficacia del ${efficacy}% en estudios`,
     });
     works.push({
-      condition: 'Apoyo general a la salud',
+      condition: 'Apoyo general a la salud y bienestar',
       grade: grade === 'A' || grade === 'B' ? 'B' : 'C',
-      description: 'Beneficios secundarios documentados',
+      description: 'Beneficios secundarios documentados en la literatura',
     });
   } else if (efficacy >= 40) {
     limited.push({
-      condition: `Mejorar ${category}`,
+      condition: categoryPurpose,
       grade,
-      description: `Evidencia limitada (${efficacy}% de eficacia)`,
+      description: `Evidencia limitada (${efficacy}% de eficacia en estudios disponibles)`,
     });
   } else {
     doesnt.push({
-      condition: `Mejorar ${category}`,
+      condition: categoryPurpose,
       grade: 'D',
       description: 'Evidencia insuficiente o resultados inconsistentes',
     });
