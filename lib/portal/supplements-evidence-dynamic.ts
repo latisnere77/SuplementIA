@@ -203,11 +203,11 @@ async function analyzeStudiesWithAI(
   console.log(`[AI] Analyzing ${studies.length} studies via Content Enricher Lambda`);
 
   try {
-    // URL de la Lambda Function URL (sin timeout de 29s de API Gateway)
-    // Esta URL apunta directamente a la función Lambda y permite ejecuciones largas
-    const API_URL = process.env.CONTENT_ENRICHER_FUNCTION_URL || 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
+    // Llamar al API route interno que hace proxy al Lambda desde el servidor
+    // Esto evita exponer la URL del Lambda en el código del cliente
+    const API_URL = '/api/analyze-studies';
 
-    // Llamar al Lambda externo que ya tiene el prompt correcto y funciona
+    // Llamar al API interno que hace proxy al Lambda
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {

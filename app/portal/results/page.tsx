@@ -19,7 +19,62 @@ import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
 import GenerationProgress from '@/components/portal/GenerationProgress';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
-import { transformEvidenceToNew } from '@/lib/portal/evidence-transformer';
+
+// ====================================
+// ADAPTER FUNCTION - Server-Side Transformation
+// ====================================
+
+/**
+ * Fetch transformed evidence from server-side API route
+ * This replaces direct client-side calls to transformEvidenceToNew()
+ * which tried to access DynamoDB and Lambda from the browser
+ *
+ * @see XRAY-ARCHITECTURE-ANALYSIS.md - Section 3.2
+ */
+async function fetchTransformedEvidence(
+  category: string,
+  evidenceSummary: any,
+  onProgress?: (progress: {
+    step: number;
+    totalSteps: number;
+    message: string;
+    percentage: number;
+    phase: 'searching' | 'analyzing' | 'caching' | 'complete';
+  }) => void
+): Promise<any> {
+  const response = await fetch('/api/portal/transform-evidence', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      category,
+      evidenceSummary,
+      forceRefresh: false,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || `Transform failed with status ${response.status}`);
+  }
+
+  const result = await response.json();
+
+  // Simulate progress if callback provided (since API doesn't stream progress yet)
+  if (onProgress && result.meta?.level === 3) {
+    // Only show progress for dynamic generation (level 3)
+    onProgress({
+      step: 4,
+      totalSteps: 4,
+      message: '✅ Datos guardados. Mostrando resultados...',
+      percentage: 100,
+      phase: 'complete',
+    });
+  }
+
+  return result.data;
+}
 
 interface Recommendation {
   recommendation_id: string;
@@ -123,10 +178,10 @@ function ResultsPageContent() {
 
     const transformEvidence = async () => {
       try {
-        // Pass progress callback
-        const transformed = await transformEvidenceToNew(
-          recommendation.evidence_summary,
+        // Use server-side API route for transformation
+        const transformed = await fetchTransformedEvidence(
           recommendation.category,
+          recommendation.evidence_summary,
           (progress) => {
             // Update progress state in real-time
             setGenerationProgress(progress);
@@ -138,12 +193,17 @@ function ResultsPageContent() {
       } catch (error) {
         console.error('Failed to transform evidence:', error);
         setGenerationProgress(null);
-        // Fallback to direct transformation (generic)
-        const transformed = await transformEvidenceToNew(
-          recommendation.evidence_summary,
-          recommendation.category
-        );
-        setTransformedEvidence(transformed);
+        // Fallback: try again without progress callback
+        try {
+          const transformed = await fetchTransformedEvidence(
+            recommendation.category,
+            recommendation.evidence_summary
+          );
+          setTransformedEvidence(transformed);
+        } catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError);
+          // Show error state to user
+        }
       }
     };
 

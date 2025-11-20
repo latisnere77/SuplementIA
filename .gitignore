@@ -58,5 +58,10 @@ infrastructure/lambda/*/*.zip
 response.json
 deploy.log
 deployment-outputs.json
-route*.ts
+
+# Ignore route config but not Next.js API routes
 route.config.ts
+# Note: Next.js API routes (app/api/**/route.ts) should be committed
+
+# Archived files
+_archived/

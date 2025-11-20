@@ -18,8 +18,9 @@ export default function DebugEnrichPage() {
 
         addLog('Starting test...');
 
-        const FUNCTION_URL = 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
-        addLog(`Target URL: ${FUNCTION_URL}`);
+        // Use internal API route instead of direct Lambda URL
+        const API_URL = '/api/analyze-studies';
+        addLog(`Target URL: ${API_URL} (internal proxy)`);
 
         try {
             const payload = {
@@ -29,10 +30,10 @@ export default function DebugEnrichPage() {
                 studies: [] // Empty studies to force Lambda to fetch/generate
             };
 
-            addLog('Sending request...');
+            addLog('Sending request to internal API...');
             const startTime = Date.now();
 
-            const response = await fetch(FUNCTION_URL, {
+            const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,7 +42,7 @@ export default function DebugEnrichPage() {
             });
 
             const duration = (Date.now() - startTime) / 1000;
-            addLog(`Response received in ${duration}s`);
+            addLog(`Response received in ${duration.toFixed(2)}s`);
             addLog(`Status: ${response.status} ${response.statusText}`);
 
             if (!response.ok) {
@@ -51,6 +52,9 @@ export default function DebugEnrichPage() {
 
             const data = await response.json();
             addLog('JSON parsed successfully');
+            addLog(`Request ID: ${data.meta?.requestId || 'N/A'}`);
+            addLog(`Proxy Duration: ${data.meta?.proxyDuration || 'N/A'}ms`);
+            addLog(`Cached: ${data.meta?.cached ? 'Yes' : 'No'}`);
             setResult(data);
             setStatus('success');
 
