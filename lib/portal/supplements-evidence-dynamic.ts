@@ -205,7 +205,15 @@ async function analyzeStudiesWithAI(
   try {
     // Llamar al API route interno que hace proxy al Lambda desde el servidor
     // Esto evita exponer la URL del Lambda en el código del cliente
-    const API_URL = '/api/analyze-studies';
+
+    // En server-side Node.js, necesitamos una URL absoluta
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000');
+
+    const API_URL = `${baseUrl}/api/analyze-studies`;
+
+    console.log(`[AI] Calling Lambda proxy at: ${API_URL}`);
 
     // Llamar al API interno que hace proxy al Lambda
     const response = await fetch(API_URL, {
