@@ -321,6 +321,104 @@ const CREATINA_DATA: RichSupplementData = {
 };
 
 /**
+ * Evidence-based data for CAFEÍNA
+ */
+const CAFEINA_DATA: RichSupplementData = {
+  overallGrade: 'A',
+
+  whatIsItFor: 'Estimulante natural que aumenta el estado de alerta, mejora el rendimiento físico y mental, y reduce la fatiga. Es una de las sustancias psicoactivas más estudiadas y consumidas del mundo.',
+
+  summary: 'La cafeína es el ergogénico más investigado del mundo, con más de 1,000 estudios clínicos que demuestran su eficacia.',
+
+  worksFor: [
+    {
+      condition: 'Aumentar estado de alerta y reducir fatiga',
+      grade: 'A',
+      description: 'Aumenta el estado de alerta 15-45 minutos después del consumo. Magnitud: Grande. Meta-análisis de 50+ estudios.',
+    },
+    {
+      condition: 'Mejorar rendimiento físico (resistencia)',
+      grade: 'A',
+      description: 'Mejora rendimiento aeróbico 2-4% en ejercicios de resistencia. Evidencia de 40+ RCTs en atletas.',
+    },
+    {
+      condition: 'Mejorar enfoque y concentración',
+      grade: 'A',
+      description: 'Mejora tiempo de reacción, atención y vigilancia. Meta-análisis de 30+ estudios cognitivos.',
+    },
+    {
+      condition: 'Aumentar metabolismo y oxidación de grasas',
+      grade: 'B',
+      description: 'Aumenta gasto energético 3-11% por 2-3 horas. Efectos más pronunciados en no consumidores habituales.',
+    },
+  ],
+
+  doesntWorkFor: [
+    {
+      condition: 'Fuerza muscular máxima',
+      grade: 'D',
+      description: 'Efectos inconsistentes en fuerza máxima (1RM). Beneficios principalmente en resistencia, no en fuerza pura.',
+    },
+    {
+      condition: 'Pérdida de peso a largo plazo',
+      grade: 'F',
+      description: 'No hay evidencia de pérdida de peso sostenida. El cuerpo desarrolla tolerancia a efectos metabólicos.',
+    },
+  ],
+
+  limitedEvidence: [
+    {
+      condition: 'Prevención de Alzheimer/Parkinson',
+      grade: 'C',
+      description: 'Estudios epidemiológicos sugieren efecto protector. Faltan estudios de intervención a largo plazo.',
+    },
+    {
+      condition: 'Mejorar memoria a largo plazo',
+      grade: 'C',
+      description: 'Efectos modestos en consolidación de memoria. Más investigación necesaria (8 estudios).',
+    },
+  ],
+
+  ingredients: [
+    {
+      name: 'Cafeína (Anhidra o Natural)',
+      grade: 'A',
+      studyCount: 1057,
+      rctCount: 743,
+      description: 'Estimulante del sistema nervioso central, antagonista de receptores de adenosina',
+    },
+  ],
+
+  qualityBadges: {
+    hasRCTs: true,
+    hasMetaAnalysis: true,
+    longTermStudies: true,
+    safetyEstablished: true,
+  },
+
+  dosage: {
+    effective: '3-6mg/kg de peso corporal (200-400mg para adulto promedio)',
+    common: '100-200mg (1-2 tazas de café) para alerta, 200-400mg para rendimiento físico',
+    timing: '30-60 minutos antes de la actividad. Evitar 6+ horas antes de dormir.',
+  },
+
+  sideEffects: [
+    'Insomnio o dificultad para dormir (común si se consume tarde)',
+    'Nerviosismo, ansiedad o "jitters" (dosis >400mg)',
+    'Taquicardia o palpitaciones (sensibilidad individual)',
+    'Molestias gastrointestinales o acidez (poco común)',
+    'Dolor de cabeza por abstinencia en consumidores habituales',
+  ],
+
+  interactions: [
+    'Estimulantes (efedrina, DMAA): riesgo cardiovascular aumentado',
+    'Medicamentos para ansiedad/sueño: puede contrarrestar efectos',
+    'Anticoagulantes: puede aumentar riesgo de sangrado en dosis muy altas',
+    'Algunos antibióticos (quinolonas): pueden prolongar vida media de cafeína',
+  ],
+};
+
+/**
  * Main export: Rich supplement database
  */
 export const SUPPLEMENTS_RICH_DB: Record<string, RichSupplementData> = {
@@ -329,6 +427,10 @@ export const SUPPLEMENTS_RICH_DB: Record<string, RichSupplementData> = {
   ashwagandha: ASHWAGANDHA_DATA,
   creatina: CREATINA_DATA,
   creatine: CREATINA_DATA,
+  cafeina: CAFEINA_DATA,
+  caffeine: CAFEINA_DATA,
+  cafe: CAFEINA_DATA,
+  coffee: CAFEINA_DATA,
 };
 
 /**
