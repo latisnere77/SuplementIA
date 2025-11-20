@@ -171,7 +171,7 @@ export default function PortalPage() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Hero Section */}
-      <div className="relative min-h-[80vh] w-full flex items-center justify-center overflow-hidden bg-white dark:bg-gray-950">
+      <div className="relative min-h-[80vh] w-full flex items-center justify-center overflow-x-hidden bg-white dark:bg-gray-950">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/50 dark:from-primary/10 dark:via-transparent dark:to-accent/10 blur-3xl" />
         
@@ -305,7 +305,7 @@ export default function PortalPage() {
                     >
                       <Combobox.Options
                         static
-                        className="absolute z-[60] mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-[400px] overflow-y-scroll py-2 overscroll-contain"
+                        className="absolute z-[9999] mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-[400px] overflow-y-scroll py-2 overscroll-contain"
                         style={{ scrollBehavior: 'smooth' }}
                       >
                         {isLoadingSuggestions ? (
