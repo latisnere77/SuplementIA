@@ -20,6 +20,19 @@ import {
 import type { SupplementEvidenceData } from '@/lib/portal/supplements-evidence-data';
 
 // ====================================
+// TYPES
+// ====================================
+
+export interface CachedEvidenceResult {
+  evidenceData: SupplementEvidenceData;
+  generatedAt: string; // ISO string
+  studyQuality: 'high' | 'medium' | 'low';
+  studyCount: number;
+  rctCount: number;
+  metaAnalysisCount: number;
+}
+
+// ====================================
 // CLIENT SETUP
 // ====================================
 
@@ -39,7 +52,7 @@ const TABLE_NAME = process.env.DYNAMODB_CACHE_TABLE || 'production-supplements-e
  */
 export async function getCachedEvidence(
   supplementName: string
-): Promise<SupplementEvidenceData | null> {
+): Promise<CachedEvidenceResult | null> {
   try {
     const normalized = normalizeSupplementName(supplementName);
 
@@ -70,11 +83,19 @@ export async function getCachedEvidence(
     // Increment access counter (fire and forget)
     incrementAccessCount(normalized).catch(console.error);
 
-    // Parse and return evidence data
+    // Parse and return evidence data with metadata
     const evidenceData: SupplementEvidenceData = JSON.parse(cacheItem.evidenceData);
 
     console.log(`[CACHE HIT] ${supplementName} found in DynamoDB (quality: ${cacheItem.studyQuality})`);
-    return evidenceData;
+
+    return {
+      evidenceData,
+      generatedAt: new Date(cacheItem.generatedAt * 1000).toISOString(),
+      studyQuality: cacheItem.studyQuality,
+      studyCount: cacheItem.studyCount,
+      rctCount: cacheItem.rctCount,
+      metaAnalysisCount: cacheItem.metaAnalysisCount,
+    };
   } catch (error) {
     console.error(`[CACHE ERROR] Failed to get ${supplementName} from cache:`, error);
     return null;

@@ -3,12 +3,7 @@
  * Client to interact with Medical MCP server for PubMed searches
  */
 
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import path from 'path';
 import { getIntelligentSearchStrategy, type SupplementCandidate } from './supplement-intelligence';
-
-const execAsync = promisify(exec);
 
 // ====================================
 // TYPES
@@ -33,15 +28,6 @@ export interface MCPSearchOptions {
   minYear?: number;
   useIntelligentSearch?: boolean; // Default: true (uses multi-candidate strategy)
 }
-
-// ====================================
-// CONFIGURATION
-// ====================================
-
-const MCP_PATH = path.join(
-  process.env.PROJECT_ROOT || process.cwd(),
-  'mcp-servers/medical-mcp/build/index.js'
-);
 
 // ====================================
 // QUERY TRANSLATION / FALLBACK
