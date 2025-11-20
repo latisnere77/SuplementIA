@@ -50,8 +50,9 @@ export function AutocompleteDropdown({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    // Usar 'click' en lugar de 'mousedown' para permitir que onClick se ejecute primero
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, [onClose]);
 
   // Scroll automático al item seleccionado con teclado
