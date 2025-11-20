@@ -200,24 +200,49 @@ async function analyzeStudiesWithAI(
   supplementName: string,
   studies: PubMedArticle[]
 ): Promise<StudyAnalysis> {
-  const { analyzeStudiesWithBedrock } = await import('@/lib/services/bedrock-analyzer');
-
-  console.log(`[AI] Analyzing ${studies.length} studies with Bedrock`);
+  console.log(`[AI] Analyzing ${studies.length} studies via Content Enricher Lambda`);
 
   try {
-    const analysis = await analyzeStudiesWithBedrock(supplementName, studies);
-    console.log(`[AI] Analysis complete - Grade ${analysis.overallGrade}`);
-    return analysis;
-  } catch (error) {
-    console.error(`[AI ERROR] Failed to analyze studies:`, error);
+    // URL del API Gateway para el content-enricher Lambda
+    const API_URL = process.env.CONTENT_ENRICHER_API_URL || 'https://lm9ho0w527.execute-api.us-east-1.amazonaws.com/dev';
 
-    // Fallback to basic analysis
+    // Llamar al Lambda externo que ya tiene el prompt correcto y funciona
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        supplementId: supplementName,
+        category: 'general',
+        forceRefresh: true,
+        studies: studies // Pasamos los estudios para que el Lambda los analice
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Lambda API error: ${response.status} ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    if (!result.success || !result.data) {
+      throw new Error(result.error || 'Invalid response from Content Enricher Lambda');
+    }
+
+    console.log(`[AI] Lambda analysis complete - Grade ${result.data.overallGrade}`);
+    return result.data as StudyAnalysis;
+
+  } catch (error) {
+    console.error(`[AI ERROR] Failed to analyze studies via Lambda:`, error);
+
+    // Fallback to basic analysis ONLY if Lambda fails
     const { getStudyQualityMetrics } = await import('@/lib/services/medical-mcp-client');
     const metrics = getStudyQualityMetrics(studies);
 
     return {
       overallGrade: metrics.qualityScore === 'high' ? 'B' : 'C',
-      whatIsItFor: `Analysis based on ${studies.length} studies`,
+      whatIsItFor: `Analysis based on ${studies.length} studies (AI Unavailable)`,
       worksFor: [],
       doesntWorkFor: [],
       limitedEvidence: [],
