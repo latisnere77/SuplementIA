@@ -203,8 +203,9 @@ async function analyzeStudiesWithAI(
   console.log(`[AI] Analyzing ${studies.length} studies via Content Enricher Lambda`);
 
   try {
-    // URL del API Gateway para el content-enricher Lambda
-    const API_URL = process.env.CONTENT_ENRICHER_API_URL || 'https://lm9ho0w527.execute-api.us-east-1.amazonaws.com/dev';
+    // URL de la Lambda Function URL (sin timeout de 29s de API Gateway)
+    // Esta URL apunta directamente a la función Lambda y permite ejecuciones largas
+    const API_URL = process.env.CONTENT_ENRICHER_FUNCTION_URL || 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
 
     // Llamar al Lambda externo que ya tiene el prompt correcto y funciona
     const response = await fetch(API_URL, {
