@@ -8,7 +8,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Heart, Shield, TrendingUp, Users, BookOpen, Globe, ChevronRight, Star, Dumbbell, Brain, Moon, Check } from 'lucide-react';
+import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { Badge } from '@/components/ui/badge';
@@ -19,10 +19,9 @@ import { useAutocomplete } from '@/lib/portal/useAutocomplete';
 import { validateSupplementQuery } from '@/lib/portal/query-validator';
 
 export default function PortalPage() {
-  const { t, language, setLanguage } = useTranslation();
+  const { t, language } = useTranslation();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -30,7 +29,7 @@ export default function PortalPage() {
   // Hook de autocomplete con debouncing
   const { suggestions, isLoading: isLoadingSuggestions } = useAutocomplete(searchQuery, {
     debounceMs: 300,
-    limit: 5,
+    limit: 10, // Aumentado para mostrar más sugerencias
   });
 
   // DEBUG: Ver qué sugerencias tenemos
@@ -241,9 +240,11 @@ export default function PortalPage() {
               className="relative max-w-2xl mx-auto"
             >
               <Combobox
-                value={selectedSuggestion}
+                value={searchQuery}
                 onChange={(value) => {
+                  console.log('[PortalPage] Combobox onChange:', value);
                   if (value) {
+                    setSearchQuery(value);
                     handleSearch(value);
                   }
                 }}
@@ -253,14 +254,17 @@ export default function PortalPage() {
 
                   <Combobox.Input
                     className="h-14 w-full pl-12 pr-4 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      console.log('[PortalPage] Input onChange:', e.target.value);
+                      setSearchQuery(e.target.value);
+                    }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && searchQuery && suggestions.length === 0) {
+                      if (e.key === 'Enter' && searchQuery) {
                         e.preventDefault();
                         handleSearch(searchQuery);
                       }
                     }}
-                    displayValue={() => searchQuery}
+                    displayValue={(value: string) => value}
                     placeholder=""
                     autoComplete="off"
                   />
@@ -301,7 +305,8 @@ export default function PortalPage() {
                     >
                       <Combobox.Options
                         static
-                        className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-96 overflow-y-auto py-2"
+                        className="absolute z-[60] mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-[400px] overflow-y-scroll py-2 overscroll-contain"
+                        style={{ scrollBehavior: 'smooth' }}
                       >
                         {isLoadingSuggestions ? (
                           <div className="px-4 py-3 flex items-center gap-3 text-gray-500">
@@ -313,30 +318,40 @@ export default function PortalPage() {
                             {t('autocomplete.no.results')}
                           </div>
                         ) : (
-                          suggestions.map((suggestion) => (
+                          suggestions.map((suggestion, idx) => (
                             <Combobox.Option
-                              key={suggestion.text}
+                              key={`${suggestion.text}-${idx}`}
                               value={suggestion.text}
                               className={({ active }) =>
                                 cn(
                                   'relative cursor-pointer select-none py-3 px-4 transition-colors',
-                                  active ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-white dark:bg-gray-800'
+                                  active ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100' : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'
                                 )
                               }
+                              onClick={() => {
+                                console.log('[PortalPage] Option clicked:', suggestion.text);
+                              }}
                             >
                               {({ active }) => (
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 w-full">
                                   {/* Icon based on type */}
                                   {suggestion.type === 'category' ? (
-                                    <TrendingUp className={cn('h-4 w-4', active ? 'text-blue-600' : 'text-gray-400')} />
+                                    <TrendingUp className={cn('h-4 w-4 flex-shrink-0', active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400')} />
                                   ) : (
-                                    <Search className={cn('h-4 w-4', active ? 'text-blue-600' : 'text-gray-400')} />
+                                    <Search className={cn('h-4 w-4 flex-shrink-0', active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400')} />
                                   )}
 
                                   {/* Suggestion text */}
-                                  <span className={cn('text-sm font-medium truncate', active ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100')}>
+                                  <span className={cn('text-sm font-medium flex-1 min-w-0', active ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100')}>
                                     {suggestion.text}
                                   </span>
+
+                                  {/* Type label */}
+                                  {suggestion.type !== 'supplement' && (
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                                      {suggestion.type === 'category' ? t('autocomplete.categories') : 'Condition'}
+                                    </span>
+                                  )}
                                 </div>
                               )}
                             </Combobox.Option>
