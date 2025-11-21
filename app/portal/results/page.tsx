@@ -268,13 +268,18 @@ function ResultsPageContent() {
 
     // Check if this is mock/generated data with no real studies
     const metadata = (recommendation as any)._enrichment_metadata || {};
-    const hasRealData = metadata.hasRealData && metadata.studiesUsed > 0;
     const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
+    const metadataStudiesUsed = metadata.studiesUsed || 0;
+    
+    // SIMPLE FIX: Trust totalStudies from evidence_summary if available
+    // This handles cases where metadata is incomplete but evidence_summary has data
+    const hasRealData = totalStudies > 0 || (metadata.hasRealData && metadataStudiesUsed > 0);
 
     // If no real data, show warning
-    if (!hasRealData || totalStudies === 0) {
+    if (!hasRealData) {
       console.warn('⚠️ No real data found for:', recommendation.category);
       console.warn('Metadata:', metadata);
+      console.warn('Evidence Summary totalStudies:', totalStudies);
       // Still transform, but user should see warning
     }
 
@@ -752,7 +757,8 @@ function ResultsPageContent() {
               const metadata = (data.recommendation as any)?._enrichment_metadata || {};
               const totalStudies = data.recommendation?.evidence_summary?.totalStudies || 0;
               const studiesUsed = metadata.studiesUsed || 0;
-              const hasRealData = studiesUsed > 0; // Only cache if we have real study data
+              // SIMPLE FIX: Trust totalStudies if metadata is incomplete
+              const hasRealData = totalStudies > 0 || studiesUsed > 0; // Only cache if we have real study data
 
               if (hasRealData) {
                 try {
@@ -898,9 +904,16 @@ function ResultsPageContent() {
           )}
         </div>
 
-        {/* Warning banner if no real data - Check BOTH totalStudies and _enrichment_metadata */}
-        {(recommendation.evidence_summary.totalStudies === 0 ||
-          (recommendation as any)._enrichment_metadata?.studiesUsed === 0) && (() => {
+        {/* Warning banner if no real data - Only show if BOTH are 0 */}
+        {(() => {
+          const metadata = (recommendation as any)._enrichment_metadata || {};
+          const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
+          const metadataStudiesUsed = metadata.studiesUsed || 0;
+          const hasNoData = totalStudies === 0 && metadataStudiesUsed === 0;
+          
+          if (!hasNoData) return null;
+          
+          return (() => {
           const suggestion = suggestSupplementCorrection(recommendation.category);
           return (
             <div className="mb-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
