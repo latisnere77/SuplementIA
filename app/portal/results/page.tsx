@@ -74,7 +74,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   // DEBUG: Log parsed worksFor
   console.log('[transformRecommendationToEvidence] Parsed worksFor:', {
     count: worksFor.length,
-    items: worksFor.map(w => ({ condition: w.condition, grade: w.grade })),
+    items: worksFor.map((w: { condition: string; grade: string }) => ({ condition: w.condition, grade: w.grade })),
   });
 
   // Parse side_effects to doesntWorkFor/limitedEvidence
