@@ -22,6 +22,7 @@ import { useAuth } from '@/lib/auth/useAuth';
 import { suggestSupplementCorrection } from '@/lib/portal/supplement-suggestions';
 import { searchAnalytics } from '@/lib/portal/search-analytics';
 import { traceSearch } from '@/lib/portal/xray-client';
+import { normalizeQuery } from '@/lib/portal/query-normalization';
 
 // ====================================
 // ADAPTER FUNCTION - Client-Side Transformation
@@ -514,14 +515,25 @@ function ResultsPageContent() {
           
           // Check if query matches a known category
           const matchedCategory = categoryMap[normalizedQuery];
-          
+
           // If not a category, treat as ingredient search
           // Ingredients are typically: single words, compound words, or scientific names
           const isIngredientSearch = !matchedCategory;
-          
-          // For ingredient searches, pass the query directly (backend will handle it)
+
+          // NORMALIZE QUERY BEFORE SENDING TO BACKEND
+          // This converts "carnitina" → "L-Carnitine", "magnesio" → "Magnesium", etc.
+          let searchTerm = normalizedQuery;
+          if (isIngredientSearch) {
+            const normalized = normalizeQuery(normalizedQuery);
+            if (normalized.confidence >= 0.8) {
+              searchTerm = normalized.normalized;
+              console.log(`✅ Query normalized: "${normalizedQuery}" → "${searchTerm}" (confidence: ${normalized.confidence})`);
+            }
+          }
+
+          // For ingredient searches, use normalized term
           // For category searches, use the mapped category
-          const category = matchedCategory || normalizedQuery;
+          const category = matchedCategory || searchTerm;
 
           const response = await fetch('/api/portal/quiz', {
             method: 'POST',
@@ -546,16 +558,17 @@ function ResultsPageContent() {
 
             // Handle 404: No scientific data found (NOT a system error)
             if (response.status === 404 && errorData.error === 'insufficient_data') {
-              console.log(`ℹ️  No scientific data found for: ${normalizedQuery}`);
+              console.log(`ℹ️  No scientific data found for: ${searchTerm} (original: ${normalizedQuery})`);
 
               // Try to suggest alternative supplement names
-              const suggestion = suggestSupplementCorrection(normalizedQuery);
+              const suggestion = suggestSupplementCorrection(searchTerm);
 
-              // Log analytics - search failed
+              // Log analytics - search failed (with both original and normalized terms)
               searchAnalytics.logFailure(normalizedQuery, {
                 errorType: 'insufficient_data',
                 suggestionsOffered: suggestion ? [suggestion.suggestion] : [],
                 requestId: errorData.requestId,
+                normalizedQuery: searchTerm !== normalizedQuery ? searchTerm : undefined,
               });
 
               // Trace search failure
@@ -563,6 +576,7 @@ function ResultsPageContent() {
                 success: false,
                 errorType: 'insufficient_data',
                 suggestionOffered: suggestion?.suggestion,
+                normalizedQuery: searchTerm,
               });
 
               if (suggestion) {
@@ -686,16 +700,18 @@ function ResultsPageContent() {
               ingredientsCount: data.recommendation.ingredients?.length || 0,
             });
 
-            // Log analytics - search successful
+            // Log analytics - search successful (with both original and normalized terms)
             searchAnalytics.logSuccess(normalizedQuery, {
               studiesFound: data.recommendation?.evidence_summary?.totalStudies || 0,
               requestId: data.requestId,
+              normalizedQuery: searchTerm !== normalizedQuery ? searchTerm : undefined,
             });
 
             // Trace search success
             traceSearch(normalizedQuery, 'api-request-complete', {
               success: true,
               studiesFound: data.recommendation?.evidence_summary?.totalStudies || 0,
+              normalizedQuery: searchTerm,
             });
 
             if (isMounted) {
