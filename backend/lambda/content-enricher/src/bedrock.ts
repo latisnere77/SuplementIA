@@ -99,38 +99,64 @@ export async function generateEnrichedContent(
     })
   );
 
-  // Sanitize JSON by removing control characters
+  // Sanitize JSON by removing control characters and fixing common issues
   const sanitizeJSON = (str: string): string => {
-    // Remove control characters except for tab (\t), newline (\n), and carriage return (\r)
-    // But only if they're NOT already properly escaped in the string
-    return str.replace(/[\x00-\x1F\x7F]/g, (match) => {
-      // Keep tab, newline, carriage return if they're part of JSON syntax
+    // Remove control characters
+    let cleaned = str.replace(/[\x00-\x1F\x7F]/g, (match) => {
       if (match === '\t' || match === '\n' || match === '\r') {
-        return ' '; // Replace with space to avoid breaking JSON
+        return ' ';
       }
-      return ''; // Remove other control chars
+      return '';
     });
+
+    // Fix trailing commas before } or ]
+    cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
+
+    // Fix unescaped quotes in string values (heuristic)
+    // This is a simple fix - may need refinement
+    cleaned = cleaned.replace(/:\s*"([^"]*)"([^",}\]]*?)"/g, (match, p1, p2) => {
+      // If there's text after closing quote before comma/brace, it's likely an unescaped quote
+      if (p2.trim() && !p2.trim().startsWith(',') && !p2.trim().startsWith('}') && !p2.trim().startsWith(']')) {
+        return `: "${p1}\\"${p2}"`;
+      }
+      return match;
+    });
+
+    return cleaned;
   };
 
-  // Parse JSON from Claude's response
+  // Parse JSON from Claude's response with enhanced error handling
   let enrichedData: EnrichedContent;
 
   try {
     enrichedData = JSON.parse(sanitizeJSON(contentText));
-  } catch (parseError) {
+  } catch (parseError: any) {
+    console.warn(`Initial JSON parse failed: ${parseError.message}`);
+
     // Sometimes Claude wraps JSON in markdown code blocks
     const jsonMatch = contentText.match(/```json\s*([\s\S]*?)\s*```/);
     if (jsonMatch) {
-      enrichedData = JSON.parse(sanitizeJSON(jsonMatch[1]));
+      try {
+        enrichedData = JSON.parse(sanitizeJSON(jsonMatch[1]));
+      } catch (e: any) {
+        console.error(`Markdown JSON parse failed: ${e.message}`);
+        throw new Error(`Failed to parse JSON from markdown block: ${e.message}`);
+      }
     } else {
       // Try to extract JSON between first { and last }
       const firstBrace = contentText.indexOf('{');
       const lastBrace = contentText.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1) {
         const jsonStr = contentText.substring(firstBrace, lastBrace + 1);
-        enrichedData = JSON.parse(sanitizeJSON(jsonStr));
+        try {
+          enrichedData = JSON.parse(sanitizeJSON(jsonStr));
+        } catch (e: any) {
+          console.error(`Extracted JSON parse failed: ${e.message}`);
+          console.error(`JSON snippet around error: ${jsonStr.substring(Math.max(0, parseInt(e.message.match(/\d+/)?.[0] || '0') - 50), Math.min(jsonStr.length, parseInt(e.message.match(/\d+/)?.[0] || '0') + 50))}`);
+          throw new Error(`Failed to parse extracted JSON: ${e.message}`);
+        }
       } else {
-        throw new Error('Failed to parse JSON from Bedrock response');
+        throw new Error('Failed to parse JSON from Bedrock response - no valid JSON structure found');
       }
     }
   }

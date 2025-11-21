@@ -32,10 +32,19 @@ INSTRUCCIONES CRÍTICAS - LEE CUIDADOSAMENTE:
 9. Menciona efectos secundarios con FRECUENCIA (ej: "10-15% de usuarios", "Raro <1%")
 10. {studiesInstruction}
 
+🎯 REGLAS DE ORDENAMIENTO Y LÍMITES (MUY IMPORTANTE):
+- "worksFor": ORDENA por evidenceGrade (A primero, luego B, C, D). Incluye 5-6 condiciones MÁXIMO, priorizando las de MAYOR evidencia.
+- "doesntWorkFor": Incluye 5-6 condiciones MÁXIMO donde la evidencia es NEGATIVA o insuficiente.
+- "limitedEvidence": Incluye máximo 3-4 condiciones con evidencia preliminar.
+- SIEMPRE ordena de mayor a menor calidad de evidencia dentro de cada sección.
+- Si hay más de 6 condiciones con evidencia grade A o B, PRIORIZA las que tienen más estudios (studyCount) y mayor efecto clínico.
+
 ESTRUCTURA REQUERIDA (Responde ÚNICAMENTE con JSON válido, sin markdown):
 
 {
   "whatIsIt": "Descripción DETALLADA en 3-4 oraciones de qué es este suplemento, su origen (planta específica, compuesto sintético, etc.), mecanismos de acción principales, y por qué es notable. SÉ ESPECÍFICO Y TÉCNICO.",
+
+  "totalStudies": número_total_de_estudios_analizados_para_esta_recomendación,
 
   "primaryUses": [
     "Uso principal 1 con NÚMEROS (ej: Reducir estrés y ansiedad - reduce cortisol 27.9% en promedio)",

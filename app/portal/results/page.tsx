@@ -150,9 +150,11 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     })),
     qualityBadges: {
       hasRCTs: ingredients.some((i: any) => i.rctCount > 0),
-      hasMetaAnalysis: evidenceSummary.totalStudies > 50,
+      hasMetaAnalysis: worksFor.some((w: any) => w.metaAnalysis === true),
       longTermStudies: evidenceSummary.researchSpanYears >= 5,
-      safetyEstablished: true,
+      safetyEstablished: sideEffects.length === 0 || sideEffects.every((s: any) =>
+        typeof s === 'object' ? s.severity === 'Mild' : true
+      ),
     },
     // Use transformed dosage
     dosage: transformedDosage,

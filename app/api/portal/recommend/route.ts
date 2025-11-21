@@ -296,7 +296,7 @@ function transformToRecommendation(
     },
     // Evidence summary (frontend expects this structure)
     evidence_summary: {
-      totalStudies: metadata?.studiesUsed || 0,
+      totalStudies: enrichedContent.totalStudies || metadata?.studiesUsed || 0,
       totalParticipants: enrichedContent.totalParticipants || 0,
       efficacyPercentage: enrichedContent.efficacyPercentage || 0,
       researchSpanYears: enrichedContent.researchSpanYears || 10,
