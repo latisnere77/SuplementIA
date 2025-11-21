@@ -659,15 +659,18 @@ function ResultsPageContent() {
                 console.warn('Failed to cache recommendation:', cacheError);
               }
 
-              // Update URL without navigating (use replaceState to avoid reload)
-              // This updates the browser URL without triggering a re-render or fetch
-              const newUrl = `/portal/results?id=${data.recommendation.recommendation_id}`;
-              const currentUrl = window.location.pathname + window.location.search;
-              if (currentUrl !== newUrl) {
-                console.log('📝 Updating URL without navigation:', newUrl);
-                window.history.replaceState({}, '', newUrl);
-                // DO NOT call router.push() - it causes unnecessary navigation
-              }
+              // DISABLED: URL update with ID
+              // The /api/portal/recommendation/[id] endpoint returns 410 (Gone) because
+              // it was designed for async polling which we no longer use.
+              // Until we implement proper ID-based retrieval from DynamoDB,
+              // we keep the URL as ?q= to avoid 410 errors on page refresh.
+              //
+              // const newUrl = `/portal/results?id=${data.recommendation.recommendation_id}`;
+              // const currentUrl = window.location.pathname + window.location.search;
+              // if (currentUrl !== newUrl) {
+              //   console.log('📝 Updating URL without navigation:', newUrl);
+              //   window.history.replaceState({}, '', newUrl);
+              // }
             }
           } else {
             const errorMessage = data.error || data.message || 'Failed to generate recommendation';
