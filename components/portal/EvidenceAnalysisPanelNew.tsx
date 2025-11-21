@@ -252,13 +252,13 @@ export default function EvidenceAnalysisPanelNew({
       )}
 
       {/* Side Effects */}
-      {evidenceSummary.sideEffects && (evidenceSummary.sideEffects.common.length > 0 || evidenceSummary.sideEffects.rare.length > 0) && (
+      {evidenceSummary.sideEffects && (evidenceSummary.sideEffects.common?.length > 0 || evidenceSummary.sideEffects.rare?.length > 0) && (
         <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Efectos Secundarios Posibles
           </h2>
 
-          {evidenceSummary.sideEffects.common.length > 0 && (
+          {evidenceSummary.sideEffects.common?.length > 0 && (
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Comunes:</h3>
               <ul className="space-y-3">
@@ -272,7 +272,7 @@ export default function EvidenceAnalysisPanelNew({
             </div>
           )}
 
-          {evidenceSummary.sideEffects.rare.length > 0 && (
+          {evidenceSummary.sideEffects.rare?.length > 0 && (
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Raros:</h3>
               <ul className="space-y-3">
@@ -300,14 +300,14 @@ export default function EvidenceAnalysisPanelNew({
       )}
 
       {/* Drug Interactions */}
-      {evidenceSummary.interactions && (evidenceSummary.interactions.medications.length > 0 || evidenceSummary.interactions.supplements.length > 0) && (
+      {evidenceSummary.interactions && (evidenceSummary.interactions.medications?.length > 0 || evidenceSummary.interactions.supplements?.length > 0) && (
         <div className="bg-white rounded-xl border-2 border-red-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <Shield className="h-6 w-6 text-red-600" />
             Interacciones con Medicamentos
           </h2>
 
-          {evidenceSummary.interactions.medications.length > 0 && (
+          {evidenceSummary.interactions.medications?.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Medicamentos:</h3>
               <div className="space-y-4">
@@ -332,7 +332,7 @@ export default function EvidenceAnalysisPanelNew({
             </div>
           )}
 
-          {evidenceSummary.interactions.supplements.length > 0 && (
+          {evidenceSummary.interactions.supplements?.length > 0 && (
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Suplementos:</h3>
               <ul className="space-y-2">
@@ -409,7 +409,7 @@ export default function EvidenceAnalysisPanelNew({
       )}
 
       {/* Ingredientes (Opcional - colapsable) */}
-      {evidenceSummary.ingredients.length > 0 && (
+      {evidenceSummary.ingredients?.length > 0 && (
         <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Ingredientes Clave
