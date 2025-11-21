@@ -15,6 +15,8 @@ import ProductRecommendationsGrid from '@/components/portal/ProductRecommendatio
 import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
 import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
+import IntelligentLoadingSpinner from '@/components/portal/IntelligentLoadingSpinner';
+import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { suggestSupplementCorrection } from '@/lib/portal/supplement-suggestions';
@@ -759,20 +761,7 @@ function ResultsPageContent() {
 
   // Show loading state (only while fetching, not while transforming)
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md px-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium mb-2">{t('common.loading')}</p>
-          <p className="text-gray-500 text-sm">
-            Analizando evidencia científica y generando recomendaciones personalizadas...
-          </p>
-          <p className="text-gray-400 text-xs mt-4">
-            Esto puede tomar 60-120 segundos
-          </p>
-        </div>
-      </div>
-    );
+    return <IntelligentLoadingSpinner supplementName={query || undefined} />;
   }
 
   if (error || !recommendation) {
@@ -811,6 +800,9 @@ function ResultsPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Legal Disclaimer Banner */}
+      <LegalDisclaimer />
+
       <div className="container mx-auto px-4 py-8 md:py-12">
         {/* Header */}
         <div className="mb-8">

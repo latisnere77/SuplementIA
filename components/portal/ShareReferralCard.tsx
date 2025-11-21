@@ -7,7 +7,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Share2, Copy, Check, MessageCircle, Mail, Twitter } from 'lucide-react';
+import { Share2, Copy, Check, MessageCircle, Mail, Twitter, Facebook, Linkedin } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface ShareReferralCardProps {
@@ -24,8 +24,20 @@ export default function ShareReferralCard({
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
+  // Get supplement name from URL or page
+  const supplementName = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search).get('q') || 'suplementos'
+    : 'suplementos';
+
   const shareLink = referralLink || (typeof window !== 'undefined' ? `${window.location.origin}/portal/results?id=${recommendationId}` : '');
-  const shareText = t('share.text') || `Check out this evidence-based health recommendation I found!`;
+
+  // Improved share texts in Spanish
+  const shareTexts = {
+    whatsapp: `🔬 Descubrí información científica verificada sobre ${supplementName}\n\n✅ Basado en estudios de PubMed\n✅ Evidencia real y verificable\n\nMíralo aquí:`,
+    twitter: `🔬 Información científica verificada sobre ${supplementName} | Basado en estudios de PubMed`,
+    email: `🔬 Información Científica sobre ${supplementName}\n\nHola,\n\nEncontré esta información respaldada por estudios científicos de PubMed sobre ${supplementName}.\n\nLa plataforma analiza investigaciones reales y proporciona recomendaciones basadas en evidencia.\n\nPuedes verlo aquí:`,
+    default: `🔬 Descubrí información científica sobre ${supplementName} basada en estudios de PubMed`,
+  };
 
   const handleCopy = async () => {
     try {
@@ -39,22 +51,34 @@ export default function ShareReferralCard({
   };
 
   const handleWhatsApp = () => {
-    const url = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareLink}`)}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(`${shareTexts.whatsapp} ${shareLink}`)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
     if (onShare) onShare('whatsapp');
   };
 
   const handleEmail = () => {
-    const subject = encodeURIComponent('Evidence-Based Health Recommendation');
-    const body = encodeURIComponent(`${shareText}\n\n${shareLink}`);
+    const subject = encodeURIComponent(`Información Científica sobre ${supplementName}`);
+    const body = encodeURIComponent(`${shareTexts.email}\n\n${shareLink}\n\n---\nEnviado desde SuplementAI - Recomendaciones basadas en evidencia científica`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
     if (onShare) onShare('email');
   };
 
   const handleTwitter = () => {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareLink)}`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTexts.twitter)}&url=${encodeURIComponent(shareLink)}&hashtags=SuplementAI,CienciaBasadaEnEvidencia`;
     window.open(url, '_blank', 'noopener,noreferrer');
     if (onShare) onShare('twitter');
+  };
+
+  const handleFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    if (onShare) onShare('facebook');
+  };
+
+  const handleLinkedIn = () => {
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    if (onShare) onShare('linkedin');
   };
 
   return (
@@ -78,38 +102,52 @@ export default function ShareReferralCard({
       </div>
 
       {/* Share Buttons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <button
-          onClick={handleWhatsApp}
-          className="flex flex-col items-center gap-2 p-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
-        >
-          <MessageCircle className="h-6 w-6" />
-          <span className="text-sm">{t('share.whatsapp')}</span>
-        </button>
+      <div className="space-y-3 mb-4">
+        {/* Primary Share Buttons (Most Popular) */}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={handleWhatsApp}
+            className="flex items-center justify-center gap-2 p-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all hover:scale-105 shadow-md"
+          >
+            <MessageCircle className="h-5 w-5" />
+            <span className="text-sm">WhatsApp</span>
+          </button>
 
-        <button
-          onClick={handleEmail}
-          className="flex flex-col items-center gap-2 p-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-        >
-          <Mail className="h-6 w-6" />
-          <span className="text-sm">{t('share.email')}</span>
-        </button>
+          <button
+            onClick={handleTwitter}
+            className="flex items-center justify-center gap-2 p-4 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-medium transition-all hover:scale-105 shadow-md"
+          >
+            <Twitter className="h-5 w-5" />
+            <span className="text-sm">Twitter</span>
+          </button>
+        </div>
 
-        <button
-          onClick={handleTwitter}
-          className="flex flex-col items-center gap-2 p-4 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-medium transition-colors"
-        >
-          <Twitter className="h-6 w-6" />
-          <span className="text-sm">{t('share.twitter')}</span>
-        </button>
+        {/* Secondary Share Buttons */}
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={handleFacebook}
+            className="flex items-center justify-center gap-2 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all hover:scale-105"
+          >
+            <Facebook className="h-4 w-4" />
+            <span className="text-xs">Facebook</span>
+          </button>
 
-        <button
-          onClick={handleCopy}
-          className="flex flex-col items-center gap-2 p-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
-        >
-          {copied ? <Check className="h-6 w-6" /> : <Copy className="h-6 w-6" />}
-          <span className="text-sm">{copied ? t('share.copied') : t('share.copy')}</span>
-        </button>
+          <button
+            onClick={handleLinkedIn}
+            className="flex items-center justify-center gap-2 p-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-medium transition-all hover:scale-105"
+          >
+            <Linkedin className="h-4 w-4" />
+            <span className="text-xs">LinkedIn</span>
+          </button>
+
+          <button
+            onClick={handleEmail}
+            className="flex items-center justify-center gap-2 p-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-all hover:scale-105"
+          >
+            <Mail className="h-4 w-4" />
+            <span className="text-xs">Email</span>
+          </button>
+        </div>
       </div>
 
       {/* Link Display */}

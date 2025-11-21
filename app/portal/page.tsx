@@ -17,6 +17,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { cn } from '@/lib/utils';
 import { useAutocomplete } from '@/lib/portal/useAutocomplete';
 import { validateSupplementQuery } from '@/lib/portal/query-validator';
+import FAQSection from '@/components/portal/FAQSection';
 
 export default function PortalPage() {
   const { t, language } = useTranslation();
@@ -549,6 +550,19 @@ export default function PortalPage() {
             })}
           </div>
         </div>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="container mx-auto px-4 md:px-6 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-4xl mx-auto"
+        >
+          <FAQSection />
+        </motion.div>
       </div>
 
       {/* CTA Section */}

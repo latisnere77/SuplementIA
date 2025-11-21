@@ -61,11 +61,17 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'ashwaganda': 'Ashwagandha',
   'ashwagandha': 'Ashwagandha',
   'aswagandha': 'Ashwagandha',
+  'ashawagandha': 'Ashwagandha',
+  'ashwaganda': 'Ashwagandha',
+  'withania': 'Ashwagandha',
 
   // Turmeric
   'curcuma': 'Turmeric',
   'curcumin': 'Turmeric',
   'cúrcuma': 'Turmeric',
+  'turmeric': 'Turmeric',
+  'curcumina': 'Turmeric',
+  'curry': 'Turmeric',
 
   // Probiotics
   'probiotics': 'Probiotics',
@@ -76,16 +82,87 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'vitamina c': 'Vitamin C',
   'vitamin c': 'Vitamin C',
   'ascorbic acid': 'Vitamin C',
+  'ácido ascórbico': 'Vitamin C',
+  'acido ascorbico': 'Vitamin C',
+  'vit c': 'Vitamin C',
 
   // B Complex
   'vitamina b': 'Vitamin B Complex',
   'b complex': 'Vitamin B Complex',
   'complejo b': 'Vitamin B Complex',
+  'b12': 'Vitamin B12',
+  'vitamina b12': 'Vitamin B12',
+  'cianocobalamina': 'Vitamin B12',
+  'b6': 'Vitamin B6',
+  'b1': 'Vitamin B1',
 
   // Retinol/Vitamin A
   'retinol': 'Vitamin A',
   'vitamina a': 'Vitamin A',
   'retinoid': 'Vitamin A',
+
+  // Creatine variations
+  'creatina': 'Creatine',
+  'creatine monohydrate': 'Creatine',
+  'creatina monohidratada': 'Creatine',
+
+  // Protein variations
+  'proteina': 'Protein',
+  'whey protein': 'Whey Protein',
+  'proteina de suero': 'Whey Protein',
+  'suero de leche': 'Whey Protein',
+
+  // Collagen variations
+  'colageno': 'Collagen',
+  'colágeno': 'Collagen',
+  'colageno hidrolizado': 'Collagen',
+  'collagen peptides': 'Collagen',
+
+  // Melatonin variations
+  'melatonina': 'Melatonin',
+  'melantonin': 'Melatonin',
+  'melatonine': 'Melatonin',
+  'hormona del sueño': 'Melatonin',
+
+  // Omega-3 variations
+  'omega 3': 'Omega-3',
+  'omega3': 'Omega-3',
+  'omega-3 fatty acids': 'Omega-3',
+  'fish oil': 'Omega-3',
+  'aceite de pescado': 'Omega-3',
+  'dha': 'Omega-3',
+  'epa': 'Omega-3',
+
+  // Magnesium variations
+  'magnesio': 'Magnesium',
+  'mg': 'Magnesium',
+  'magnesio citrato': 'Magnesium Citrate',
+  'magnesio glicinato': 'Magnesium Glycinate',
+
+  // Zinc variations
+  'zinc': 'Zinc',
+  'zinco': 'Zinc',
+  'zinc picolinato': 'Zinc Picolinate',
+
+  // Common typos and abbreviations
+  'vit d': 'Vitamin D',
+  'vit d3': 'Vitamin D3',
+  'k2': 'Vitamin K2',
+  'vit k': 'Vitamin K',
+  'calcio': 'Calcium',
+  'hierro': 'Iron',
+  'potasio': 'Potassium',
+
+  // Herbal variations
+  'ginseng': 'Ginseng',
+  'ginsen': 'Ginseng',
+  'te verde': 'Green Tea Extract',
+  'té verde': 'Green Tea Extract',
+  'green tea': 'Green Tea Extract',
+  'maca': 'Maca Root',
+  'raiz de maca': 'Maca Root',
+  'jengibre': 'Ginger',
+  'ginger': 'Ginger',
 };
 
 /**
