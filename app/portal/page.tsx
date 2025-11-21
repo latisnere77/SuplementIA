@@ -244,7 +244,6 @@ export default function PortalPage() {
                 onChange={(value) => {
                   console.log('[PortalPage] Combobox onChange:', value);
                   if (value) {
-                    setSearchQuery(value);
                     handleSearch(value);
                   }
                 }}
@@ -253,18 +252,19 @@ export default function PortalPage() {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400 z-10 pointer-events-none" />
 
                   <Combobox.Input
-                    className="h-14 w-full pl-12 pr-4 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
+                    className="h-14 w-full pl-12 pr-24 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
                     onChange={(e) => {
                       console.log('[PortalPage] Input onChange:', e.target.value);
                       setSearchQuery(e.target.value);
                     }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && searchQuery) {
+                      if (e.key === 'Enter') {
                         e.preventDefault();
-                        handleSearch(searchQuery);
+                        if (searchQuery.trim()) {
+                          handleSearch(searchQuery);
+                        }
                       }
                     }}
-                    displayValue={(value: string) => value}
                     placeholder=""
                     autoComplete="off"
                   />
