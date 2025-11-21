@@ -99,23 +99,36 @@ export async function generateEnrichedContent(
     })
   );
 
+  // Sanitize JSON by removing control characters
+  const sanitizeJSON = (str: string): string => {
+    // Remove control characters except for tab (\t), newline (\n), and carriage return (\r)
+    // But only if they're NOT already properly escaped in the string
+    return str.replace(/[\x00-\x1F\x7F]/g, (match) => {
+      // Keep tab, newline, carriage return if they're part of JSON syntax
+      if (match === '\t' || match === '\n' || match === '\r') {
+        return ' '; // Replace with space to avoid breaking JSON
+      }
+      return ''; // Remove other control chars
+    });
+  };
+
   // Parse JSON from Claude's response
   let enrichedData: EnrichedContent;
 
   try {
-    enrichedData = JSON.parse(contentText);
+    enrichedData = JSON.parse(sanitizeJSON(contentText));
   } catch (parseError) {
     // Sometimes Claude wraps JSON in markdown code blocks
     const jsonMatch = contentText.match(/```json\s*([\s\S]*?)\s*```/);
     if (jsonMatch) {
-      enrichedData = JSON.parse(jsonMatch[1]);
+      enrichedData = JSON.parse(sanitizeJSON(jsonMatch[1]));
     } else {
       // Try to extract JSON between first { and last }
       const firstBrace = contentText.indexOf('{');
       const lastBrace = contentText.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1) {
         const jsonStr = contentText.substring(firstBrace, lastBrace + 1);
-        enrichedData = JSON.parse(jsonStr);
+        enrichedData = JSON.parse(sanitizeJSON(jsonStr));
       } else {
         throw new Error('Failed to parse JSON from Bedrock response');
       }

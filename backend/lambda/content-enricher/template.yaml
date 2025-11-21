@@ -5,7 +5,7 @@ Description: Suplementia Content Enricher - Generate enriched content using Bedr
 Parameters:
   Environment:
     Type: String
-    Default: staging
+    Default: dev
     AllowedValues:
       - dev
       - staging
@@ -24,7 +24,7 @@ Parameters:
 
 Globals:
   Function:
-    Timeout: 30  # Bedrock can take time
+    Timeout: 90  # Bedrock needs time to analyze studies
     MemorySize: 1024
     Runtime: nodejs20.x
     Tracing: Active  # Enable X-Ray

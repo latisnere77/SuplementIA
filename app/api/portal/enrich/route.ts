@@ -13,9 +13,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+// Configure max duration for this route (Bedrock needs time)
+export const maxDuration = 120; // 120 seconds for content enrichment
+export const dynamic = 'force-dynamic'; // Disable static optimization
+
 // Lambda endpoints
 const STUDIES_API_URL = process.env.STUDIES_API_URL || 'https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search';
-const ENRICHER_API_URL = process.env.ENRICHER_API_URL || 'https://your-enricher-api-url.amazonaws.com/dev/enrich';
+const ENRICHER_API_URL = process.env.ENRICHER_API_URL || 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
 
 export interface EnrichRequest {
   supplementName: string;
@@ -63,7 +67,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         supplementName,
-        maxResults: maxStudies || 20, // Default: fetch 20 studies
+        maxResults: Math.min(maxStudies || 1, 1), // LIMIT: 1 study to reliably stay under 30s timeout
         filters: {
           rctOnly: rctOnly || false, // Prioritize RCTs
           yearFrom: yearFrom || 2010, // Last 15 years
