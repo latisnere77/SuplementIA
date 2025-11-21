@@ -31,12 +31,17 @@ import { useAuth } from '@/lib/auth/useAuth';
  * provides all the data we need. We just need to map it to the visual format.
  */
 function transformRecommendationToEvidence(recommendation: Recommendation): any {
-  // Extract supplement data from recommendation
+  // Extract supplement data from recommendation (defensive)
   const supplement = (recommendation as any).supplement || {};
   const evidenceSummary = recommendation.evidence_summary || {};
 
+  // Defensive: Ensure arrays exist
+  const benefits = Array.isArray(supplement.benefits) ? supplement.benefits : [];
+  const sideEffects = Array.isArray(supplement.side_effects) ? supplement.side_effects : [];
+  const ingredients = Array.isArray(evidenceSummary.ingredients) ? evidenceSummary.ingredients : [];
+
   // Parse benefits array to worksFor format
-  const worksFor = (supplement.benefits || []).map((benefit: string) => {
+  const worksFor = benefits.map((benefit: string) => {
     // Parse format: "Condition (Evidencia: A, magnitude)"
     const match = benefit.match(/^(.+?)\s*\(Evidencia:\s*([A-F])[,\s]+(.+?)\)$/);
     if (match) {
@@ -55,7 +60,6 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   });
 
   // Parse side_effects to doesntWorkFor/limitedEvidence
-  const sideEffects = supplement.side_effects || [];
   const limitedEvidence = sideEffects.map((effect: string) => ({
     condition: effect,
     grade: 'C' as any,
@@ -63,7 +67,6 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   }));
 
   // Determine overall grade from ingredients
-  const ingredients = evidenceSummary.ingredients || [];
   const overallGrade = ingredients.length > 0
     ? ingredients[0].grade
     : ('C' as any);
