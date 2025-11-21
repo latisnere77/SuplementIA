@@ -263,16 +263,27 @@ function transformToRecommendation(
     // Main supplement recommendation
     supplement: {
       name: enrichedContent.name || category,
+      // FIXED: Lambda returns 'whatIsIt', not 'description'
       description: enrichedContent.whatIsIt || enrichedContent.description || enrichedContent.overview || '',
       dosage: enrichedContent.dosage || 'Consultar con profesional de salud',
       // Extract benefits from worksFor array
-      benefits: enrichedContent.worksFor?.map((w: any) => `${w.condition} (Evidencia: ${w.evidenceGrade}, ${w.magnitude})`) || [],
+      benefits: enrichedContent.worksFor?.map((w: any) => {
+        // Handle both old and new formats
+        if (typeof w === 'string') return w;
+        return `${w.condition || w.use || w.benefit} (Evidencia: ${w.evidenceGrade || w.grade || 'C'}, ${w.magnitude || w.effect || 'Ver estudios'})`;
+      }) || [],
       // Extract side effects from safety.sideEffects
-      side_effects: enrichedContent.safety?.sideEffects?.map((s: any) => `${s.effect} (${s.frequency}, ${s.severity})`) || [],
+      side_effects: enrichedContent.safety?.sideEffects?.map((s: any) => {
+        if (typeof s === 'string') return s;
+        return `${s.effect || s.name} (${s.frequency || 'Frecuencia variable'}, ${s.severity || 'Mild'})`;
+      }) || [],
       // Extract warnings from safety.contraindications
       warnings: enrichedContent.safety?.contraindications || [],
       // Extract interactions from safety.interactions
-      interactions: enrichedContent.safety?.interactions?.map((i: any) => `${i.medication}: ${i.description}`) || [],
+      interactions: enrichedContent.safety?.interactions?.map((i: any) => {
+        if (typeof i === 'string') return i;
+        return `${i.medication || i.drug || i.substance}: ${i.description || i.effect}`;
+      }) || [],
     },
     // Evidence summary (frontend expects this structure)
     evidence_summary: {
