@@ -269,8 +269,19 @@ function ResultsPageContent() {
             const { recommendation, timestamp, ttl } = JSON.parse(cachedData);
             const age = Date.now() - timestamp;
 
-            // Check if cache is still valid
-            if (age < ttl) {
+            // Check if cache has inconsistent data (fake studies)
+            const metadata = (recommendation as any)?._enrichment_metadata || {};
+            const totalStudies = recommendation?.evidence_summary?.totalStudies || 0;
+            const studiesUsed = metadata.studiesUsed || 0;
+
+            // If totalStudies > 0 but studiesUsed = 0, this is fake/generated data from old cache
+            const hasFakeData = totalStudies > 0 && studiesUsed === 0;
+
+            if (hasFakeData) {
+              console.log('⚠️  Cache has fake/generated data (totalStudies:', totalStudies, 'studiesUsed:', studiesUsed, '), invalidating cache');
+              localStorage.removeItem(cacheKey);
+            } else if (age < ttl) {
+              // Cache is still valid and has consistent data
               console.log('✅ Found recommendation in localStorage cache (age:', Math.floor(age / 1000 / 60), 'minutes)');
               if (isMounted) {
                 setRecommendation(recommendation);
