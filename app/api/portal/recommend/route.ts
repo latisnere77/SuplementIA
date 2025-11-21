@@ -293,9 +293,10 @@ function transformToRecommendation(
       researchSpanYears: enrichedContent.researchSpanYears || 10,
       ingredients: enrichedContent.ingredients || [{
         name: enrichedContent.name || category,
-        grade: enrichedContent.evidenceGrade || 'C',
-        studyCount: metadata?.studiesUsed || 0,
-        rctCount: metadata?.rctCount || 0,
+        // Get grade from first worksFor item if available, fallback to C
+        grade: enrichedContent.worksFor?.[0]?.evidenceGrade || enrichedContent.worksFor?.[0]?.grade || enrichedContent.evidenceGrade || 'C',
+        studyCount: enrichedContent.worksFor?.[0]?.studyCount || metadata?.studiesUsed || 0,
+        rctCount: enrichedContent.worksFor?.[0]?.rctCount || metadata?.rctCount || 0,
       }],
     },
     // Evidence and studies (legacy, keep for compatibility)
