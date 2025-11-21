@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
         rctOnly: false,
         yearFrom: 2010,
       }),
-      signal: AbortSignal.timeout(110000), // 110s timeout (less than maxDuration)
+      signal: AbortSignal.timeout(115000), // 115s timeout (less than maxDuration of 120s)
     });
 
     const enrichDuration = Date.now() - enrichStartTime;
