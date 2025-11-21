@@ -762,14 +762,21 @@ function ResultsPageContent() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             {t('results.title')} {recommendation.category}
           </h1>
-          <p className="text-gray-600">
-            {t('results.based.on')} {recommendation.evidence_summary.totalStudies.toLocaleString()} {t('results.studies')}{' '}
-            {recommendation.evidence_summary.totalParticipants.toLocaleString()} {t('results.participants')}
-          </p>
+          {recommendation.evidence_summary.totalStudies > 0 ? (
+            <p className="text-gray-600">
+              {t('results.based.on')} {recommendation.evidence_summary.totalStudies.toLocaleString()} {t('results.studies')}{' '}
+              {recommendation.evidence_summary.totalParticipants.toLocaleString()} {t('results.participants')}
+            </p>
+          ) : (
+            <p className="text-yellow-700 font-medium">
+              ⚠️ Esta información no está respaldada por estudios científicos verificados
+            </p>
+          )}
         </div>
 
-        {/* Warning banner if no real data */}
-        {recommendation.evidence_summary.totalStudies === 0 && (() => {
+        {/* Warning banner if no real data - Check BOTH totalStudies and _enrichment_metadata */}
+        {(recommendation.evidence_summary.totalStudies === 0 ||
+          (recommendation as any)._enrichment_metadata?.studiesUsed === 0) && (() => {
           const suggestion = suggestSupplementCorrection(recommendation.category);
           return (
             <div className="mb-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
