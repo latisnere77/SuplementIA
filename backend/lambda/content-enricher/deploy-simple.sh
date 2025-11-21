@@ -61,7 +61,7 @@ if aws lambda get-function --function-name "$FUNCTION_NAME" --region "$REGION" >
     aws lambda update-function-configuration \
         --function-name "$FUNCTION_NAME" \
         --runtime nodejs20.x \
-        --timeout 60 \
+        --timeout 120 \
         --memory-size 1024 \
         --environment "Variables={
             ENVIRONMENT=dev,
@@ -153,7 +153,7 @@ EOF
         --role "$ROLE_ARN" \
         --handler index.handler \
         --zip-file fileb://content-enricher.zip \
-        --timeout 60 \
+        --timeout 120 \
         --memory-size 1024 \
         --architectures arm64 \
         --environment "Variables={

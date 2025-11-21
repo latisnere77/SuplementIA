@@ -66,7 +66,9 @@ export async function POST(request: NextRequest) {
     let expansionMetadata = null;
 
     // Common abbreviations fallback map (in case LLM fails)
+    // Also includes Spanish-to-English translations for common supplements
     const COMMON_ABBREVIATIONS: Record<string, string> = {
+      // Abbreviations
       'cbd': 'cannabidiol',
       'hmb': 'beta-hydroxy beta-methylbutyrate',
       'bcaa': 'branched-chain amino acids',
@@ -79,6 +81,36 @@ export async function POST(request: NextRequest) {
       'dmae': 'dimethylaminoethanol',
       'copper peptides': 'copper tripeptide-1', // GHK-Cu
       'ghk-cu': 'copper tripeptide-1',
+      // Spanish translations (PubMed is in English)
+      'jengibre': 'ginger',
+      'cúrcuma': 'turmeric',
+      'curcuma': 'turmeric',
+      'omega 3': 'omega-3 fatty acids',
+      'omega-3': 'omega-3 fatty acids',
+      'vitamina d': 'vitamin d',
+      'vitamina c': 'vitamin c',
+      'magnesio': 'magnesium',
+      'zinc': 'zinc',
+      'hierro': 'iron',
+      'calcio': 'calcium',
+      'proteína': 'protein',
+      'proteina': 'protein',
+      'creatina': 'creatine',
+      'cafeína': 'caffeine',
+      'cafeina': 'caffeine',
+      'melatonina': 'melatonin',
+      'colágeno': 'collagen',
+      'colageno': 'collagen',
+      'ashwagandha': 'ashwagandha',
+      'rhodiola': 'rhodiola',
+      'ginseng': 'ginseng',
+      'maca': 'maca',
+      'espirulina': 'spirulina',
+      'chlorella': 'chlorella',
+      'probióticos': 'probiotics',
+      'probioticos': 'probiotics',
+      'prebióticos': 'prebiotics',
+      'prebioticos': 'prebiotics',
     };
 
     console.log(`🧠 Checking if term needs expansion/translation: "${supplementName}"`);
