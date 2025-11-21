@@ -18,6 +18,7 @@ import ShareReferralCard from '@/components/portal/ShareReferralCard';
 import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
+import { suggestSupplementCorrection } from '@/lib/portal/supplement-suggestions';
 
 // ====================================
 // ADAPTER FUNCTION - Client-Side Transformation
@@ -232,6 +233,18 @@ function ResultsPageContent() {
     if (!recommendation) {
       setTransformedEvidence(null);
       return;
+    }
+
+    // Check if this is mock/generated data with no real studies
+    const metadata = (recommendation as any)._enrichment_metadata || {};
+    const hasRealData = metadata.hasRealData && metadata.studiesUsed > 0;
+    const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
+
+    // If no real data, show warning
+    if (!hasRealData || totalStudies === 0) {
+      console.warn('⚠️ No real data found for:', recommendation.category);
+      console.warn('Metadata:', metadata);
+      // Still transform, but user should see warning
     }
 
     // Simple client-side transformation (no API calls needed)
@@ -754,6 +767,42 @@ function ResultsPageContent() {
             {recommendation.evidence_summary.totalParticipants.toLocaleString()} {t('results.participants')}
           </p>
         </div>
+
+        {/* Warning banner if no real data */}
+        {recommendation.evidence_summary.totalStudies === 0 && (() => {
+          const suggestion = suggestSupplementCorrection(recommendation.category);
+          return (
+            <div className="mb-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <div className="text-yellow-600 mt-0.5">⚠️</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-yellow-900 mb-1">
+                    No se encontraron estudios científicos para "{recommendation.category}"
+                  </h3>
+                  <p className="text-yellow-800 text-sm mb-2">
+                    No encontramos estudios científicos publicados sobre este suplemento. La información mostrada es de carácter general y no está respaldada por evidencia científica específica.
+                  </p>
+                  {suggestion && (
+                    <div className="mt-3 p-3 bg-white border border-yellow-300 rounded-lg">
+                      <p className="text-yellow-900 text-sm mb-2">
+                        <strong>¿Buscabas esto?</strong>
+                      </p>
+                      <button
+                        onClick={() => router.push(`/portal/results?q=${encodeURIComponent(suggestion.suggestion)}`)}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                      >
+                        <span>{suggestion.suggestion}</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Evidence Analysis - NUEVO DISEÑO VISUAL */}
         <div className="mb-8">
