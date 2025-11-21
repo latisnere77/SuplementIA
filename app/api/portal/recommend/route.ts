@@ -8,7 +8,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { getMockRecommendation } from '@/lib/portal/mockData';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 
@@ -120,56 +119,72 @@ export async function POST(request: NextRequest) {
 
     if (!enrichResponse.ok) {
       const errorText = await enrichResponse.text();
-      console.warn(`⚠️  Enrichment failed (${enrichResponse.status}), using fallback`);
+      console.error(`❌ Enrichment failed (${enrichResponse.status}):`, errorText);
 
-      // Graceful fallback to mock data
-      const mockRecommendation = getMockRecommendation(sanitizedCategory);
-
+      // STRICT VALIDATION: DO NOT generate fake data
+      // Return 404 with clear message
       return NextResponse.json(
         {
-          success: true,
+          success: false,
+          error: 'insufficient_data',
+          message: `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
+          suggestion: 'Intenta buscar con un nombre más específico o verifica la ortografía.',
           requestId,
-          recommendation: transformToRecommendation(
-            mockRecommendation,
-            sanitizedCategory,
-            age || 35,
-            gender || 'male',
-            location || 'CDMX',
-            quiz_id,
-            { hasRealData: false, fallback: true }
-          ),
+          category: sanitizedCategory,
         },
-        { status: 200 }
+        { status: 404 }
       );
     }
 
     const enrichData = await enrichResponse.json();
 
     if (!enrichData.success || !enrichData.data) {
-      console.warn(`⚠️  Enrichment unsuccessful or no data, using fallback`);
-      const mockRecommendation = getMockRecommendation(sanitizedCategory);
+      console.error(`❌ Enrichment unsuccessful or no data for: ${sanitizedCategory}`);
 
+      // STRICT VALIDATION: DO NOT generate fake data
+      // Return 404 with clear message
       return NextResponse.json(
         {
-          success: true,
+          success: false,
+          error: 'insufficient_data',
+          message: `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
+          suggestion: 'Intenta buscar con un nombre más específico o verifica la ortografía.',
           requestId,
-          recommendation: transformToRecommendation(
-            mockRecommendation,
-            sanitizedCategory,
-            age || 35,
-            gender || 'male',
-            location || 'CDMX',
-            quiz_id,
-            { hasRealData: false, fallback: true }
-          ),
+          category: sanitizedCategory,
         },
-        { status: 200 }
+        { status: 404 }
       );
     }
 
     // Transform enriched data to recommendation format
     const enrichedContent = enrichData.data;
     const metadata = enrichData.metadata || {};
+
+    // CRITICAL VALIDATION: Ensure we have real scientific data
+    const hasRealData = metadata.hasRealData === true && (metadata.studiesUsed || 0) > 0;
+
+    if (!hasRealData) {
+      console.error(`❌ No real scientific data found for: ${sanitizedCategory}`);
+      console.error(`Metadata:`, JSON.stringify(metadata));
+
+      // STRICT VALIDATION: DO NOT generate fake data
+      // Return 404 with clear message
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No encontramos estudios científicos verificables sobre "${sanitizedCategory}".`,
+          suggestion: 'Verifica la ortografía o intenta con un término más específico. Si crees que esto es un error, contáctanos.',
+          requestId,
+          category: sanitizedCategory,
+          metadata: {
+            studiesUsed: metadata.studiesUsed || 0,
+            hasRealData: metadata.hasRealData || false,
+          },
+        },
+        { status: 404 }
+      );
+    }
 
     const duration = Date.now() - startTime;
 
@@ -179,7 +194,7 @@ export async function POST(request: NextRequest) {
         requestId,
         category: sanitizedCategory,
         studiesUsed: metadata.studiesUsed || 0,
-        hasRealData: metadata.hasRealData || false,
+        hasRealData: true,
         duration,
       })
     );
@@ -213,26 +228,18 @@ export async function POST(request: NextRequest) {
       duration,
     });
 
-    // Graceful fallback on any error
-    console.warn(`⚠️  Error generating recommendation, using fallback: ${error.message}`);
+    console.error(`❌ Error generating recommendation: ${error.message}`);
 
-    const mockRecommendation = getMockRecommendation('general');
-
+    // DO NOT generate fake data - return proper error instead
     return NextResponse.json(
       {
-        success: true,
+        success: false,
+        error: 'recommendation_generation_failed',
+        message: `Hubo un error al generar la recomendación. Por favor, intenta de nuevo.`,
+        details: error.message,
         requestId,
-        recommendation: transformToRecommendation(
-          mockRecommendation,
-          'general',
-          35,
-          'male',
-          'CDMX',
-          undefined,
-          { hasRealData: false, fallback: true, error: error.message }
-        ),
       },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }

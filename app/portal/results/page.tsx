@@ -532,14 +532,41 @@ function ResultsPageContent() {
 
           if (!response.ok) {
             const errorText = await response.text();
+            let errorData: any = {};
+
+            try {
+              errorData = JSON.parse(errorText);
+            } catch {
+              errorData = { message: errorText };
+            }
+
+            // Handle 404: No scientific data found (NOT a system error)
+            if (response.status === 404 && errorData.error === 'insufficient_data') {
+              console.log(`ℹ️  No scientific data found for: ${normalizedQuery}`);
+
+              // Try to suggest alternative supplement names
+              const suggestion = suggestSupplementCorrection(normalizedQuery);
+
+              if (suggestion) {
+                // Show error with intelligent suggestion
+                setError(
+                  `No encontramos información científica sobre "${normalizedQuery}".\n\n¿Quizás buscabas "${suggestion.suggestion}"?`
+                );
+              } else {
+                // Show generic error
+                setError(
+                  `❌ ${errorData.message || `No encontramos información científica suficiente sobre "${normalizedQuery}".`}\n\n💡 ${errorData.suggestion || 'Intenta con un término más específico o verifica la ortografía.'}`
+                );
+              }
+              setIsLoading(false);
+              return;
+            }
+
+            // Handle other errors
             console.error('❌ API Error:', response.status, errorText);
             let errorMessage = `Backend error: ${response.status}`;
-            try {
-              const errorData = JSON.parse(errorText);
-              errorMessage = errorData.message || errorData.error || errorMessage;
-            } catch {
-              errorMessage = errorText || errorMessage;
-            }
+            errorMessage = errorData.message || errorData.error || errorMessage;
+
             setError(errorMessage);
             setIsLoading(false);
             return;
@@ -749,14 +776,31 @@ function ResultsPageContent() {
   }
 
   if (error || !recommendation) {
+    // Try to extract suggestion from error message
+    const suggestionMatch = error?.match(/¿Quizás buscabas "([^"]+)"\?/);
+    const suggestedSupplement = suggestionMatch ? suggestionMatch[1] : null;
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('common.error')}</h2>
-          <p className="text-gray-600 mb-6">{error || 'Recommendation not found'}</p>
+        <div className="text-center max-w-md px-4">
+          <div className="mb-6 text-6xl">🔍</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            {suggestedSupplement ? 'Suplemento no encontrado' : t('common.error')}
+          </h2>
+          <p className="text-gray-600 mb-6 whitespace-pre-line">{error || 'Recommendation not found'}</p>
+
+          {suggestedSupplement && (
+            <button
+              onClick={() => router.push(`/portal/results?q=${encodeURIComponent(suggestedSupplement)}`)}
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors mb-3 w-full"
+            >
+              Buscar "{suggestedSupplement}"
+            </button>
+          )}
+
           <button
             onClick={() => router.push('/portal')}
-            className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+            className={`${suggestedSupplement ? 'bg-gray-500 hover:bg-gray-600' : 'bg-blue-500 hover:bg-blue-600'} text-white px-6 py-3 rounded-lg font-semibold transition-colors w-full`}
           >
             {t('results.back')}
           </button>

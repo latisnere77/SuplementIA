@@ -21,6 +21,11 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'coenzima q': 'CoQ10',
   'coenzima q10': 'CoQ10',
   'q10': 'CoQ10',
+  'enzima q': 'CoQ10',
+  'enzima q10': 'CoQ10',
+  'enzima q15': 'CoQ10',
+  'enzima q12': 'CoQ10',
+  'coq': 'CoQ10',
 
   // Vitamin D variations
   'vitamina d': 'Vitamin D',

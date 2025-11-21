@@ -114,21 +114,66 @@ export async function POST(request: NextRequest) {
 
     if (!studiesResponse.ok) {
       const error = await studiesResponse.text();
-      console.error('Studies API error:', error);
+      console.error('❌ Studies API error:', error);
 
-      // FALLBACK: If studies fetch fails, still try to enrich without studies
-      console.warn('⚠️  Studies fetch failed, enriching without real data...');
-      return await enrichWithoutStudies(supplementName, category, forceRefresh);
+      // STRICT VALIDATION: DO NOT generate data without studies
+      console.error(`❌ Cannot fetch studies for: ${supplementName}`);
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No pudimos encontrar estudios científicos para "${supplementName}".`,
+          details: error,
+          metadata: {
+            hasRealData: false,
+            studiesUsed: 0,
+          },
+        },
+        { status: 404 }
+      );
     }
 
     const studiesData = await studiesResponse.json();
 
     if (!studiesData.success || !studiesData.data?.studies) {
-      console.warn('⚠️  No studies found, enriching without real data...');
-      return await enrichWithoutStudies(supplementName, category, forceRefresh);
+      console.error(`❌ No studies found for: ${supplementName}`);
+
+      // STRICT VALIDATION: DO NOT generate data without studies
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No encontramos estudios científicos para "${supplementName}".`,
+          suggestion: 'Verifica la ortografía o intenta con un término más específico.',
+          metadata: {
+            hasRealData: false,
+            studiesUsed: 0,
+          },
+        },
+        { status: 404 }
+      );
     }
 
     const studies = studiesData.data.studies;
+
+    // CRITICAL VALIDATION: Ensure we have at least one study
+    if (!studies || studies.length === 0) {
+      console.error(`❌ No studies found (empty array) for: ${supplementName}`);
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No encontramos estudios científicos para "${supplementName}".`,
+          suggestion: 'Verifica la ortografía o intenta con un término más específico.',
+          metadata: {
+            hasRealData: false,
+            studiesUsed: 0,
+          },
+        },
+        { status: 404 }
+      );
+    }
 
     console.log(
       JSON.stringify({
@@ -211,52 +256,9 @@ export async function POST(request: NextRequest) {
 /**
  * Fallback: Enrich without studies (when studies fetch fails)
  */
-async function enrichWithoutStudies(
-  supplementName: string,
-  category?: string,
-  forceRefresh?: boolean
-) {
-  console.warn('⚠️  Enriching without real studies (fallback mode)');
-
-  const enrichResponse = await fetch(ENRICHER_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      supplementId: supplementName,
-      category: category || 'general',
-      forceRefresh: forceRefresh || false,
-      // No studies - Claude will use general knowledge
-    }),
-  });
-
-  if (!enrichResponse.ok) {
-    const error = await enrichResponse.text();
-    console.error('Enricher API error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to enrich content',
-        details: error,
-      },
-      { status: enrichResponse.status }
-    );
-  }
-
-  const enrichData = await enrichResponse.json();
-
-  return NextResponse.json({
-    ...enrichData,
-    metadata: {
-      ...enrichData.metadata,
-      hasRealData: false,
-      intelligentSystem: true,
-      fallbackMode: true,
-      warning: 'No PubMed studies available, using general knowledge',
-    },
-  });
-}
+// ❌ REMOVED: enrichWithoutStudies function
+// This function was generating fake data without real studies
+// We now STRICTLY require real PubMed studies for all recommendations
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

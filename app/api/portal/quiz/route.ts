@@ -210,6 +210,33 @@ export async function POST(request: NextRequest) {
           errorData = { raw: errorText.substring(0, 500) };
         }
 
+        // Handle 404: No scientific data found (NOT an error, but intentional)
+        if (recommendationResponse.status === 404) {
+          console.log(`ℹ️  No scientific data found for: ${sanitizedCategory}`);
+
+          portalLogger.logRequest({
+            requestId,
+            endpoint: '/api/portal/quiz',
+            category: sanitizedCategory,
+            result: 'insufficient_data',
+          });
+
+          // Return 404 to frontend with helpful message
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'insufficient_data',
+              message: errorData.message || `No encontramos información científica suficiente sobre "${sanitizedCategory}".`,
+              suggestion: errorData.suggestion || 'Intenta con un término más específico o verifica la ortografía.',
+              category: sanitizedCategory,
+              requestId,
+              quizId,
+            },
+            { status: 404 }
+          );
+        }
+
+        // For other errors (500, 502, etc.), log as errors
         const error = new Error(`Backend API returned ${recommendationResponse.status}`);
         (error as any).statusCode = recommendationResponse.status;
         (error as any).response = errorData;
@@ -224,23 +251,17 @@ export async function POST(request: NextRequest) {
           backendResponse: errorData,
         });
 
-        // GRACEFUL FALLBACK: Use mock data when backend fails (502, 500, etc.)
-        console.warn(`⚠️  Backend returned ${recommendationResponse.status}, falling back to demo mode`);
-        const mockRecommendation = getMockRecommendation(sanitizedCategory);
-
+        // Return error to frontend (don't generate fake data)
         return NextResponse.json(
           {
-            success: true,
-            quiz_id: quizId,
-            recommendation: {
-              ...mockRecommendation,
-              quiz_id: quizId,
-            },
-            demo: true,
-            fallback: true,
-            fallbackReason: `Backend returned ${recommendationResponse.status}`,
+            success: false,
+            error: 'backend_error',
+            message: 'Hubo un error al procesar tu solicitud. Por favor, intenta nuevamente.',
+            statusCode: recommendationResponse.status,
+            requestId,
+            quizId,
           },
-          { status: 200 }
+          { status: recommendationResponse.status }
         );
       }
 
