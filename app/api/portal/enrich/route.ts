@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       JSON.stringify({
         event: 'ORCHESTRATION_START',
         supplementName,
-        maxStudies: maxStudies || 20,
+        maxStudies: maxStudies || 10,
         rctOnly: rctOnly || false,
       })
     );
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         supplementName: searchTerm, // Use expanded term for better PubMed results
-        maxResults: Math.min(maxStudies || 1, 1), // LIMIT: 1 study to reliably stay under 30s timeout
+        maxResults: Math.min(maxStudies || 10, 10), // LIMIT: Up to 10 studies for comprehensive analysis
         filters: {
           rctOnly: rctOnly || false, // Prioritize RCTs
           yearFrom: yearFrom || 2010, // Last 15 years

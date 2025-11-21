@@ -10,7 +10,7 @@
     "lint": "eslint src/**/*.ts",
     "package": "npm run build && npm run package:zip",
     "package:zip": "cd dist && zip -r ../content-enricher.zip . && cd ..",
-    "deploy": "npm run package && aws lambda update-function-code --function-name suplementia-content-enricher --zip-file fileb://content-enricher.zip"
+    "deploy": "npm run package && aws lambda update-function-code --function-name suplementia-content-enricher-dev --zip-file fileb://content-enricher.zip"
   },
   "keywords": [
     "bedrock",
