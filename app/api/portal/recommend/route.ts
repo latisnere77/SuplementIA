@@ -297,6 +297,44 @@ function transformToRecommendation(
       duration: enrichedContent.duration || 'Según necesidad',
       considerations: enrichedContent.considerations || [],
     },
+    // Products (required by frontend)
+    products: enrichedContent.products || [
+      {
+        tier: 'budget',
+        name: `${enrichedContent.name || category} Básico`,
+        price: 150,
+        currency: 'MXN',
+        contains: [enrichedContent.name || category],
+        whereToBuy: 'Amazon México',
+        affiliateLink: `https://amazon.com.mx/search?k=${encodeURIComponent(category)}`,
+        description: `Suplemento de ${category} de calidad básica`,
+        isAnkonere: false,
+      },
+      {
+        tier: 'value',
+        name: `${enrichedContent.name || category} Premium`,
+        price: 320,
+        currency: 'MXN',
+        contains: [enrichedContent.name || category, 'Co-factores'],
+        whereToBuy: 'Amazon México',
+        affiliateLink: `https://amazon.com.mx/search?k=${encodeURIComponent(category)}`,
+        description: `Fórmula mejorada con ${category} y co-factores para mejor absorción`,
+        isAnkonere: false,
+      },
+      {
+        tier: 'premium',
+        name: `ANKONERE ${enrichedContent.name || category} Pro`,
+        price: 450,
+        currency: 'MXN',
+        contains: [enrichedContent.name || category, 'Formulación optimizada'],
+        whereToBuy: 'ANKONERE Direct',
+        directLink: `https://ankonere.com/product/${encodeURIComponent(category)}`,
+        description: `Fórmula premium con ${category} optimizada para LATAM`,
+        isAnkonere: true,
+      },
+    ],
+    // Ingredients (required for ingredient adjustments)
+    ingredients: enrichedContent.ingredients || [],
     // Metadata
     _enrichment_metadata: {
       hasRealData: metadata?.hasRealData || false,
