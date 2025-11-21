@@ -52,7 +52,7 @@ interface ProgressUpdate {
 // ====================================
 
 export const runtime = 'nodejs';
-export const maxDuration = 60; // Allow up to 60s for Bedrock analysis
+export const maxDuration = 120; // Allow up to 120s for Bedrock analysis (matches /enrich)
 export const dynamic = 'force-dynamic';
 
 // ====================================
