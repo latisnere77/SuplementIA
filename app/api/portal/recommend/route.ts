@@ -273,24 +273,26 @@ function transformToRecommendation(
       // FIXED: Lambda returns 'whatIsIt', not 'description'
       description: enrichedContent.whatIsIt || enrichedContent.description || enrichedContent.overview || '',
       dosage: enrichedContent.dosage || 'Consultar con profesional de salud',
-      // Extract benefits from worksFor array
+      // ✅ KEEP STRUCTURED DATA - Don't convert to strings
+      worksFor: enrichedContent.worksFor || [],
+      doesntWorkFor: enrichedContent.doesntWorkFor || [],
+      limitedEvidence: enrichedContent.limitedEvidence || [],
+      // Side effects as structured objects
+      sideEffects: enrichedContent.safety?.sideEffects || [],
+      // Contraindications/warnings as array
+      contraindications: enrichedContent.safety?.contraindications || [],
+      // Interactions as structured objects
+      interactions: enrichedContent.safety?.interactions || [],
+      // LEGACY: Keep old format for backwards compatibility
       benefits: enrichedContent.worksFor?.map((w: any) => {
-        // Handle both old and new formats
         if (typeof w === 'string') return w;
         return `${w.condition || w.use || w.benefit} (Evidencia: ${w.evidenceGrade || w.grade || 'C'}, ${w.magnitude || w.effect || 'Ver estudios'})`;
       }) || [],
-      // Extract side effects from safety.sideEffects
       side_effects: enrichedContent.safety?.sideEffects?.map((s: any) => {
         if (typeof s === 'string') return s;
         return `${s.effect || s.name} (${s.frequency || 'Frecuencia variable'}, ${s.severity || 'Mild'})`;
       }) || [],
-      // Extract warnings from safety.contraindications
       warnings: enrichedContent.safety?.contraindications || [],
-      // Extract interactions from safety.interactions
-      interactions: enrichedContent.safety?.interactions?.map((i: any) => {
-        if (typeof i === 'string') return i;
-        return `${i.medication || i.drug || i.substance}: ${i.description || i.effect}`;
-      }) || [],
     },
     // Evidence summary (frontend expects this structure)
     evidence_summary: {

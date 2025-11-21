@@ -44,50 +44,51 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   console.log('[transformRecommendationToEvidence] Input:', {
     category: recommendation.category,
     supplementName: supplement.name,
-    hasBenefits: Array.isArray(supplement.benefits),
-    benefitsCount: supplement.benefits?.length || 0,
+    hasWorksFor: Array.isArray(supplement.worksFor),
+    worksForCount: supplement.worksFor?.length || 0,
+    hasDoesntWorkFor: Array.isArray(supplement.doesntWorkFor),
+    doesntWorkForCount: supplement.doesntWorkFor?.length || 0,
+    hasLimitedEvidence: Array.isArray(supplement.limitedEvidence),
+    limitedEvidenceCount: supplement.limitedEvidence?.length || 0,
+    hasSideEffects: Array.isArray(supplement.sideEffects),
+    sideEffectsCount: supplement.sideEffects?.length || 0,
     hasDosage: !!supplement.dosage,
     dosageType: typeof supplement.dosage,
     ingredientsCount: evidenceSummary.ingredients?.length || 0,
   });
 
-  // Defensive: Ensure arrays exist
-  const benefits = Array.isArray(supplement.benefits) ? supplement.benefits : [];
-  const sideEffects = Array.isArray(supplement.side_effects) ? supplement.side_effects : [];
+  // ✅ USE STRUCTURED DATA - No string parsing needed!
+  const worksFor = Array.isArray(supplement.worksFor) ? supplement.worksFor.map((item: any) => ({
+    condition: item.condition || item.use || item.benefit || '',
+    grade: item.evidenceGrade || item.grade || 'C',
+    description: item.notes || item.effectSize || item.magnitude || '',
+    studyCount: item.studyCount || 0,
+    metaAnalysis: item.metaAnalysis || false,
+  })) : [];
+
+  const doesntWorkFor = Array.isArray(supplement.doesntWorkFor) ? supplement.doesntWorkFor.map((item: any) => ({
+    condition: item.condition || item.use || '',
+    grade: item.evidenceGrade || item.grade || 'D',
+    description: item.notes || item.effectSize || '',
+    studyCount: item.studyCount || 0,
+  })) : [];
+
+  const limitedEvidence = Array.isArray(supplement.limitedEvidence) ? supplement.limitedEvidence.map((item: any) => ({
+    condition: item.condition || item.use || '',
+    grade: item.evidenceGrade || item.grade || 'C',
+    description: item.notes || '',
+    studyCount: item.studyCount || 0,
+  })) : [];
+
+  // DEBUG: Log parsed structured data
+  console.log('[transformRecommendationToEvidence] Structured data:', {
+    worksForCount: worksFor.length,
+    doesntWorkForCount: doesntWorkFor.length,
+    limitedEvidenceCount: limitedEvidence.length,
+  });
+
+  // Defensive: Ensure ingredients array exists
   const ingredients = Array.isArray(evidenceSummary.ingredients) ? evidenceSummary.ingredients : [];
-
-  // Parse benefits array to worksFor format
-  const worksFor = benefits.map((benefit: string) => {
-    // Parse format: "Condition (Evidencia: A, magnitude)"
-    const match = benefit.match(/^(.+?)\s*\(Evidencia:\s*([A-F])[,\s]+(.+?)\)$/);
-    if (match) {
-      return {
-        condition: match[1].trim(),
-        grade: match[2] as any,
-        description: match[3].trim(),
-      };
-    }
-    // Fallback if format doesn't match
-    console.warn('[transformRecommendationToEvidence] Failed to parse benefit:', benefit);
-    return {
-      condition: benefit,
-      grade: 'C' as any,
-      description: '',
-    };
-  });
-
-  // DEBUG: Log parsed worksFor
-  console.log('[transformRecommendationToEvidence] Parsed worksFor:', {
-    count: worksFor.length,
-    items: worksFor.map((w: { condition: string; grade: string }) => ({ condition: w.condition, grade: w.grade })),
-  });
-
-  // Parse side_effects to doesntWorkFor/limitedEvidence
-  const limitedEvidence = sideEffects.map((effect: string) => ({
-    condition: effect,
-    grade: 'C' as any,
-    description: 'Posible efecto secundario',
-  }));
 
   // Determine overall grade from ingredients
   const overallGrade = ingredients.length > 0
@@ -110,11 +111,35 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     output: transformedDosage,
   });
 
+  // ✅ USE STRUCTURED DATA for side effects and contraindications
+  const sideEffects = Array.isArray(supplement.sideEffects) ? supplement.sideEffects.map((item: any) => {
+    // Handle both structured objects and strings (legacy)
+    if (typeof item === 'string') return item;
+    return {
+      effect: item.effect || item.name || '',
+      frequency: item.frequency || 'Frecuencia variable',
+      severity: item.severity || 'Mild',
+      notes: item.notes || '',
+    };
+  }) : [];
+
+  const contraindications = Array.isArray(supplement.contraindications) ? supplement.contraindications : [];
+
+  const interactions = Array.isArray(supplement.interactions) ? supplement.interactions.map((item: any) => {
+    // Handle both structured objects and strings (legacy)
+    if (typeof item === 'string') return item;
+    return {
+      medication: item.medication || item.drug || item.substance || '',
+      severity: item.severity || 'Moderate',
+      description: item.description || item.effect || '',
+    };
+  }) : [];
+
   const result = {
     overallGrade,
     whatIsItFor: supplement.description || `Suplemento: ${recommendation.category}`,
     worksFor,
-    doesntWorkFor: [], // We don't have explicit "doesn't work for" data yet
+    doesntWorkFor, // ✅ NOW POPULATED with real data
     limitedEvidence,
     ingredients: ingredients.map((ing: any) => ({
       name: ing.name,
@@ -131,9 +156,9 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     },
     // Use transformed dosage
     dosage: transformedDosage,
-    sideEffects: Array.isArray(supplement.side_effects) ? supplement.side_effects : [],
-    interactions: Array.isArray(supplement.interactions) ? supplement.interactions : [],
-    contraindications: Array.isArray(supplement.warnings) ? supplement.warnings : [],
+    sideEffects,
+    interactions,
+    contraindications,
   };
 
   // DEBUG: Log final result summary
