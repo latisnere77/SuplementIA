@@ -37,6 +37,9 @@ export async function handler(
 
   const requestId = context.awsRequestId;
   const startTime = Date.now();
+  const correlationId = (event as any).headers?.['X-Request-ID'] || 
+                        (event as any).headers?.['x-request-id'] || 
+                        requestId;
 
   try {
     // Parse request
@@ -63,26 +66,46 @@ export async function handler(
       return createErrorResponse(400, 'supplementId is required', requestId);
     }
 
+    // Extract study metadata
+    const studiesCount = studies?.length || 0;
+    const studyTypes = studies?.map((s: any) => s.studyType || 'unknown') || [];
+    const studyIds = studies?.map((s: any) => s.pmid || s.id).filter(Boolean) || [];
+    const uniqueStudyTypes = [...new Set(studyTypes)];
+
     // Add X-Ray annotations
     if (subsegment) {
       subsegment.addAnnotation('supplementId', supplementId);
       subsegment.addAnnotation('module', 'content-enricher');
       subsegment.addAnnotation('version', '1.0.0');
+      subsegment.addAnnotation('correlationId', correlationId);
       subsegment.addAnnotation('forceRefresh', forceRefresh || false);
-      subsegment.addAnnotation('studiesProvided', studies?.length || 0);
-      subsegment.addAnnotation('hasRealData', !!(studies && studies.length > 0));
+      subsegment.addAnnotation('studiesProvided', studiesCount);
+      subsegment.addAnnotation('hasRealData', studiesCount > 0);
+      subsegment.addMetadata('studies', {
+        count: studiesCount,
+        studyTypes: uniqueStudyTypes,
+        sampleIds: studyIds.slice(0, 10), // First 10 IDs for reference
+        hasStudies: studiesCount > 0,
+      });
+      subsegment.addMetadata('request', {
+        supplementId,
+        category: category || 'general',
+        forceRefresh: forceRefresh || false,
+      });
     }
 
     // Log request
     console.log(
       JSON.stringify({
-        event: 'REQUEST',
+        event: 'CONTENT_ENRICH_REQUEST',
         requestId,
+        correlationId,
         supplementId,
-        category,
-        forceRefresh,
-        studiesProvided: studies?.length || 0,
-        hasRealData: studies && studies.length > 0,
+        category: category || 'general',
+        forceRefresh: forceRefresh || false,
+        studiesProvided: studiesCount,
+        hasRealData: studiesCount > 0,
+        studyTypes: uniqueStudyTypes,
         timestamp: new Date().toISOString(),
       })
     );
@@ -93,7 +116,9 @@ export async function handler(
     if (!forceRefresh) {
       enrichedContent = await getFromCache(supplementId);
       if (enrichedContent) {
-        subsegment?.addAnnotation('cacheHit', true);
+        if (subsegment) {
+          subsegment.addAnnotation('cacheHit', true);
+        }
 
         const duration = Date.now() - startTime;
 
@@ -101,8 +126,11 @@ export async function handler(
           JSON.stringify({
             event: 'CACHE_HIT',
             requestId,
+            correlationId,
             supplementId,
             duration,
+            studiesProvided: studiesCount,
+            timestamp: new Date().toISOString(),
           })
         );
 
@@ -113,12 +141,22 @@ export async function handler(
             supplementId,
             generatedAt: new Date().toISOString(),
             cached: true,
-            hasRealData: studies && studies.length > 0,
-            studiesUsed: studies?.length || 0,
+            hasRealData: studiesCount > 0,
+            studiesUsed: studiesCount,
+            requestId,
+            correlationId,
           },
         };
 
-        subsegment?.close();
+        if (subsegment) {
+          subsegment.addAnnotation('success', true);
+          subsegment.addMetadata('response', {
+            cached: true,
+            hasRealData: studiesCount > 0,
+            studiesUsed: studiesCount,
+          });
+          subsegment.close();
+        }
 
         return {
           statusCode: 200,
@@ -128,16 +166,21 @@ export async function handler(
       }
     }
 
-    subsegment?.addAnnotation('cacheHit', false);
+    if (subsegment) {
+      subsegment.addAnnotation('cacheHit', false);
+    }
 
     // Cache miss or forceRefresh - call Bedrock
     console.log(
       JSON.stringify({
         event: 'GENERATING_CONTENT',
         requestId,
+        correlationId,
         supplementId,
         reason: forceRefresh ? 'force_refresh' : 'cache_miss',
-        studiesProvided: studies?.length || 0,
+        studiesProvided: studiesCount,
+        studyTypes: uniqueStudyTypes,
+        timestamp: new Date().toISOString(),
       })
     );
 
@@ -161,17 +204,25 @@ export async function handler(
     // Log success
     console.log(
       JSON.stringify({
-        event: 'SUCCESS',
+        event: 'CONTENT_ENRICH_SUCCESS',
         requestId,
+        correlationId,
         supplementId,
         duration,
         bedrockDuration: bedrockMetadata.duration,
         tokensUsed: bedrockMetadata.tokensUsed,
+        studiesUsed: studiesCount,
+        hasRealData: studiesCount > 0,
+        mechanismsCount: enrichedContent.mechanisms?.length || 0,
+        worksForCount: enrichedContent.worksFor?.length || 0,
+        timestamp: new Date().toISOString(),
       })
     );
 
     // Add metadata to X-Ray
     if (subsegment) {
+      subsegment.addAnnotation('success', true);
+      subsegment.addAnnotation('studiesUsed', studiesCount);
       subsegment.addMetadata('bedrock', {
         duration: bedrockMetadata.duration,
         tokensUsed: bedrockMetadata.tokensUsed,
@@ -180,6 +231,8 @@ export async function handler(
         duration,
         mechanismsCount: enrichedContent.mechanisms?.length || 0,
         worksForCount: enrichedContent.worksFor?.length || 0,
+        hasRealData: studiesCount > 0,
+        studiesUsed: studiesCount,
       });
       subsegment.close();
     }
@@ -193,8 +246,10 @@ export async function handler(
         bedrockDuration: bedrockMetadata.duration,
         tokensUsed: bedrockMetadata.tokensUsed,
         cached: false,
-        hasRealData: studies && studies.length > 0,
-        studiesUsed: studies?.length || 0,
+        hasRealData: studiesCount > 0,
+        studiesUsed: studiesCount,
+        requestId,
+        correlationId,
       },
     };
 
@@ -204,19 +259,25 @@ export async function handler(
       body: JSON.stringify(response),
     };
   } catch (error: any) {
+    const duration = Date.now() - startTime;
     // Log error
     console.error(
       JSON.stringify({
-        event: 'ERROR',
+        event: 'CONTENT_ENRICH_ERROR',
         requestId,
+        correlationId,
+        supplementId: (event as any).body ? JSON.parse((event as any).body)?.supplementId : 'unknown',
         error: error.message,
         stack: error.stack,
+        duration,
         timestamp: new Date().toISOString(),
       })
     );
 
     // Add error to X-Ray
     if (subsegment) {
+      subsegment.addAnnotation('success', false);
+      subsegment.addAnnotation('error', error.message);
       subsegment.addError(error);
       subsegment.close();
     }

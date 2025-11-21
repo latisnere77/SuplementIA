@@ -12,7 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { expandAbbreviation, detectAbbreviation } from '@/lib/services/abbreviation-expander';
+import { expandAbbreviation, detectAbbreviation, generateSearchVariations } from '@/lib/services/abbreviation-expander';
 
 // Configure max duration for this route (Bedrock needs time)
 export const maxDuration = 120; // 120 seconds for content enrichment
@@ -35,9 +35,13 @@ export interface EnrichRequest {
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
+  const requestId = crypto.randomUUID();
+  const correlationId = request.headers.get('X-Request-ID') || requestId;
+  let supplementName = 'unknown';
 
   try {
     const body: EnrichRequest = await request.json();
+    supplementName = body.supplementName || 'unknown';
 
     // Validate request
     if (!body.supplementName) {
@@ -47,14 +51,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { supplementName, category, forceRefresh, maxStudies, rctOnly, yearFrom, yearTo } = body;
+    const { category, forceRefresh, maxStudies, rctOnly, yearFrom, yearTo } = body;
 
     console.log(
       JSON.stringify({
         event: 'ORCHESTRATION_START',
+        requestId,
+        correlationId,
         supplementName,
+        originalQuery: supplementName,
+        category,
         maxStudies: maxStudies || 10,
         rctOnly: rctOnly || false,
+        timestamp: new Date().toISOString(),
       })
     );
 
@@ -64,6 +73,17 @@ export async function POST(request: NextRequest) {
     // This ensures better PubMed results (PubMed is in English)
     let searchTerm = supplementName;
     let expansionMetadata = null;
+    const originalQuery = supplementName;
+
+    console.log(
+      JSON.stringify({
+        event: 'QUERY_TRANSLATION_START',
+        requestId,
+        correlationId,
+        originalQuery: supplementName,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     // Common abbreviations fallback map (in case LLM fails)
     // Also includes Spanish-to-English translations for common supplements
@@ -111,9 +131,23 @@ export async function POST(request: NextRequest) {
       'probioticos': 'probiotics',
       'prebióticos': 'prebiotics',
       'prebioticos': 'prebiotics',
+      // Herbs and spices (Spanish → English)
+      'cilantro': 'coriander',
+      'perejil': 'parsley',
+      'romero': 'rosemary',
+      'albahaca': 'basil',
+      'orégano': 'oregano',
+      'oregano': 'oregano',
+      'tomillo': 'thyme',
+      'menta': 'mint',
+      'canela': 'cinnamon',
+      'comino': 'cumin',
+      'ajo': 'garlic',
+      'cebolla': 'onion',
+      'pimienta': 'pepper',
+      'pimienta negra': 'black pepper',
+      'pimienta cayena': 'cayenne pepper',
     };
-
-    console.log(`🧠 Checking if term needs expansion/translation: "${supplementName}"`);
 
     // First check common abbreviations map
     const lowerTerm = supplementName.toLowerCase();
@@ -125,12 +159,49 @@ export async function POST(request: NextRequest) {
         alternatives: [searchTerm],
         confidence: 1.0,
         isAbbreviation: true,
+        source: 'fallback_map',
       };
-      console.log(`✨ Expanded via fallback map: "${supplementName}" → "${searchTerm}"`);
+      console.log(
+        JSON.stringify({
+          event: 'QUERY_TRANSLATED',
+          requestId,
+          correlationId,
+          originalQuery: supplementName,
+          translatedQuery: searchTerm,
+          translationMethod: 'fallback_map',
+          confidence: 1.0,
+          timestamp: new Date().toISOString(),
+        })
+      );
     } else {
       // Try LLM expansion
+      console.log(
+        JSON.stringify({
+          event: 'QUERY_LLM_EXPANSION_START',
+          requestId,
+          correlationId,
+          originalQuery: supplementName,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
       try {
         const expansion = await expandAbbreviation(supplementName);
+
+        console.log(
+          JSON.stringify({
+            event: 'QUERY_LLM_EXPANSION_RESULT',
+            requestId,
+            correlationId,
+            originalQuery: supplementName,
+            source: expansion.source,
+            alternativesCount: expansion.alternatives.length,
+            alternatives: expansion.alternatives,
+            confidence: expansion.confidence,
+            isAbbreviation: expansion.isAbbreviation,
+            timestamp: new Date().toISOString(),
+          })
+        );
 
         // Use expanded term if LLM provided alternatives
         if (expansion.alternatives.length > 0 && expansion.source === 'llm') {
@@ -141,37 +212,138 @@ export async function POST(request: NextRequest) {
             alternatives: expansion.alternatives,
             confidence: expansion.confidence,
             isAbbreviation: expansion.isAbbreviation,
+            source: 'llm',
           };
-          console.log(`✨ Transformed via LLM: "${supplementName}" → "${searchTerm}"`);
+          console.log(
+            JSON.stringify({
+              event: 'QUERY_TRANSLATED',
+              requestId,
+              correlationId,
+              originalQuery: supplementName,
+              translatedQuery: searchTerm,
+              translationMethod: 'llm',
+              confidence: expansion.confidence,
+              alternatives: expansion.alternatives,
+              timestamp: new Date().toISOString(),
+            })
+          );
         } else {
-          console.log(`✓ No transformation needed for "${supplementName}"`);
+          console.log(
+            JSON.stringify({
+              event: 'QUERY_NO_TRANSLATION',
+              requestId,
+              correlationId,
+              originalQuery: supplementName,
+              translatedQuery: supplementName,
+              translationMethod: 'none',
+              reason: expansion.source === 'llm' ? 'llm_returned_empty' : 'no_expansion_needed',
+              llmSource: expansion.source,
+              alternativesCount: expansion.alternatives.length,
+              timestamp: new Date().toISOString(),
+            })
+          );
         }
       } catch (error: any) {
-        console.warn(`⚠️  Expansion/translation failed: ${error.message}, using original term`);
+        console.error(
+          JSON.stringify({
+            event: 'QUERY_TRANSLATION_FAILED',
+            requestId,
+            correlationId,
+            originalQuery: supplementName,
+            translatedQuery: supplementName,
+            error: error.message,
+            errorStack: error.stack,
+            errorName: error.name,
+            fallback: 'using_original',
+            timestamp: new Date().toISOString(),
+          })
+        );
       }
     }
 
     // STEP 1: Fetch REAL PubMed studies
-    console.log(`📚 Fetching real PubMed studies for: ${searchTerm}...`);
-
-    // STEP 1: Fetch REAL PubMed studies
-    console.log(`📚 Fetching real PubMed studies for: ${searchTerm}...`);
+    console.log(
+      JSON.stringify({
+        event: 'STUDIES_FETCH_START',
+        requestId,
+        correlationId,
+        originalQuery: supplementName,
+        translatedQuery: searchTerm,
+        searchTerm,
+        maxStudies: maxStudies || 10,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     // Helper to fetch studies with specific filters
-    const fetchStudies = async (term: string, filters: any) => {
-      return fetch(STUDIES_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          supplementName: term,
-          maxResults: Math.min(maxStudies || 10, 10),
+    const fetchStudies = async (term: string, filters: any, attempt: number) => {
+      const fetchStartTime = Date.now();
+      console.log(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_ATTEMPT',
+          requestId,
+          correlationId,
+          attempt,
+          searchTerm: term,
           filters,
-        }),
-      });
+          lambdaUrl: STUDIES_API_URL,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      try {
+        const response = await fetch(STUDIES_API_URL, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Request-ID': correlationId,
+          },
+          body: JSON.stringify({
+            supplementName: term,
+            maxResults: Math.min(maxStudies || 10, 10),
+            filters,
+          }),
+        });
+
+        const fetchDuration = Date.now() - fetchStartTime;
+        const responseData = await response.json().catch(() => ({ success: false }));
+
+        console.log(
+          JSON.stringify({
+            event: 'STUDIES_FETCH_RESPONSE',
+            requestId,
+            correlationId,
+            attempt,
+            searchTerm: term,
+            statusCode: response.status,
+            success: responseData.success,
+            studiesFound: responseData.success ? (responseData.data?.studies || []).length : 0,
+            duration: fetchDuration,
+            timestamp: new Date().toISOString(),
+          })
+        );
+
+        return { response, data: responseData };
+      } catch (error: any) {
+        const fetchDuration = Date.now() - fetchStartTime;
+        console.error(
+          JSON.stringify({
+            event: 'STUDIES_FETCH_ERROR',
+            requestId,
+            correlationId,
+            attempt,
+            searchTerm: term,
+            error: error.message,
+            duration: fetchDuration,
+            timestamp: new Date().toISOString(),
+          })
+        );
+        throw error;
+      }
     };
 
     // Attempt 1: Strict filters (High quality evidence)
-    let studiesResponse = await fetchStudies(searchTerm, {
+    const strictFilters = {
       rctOnly: rctOnly || false,
       yearFrom: yearFrom || 2010,
       yearTo: yearTo,
@@ -181,45 +353,242 @@ export async function POST(request: NextRequest) {
         'meta-analysis',
         'systematic review',
       ],
-    });
+    };
 
-    let studiesData = await studiesResponse.json().catch(() => ({ success: false }));
-    let studies = studiesData.success ? studiesData.data?.studies || [] : [];
+    let studiesResponse;
+    let studiesData;
+    let studies: any[] = [];
+
+    try {
+      const result = await fetchStudies(searchTerm, strictFilters, 1);
+      studiesResponse = result.response;
+      studiesData = result.data;
+      studies = studiesData.success ? studiesData.data?.studies || [] : [];
+    } catch (error: any) {
+      console.error(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_ATTEMPT_FAILED',
+          requestId,
+          correlationId,
+          attempt: 1,
+          error: error.message,
+          timestamp: new Date().toISOString(),
+        })
+      );
+    }
 
     // Attempt 2: Relaxed filters (If no strict studies found)
     if (studies.length === 0) {
-      console.log(`⚠️ No studies found with strict filters. Retrying with relaxed filters...`);
-
-      studiesResponse = await fetchStudies(searchTerm, {
+      const relaxedFilters = {
         rctOnly: false,
         yearFrom: 2000, // Look back further
         yearTo: yearTo,
         humanStudiesOnly: true, // Still require human studies
         // Remove studyTypes restriction to include all types (clinical trials, reviews, etc.)
-      });
+      };
 
-      studiesData = await studiesResponse.json().catch(() => ({ success: false }));
-      studies = studiesData.success ? studiesData.data?.studies || [] : [];
+      console.log(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_RETRY',
+          requestId,
+          correlationId,
+          attempt: 2,
+          reason: 'no_studies_with_strict_filters',
+          previousAttempt: 1,
+          filters: relaxedFilters,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      try {
+        const result = await fetchStudies(searchTerm, relaxedFilters, 2);
+        studiesResponse = result.response;
+        studiesData = result.data;
+        studies = studiesData.success ? studiesData.data?.studies || [] : [];
+      } catch (error: any) {
+        console.error(
+          JSON.stringify({
+            event: 'STUDIES_FETCH_ATTEMPT_FAILED',
+            requestId,
+            correlationId,
+            attempt: 2,
+            error: error.message,
+            timestamp: new Date().toISOString(),
+          })
+        );
+      }
     }
 
     // Attempt 3: Ultra-relaxed filters (If still no studies)
     // Sometimes "humanStudiesOnly" filter in PubMed is imperfect or studies are very new
     if (studies.length === 0) {
-      console.log(`⚠️ No studies found with relaxed filters. Retrying with ultra-relaxed filters...`);
-
-      studiesResponse = await fetchStudies(searchTerm, {
+      const ultraRelaxedFilters = {
         rctOnly: false,
         yearFrom: 1990,
         yearTo: yearTo,
         humanStudiesOnly: false, // Allow in-vitro/animal if that's all we have (better than nothing)
-      });
+      };
 
-      studiesData = await studiesResponse.json().catch(() => ({ success: false }));
-      studies = studiesData.success ? studiesData.data?.studies || [] : [];
+      console.log(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_RETRY',
+          requestId,
+          correlationId,
+          attempt: 3,
+          reason: 'no_studies_with_relaxed_filters',
+          previousAttempt: 2,
+          filters: ultraRelaxedFilters,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      try {
+        const result = await fetchStudies(searchTerm, ultraRelaxedFilters, 3);
+        studiesResponse = result.response;
+        studiesData = result.data;
+        studies = studiesData.success ? studiesData.data?.studies || [] : [];
+      } catch (error: any) {
+        console.error(
+          JSON.stringify({
+            event: 'STUDIES_FETCH_ATTEMPT_FAILED',
+            requestId,
+            correlationId,
+            attempt: 3,
+            error: error.message,
+            timestamp: new Date().toISOString(),
+          })
+        );
+      }
+    }
+
+    // STEP 1.5: If no studies found, generate and try search variations
+    if (studies.length === 0) {
+      console.log(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_VARIATIONS_START',
+          requestId,
+          correlationId,
+          originalQuery: supplementName,
+          translatedQuery: searchTerm,
+          searchTerm,
+          reason: 'no_studies_found_with_base_term',
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      try {
+        // Generate intelligent search variations using LLM
+        const variations = await generateSearchVariations(searchTerm);
+        
+        console.log(
+          JSON.stringify({
+            event: 'STUDIES_FETCH_VARIATIONS_GENERATED',
+            requestId,
+            correlationId,
+            originalQuery: supplementName,
+            translatedQuery: searchTerm,
+            variationsCount: variations.length,
+            variations,
+            timestamp: new Date().toISOString(),
+          })
+        );
+
+        // Try each variation with relaxed filters
+        const relaxedFilters = {
+          rctOnly: false,
+          yearFrom: 2000,
+          yearTo: yearTo,
+          humanStudiesOnly: true,
+        };
+
+        for (let i = 0; i < variations.length && studies.length === 0; i++) {
+          const variation = variations[i];
+          
+          console.log(
+            JSON.stringify({
+              event: 'STUDIES_FETCH_VARIATION_ATTEMPT',
+              requestId,
+              correlationId,
+              originalQuery: supplementName,
+              translatedQuery: searchTerm,
+              variationIndex: i + 1,
+              variation,
+              totalVariations: variations.length,
+              timestamp: new Date().toISOString(),
+            })
+          );
+
+          try {
+            const result = await fetchStudies(variation, relaxedFilters, 100 + i); // Use high number to distinguish from regular attempts
+            const variationStudies = result.data.success ? result.data.data?.studies || [] : [];
+            
+            if (variationStudies.length > 0) {
+              studies = variationStudies;
+              searchTerm = variation; // Update searchTerm to the successful variation
+              
+              console.log(
+                JSON.stringify({
+                  event: 'STUDIES_FETCH_VARIATION_SUCCESS',
+                  requestId,
+                  correlationId,
+                  originalQuery: supplementName,
+                  translatedQuery: searchTerm,
+                  successfulVariation: variation,
+                  variationIndex: i + 1,
+                  studiesFound: studies.length,
+                  timestamp: new Date().toISOString(),
+                })
+              );
+              break; // Stop trying variations once we find studies
+            }
+          } catch (error: any) {
+            console.warn(
+              JSON.stringify({
+                event: 'STUDIES_FETCH_VARIATION_FAILED',
+                requestId,
+                correlationId,
+                variation,
+                variationIndex: i + 1,
+                error: error.message,
+                timestamp: new Date().toISOString(),
+              })
+            );
+            // Continue to next variation
+          }
+        }
+      } catch (error: any) {
+        console.error(
+          JSON.stringify({
+            event: 'STUDIES_FETCH_VARIATIONS_ERROR',
+            requestId,
+            correlationId,
+            originalQuery: supplementName,
+            translatedQuery: searchTerm,
+            error: error.message,
+            errorStack: error.stack,
+            timestamp: new Date().toISOString(),
+          })
+        );
+        // Continue to final error handling if variations also fail
+      }
     }
 
     if (studies.length === 0) {
-      console.error(`❌ No studies found for: ${supplementName} (after all attempts)`);
+      const totalDuration = Date.now() - startTime;
+      console.error(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_FAILED',
+          requestId,
+          correlationId,
+          originalQuery: supplementName,
+          translatedQuery: searchTerm,
+          searchTerm,
+          attempts: 3,
+          totalDuration,
+          reason: 'no_studies_found_after_all_attempts_and_variations',
+          timestamp: new Date().toISOString(),
+        })
+      );
 
       // STRICT VALIDATION: DO NOT generate data without studies
       return NextResponse.json(
@@ -231,28 +600,60 @@ export async function POST(request: NextRequest) {
           metadata: {
             hasRealData: false,
             studiesUsed: 0,
+            requestId,
+            correlationId,
+            originalQuery: supplementName,
+            translatedQuery: searchTerm,
+            attempts: 3,
+            triedVariations: true,
           },
         },
         { status: 404 }
       );
     }
 
+    // Determine if we used a variation
+    const baseTerm = expansionMetadata?.expanded || supplementName;
+    const usedVariationForLogging = searchTerm !== supplementName && searchTerm !== baseTerm;
+    
     console.log(
       JSON.stringify({
         event: 'STUDIES_FETCHED',
-        supplementName,
+        requestId,
+        correlationId,
+        originalQuery: supplementName,
+        translatedQuery: baseTerm,
+        finalSearchTerm: searchTerm,
+        usedVariation: usedVariationForLogging,
         studiesFound: studies.length,
         studyTypes: studies.map((s: any) => s.studyType),
+        studyIds: studies.map((s: any) => s.pmid || s.id).filter(Boolean),
+        translationMethod: expansionMetadata?.source || 'none',
+        timestamp: new Date().toISOString(),
       })
     );
 
     // STEP 2: Pass real studies to content-enricher
-    console.log(`🧠 Enriching with ${studies.length} REAL studies...`);
+    const enrichStartTime = Date.now();
+    console.log(
+      JSON.stringify({
+        event: 'CONTENT_ENRICH_START',
+        requestId,
+        correlationId,
+        originalQuery: supplementName,
+        translatedQuery: searchTerm,
+        supplementId: supplementName,
+        studiesCount: studies.length,
+        lambdaUrl: ENRICHER_API_URL,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     const enrichResponse = await fetch(ENRICHER_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-Request-ID': correlationId,
       },
       body: JSON.stringify({
         supplementId: supplementName,
@@ -262,14 +663,31 @@ export async function POST(request: NextRequest) {
       }),
     });
 
+    const enrichDuration = Date.now() - enrichStartTime;
+
     if (!enrichResponse.ok) {
       const error = await enrichResponse.text();
-      console.error('Enricher API error:', error);
+      console.error(
+        JSON.stringify({
+          event: 'CONTENT_ENRICH_ERROR',
+          requestId,
+          correlationId,
+          originalQuery: supplementName,
+          translatedQuery: searchTerm,
+          supplementId: supplementName,
+          statusCode: enrichResponse.status,
+          error,
+          duration: enrichDuration,
+          timestamp: new Date().toISOString(),
+        })
+      );
       return NextResponse.json(
         {
           success: false,
           error: 'Failed to enrich content',
           details: error,
+          requestId,
+          correlationId,
         },
         { status: enrichResponse.status }
       );
@@ -277,18 +695,44 @@ export async function POST(request: NextRequest) {
 
     const enrichData = await enrichResponse.json();
 
+    console.log(
+      JSON.stringify({
+        event: 'CONTENT_ENRICH_SUCCESS',
+        requestId,
+        correlationId,
+        originalQuery: supplementName,
+        translatedQuery: searchTerm,
+        supplementId: supplementName,
+        duration: enrichDuration,
+        hasData: !!enrichData.data,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
     const duration = Date.now() - startTime;
+
+    // Determine if we used a variation (reuse baseTerm from earlier)
+    const finalBaseTerm = expansionMetadata?.expanded || supplementName;
+    const usedVariation = searchTerm !== supplementName && searchTerm !== finalBaseTerm;
 
     console.log(
       JSON.stringify({
         event: 'ORCHESTRATION_SUCCESS',
+        requestId,
+        correlationId,
+        originalQuery: supplementName,
+        translatedQuery: finalBaseTerm,
+        finalSearchTerm: searchTerm,
+        usedVariation,
         supplementName,
         duration,
         studiesUsed: studies.length,
         hasRealData: true,
+        translationApplied: !!expansionMetadata,
+        timestamp: new Date().toISOString(),
       })
     );
-
+    
     // Add metadata about the intelligent system
     return NextResponse.json({
       ...enrichData,
@@ -299,16 +743,36 @@ export async function POST(request: NextRequest) {
         hasRealData: true,
         intelligentSystem: true,
         studiesSource: 'PubMed',
+        requestId,
+        correlationId,
+        originalQuery: supplementName,
+        translatedQuery: finalBaseTerm,
+        finalSearchTerm: searchTerm,
+        usedVariation,
         ...(expansionMetadata ? { expansion: expansionMetadata } : {}),
       },
     });
   } catch (error: any) {
-    console.error('Orchestration error:', error);
+    const duration = Date.now() - startTime;
+    console.error(
+      JSON.stringify({
+        event: 'ORCHESTRATION_ERROR',
+        requestId,
+        correlationId,
+        originalQuery: supplementName,
+        error: error.message,
+        stack: error.stack,
+        duration,
+        timestamp: new Date().toISOString(),
+      })
+    );
     return NextResponse.json(
       {
         success: false,
         error: error.message || 'Internal server error',
         intelligentSystem: false,
+        requestId,
+        correlationId,
       },
       { status: 500 }
     );

@@ -212,7 +212,19 @@ export async function POST(request: NextRequest) {
 
         // Handle 404: No scientific data found (NOT an error, but intentional)
         if (recommendationResponse.status === 404) {
-          console.log(`ℹ️  No scientific data found for: ${sanitizedCategory}`);
+          console.log(
+            JSON.stringify({
+              event: 'QUIZ_NO_DATA_FOUND',
+              requestId,
+              quizId,
+              category: sanitizedCategory,
+              error: errorData.error || 'insufficient_data',
+              message: errorData.message,
+              suggestion: errorData.suggestion,
+              action: 'returning_404_no_mock_data',
+              timestamp: new Date().toISOString(),
+            })
+          );
 
           portalLogger.logRequest({
             requestId,
@@ -222,6 +234,7 @@ export async function POST(request: NextRequest) {
           });
 
           // Return 404 to frontend with helpful message
+          // IMPORTANT: We do NOT use mock data here - 404 means no real data found
           return NextResponse.json(
             {
               success: false,
@@ -336,8 +349,24 @@ export async function POST(request: NextRequest) {
         errorType: apiError.name,
       });
 
-      // GRACEFUL FALLBACK: Use mock data when backend is unreachable
-      console.warn(`⚠️  Backend unreachable (${apiError.message}), falling back to demo mode`);
+      // GRACEFUL FALLBACK: Use mock data ONLY when backend is completely unreachable
+      // This is different from 404 (insufficient_data) - 404 means backend responded but no data found
+      // This catch block means backend is unreachable (network error, timeout, etc.)
+      console.warn(
+        JSON.stringify({
+          event: 'QUIZ_BACKEND_UNREACHABLE',
+          requestId,
+          quizId,
+          category: sanitizedCategory,
+          error: apiError.message,
+          errorType: apiError.name,
+          errorCode: apiError.code,
+          action: 'fallback_to_mock_data',
+          note: 'This is different from 404 - backend is unreachable, not responding with insufficient_data',
+          timestamp: new Date().toISOString(),
+        })
+      );
+      
       const mockRecommendation = getMockRecommendation(sanitizedCategory);
 
       return NextResponse.json(

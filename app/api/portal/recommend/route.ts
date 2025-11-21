@@ -99,7 +99,18 @@ export async function POST(request: NextRequest) {
 
     // Call our intelligent enrichment system with extended timeout
     const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich`;
-    console.log(`🧠 Calling intelligent enrichment system for: ${sanitizedCategory}`);
+    const enrichStartTime = Date.now();
+    
+    console.log(
+      JSON.stringify({
+        event: 'RECOMMEND_ENRICH_CALL_START',
+        requestId,
+        category: sanitizedCategory,
+        originalCategory: category,
+        enrichApiUrl: ENRICH_API_URL,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     const enrichResponse = await fetch(ENRICH_API_URL, {
       method: 'POST',
@@ -117,9 +128,30 @@ export async function POST(request: NextRequest) {
       signal: AbortSignal.timeout(110000), // 110s timeout (less than maxDuration)
     });
 
+    const enrichDuration = Date.now() - enrichStartTime;
+
     if (!enrichResponse.ok) {
       const errorText = await enrichResponse.text();
-      console.error(`❌ Enrichment failed (${enrichResponse.status}):`, errorText);
+      let errorData: any = {};
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { raw: errorText.substring(0, 500) };
+      }
+
+      console.error(
+        JSON.stringify({
+          event: 'RECOMMEND_ENRICH_CALL_FAILED',
+          requestId,
+          category: sanitizedCategory,
+          originalCategory: category,
+          statusCode: enrichResponse.status,
+          duration: enrichDuration,
+          error: errorData.error || errorData.message || 'Unknown error',
+          errorData,
+          timestamp: new Date().toISOString(),
+        })
+      );
 
       // STRICT VALIDATION: DO NOT generate fake data
       // Return 404 with clear message
@@ -138,8 +170,35 @@ export async function POST(request: NextRequest) {
 
     const enrichData = await enrichResponse.json();
 
+    console.log(
+      JSON.stringify({
+        event: 'RECOMMEND_ENRICH_CALL_SUCCESS',
+        requestId,
+        category: sanitizedCategory,
+        originalCategory: category,
+        duration: enrichDuration,
+        success: enrichData.success,
+        hasData: !!enrichData.data,
+        hasMetadata: !!enrichData.metadata,
+        studiesUsed: enrichData.metadata?.studiesUsed || 0,
+        hasRealData: enrichData.metadata?.hasRealData || false,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
     if (!enrichData.success || !enrichData.data) {
-      console.error(`❌ Enrichment unsuccessful or no data for: ${sanitizedCategory}`);
+      console.error(
+        JSON.stringify({
+          event: 'RECOMMEND_ENRICH_NO_DATA',
+          requestId,
+          category: sanitizedCategory,
+          originalCategory: category,
+          success: enrichData.success,
+          hasData: !!enrichData.data,
+          enrichDataKeys: Object.keys(enrichData),
+          timestamp: new Date().toISOString(),
+        })
+      );
 
       // STRICT VALIDATION: DO NOT generate fake data
       // Return 404 with clear message
@@ -163,9 +222,33 @@ export async function POST(request: NextRequest) {
     // CRITICAL VALIDATION: Ensure we have real scientific data
     const hasRealData = metadata.hasRealData === true && (metadata.studiesUsed || 0) > 0;
 
+    console.log(
+      JSON.stringify({
+        event: 'RECOMMEND_VALIDATION_CHECK',
+        requestId,
+        category: sanitizedCategory,
+        originalCategory: category,
+        hasRealData,
+        studiesUsed: metadata.studiesUsed || 0,
+        metadataHasRealData: metadata.hasRealData,
+        metadataKeys: Object.keys(metadata),
+        timestamp: new Date().toISOString(),
+      })
+    );
+
     if (!hasRealData) {
-      console.error(`❌ No real scientific data found for: ${sanitizedCategory}`);
-      console.error(`Metadata:`, JSON.stringify(metadata));
+      console.error(
+        JSON.stringify({
+          event: 'RECOMMEND_VALIDATION_FAILED',
+          requestId,
+          category: sanitizedCategory,
+          originalCategory: category,
+          hasRealData: false,
+          studiesUsed: metadata.studiesUsed || 0,
+          metadata: JSON.stringify(metadata),
+          timestamp: new Date().toISOString(),
+        })
+      );
 
       // STRICT VALIDATION: DO NOT generate fake data
       // Return 404 with clear message
@@ -186,19 +269,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const duration = Date.now() - startTime;
-
-    console.log(
-      JSON.stringify({
-        event: 'INTELLIGENT_RECOMMENDATION_SUCCESS',
-        requestId,
-        category: sanitizedCategory,
-        studiesUsed: metadata.studiesUsed || 0,
-        hasRealData: true,
-        duration,
-      })
-    );
-
     const recommendation = transformToRecommendation(
       enrichedContent,
       sanitizedCategory,
@@ -207,6 +277,23 @@ export async function POST(request: NextRequest) {
       location || 'CDMX',
       quiz_id,
       metadata
+    );
+
+    const duration = Date.now() - startTime;
+
+    console.log(
+      JSON.stringify({
+        event: 'INTELLIGENT_RECOMMENDATION_SUCCESS',
+        requestId,
+        category: sanitizedCategory,
+        originalCategory: category,
+        studiesUsed: metadata.studiesUsed || 0,
+        hasRealData: true,
+        enrichDuration,
+        totalDuration: duration,
+        recommendationId: recommendation.recommendation_id,
+        timestamp: new Date().toISOString(),
+      })
     );
 
     return NextResponse.json(
@@ -220,6 +307,14 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     const duration = Date.now() - startTime;
+    let category = 'unknown';
+    
+    try {
+      const errorBody = await request.clone().json().catch(() => ({}));
+      category = errorBody?.category || 'unknown';
+    } catch {
+      // Ignore - category will remain 'unknown'
+    }
 
     portalLogger.logError(error, {
       requestId,
@@ -228,7 +323,17 @@ export async function POST(request: NextRequest) {
       duration,
     });
 
-    console.error(`❌ Error generating recommendation: ${error.message}`);
+    console.error(
+      JSON.stringify({
+        event: 'RECOMMEND_ERROR',
+        requestId,
+        category,
+        error: error.message,
+        stack: error.stack,
+        duration,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     // DO NOT generate fake data - return proper error instead
     return NextResponse.json(

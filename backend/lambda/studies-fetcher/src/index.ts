@@ -25,6 +25,9 @@ export async function handler(
   const subsegment = segment?.addNewSubsegment?.('studies-fetcher');
 
   const startTime = Date.now();
+  const correlationId = event.headers?.['X-Request-ID'] || 
+                       event.headers?.['x-request-id'] || 
+                       context.awsRequestId;
 
   try {
     // Add X-Ray annotations
@@ -32,6 +35,7 @@ export async function handler(
       subsegment.addAnnotation('module', 'studies-fetcher');
       subsegment.addAnnotation('requestId', context.awsRequestId);
       subsegment.addAnnotation('httpMethod', event.httpMethod);
+      subsegment.addAnnotation('correlationId', correlationId);
     }
 
     // Handle OPTIONS (CORS preflight)
@@ -52,20 +56,68 @@ export async function handler(
     const request = parseRequest(event);
 
     if (subsegment) {
+      subsegment.addAnnotation('module', 'studies-fetcher');
       subsegment.addAnnotation('supplementName', request.supplementName);
+      subsegment.addAnnotation('searchQuery', request.supplementName); // Alias for clarity
       subsegment.addAnnotation('maxResults', request.maxResults || config.defaultMaxResults);
-      subsegment.addMetadata('filters', request.filters || {});
+      subsegment.addAnnotation('correlationId', correlationId);
+      subsegment.addMetadata('filters', {
+        ...request.filters,
+        rctOnly: request.filters?.rctOnly || false,
+        yearFrom: request.filters?.yearFrom,
+        yearTo: request.filters?.yearTo,
+        humanStudiesOnly: request.filters?.humanStudiesOnly,
+        studyTypes: request.filters?.studyTypes || [],
+      });
+      subsegment.addMetadata('request', {
+        supplementName: request.supplementName,
+        maxResults: request.maxResults || config.defaultMaxResults,
+      });
     }
+
+    // Log structured request
+    console.log(
+      JSON.stringify({
+        event: 'STUDIES_FETCH_REQUEST',
+        requestId: context.awsRequestId,
+        correlationId,
+        supplementName: request.supplementName,
+        searchQuery: request.supplementName,
+        maxResults: request.maxResults || config.defaultMaxResults,
+        filters: request.filters || {},
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     // Search PubMed
     const searchSubsegment = subsegment?.addNewSubsegment?.('pubmed-search');
+    const searchStartTime = Date.now();
+    
     try {
+      if (searchSubsegment) {
+        searchSubsegment.addAnnotation('searchQuery', request.supplementName);
+        searchSubsegment.addMetadata('filters', request.filters || {});
+      }
+
       const studies = await searchPubMed(request);
 
-      searchSubsegment?.addAnnotation('studiesFound', studies.length);
+      const searchDuration = Date.now() - searchStartTime;
+      const studyTypes = studies.map((s: any) => s.studyType || 'unknown');
+      const studyIds = studies.map((s: any) => s.pmid || s.id).filter(Boolean);
+
+      if (searchSubsegment) {
+        searchSubsegment.addAnnotation('studiesFound', studies.length);
+        searchSubsegment.addAnnotation('success', true);
+        searchSubsegment.addMetadata('results', {
+          count: studies.length,
+          studyTypes: [...new Set(studyTypes)],
+          sampleIds: studyIds.slice(0, 5), // First 5 IDs for reference
+        });
+      }
       searchSubsegment?.close();
 
       const duration = Date.now() - startTime;
+      const searchDuration = Date.now() - searchStartTime;
 
       // Build success response
       const response: StudiesResponse = {
@@ -82,10 +134,31 @@ export async function handler(
         },
       };
 
+      // Log structured success
+      console.log(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_SUCCESS',
+          requestId: context.awsRequestId,
+          correlationId,
+          supplementName: request.supplementName,
+          searchQuery: request.supplementName,
+          studiesFound: studies.length,
+          duration,
+          searchDuration,
+          studyTypes: [...new Set(studyTypes)],
+          timestamp: new Date().toISOString(),
+        })
+      );
+
       if (subsegment) {
         subsegment.addAnnotation('success', true);
+        subsegment.addAnnotation('studiesFound', studies.length);
         subsegment.addAnnotation('duration', duration);
-        subsegment.addMetadata('response', { studiesCount: studies.length });
+        subsegment.addMetadata('response', { 
+          studiesCount: studies.length,
+          studyTypes: [...new Set(studyTypes)],
+          searchDuration,
+        });
       }
 
       // Save to cache asynchronously (fire-and-forget)
@@ -99,15 +172,48 @@ export async function handler(
         body: JSON.stringify(response),
       };
     } catch (error) {
-      searchSubsegment?.addError(error as Error);
+      const searchDuration = Date.now() - searchStartTime;
+      console.error(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_ERROR',
+          requestId: context.awsRequestId,
+          correlationId,
+          supplementName: request.supplementName,
+          searchQuery: request.supplementName,
+          error: (error as Error).message,
+          searchDuration,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      if (searchSubsegment) {
+        searchSubsegment.addAnnotation('success', false);
+        searchSubsegment.addAnnotation('error', (error as Error).message);
+        searchSubsegment.addError(error as Error);
+      }
       searchSubsegment?.close();
       throw error;
     }
   } catch (error: any) {
-    console.error('Error in studies-fetcher:', error);
+    const duration = Date.now() - startTime;
+    const correlationId = event.headers?.['X-Request-ID'] || 
+                         event.headers?.['x-request-id'] || 
+                         context.awsRequestId;
+    console.error(
+      JSON.stringify({
+        event: 'STUDIES_FETCHER_ERROR',
+        requestId: context.awsRequestId,
+        correlationId,
+        error: error.message,
+        stack: error.stack,
+        duration,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     if (subsegment) {
       subsegment.addAnnotation('success', false);
+      subsegment.addAnnotation('error', error.message);
       subsegment.addError(error);
     }
 

@@ -92,14 +92,20 @@ async function expandWithLLM(term: string): Promise<string[]> {
 
 Your task: Provide the full chemical or scientific names optimized for PubMed searches.
 
-Rules:
+CRITICAL RULES:
 1. If it's an ABBREVIATION (like HMB, BCAA, NAC), expand it to full chemical names
-2. If it's in SPANISH, translate it to English scientific names (PubMed is in English)
+2. If it's in SPANISH, you MUST translate it to English scientific names (PubMed is in English)
+   - Spanish herbs/spices: "cilantro" → "coriander", "perejil" → "parsley", "romero" → "rosemary"
+   - Spanish vitamins: "vitamina c" → "vitamin c", "vitamina d" → "vitamin d"
+   - Spanish minerals: "magnesio" → "magnesium", "calcio" → "calcium"
+   - ALWAYS translate Spanish terms - PubMed searches require English
 3. Return ONLY names that would find studies in PubMed
 4. Order by: most common scientific name first
 5. Include chemical names, brand names if very common
 6. Maximum 3-4 alternatives
-7. If you don't recognize it or it's already in English, return empty array
+7. If it's already in English and not an abbreviation, return empty array ONLY if you're certain
+
+IMPORTANT: Be aggressive with Spanish→English translation. If you detect Spanish, translate it immediately.
 
 Return ONLY a JSON array, no explanation:
 ["primary name", "alternative name 1", "alternative name 2"]
@@ -108,6 +114,9 @@ Examples:
 - "HMB" → ["beta-hydroxy beta-methylbutyrate", "β-hydroxy-β-methylbutyrate", "leucine metabolite"]
 - "BCAA" → ["branched-chain amino acids", "leucine isoleucine valine"]
 - "NAC" → ["N-acetylcysteine", "N-acetyl-L-cysteine"]
+- "cilantro" → ["coriander", "Coriandrum sativum"] (Spanish→English translation)
+- "jengibre" → ["ginger", "Zingiber officinale"] (Spanish→English translation)
+- "cúrcuma" → ["turmeric", "curcumin"] (Spanish→English translation)
 - "ashwagandha" → [] (already in English)
 - "ginseng" → [] (already in English)
 
@@ -135,29 +144,76 @@ Now expand: "${term}"`;
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
 
-    console.log(`[ABBREVIATION] Claude response: ${content}`);
+    console.log(
+      JSON.stringify({
+        event: 'LLM_EXPANSION_RESPONSE',
+        term,
+        rawResponse: content,
+        responseLength: content.length,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     // Parse JSON array from response
     // Handle both direct JSON and markdown-wrapped JSON
     const jsonMatch = content.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
-      console.warn(`[ABBREVIATION] No JSON array found in response`);
+      console.warn(
+        JSON.stringify({
+          event: 'LLM_EXPANSION_NO_JSON',
+          term,
+          rawResponse: content.substring(0, 500), // First 500 chars
+          timestamp: new Date().toISOString(),
+        })
+      );
       return [];
     }
 
-    const alternatives = JSON.parse(jsonMatch[0]) as string[];
+    let alternatives: string[] = [];
+    try {
+      alternatives = JSON.parse(jsonMatch[0]) as string[];
+    } catch (parseError: any) {
+      console.error(
+        JSON.stringify({
+          event: 'LLM_EXPANSION_JSON_PARSE_ERROR',
+          term,
+          jsonMatch: jsonMatch[0].substring(0, 500),
+          error: parseError.message,
+          timestamp: new Date().toISOString(),
+        })
+      );
+      return [];
+    }
 
     // Validate and filter
     const validated = alternatives
       .filter(alt => typeof alt === 'string' && alt.length > 0)
       .slice(0, 4); // Max 4 alternatives
 
-    console.log(`[ABBREVIATION] Expanded to: ${validated.join(', ')}`);
+    console.log(
+      JSON.stringify({
+        event: 'LLM_EXPANSION_SUCCESS',
+        term,
+        alternativesCount: validated.length,
+        alternatives: validated,
+        originalCount: alternatives.length,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     return validated;
 
-  } catch (error) {
-    console.error('[ABBREVIATION] Error expanding with LLM:', error);
+  } catch (error: any) {
+    console.error(
+      JSON.stringify({
+        event: 'LLM_EXPANSION_ERROR',
+        term,
+        error: error.message,
+        errorStack: error.stack,
+        errorName: error.name,
+        timestamp: new Date().toISOString(),
+      })
+    );
     return [];
   }
 }
@@ -184,19 +240,61 @@ export async function expandAbbreviation(
   term: string
 ): Promise<AbbreviationExpansion> {
   const trimmed = term.trim();
+  const startTime = Date.now();
 
-  console.log(`[ABBREVIATION] Analyzing term: "${trimmed}"`);
+  console.log(
+    JSON.stringify({
+      event: 'ABBREVIATION_EXPANSION_START',
+      term: trimmed,
+      timestamp: new Date().toISOString(),
+    })
+  );
 
   // 1. Check if it's an abbreviation
   const isAbbr = isLikelyAbbreviation(trimmed);
 
+  console.log(
+    JSON.stringify({
+      event: 'ABBREVIATION_ANALYSIS',
+      term: trimmed,
+      isAbbreviation: isAbbr,
+      timestamp: new Date().toISOString(),
+    })
+  );
+
   // 2. ALWAYS try LLM expansion (handles both abbreviations AND Spanish translation)
   // The LLM will return empty array if no expansion/translation needed
-  console.log(`[ABBREVIATION] ${isAbbr ? 'Detected abbreviation' : 'Checking for translation'}, calling LLM...`);
-
+  const llmStartTime = Date.now();
   const llmAlternatives = await expandWithLLM(trimmed);
+  const llmDuration = Date.now() - llmStartTime;
+
+  console.log(
+    JSON.stringify({
+      event: 'ABBREVIATION_LLM_COMPLETE',
+      term: trimmed,
+      isAbbreviation: isAbbr,
+      alternativesCount: llmAlternatives.length,
+      alternatives: llmAlternatives,
+      llmDuration,
+      timestamp: new Date().toISOString(),
+    })
+  );
 
   if (llmAlternatives.length > 0) {
+    const totalDuration = Date.now() - startTime;
+    console.log(
+      JSON.stringify({
+        event: 'ABBREVIATION_EXPANSION_SUCCESS',
+        term: trimmed,
+        expandedTo: llmAlternatives[0],
+        alternatives: llmAlternatives,
+        source: 'llm',
+        confidence: 0.9,
+        totalDuration,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
     return {
       original: trimmed,
       isAbbreviation: isAbbr,
@@ -207,7 +305,20 @@ export async function expandAbbreviation(
   }
 
   // 3. Fallback: use original term (no expansion needed)
-  console.log(`[ABBREVIATION] No expansion needed, using original term`);
+  const totalDuration = Date.now() - startTime;
+  console.log(
+    JSON.stringify({
+      event: 'ABBREVIATION_NO_EXPANSION',
+      term: trimmed,
+      isAbbreviation: isAbbr,
+      reason: 'llm_returned_empty_or_no_expansion_needed',
+      source: isAbbr ? 'heuristic' : 'none',
+      confidence: 1.0,
+      totalDuration,
+      timestamp: new Date().toISOString(),
+    })
+  );
+
   return {
     original: trimmed,
     isAbbreviation: isAbbr,
@@ -215,6 +326,164 @@ export async function expandAbbreviation(
     confidence: 1.0, // High confidence - term is already good
     source: isAbbr ? 'heuristic' : 'none',
   };
+}
+
+// ====================================
+// SEARCH VARIATION GENERATION
+// ====================================
+
+/**
+ * Generate search variations for a supplement term when initial search fails
+ * Uses LLM to generate intelligent variations optimized for PubMed searches
+ * 
+ * @param term - The supplement term that didn't find results
+ * @returns Array of search variations to try
+ * 
+ * @example
+ * generateSearchVariations('kefir')
+ * // Returns: ['kefir milk', 'kefir grains', 'kefir supplementation', 'kefir probiotics']
+ */
+export async function generateSearchVariations(term: string): Promise<string[]> {
+  const trimmed = term.trim();
+
+  console.log(
+    JSON.stringify({
+      event: 'SEARCH_VARIATIONS_GENERATION_START',
+      term: trimmed,
+      timestamp: new Date().toISOString(),
+    })
+  );
+
+  const prompt = `You are a PubMed search expert. A user searched for "${trimmed}" but found no studies.
+
+Your task: Generate 3-5 search term variations that would likely find studies in PubMed for this supplement.
+
+Rules:
+1. Generate variations that are commonly used in scientific literature
+2. Include compound terms (e.g., "kefir milk", "kefir grains")
+3. Include scientific/technical terms if applicable
+4. Include "supplementation" or "supplement" variations
+5. Order by likelihood of finding results (most likely first)
+6. Return ONLY a JSON array, no explanation
+
+Examples:
+- "kefir" → ["kefir milk", "kefir grains", "kefir supplementation", "kefir probiotics"]
+- "ashwagandha" → ["ashwagandha supplementation", "Withania somnifera", "ashwagandha extract"]
+- "turmeric" → ["turmeric", "curcumin", "turmeric extract", "curcuma longa"]
+
+Generate variations for: "${trimmed}"`;
+
+  try {
+    const command = new InvokeModelCommand({
+      modelId: MODEL_ID,
+      contentType: 'application/json',
+      accept: 'application/json',
+      body: JSON.stringify({
+        anthropic_version: 'bedrock-2023-05-31',
+        max_tokens: 200,
+        temperature: 0.2, // Slightly higher for creativity in variations
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+      }),
+    });
+
+    const response = await bedrockClient.send(command);
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    const content = responseBody.content[0].text;
+
+    console.log(
+      JSON.stringify({
+        event: 'SEARCH_VARIATIONS_LLM_RESPONSE',
+        term: trimmed,
+        rawResponse: content,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
+    // Parse JSON array from response
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      console.warn(
+        JSON.stringify({
+          event: 'SEARCH_VARIATIONS_NO_JSON',
+          term: trimmed,
+          rawResponse: content.substring(0, 500),
+          timestamp: new Date().toISOString(),
+        })
+      );
+      // Fallback: generate basic variations
+      return generateBasicVariations(trimmed);
+    }
+
+    let variations: string[] = [];
+    try {
+      variations = JSON.parse(jsonMatch[0]) as string[];
+    } catch (parseError: any) {
+      console.error(
+        JSON.stringify({
+          event: 'SEARCH_VARIATIONS_JSON_PARSE_ERROR',
+          term: trimmed,
+          jsonMatch: jsonMatch[0].substring(0, 500),
+          error: parseError.message,
+          timestamp: new Date().toISOString(),
+        })
+      );
+      return generateBasicVariations(trimmed);
+    }
+
+    // Validate and filter
+    const validated = variations
+      .filter(v => typeof v === 'string' && v.length > 0 && v.length < 100)
+      .slice(0, 5); // Max 5 variations
+
+    // Always include original term as first option
+    const finalVariations = [trimmed, ...validated.filter(v => v.toLowerCase() !== trimmed.toLowerCase())];
+
+    console.log(
+      JSON.stringify({
+        event: 'SEARCH_VARIATIONS_SUCCESS',
+        term: trimmed,
+        variationsCount: finalVariations.length,
+        variations: finalVariations,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
+    return finalVariations;
+
+  } catch (error: any) {
+    console.error(
+      JSON.stringify({
+        event: 'SEARCH_VARIATIONS_ERROR',
+        term: trimmed,
+        error: error.message,
+        errorStack: error.stack,
+        errorName: error.name,
+        timestamp: new Date().toISOString(),
+      })
+    );
+    // Fallback to basic variations
+    return generateBasicVariations(trimmed);
+  }
+}
+
+/**
+ * Generate basic search variations as fallback
+ */
+function generateBasicVariations(term: string): string[] {
+  const variations = [
+    term,
+    `${term} supplementation`,
+    `${term} supplement`,
+    `${term} extract`,
+  ];
+  
+  // Remove duplicates and return
+  return [...new Set(variations)];
 }
 
 // ====================================
