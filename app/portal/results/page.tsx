@@ -90,7 +90,13 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
       longTermStudies: evidenceSummary.researchSpanYears >= 5,
       safetyEstablished: true,
     },
-    dosage: supplement.dosage || 'Consultar con profesional de salud',
+    // Transform dosage object from Lambda format to component format
+    dosage: typeof supplement.dosage === 'object' && supplement.dosage !== null ? {
+      effectiveDose: supplement.dosage.effectiveDose || supplement.dosage.optimalDose || 'No especificado',
+      commonDose: supplement.dosage.standard || supplement.dosage.optimalDose || 'Consultar con profesional',
+      timing: supplement.dosage.timing || 'Según indicaciones',
+      notes: supplement.dosage.notes || '',
+    } : undefined,
     sideEffects: Array.isArray(supplement.side_effects) ? supplement.side_effects : [],
     interactions: Array.isArray(supplement.interactions) ? supplement.interactions : [],
     contraindications: Array.isArray(supplement.warnings) ? supplement.warnings : [],
