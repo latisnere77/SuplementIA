@@ -217,6 +217,34 @@ function ResultsPageContent() {
     const fetchRecommendation = async (retryCount = 0): Promise<boolean> => {
       if (!recommendationId) return false;
 
+      // FIRST: Check localStorage cache
+      if (typeof window !== 'undefined' && retryCount === 0) {
+        try {
+          const cacheKey = `recommendation_${recommendationId}`;
+          const cachedData = localStorage.getItem(cacheKey);
+
+          if (cachedData) {
+            const { recommendation, timestamp, ttl } = JSON.parse(cachedData);
+            const age = Date.now() - timestamp;
+
+            // Check if cache is still valid
+            if (age < ttl) {
+              console.log('✅ Found recommendation in localStorage cache (age:', Math.floor(age / 1000 / 60), 'minutes)');
+              if (isMounted) {
+                setRecommendation(recommendation);
+                setIsLoading(false);
+              }
+              return true; // Success - used cache
+            } else {
+              console.log('⚠️  Cache expired, removing:', cacheKey);
+              localStorage.removeItem(cacheKey);
+            }
+          }
+        } catch (cacheError) {
+          console.warn('Failed to read from cache:', cacheError);
+        }
+      }
+
       // Retry logic with exponential backoff
       const maxRetries = 3;
       const baseDelay = 1000; // 1 second
@@ -248,7 +276,22 @@ function ResultsPageContent() {
             await new Promise(resolve => setTimeout(resolve, retryDelay));
             return fetchRecommendation(retryCount + 1);
           }
-          
+
+          // Handle 410 Gone - recommendation endpoint no longer available (new system)
+          if (response.status === 410) {
+            console.log('⚠️  410 Gone - recommendation was already delivered in quiz response');
+            console.log('⚠️  Redirecting to homepage to generate new recommendation');
+            if (isMounted) {
+              setError('Esta recomendación ya no está disponible. Por favor, genera una nueva búsqueda.');
+              setIsLoading(false);
+              // Redirect to homepage after 2 seconds
+              setTimeout(() => {
+                router.push('/portal');
+              }, 2000);
+            }
+            return false;
+          }
+
           // Better error messages for specific cases
           let errorMessage = errorData.error || errorData.message || `Failed to load recommendation (${response.status})`;
           if (response.status === 503 && errorData.isTimeout) {
@@ -545,8 +588,23 @@ function ResultsPageContent() {
             });
             
             setRecommendation(data.recommendation);
-            // Update URL with recommendation ID
+
+            // CACHE: Save to localStorage for later retrieval
             if (data.recommendation.recommendation_id && typeof window !== 'undefined') {
+              try {
+                const cacheKey = `recommendation_${data.recommendation.recommendation_id}`;
+                const cacheData = {
+                  recommendation: data.recommendation,
+                  timestamp: Date.now(),
+                  ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
+                };
+                localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+                console.log('💾 Saved recommendation to localStorage:', data.recommendation.recommendation_id);
+              } catch (cacheError) {
+                console.warn('Failed to cache recommendation:', cacheError);
+              }
+
+              // Update URL with recommendation ID
               const newUrl = `/portal/results?id=${data.recommendation.recommendation_id}`;
               const currentUrl = window.location.pathname + window.location.search;
               if (currentUrl !== newUrl) {
