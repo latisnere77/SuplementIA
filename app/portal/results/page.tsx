@@ -647,18 +647,28 @@ function ResultsPageContent() {
             }
 
             // CACHE: Save to localStorage for later retrieval
+            // BUT: Don't cache recommendations with no real data (fake/generated)
             if (data.recommendation.recommendation_id && typeof window !== 'undefined') {
-              try {
-                const cacheKey = `recommendation_${data.recommendation.recommendation_id}`;
-                const cacheData = {
-                  recommendation: data.recommendation,
-                  timestamp: Date.now(),
-                  ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
-                };
-                localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-                console.log('💾 Saved recommendation to localStorage:', data.recommendation.recommendation_id);
-              } catch (cacheError) {
-                console.warn('Failed to cache recommendation:', cacheError);
+              const metadata = (data.recommendation as any)?._enrichment_metadata || {};
+              const totalStudies = data.recommendation?.evidence_summary?.totalStudies || 0;
+              const studiesUsed = metadata.studiesUsed || 0;
+              const hasRealData = studiesUsed > 0; // Only cache if we have real study data
+
+              if (hasRealData) {
+                try {
+                  const cacheKey = `recommendation_${data.recommendation.recommendation_id}`;
+                  const cacheData = {
+                    recommendation: data.recommendation,
+                    timestamp: Date.now(),
+                    ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
+                  };
+                  localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+                  console.log('💾 Saved recommendation to localStorage:', data.recommendation.recommendation_id);
+                } catch (cacheError) {
+                  console.warn('Failed to cache recommendation:', cacheError);
+                }
+              } else {
+                console.log('⚠️  Skipping cache for recommendation with no real data (totalStudies:', totalStudies, 'studiesUsed:', studiesUsed, ')');
               }
 
               // DISABLED: URL update with ID
