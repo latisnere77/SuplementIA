@@ -145,8 +145,8 @@ export async function POST(request: NextRequest) {
 
     const enrichData = await enrichResponse.json();
 
-    if (!enrichData.success) {
-      console.warn(`⚠️  Enrichment unsuccessful, using fallback`);
+    if (!enrichData.success || !enrichData.data) {
+      console.warn(`⚠️  Enrichment unsuccessful or no data, using fallback`);
       const mockRecommendation = getMockRecommendation(sanitizedCategory);
 
       return NextResponse.json(

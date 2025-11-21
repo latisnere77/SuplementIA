@@ -90,10 +90,10 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
       longTermStudies: evidenceSummary.researchSpanYears >= 5,
       safetyEstablished: true,
     },
-    dosage: supplement.dosage,
-    sideEffects: supplement.side_effects,
-    interactions: supplement.interactions,
-    contraindications: supplement.warnings,
+    dosage: supplement.dosage || 'Consultar con profesional de salud',
+    sideEffects: Array.isArray(supplement.side_effects) ? supplement.side_effects : [],
+    interactions: Array.isArray(supplement.interactions) ? supplement.interactions : [],
+    contraindications: Array.isArray(supplement.warnings) ? supplement.warnings : [],
   };
 }
 
