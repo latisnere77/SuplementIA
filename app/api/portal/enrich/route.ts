@@ -77,6 +77,8 @@ export async function POST(request: NextRequest) {
       '5-htp': '5-hydroxytryptophan',
       'sam-e': 'S-adenosyl methionine',
       'dmae': 'dimethylaminoethanol',
+      'copper peptides': 'copper tripeptide-1', // GHK-Cu
+      'ghk-cu': 'copper tripeptide-1',
     };
 
     console.log(`🧠 Checking if term needs expansion/translation: "${supplementName}"`);
@@ -120,76 +122,74 @@ export async function POST(request: NextRequest) {
     // STEP 1: Fetch REAL PubMed studies
     console.log(`📚 Fetching real PubMed studies for: ${searchTerm}...`);
 
-    const studiesResponse = await fetch(STUDIES_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        supplementName: searchTerm, // Use expanded term for better PubMed results
-        maxResults: Math.min(maxStudies || 10, 10), // LIMIT: Up to 10 studies for comprehensive analysis
-        filters: {
-          rctOnly: rctOnly || false, // Prioritize RCTs
-          yearFrom: yearFrom || 2010, // Last 15 years
-          yearTo: yearTo,
-          humanStudiesOnly: true,
-          studyTypes: [
-            'randomized controlled trial',
-            'meta-analysis',
-            'systematic review',
-          ],
-        },
-      }),
+    // STEP 1: Fetch REAL PubMed studies
+    console.log(`📚 Fetching real PubMed studies for: ${searchTerm}...`);
+
+    // Helper to fetch studies with specific filters
+    const fetchStudies = async (term: string, filters: any) => {
+      return fetch(STUDIES_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          supplementName: term,
+          maxResults: Math.min(maxStudies || 10, 10),
+          filters,
+        }),
+      });
+    };
+
+    // Attempt 1: Strict filters (High quality evidence)
+    let studiesResponse = await fetchStudies(searchTerm, {
+      rctOnly: rctOnly || false,
+      yearFrom: yearFrom || 2010,
+      yearTo: yearTo,
+      humanStudiesOnly: true,
+      studyTypes: [
+        'randomized controlled trial',
+        'meta-analysis',
+        'systematic review',
+      ],
     });
 
-    if (!studiesResponse.ok) {
-      const error = await studiesResponse.text();
-      console.error('❌ Studies API error:', error);
+    let studiesData = await studiesResponse.json().catch(() => ({ success: false }));
+    let studies = studiesData.success ? studiesData.data?.studies || [] : [];
 
-      // STRICT VALIDATION: DO NOT generate data without studies
-      console.error(`❌ Cannot fetch studies for: ${supplementName}`);
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'insufficient_data',
-          message: `No pudimos encontrar estudios científicos para "${supplementName}".`,
-          details: error,
-          metadata: {
-            hasRealData: false,
-            studiesUsed: 0,
-          },
-        },
-        { status: 404 }
-      );
+    // Attempt 2: Relaxed filters (If no strict studies found)
+    if (studies.length === 0) {
+      console.log(`⚠️ No studies found with strict filters. Retrying with relaxed filters...`);
+
+      studiesResponse = await fetchStudies(searchTerm, {
+        rctOnly: false,
+        yearFrom: 2000, // Look back further
+        yearTo: yearTo,
+        humanStudiesOnly: true, // Still require human studies
+        // Remove studyTypes restriction to include all types (clinical trials, reviews, etc.)
+      });
+
+      studiesData = await studiesResponse.json().catch(() => ({ success: false }));
+      studies = studiesData.success ? studiesData.data?.studies || [] : [];
     }
 
-    const studiesData = await studiesResponse.json();
+    // Attempt 3: Ultra-relaxed filters (If still no studies)
+    // Sometimes "humanStudiesOnly" filter in PubMed is imperfect or studies are very new
+    if (studies.length === 0) {
+      console.log(`⚠️ No studies found with relaxed filters. Retrying with ultra-relaxed filters...`);
 
-    if (!studiesData.success || !studiesData.data?.studies) {
-      console.error(`❌ No studies found for: ${supplementName}`);
+      studiesResponse = await fetchStudies(searchTerm, {
+        rctOnly: false,
+        yearFrom: 1990,
+        yearTo: yearTo,
+        humanStudiesOnly: false, // Allow in-vitro/animal if that's all we have (better than nothing)
+      });
 
-      // STRICT VALIDATION: DO NOT generate data without studies
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'insufficient_data',
-          message: `No encontramos estudios científicos para "${supplementName}".`,
-          suggestion: 'Verifica la ortografía o intenta con un término más específico.',
-          metadata: {
-            hasRealData: false,
-            studiesUsed: 0,
-          },
-        },
-        { status: 404 }
-      );
+      studiesData = await studiesResponse.json().catch(() => ({ success: false }));
+      studies = studiesData.success ? studiesData.data?.studies || [] : [];
     }
 
-    const studies = studiesData.data.studies;
+    if (studies.length === 0) {
+      console.error(`❌ No studies found for: ${supplementName} (after all attempts)`);
 
-    // CRITICAL VALIDATION: Ensure we have at least one study
-    if (!studies || studies.length === 0) {
-      console.error(`❌ No studies found (empty array) for: ${supplementName}`);
-
+      // STRICT VALIDATION: DO NOT generate data without studies
       return NextResponse.json(
         {
           success: false,
