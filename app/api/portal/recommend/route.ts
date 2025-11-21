@@ -97,42 +97,125 @@ export async function POST(request: NextRequest) {
     // Sanitize category
     const sanitizedCategory = sanitizeQuery(category);
 
-    // Generate unique recommendation ID for async pattern
-    const recommendationId = `rec_${Date.now()}_${randomUUID().substring(0, 8)}`;
-
-    // ASYNC PATTERN: Start enrichment and return immediately with 202 Accepted
-    // Frontend will poll for completion
-    console.log(`🚀 Starting async enrichment for: ${sanitizedCategory} (ID: ${recommendationId})`);
-
-    // Start enrichment process (don't await - fire and forget)
+    // Call our intelligent enrichment system with extended timeout
     const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich`;
+    console.log(`🧠 Calling intelligent enrichment system for: ${sanitizedCategory}`);
 
-    // Fire async enrichment (use Promise to not block response)
-    processEnrichmentAsync(
-      ENRICH_API_URL,
+    const enrichResponse = await fetch(ENRICH_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Request-ID': requestId,
+      },
+      body: JSON.stringify({
+        supplementName: sanitizedCategory,
+        category: sanitizedCategory,
+        maxStudies: 1, // Start with 1 study to stay under timeout
+        rctOnly: false,
+        yearFrom: 2010,
+      }),
+      signal: AbortSignal.timeout(110000), // 110s timeout (less than maxDuration)
+    });
+
+    if (!enrichResponse.ok) {
+      const errorText = await enrichResponse.text();
+      console.error(`❌ Enrichment failed (${enrichResponse.status}):`, errorText);
+
+      // STRICT VALIDATION: DO NOT generate fake data
+      // Return 404 with clear message
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
+          suggestion: 'Intenta buscar con un nombre más específico o verifica la ortografía.',
+          requestId,
+          category: sanitizedCategory,
+        },
+        { status: 404 }
+      );
+    }
+
+    const enrichData = await enrichResponse.json();
+
+    if (!enrichData.success || !enrichData.data) {
+      console.error(`❌ Enrichment unsuccessful or no data for: ${sanitizedCategory}`);
+
+      // STRICT VALIDATION: DO NOT generate fake data
+      // Return 404 with clear message
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
+          suggestion: 'Intenta buscar con un nombre más específico o verifica la ortografía.',
+          requestId,
+          category: sanitizedCategory,
+        },
+        { status: 404 }
+      );
+    }
+
+    // Transform enriched data to recommendation format
+    const enrichedContent = enrichData.data;
+    const metadata = enrichData.metadata || {};
+
+    // CRITICAL VALIDATION: Ensure we have real scientific data
+    const hasRealData = metadata.hasRealData === true && (metadata.studiesUsed || 0) > 0;
+
+    if (!hasRealData) {
+      console.error(`❌ No real scientific data found for: ${sanitizedCategory}`);
+      console.error(`Metadata:`, JSON.stringify(metadata));
+
+      // STRICT VALIDATION: DO NOT generate fake data
+      // Return 404 with clear message
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No encontramos estudios científicos verificables sobre "${sanitizedCategory}".`,
+          suggestion: 'Verifica la ortografía o intenta con un término más específico. Si crees que esto es un error, contáctanos.',
+          requestId,
+          category: sanitizedCategory,
+          metadata: {
+            studiesUsed: metadata.studiesUsed || 0,
+            hasRealData: metadata.hasRealData || false,
+          },
+        },
+        { status: 404 }
+      );
+    }
+
+    const duration = Date.now() - startTime;
+
+    console.log(
+      JSON.stringify({
+        event: 'INTELLIGENT_RECOMMENDATION_SUCCESS',
+        requestId,
+        category: sanitizedCategory,
+        studiesUsed: metadata.studiesUsed || 0,
+        hasRealData: true,
+        duration,
+      })
+    );
+
+    const recommendation = transformToRecommendation(
+      enrichedContent,
       sanitizedCategory,
-      recommendationId,
-      requestId,
       age || 35,
       gender || 'male',
       location || 'CDMX',
-      quiz_id
-    ).catch((error) => {
-      console.error(`❌ Async enrichment failed for ${recommendationId}:`, error);
-    });
+      quiz_id,
+      metadata
+    );
 
-    // Return 202 Accepted immediately with recommendation_id
-    // Frontend will poll /api/portal/recommendation/[id] for completion
     return NextResponse.json(
       {
         success: true,
-        status: 'processing',
-        recommendation_id: recommendationId,
-        message: 'Recommendation is being generated. Please poll for completion.',
-        pollUrl: `/api/portal/recommendation/${recommendationId}`,
         requestId,
+        recommendation,
       },
-      { status: 202 }
+      { status: 200 }
     );
 
   } catch (error: any) {
@@ -162,138 +245,6 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Process enrichment asynchronously
- * This runs in the background and saves result to cache
- */
-async function processEnrichmentAsync(
-  enrichApiUrl: string,
-  category: string,
-  recommendationId: string,
-  requestId: string,
-  age: number,
-  gender: string,
-  location: string,
-  quiz_id?: string
-): Promise<void> {
-  const startTime = Date.now();
-
-  try {
-    console.log(`⏳ [${recommendationId}] Starting enrichment for: ${category}`);
-
-    const enrichResponse = await fetch(enrichApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Request-ID': requestId,
-      },
-      body: JSON.stringify({
-        supplementName: category,
-        category: category,
-        maxStudies: 1,
-        rctOnly: false,
-        yearFrom: 2010,
-      }),
-      signal: AbortSignal.timeout(110000), // 110s timeout
-    });
-
-    if (!enrichResponse.ok) {
-      const errorText = await enrichResponse.text();
-      console.error(`❌ [${recommendationId}] Enrichment failed (${enrichResponse.status}):`, errorText);
-      // Save error state to localStorage for polling endpoint
-      saveRecommendationStatus(recommendationId, 'error', null, errorText);
-      return;
-    }
-
-    const enrichData = await enrichResponse.json();
-
-    if (!enrichData.success || !enrichData.data) {
-      console.error(`❌ [${recommendationId}] Enrichment unsuccessful or no data`);
-      saveRecommendationStatus(recommendationId, 'error', null, 'No data returned from enrichment');
-      return;
-    }
-
-    // Transform enriched data to recommendation format
-    const enrichedContent = enrichData.data;
-    const metadata = enrichData.metadata || {};
-
-    // CRITICAL VALIDATION: Ensure we have real scientific data
-    const hasRealData = metadata.hasRealData === true && (metadata.studiesUsed || 0) > 0;
-
-    if (!hasRealData) {
-      console.error(`❌ [${recommendationId}] No real scientific data found`);
-      console.error(`Metadata:`, JSON.stringify(metadata));
-      saveRecommendationStatus(recommendationId, 'error', null, 'No real scientific data found');
-      return;
-    }
-
-    const duration = Date.now() - startTime;
-
-    console.log(
-      JSON.stringify({
-        event: 'ASYNC_ENRICHMENT_SUCCESS',
-        recommendationId,
-        category,
-        studiesUsed: metadata.studiesUsed || 0,
-        hasRealData: true,
-        duration,
-      })
-    );
-
-    const recommendation = transformToRecommendation(
-      enrichedContent,
-      category,
-      age,
-      gender,
-      location,
-      quiz_id,
-      metadata,
-      recommendationId // Pass the recommendation ID
-    );
-
-    // Save completed recommendation for polling endpoint
-    saveRecommendationStatus(recommendationId, 'completed', recommendation, null);
-
-    console.log(`✅ [${recommendationId}] Recommendation saved successfully`);
-
-  } catch (error: any) {
-    const duration = Date.now() - startTime;
-    console.error(`❌ [${recommendationId}] Async enrichment error:`, error.message);
-    saveRecommendationStatus(recommendationId, 'error', null, error.message);
-  }
-}
-
-/**
- * Save recommendation status to localStorage (temporary solution)
- * In production, this should use DynamoDB or Redis
- */
-function saveRecommendationStatus(
-  recommendationId: string,
-  status: 'processing' | 'completed' | 'error',
-  recommendation: any | null,
-  error: string | null
-): void {
-  // Store in memory (simple in-memory cache for serverless)
-  // In production, use DynamoDB or Vercel KV
-  const cacheKey = `recommendation:${recommendationId}`;
-  const data = {
-    status,
-    recommendation,
-    error,
-    timestamp: Date.now(),
-  };
-
-  // Save to global cache (will persist during lambda warm state)
-  if (typeof global !== 'undefined') {
-    if (!(global as any).__recommendationCache) {
-      (global as any).__recommendationCache = new Map();
-    }
-    (global as any).__recommendationCache.set(cacheKey, data);
-  }
-
-  console.log(`💾 [${recommendationId}] Status saved: ${status}`);
-}
-
-/**
  * Transform enriched content to recommendation format expected by quiz frontend
  */
 function transformToRecommendation(
@@ -303,10 +254,9 @@ function transformToRecommendation(
   gender: string,
   location: string,
   quiz_id?: string,
-  metadata?: any,
-  recommendationId?: string
+  metadata?: any
 ): any {
-  const recId = recommendationId || `rec_${Date.now()}_${randomUUID().substring(0, 8)}`;
+  const recId = `rec_${Date.now()}_${randomUUID().substring(0, 8)}`;
 
   return {
     recommendation_id: recId,
