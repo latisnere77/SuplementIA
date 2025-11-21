@@ -153,8 +153,8 @@ async function searchSupplementInPubMedIntelligent(
 
   console.log(`[MCP INTELLIGENT] Analyzing query: ${supplementName}`);
 
-  // Get intelligent search strategy
-  const strategy = getIntelligentSearchStrategy(supplementName, 3); // Top 3 candidates
+  // Get intelligent search strategy (now with async abbreviation expansion)
+  const strategy = await getIntelligentSearchStrategy(supplementName, 3); // Top 3 candidates
 
   console.log(`[MCP INTELLIGENT] Found ${strategy.candidates.length} candidates`);
 

@@ -12,15 +12,27 @@ import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-valid
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-import { PORTAL_API_URL } from '@/lib/portal/api-config';
-
-// Quiz endpoint uses /portal/recommend path
-const QUIZ_API_URL = `${PORTAL_API_URL}/portal/recommend`;
-
 // Check if we're in demo mode (only if API URL is explicitly disabled)
-// Note: 'staging' in URL is OK - it's still a valid backend endpoint
-// We have a default URL, so demo mode should only activate if explicitly disabled
 const isDemoMode = process.env.PORTAL_API_URL === 'DISABLED' || process.env.PORTAL_API_URL === 'false';
+
+/**
+ * Get the base URL for internal API calls
+ * Auto-detects production URL from Vercel environment
+ */
+function getBaseUrl(): string {
+  // 1. Vercel production URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  // 2. Explicit URL from env
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+
+  // 3. Local development
+  return 'http://localhost:3000';
+}
 
 /**
  * Helper: Detect altitude from location
@@ -148,8 +160,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // PRODUCTION MODE: Call Lambda to generate recommendation
+    // PRODUCTION MODE: Call our intelligent recommendation system
     const backendCallStart = Date.now();
+    const QUIZ_API_URL = `${getBaseUrl()}/api/portal/recommend`;
 
     portalLogger.logBackendCall(QUIZ_API_URL, 'POST', {
       requestId,

@@ -1,7 +1,10 @@
 /**
  * Supplement Intelligence System
  * Advanced detection, translation, disambiguation, and fuzzy matching
+ * Now with intelligent abbreviation expansion via LLM
  */
+
+import { expandAbbreviation, detectAbbreviation } from './abbreviation-expander';
 
 // ====================================
 // TYPES
@@ -9,7 +12,7 @@
 
 export interface SupplementCandidate {
   term: string;
-  type: 'translation' | 'synonym' | 'scientific_name' | 'compound' | 'fuzzy_match';
+  type: 'translation' | 'synonym' | 'scientific_name' | 'compound' | 'fuzzy_match' | 'abbreviation_expansion';
   confidence: number;
   source: string;
 }
@@ -127,6 +130,129 @@ const SUPPLEMENT_SYNONYMS: Record<string, string[]> = {
     'Korean ginseng',
     'Panax ginseng',
   ],
+
+  // ============================================
+  // COMMON SUPPLEMENT ABBREVIATIONS (FALLBACK)
+  // ============================================
+  // These serve as fallback if LLM expansion fails
+
+  // HMB - Beta-hydroxy beta-methylbutyrate
+  'hmb': [
+    'beta-hydroxy beta-methylbutyrate',
+    'β-hydroxy-β-methylbutyrate',
+    'leucine metabolite',
+    'HMB',
+  ],
+
+  // BCAA - Branched-Chain Amino Acids
+  'bcaa': [
+    'branched-chain amino acids',
+    'leucine isoleucine valine',
+    'BCAA',
+  ],
+
+  // NAC - N-Acetylcysteine
+  'nac': [
+    'N-acetylcysteine',
+    'N-acetyl-L-cysteine',
+    'NAC',
+  ],
+
+  // CoQ10 - Coenzyme Q10
+  'coq10': [
+    'coenzyme q10',
+    'ubiquinone',
+    'CoQ10',
+  ],
+  'coq': [
+    'coenzyme q10',
+    'ubiquinone',
+  ],
+
+  // ALA - Alpha Lipoic Acid (note: can also mean alpha-linolenic acid)
+  'ala': [
+    'alpha lipoic acid',
+    'α-lipoic acid',
+    'thioctic acid',
+  ],
+
+  // EPA & DHA - Omega-3 fatty acids
+  'epa': [
+    'eicosapentaenoic acid',
+    'EPA omega-3',
+  ],
+  'dha': [
+    'docosahexaenoic acid',
+    'DHA omega-3',
+  ],
+
+  // 5-HTP - 5-Hydroxytryptophan
+  '5-htp': [
+    '5-hydroxytryptophan',
+    '5-HTP',
+    'oxitriptan',
+  ],
+  '5htp': [
+    '5-hydroxytryptophan',
+    '5-HTP',
+  ],
+
+  // SAMe - S-Adenosyl methionine
+  'same': [
+    'S-adenosyl methionine',
+    'S-adenosylmethionine',
+    'SAMe',
+  ],
+
+  // MSM - Methylsulfonylmethane
+  'msm': [
+    'methylsulfonylmethane',
+    'dimethyl sulfone',
+    'MSM',
+  ],
+
+  // GABA - Gamma-Aminobutyric Acid
+  'gaba': [
+    'gamma-aminobutyric acid',
+    'γ-aminobutyric acid',
+    'GABA',
+  ],
+
+  // L-Theanine
+  'l-theanine': [
+    'L-theanine',
+    'theanine',
+    'N-ethyl-L-glutamine',
+  ],
+  'theanine': [
+    'L-theanine',
+    'theanine',
+  ],
+
+  // TMG - Trimethylglycine (Betaine)
+  'tmg': [
+    'trimethylglycine',
+    'betaine',
+    'TMG',
+  ],
+
+  // DMAE - Dimethylaminoethanol
+  'dmae': [
+    'dimethylaminoethanol',
+    'dimethylethanolamine',
+    'DMAE',
+  ],
+
+  // L-Carnitine
+  'l-carnitine': [
+    'L-carnitine',
+    'levocarnitine',
+    'carnitine',
+  ],
+  'carnitine': [
+    'L-carnitine',
+    'levocarnitine',
+  ],
 };
 
 // ====================================
@@ -231,8 +357,9 @@ function autocorrect(query: string): string {
 
 /**
  * Get all possible search candidates for a query
+ * Now with intelligent abbreviation expansion
  */
-export function getSearchCandidates(query: string): SupplementCandidate[] {
+export async function getSearchCandidates(query: string): Promise<SupplementCandidate[]> {
   const candidates: SupplementCandidate[] = [];
   const normalized = normalizeQuery(query);
   const corrected = autocorrect(query);
@@ -243,10 +370,39 @@ export function getSearchCandidates(query: string): SupplementCandidate[] {
     console.log(`[INTELLIGENCE] Autocorrected: "${corrected}"`);
   }
 
-  // 1. Try direct lookup in synonyms
+  // 0. FIRST: Check if it's an abbreviation and expand with LLM
+  const isAbbr = detectAbbreviation(query);
+  if (isAbbr) {
+    console.log(`[INTELLIGENCE] Detected abbreviation, expanding with LLM...`);
+    const expansion = await expandAbbreviation(query);
+
+    if (expansion.alternatives.length > 0 && expansion.source === 'llm') {
+      console.log(`[INTELLIGENCE] LLM expanded to: ${expansion.alternatives.join(', ')}`);
+      expansion.alternatives.forEach((alt, index) => {
+        candidates.push({
+          term: alt,
+          type: 'abbreviation_expansion',
+          confidence: expansion.confidence - (index * 0.05), // Slight decrease for alternatives
+          source: 'llm_expansion',
+        });
+      });
+
+      // Also keep original as fallback with lower confidence
+      candidates.push({
+        term: query,
+        type: 'abbreviation_expansion',
+        confidence: 0.3,
+        source: 'original_abbreviation',
+      });
+
+      return candidates; // Return early with LLM expansions
+    }
+  }
+
+  // 1. Try direct lookup in synonyms dictionary
   const synonyms = SUPPLEMENT_SYNONYMS[normalized] || SUPPLEMENT_SYNONYMS[corrected];
   if (synonyms && synonyms.length > 0) {
-    console.log(`[INTELLIGENCE] Found ${synonyms.length} synonyms`);
+    console.log(`[INTELLIGENCE] Found ${synonyms.length} synonyms in dictionary`);
     synonyms.forEach((synonym, index) => {
       candidates.push({
         term: synonym,
@@ -292,14 +448,14 @@ export function getSearchCandidates(query: string): SupplementCandidate[] {
 
 /**
  * Intelligent search strategy:
- * 1. Get all candidates
+ * 1. Get all candidates (with async abbreviation expansion)
  * 2. Return top N candidates for parallel search
  */
-export function getIntelligentSearchStrategy(
+export async function getIntelligentSearchStrategy(
   query: string,
   maxCandidates: number = 3
-): IntelligentSearchResult {
-  const candidates = getSearchCandidates(query);
+): Promise<IntelligentSearchResult> {
+  const candidates = await getSearchCandidates(query);
   const topCandidates = candidates.slice(0, maxCandidates);
 
   console.log(`[INTELLIGENCE] Strategy: Search top ${topCandidates.length} candidates`);
