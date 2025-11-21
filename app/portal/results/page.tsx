@@ -20,6 +20,8 @@ import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { suggestSupplementCorrection } from '@/lib/portal/supplement-suggestions';
+import { searchAnalytics } from '@/lib/portal/search-analytics';
+import { traceSearch } from '@/lib/portal/xray-client';
 
 // ====================================
 // ADAPTER FUNCTION - Client-Side Transformation
@@ -549,6 +551,20 @@ function ResultsPageContent() {
               // Try to suggest alternative supplement names
               const suggestion = suggestSupplementCorrection(normalizedQuery);
 
+              // Log analytics - search failed
+              searchAnalytics.logFailure(normalizedQuery, {
+                errorType: 'insufficient_data',
+                suggestionsOffered: suggestion ? [suggestion.suggestion] : [],
+                requestId: errorData.requestId,
+              });
+
+              // Trace search failure
+              traceSearch(normalizedQuery, 'api-request-complete', {
+                success: false,
+                errorType: 'insufficient_data',
+                suggestionOffered: suggestion?.suggestion,
+              });
+
               if (suggestion) {
                 // Show error with intelligent suggestion
                 setError(
@@ -668,6 +684,18 @@ function ResultsPageContent() {
               id: data.recommendation.recommendation_id,
               category: data.recommendation.category,
               ingredientsCount: data.recommendation.ingredients?.length || 0,
+            });
+
+            // Log analytics - search successful
+            searchAnalytics.logSuccess(normalizedQuery, {
+              studiesFound: data.recommendation?.evidence_summary?.totalStudies || 0,
+              requestId: data.requestId,
+            });
+
+            // Trace search success
+            traceSearch(normalizedQuery, 'api-request-complete', {
+              success: true,
+              studiesFound: data.recommendation?.evidence_summary?.totalStudies || 0,
             });
 
             if (isMounted) {

@@ -62,7 +62,6 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'ashwagandha': 'Ashwagandha',
   'aswagandha': 'Ashwagandha',
   'ashawagandha': 'Ashwagandha',
-  'ashwaganda': 'Ashwagandha',
   'withania': 'Ashwagandha',
 
   // Turmeric
@@ -118,31 +117,7 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'colageno hidrolizado': 'Collagen',
   'collagen peptides': 'Collagen',
 
-  // Melatonin variations
-  'melatonina': 'Melatonin',
-  'melantonin': 'Melatonin',
-  'melatonine': 'Melatonin',
-  'hormona del sueño': 'Melatonin',
-
-  // Omega-3 variations
-  'omega 3': 'Omega-3',
-  'omega3': 'Omega-3',
-  'omega-3 fatty acids': 'Omega-3',
-  'fish oil': 'Omega-3',
-  'aceite de pescado': 'Omega-3',
-  'dha': 'Omega-3',
-  'epa': 'Omega-3',
-
-  // Magnesium variations
-  'magnesio': 'Magnesium',
-  'mg': 'Magnesium',
-  'magnesio citrato': 'Magnesium Citrate',
-  'magnesio glicinato': 'Magnesium Glycinate',
-
-  // Zinc variations
-  'zinc': 'Zinc',
-  'zinco': 'Zinc',
-  'zinc picolinato': 'Zinc Picolinate',
+  // (Melatonin, Omega-3, Magnesium, Zinc already defined above - skipping duplicates)
 
   // Common typos and abbreviations
   'vit d': 'Vitamin D',
@@ -163,6 +138,56 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'raiz de maca': 'Maca Root',
   'jengibre': 'Ginger',
   'ginger': 'Ginger',
+
+  // ========== CARNITINA / L-CARNITINE VARIATIONS (ADDED 2025-11-21) ==========
+  // Spanish variations
+  'carnitina': 'L-Carnitine',
+  'l-carnitina': 'L-Carnitine',
+  'l carnitina': 'L-Carnitine',
+  'levo carnitina': 'L-Carnitine',
+  'levocarnitina': 'L-Carnitine',
+  'carnita': 'L-Carnitine', // common typo
+  'karnitina': 'L-Carnitine', // k/c confusion
+  'carnitin': 'L-Carnitine',
+  'carniti': 'L-Carnitine',
+  'cartinine': 'L-Carnitine', // common confusion
+  'carantine': 'L-Carnitine',
+
+  // English variations
+  'carnitine': 'L-Carnitine',
+  'l-carnitine': 'L-Carnitine',
+  'l carnitine': 'L-Carnitine',
+  'levocarnitine': 'L-Carnitine',
+  'levo carnitine': 'L-Carnitine',
+
+  // Acetyl-L-Carnitine variations
+  'acetil carnitina': 'Acetyl-L-Carnitine',
+  'acetil-l-carnitina': 'Acetyl-L-Carnitine',
+  'acetil l carnitina': 'Acetyl-L-Carnitine',
+  'acetyl carnitine': 'Acetyl-L-Carnitine',
+  'acetyl-l-carnitine': 'Acetyl-L-Carnitine',
+  'acetyl l carnitine': 'Acetyl-L-Carnitine',
+  'alcar': 'Acetyl-L-Carnitine', // common abbreviation
+  'acetylcarnitine': 'Acetyl-L-Carnitine',
+  'n-acetyl-l-carnitine': 'Acetyl-L-Carnitine',
+
+  // Propionyl-L-Carnitine variations
+  'propionil carnitina': 'Propionyl-L-Carnitine',
+  'propionyl carnitine': 'Propionyl-L-Carnitine',
+  'propionyl-l-carnitine': 'Propionyl-L-Carnitine',
+  'propionyl l carnitine': 'Propionyl-L-Carnitine',
+  'plc': 'Propionyl-L-Carnitine', // abbreviation
+
+  // L-Carnitine Tartrate variations
+  'carnitina tartrato': 'L-Carnitine Tartrate',
+  'carnitine tartrate': 'L-Carnitine Tartrate',
+  'l-carnitine tartrate': 'L-Carnitine Tartrate',
+  'carnitina tartrate': 'L-Carnitine Tartrate',
+
+  // Common misspellings and variations
+  'carnit': 'L-Carnitine',
+  'karnitin': 'L-Carnitine',
+  'carnithine': 'L-Carnitine',
 };
 
 /**
