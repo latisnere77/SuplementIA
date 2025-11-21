@@ -21,7 +21,7 @@ export interface ValidationResult {
  */
 const VALID_SUPPLEMENTS = new Set([
   // Suplementos populares
-  'ashwagandha', 'cbd', 'melatonin', 'melatonina', 'creatine', 'creatina',
+  'ashwagandha', 'cbd', 'cannabidiol', 'melatonin', 'melatonina', 'creatine', 'creatina',
   'protein', 'proteina', 'whey', 'collagen', 'colageno', 'caffeine', 'cafeina',
   'bcaa', 'glutamine', 'glutamina', 'beta-alanine', 'beta-alanina',
   'l-carnitine', 'l-carnitina', 'coq10', 'rhodiola', 'ginseng',

@@ -149,10 +149,12 @@ export async function handler(
 
     enrichedContent = content;
 
-    // Save to cache asynchronously (don't wait)
-    saveToCacheAsync(supplementId, enrichedContent).catch((err) => {
+    // Save to cache (await to ensure it completes before Lambda freezes)
+    try {
+      await saveToCacheAsync(supplementId, enrichedContent);
+    } catch (err) {
       console.error('Failed to save to cache (non-fatal):', err);
-    });
+    }
 
     const duration = Date.now() - startTime;
 

@@ -65,26 +65,56 @@ export async function POST(request: NextRequest) {
     let searchTerm = supplementName;
     let expansionMetadata = null;
 
-    console.log(`🧠 Checking if term needs expansion/translation: "${supplementName}"`);
-    try {
-      const expansion = await expandAbbreviation(supplementName);
+    // Common abbreviations fallback map (in case LLM fails)
+    const COMMON_ABBREVIATIONS: Record<string, string> = {
+      'cbd': 'cannabidiol',
+      'hmb': 'beta-hydroxy beta-methylbutyrate',
+      'bcaa': 'branched-chain amino acids',
+      'nac': 'N-acetylcysteine',
+      'epa': 'eicosapentaenoic acid',
+      'dha': 'docosahexaenoic acid',
+      'ala': 'alpha-linolenic acid',
+      '5-htp': '5-hydroxytryptophan',
+      'sam-e': 'S-adenosyl methionine',
+      'dmae': 'dimethylaminoethanol',
+    };
 
-      // Use expanded term if LLM provided alternatives
-      if (expansion.alternatives.length > 0 && expansion.source === 'llm') {
-        searchTerm = expansion.alternatives[0]; // Use primary expanded/translated term
-        expansionMetadata = {
-          original: supplementName,
-          expanded: searchTerm,
-          alternatives: expansion.alternatives,
-          confidence: expansion.confidence,
-          isAbbreviation: expansion.isAbbreviation,
-        };
-        console.log(`✨ Transformed "${supplementName}" → "${searchTerm}"`);
-      } else {
-        console.log(`✓ No transformation needed for "${supplementName}"`);
+    console.log(`🧠 Checking if term needs expansion/translation: "${supplementName}"`);
+
+    // First check common abbreviations map
+    const lowerTerm = supplementName.toLowerCase();
+    if (COMMON_ABBREVIATIONS[lowerTerm]) {
+      searchTerm = COMMON_ABBREVIATIONS[lowerTerm];
+      expansionMetadata = {
+        original: supplementName,
+        expanded: searchTerm,
+        alternatives: [searchTerm],
+        confidence: 1.0,
+        isAbbreviation: true,
+      };
+      console.log(`✨ Expanded via fallback map: "${supplementName}" → "${searchTerm}"`);
+    } else {
+      // Try LLM expansion
+      try {
+        const expansion = await expandAbbreviation(supplementName);
+
+        // Use expanded term if LLM provided alternatives
+        if (expansion.alternatives.length > 0 && expansion.source === 'llm') {
+          searchTerm = expansion.alternatives[0]; // Use primary expanded/translated term
+          expansionMetadata = {
+            original: supplementName,
+            expanded: searchTerm,
+            alternatives: expansion.alternatives,
+            confidence: expansion.confidence,
+            isAbbreviation: expansion.isAbbreviation,
+          };
+          console.log(`✨ Transformed via LLM: "${supplementName}" → "${searchTerm}"`);
+        } else {
+          console.log(`✓ No transformation needed for "${supplementName}"`);
+        }
+      } catch (error: any) {
+        console.warn(`⚠️  Expansion/translation failed: ${error.message}, using original term`);
       }
-    } catch (error: any) {
-      console.warn(`⚠️  Expansion/translation failed: ${error.message}, using original term`);
     }
 
     // STEP 1: Fetch REAL PubMed studies
