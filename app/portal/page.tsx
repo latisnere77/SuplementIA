@@ -239,41 +239,38 @@ export default function PortalPage() {
               transition={{ duration: 1, delay: 0.9 }}
               className="relative max-w-2xl mx-auto"
             >
-              <Combobox
-                value={searchQuery}
-                onChange={(value) => {
-                  // Solo se llama cuando se selecciona una sugerencia
-                  console.log('[PortalPage] Combobox onChange (suggestion selected):', value);
-                  if (value) {
-                    handleSearch(value);
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (searchQuery.trim()) {
+                    handleSearch(searchQuery);
                   }
                 }}
               >
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400 z-10 pointer-events-none" />
+                <Combobox
+                  value={searchQuery}
+                  onChange={(value) => {
+                    // Solo se llama cuando se selecciona una sugerencia
+                    console.log('[PortalPage] Combobox onChange (suggestion selected):', value);
+                    if (value) {
+                      handleSearch(value);
+                    }
+                  }}
+                >
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400 z-10 pointer-events-none" />
 
-                  <Combobox.Input
-                    className="h-14 w-full pl-12 pr-24 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
-                    onChange={(e) => {
-                      // Solo actualiza el estado del query
-                      console.log('[PortalPage] Input onChange:', e.target.value);
-                      setSearchQuery(e.target.value);
-                    }}
-                    onKeyDown={(e) => {
-                      // Manejar Enter manualmente
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (searchQuery.trim()) {
-                          console.log('[PortalPage] Enter pressed, searching:', searchQuery);
-                          handleSearch(searchQuery);
-                        }
-                      }
-                    }}
-                    displayValue={() => searchQuery}
-                    placeholder=""
-                    autoComplete="off"
-                  />
+                    <Combobox.Input
+                      className="h-14 w-full pl-12 pr-24 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
+                      onChange={(e) => {
+                        // Solo actualiza el estado del query
+                        console.log('[PortalPage] Input onChange:', e.target.value);
+                        setSearchQuery(e.target.value);
+                      }}
+                      displayValue={() => searchQuery}
+                      placeholder=""
+                      autoComplete="off"
+                    />
 
                   {/* Animated Placeholder */}
                   <div className="absolute inset-0 flex items-center pl-12 pointer-events-none">
@@ -384,6 +381,7 @@ export default function PortalPage() {
                   )}
                 </div>
               </Combobox>
+              </form>
 
               {/* Validation Error Message */}
               <AnimatePresence>
