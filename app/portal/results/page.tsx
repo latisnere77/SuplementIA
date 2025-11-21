@@ -635,7 +635,7 @@ function ResultsPageContent() {
             
             const pollStatus = async () => {
               try {
-                const statusResponse = await fetch(`/api/portal/status/${data.recommendation_id}`);
+                const statusResponse = await fetch(`/api/portal/recommendation/${data.recommendation_id}`);
                 const statusData = await statusResponse.json();
                 
                 console.log('📊 Polling status:', {
