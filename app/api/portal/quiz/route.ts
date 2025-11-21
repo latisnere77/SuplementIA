@@ -11,6 +11,7 @@ import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-valid
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+export const maxDuration = 120; // 2 minutes to allow for recommend endpoint processing
 
 // Check if we're in demo mode (only if API URL is explicitly disabled)
 const isDemoMode = process.env.PORTAL_API_URL === 'DISABLED' || process.env.PORTAL_API_URL === 'false';
@@ -189,7 +190,7 @@ export async function POST(request: NextRequest) {
           sensitivities,
           quiz_id: quizId,
         }),
-        signal: AbortSignal.timeout(15000), // 15s timeout (allows for cold start and network latency)
+        signal: AbortSignal.timeout(120000), // 120s timeout to allow recommend endpoint to complete (enrich can take 30-60s without cache)
       });
 
       const backendResponseTime = Date.now() - backendCallStart;
