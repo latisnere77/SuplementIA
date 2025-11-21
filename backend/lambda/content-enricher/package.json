@@ -12,11 +12,18 @@
     "package:zip": "cd dist && zip -r ../content-enricher.zip . && cd ..",
     "deploy": "npm run package && aws lambda update-function-code --function-name suplementia-content-enricher --zip-file fileb://content-enricher.zip"
   },
-  "keywords": ["bedrock", "claude", "content", "enrichment"],
+  "keywords": [
+    "bedrock",
+    "claude",
+    "content",
+    "enrichment"
+  ],
   "author": "Suplementia",
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.470.0",
+    "@aws-sdk/client-dynamodb": "^3.936.0",
+    "@aws-sdk/lib-dynamodb": "^3.936.0",
     "aws-xray-sdk-core": "^3.5.3"
   },
   "devDependencies": {

@@ -1,104 +1,102 @@
 /**
- * Cache Service integration
+ * DynamoDB Cache integration
  */
 
-import { config } from './config';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { EnrichedContent } from './types';
 
+const dynamoClient = new DynamoDBClient({ region: 'us-east-1' });
+const docClient = DynamoDBDocumentClient.from(dynamoClient);
+const TABLE_NAME = 'suplementia-content-enricher-cache';
+const CACHE_TTL_DAYS = 7; // Cache expires after 7 days
+
 /**
- * Save enriched content to cache (async, fire-and-forget)
+ * Save enriched content to DynamoDB cache (async, fire-and-forget)
  */
 export async function saveToCacheAsync(
   supplementId: string,
   data: EnrichedContent
 ): Promise<void> {
-  if (!config.cacheServiceUrl) {
-    console.log('Cache service URL not configured, skipping cache save');
-    return;
-  }
-
   try {
-    const url = `${config.cacheServiceUrl}/cache/${supplementId}`;
+    const ttl = Math.floor(Date.now() / 1000) + (CACHE_TTL_DAYS * 24 * 60 * 60);
 
     console.log(
       JSON.stringify({
         operation: 'CacheSave',
         supplementId,
-        url,
+        table: TABLE_NAME,
       })
     );
 
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-      signal: AbortSignal.timeout(2000), // 2s timeout for cache save
-    });
-
-    if (!response.ok) {
-      console.warn(`Failed to save to cache: ${response.status}`);
-    } else {
-      console.log(
-        JSON.stringify({
-          operation: 'CacheSaveSuccess',
+    await docClient.send(
+      new PutCommand({
+        TableName: TABLE_NAME,
+        Item: {
           supplementId,
-        })
-      );
-    }
+          data,
+          createdAt: new Date().toISOString(),
+          ttl,
+          version: '1.0.0',
+        },
+      })
+    );
+
+    console.log(
+      JSON.stringify({
+        operation: 'CacheSaveSuccess',
+        supplementId,
+      })
+    );
   } catch (error: any) {
     // Don't throw - cache save is optional
-    console.warn('Cache save error (non-fatal):', error.message);
+    console.warn('DynamoDB cache save error (non-fatal):', error.message);
   }
 }
 
 /**
- * Get enriched content from cache
+ * Get enriched content from DynamoDB cache
  */
 export async function getFromCache(
   supplementId: string
 ): Promise<EnrichedContent | null> {
-  if (!config.cacheServiceUrl) {
-    return null;
-  }
-
   try {
-    const url = `${config.cacheServiceUrl}/cache/${supplementId}`;
+    const result = await docClient.send(
+      new GetCommand({
+        TableName: TABLE_NAME,
+        Key: { supplementId },
+      })
+    );
 
-    const response = await fetch(url, {
-      method: 'GET',
-      signal: AbortSignal.timeout(500), // 500ms timeout for cache read
-    });
-
-    if (response.status === 404) {
+    if (!result.Item) {
       return null; // Cache miss
     }
 
-    if (!response.ok) {
-      console.warn(`Failed to get from cache: ${response.status}`);
+    const now = Math.floor(Date.now() / 1000);
+    const isExpired = result.Item.ttl && result.Item.ttl < now;
+
+    if (isExpired) {
+      console.log(
+        JSON.stringify({
+          operation: 'CacheExpired',
+          supplementId,
+        })
+      );
       return null;
     }
 
-    const data = await response.json() as any;
+    console.log(
+      JSON.stringify({
+        operation: 'CacheHit',
+        supplementId,
+        age: result.Item.createdAt,
+      })
+    );
 
-    if (data.success && data.data) {
-      console.log(
-        JSON.stringify({
-          operation: 'CacheHit',
-          supplementId,
-          isStale: data.metadata?.isStale,
-        })
-      );
-
-      // Return cached data even if stale (it's still useful)
-      return data.data as EnrichedContent;
-    }
-
-    return null;
+    return result.Item.data as EnrichedContent;
   } catch (error: any) {
     // Don't throw - cache read is optional
-    console.warn('Cache read error (non-fatal):', error.message);
+    console.warn('DynamoDB cache read error (non-fatal):', error.message);
     return null;
   }
 }
