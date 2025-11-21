@@ -121,6 +121,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         supplementName: sanitizedCategory,
         category: sanitizedCategory,
+        forceRefresh: true, // Force refresh to bypass cache
         maxStudies: 10, // Use up to 10 studies for comprehensive analysis
         rctOnly: false,
         yearFrom: 2010,
