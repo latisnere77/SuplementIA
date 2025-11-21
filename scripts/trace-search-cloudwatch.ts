@@ -46,9 +46,14 @@ const LOG_GROUPS = [
   '/aws/lambda/suplementia-studies-fetcher-dev',
   '/aws/lambda/suplementia-studies-fetcher-staging',
   '/aws/lambda/suplementia-studies-fetcher-prod',
+  '/aws/lambda/suplementia-studies-fetcher-production',
   '/aws/lambda/suplementia-content-enricher-dev',
   '/aws/lambda/suplementia-content-enricher-staging',
   '/aws/lambda/suplementia-content-enricher-production',
+  '/aws/lambda/suplementia-content-enricher-prod',
+  // Vercel logs (if available)
+  '/vercel/suplementia',
+  '/vercel/api',
 ];
 
 async function queryCloudWatchLogs(

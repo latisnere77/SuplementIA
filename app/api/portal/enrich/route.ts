@@ -477,9 +477,42 @@ export async function POST(request: NextRequest) {
       );
 
       try {
-        // Generate intelligent search variations using LLM
-        const variations = await generateSearchVariations(searchTerm);
+        // Generate intelligent search variations using LLM (with timeout)
+        const variationStartTime = Date.now();
+        const VARIATION_TIMEOUT = 10000; // 10 seconds max for variation generation
         
+        let variations: string[] = [];
+        try {
+          variations = await Promise.race([
+            generateSearchVariations(searchTerm),
+            new Promise<string[]>((_, reject) => 
+              setTimeout(() => reject(new Error('Variation generation timeout')), VARIATION_TIMEOUT)
+            ),
+          ]) as string[];
+        } catch (error: any) {
+          console.warn(
+            JSON.stringify({
+              event: 'STUDIES_FETCH_VARIATIONS_GENERATION_TIMEOUT',
+              requestId,
+              correlationId,
+              originalQuery: supplementName,
+              translatedQuery: searchTerm,
+              error: error.message,
+              fallback: 'using_basic_variations',
+              timestamp: new Date().toISOString(),
+            })
+          );
+          // Fallback to basic variations if LLM times out
+          variations = [
+            searchTerm,
+            `${searchTerm} supplementation`,
+            `${searchTerm} supplement`,
+            `${searchTerm} milk`,
+            `${searchTerm} extract`,
+          ].slice(0, 3); // Limit to 3 basic variations
+        }
+        
+        const variationDuration = Date.now() - variationStartTime;
         console.log(
           JSON.stringify({
             event: 'STUDIES_FETCH_VARIATIONS_GENERATED',
@@ -488,12 +521,16 @@ export async function POST(request: NextRequest) {
             originalQuery: supplementName,
             translatedQuery: searchTerm,
             variationsCount: variations.length,
-            variations,
+            variations: variations.slice(0, 5), // Log first 5 only
+            duration: variationDuration,
             timestamp: new Date().toISOString(),
           })
         );
 
-        // Try each variation with relaxed filters
+        // Limit to first 3 variations to avoid timeout (try most likely ones first)
+        const variationsToTry = variations.slice(0, 3);
+        
+        // Try variations in parallel (faster than sequential)
         const relaxedFilters = {
           rctOnly: false,
           yearFrom: 2000,
@@ -501,46 +538,30 @@ export async function POST(request: NextRequest) {
           humanStudiesOnly: true,
         };
 
-        for (let i = 0; i < variations.length && studies.length === 0; i++) {
-          const variation = variations[i];
-          
-          console.log(
-            JSON.stringify({
-              event: 'STUDIES_FETCH_VARIATION_ATTEMPT',
-              requestId,
-              correlationId,
-              originalQuery: supplementName,
-              translatedQuery: searchTerm,
-              variationIndex: i + 1,
-              variation,
-              totalVariations: variations.length,
-              timestamp: new Date().toISOString(),
-            })
-          );
-
+        const variationPromises = variationsToTry.map(async (variation, i) => {
           try {
-            const result = await fetchStudies(variation, relaxedFilters, 100 + i); // Use high number to distinguish from regular attempts
+            console.log(
+              JSON.stringify({
+                event: 'STUDIES_FETCH_VARIATION_ATTEMPT',
+                requestId,
+                correlationId,
+                originalQuery: supplementName,
+                translatedQuery: searchTerm,
+                variationIndex: i + 1,
+                variation,
+                totalVariations: variationsToTry.length,
+                timestamp: new Date().toISOString(),
+              })
+            );
+
+            const result = await fetchStudies(variation, relaxedFilters, 100 + i);
             const variationStudies = result.data.success ? result.data.data?.studies || [] : [];
             
-            if (variationStudies.length > 0) {
-              studies = variationStudies;
-              searchTerm = variation; // Update searchTerm to the successful variation
-              
-              console.log(
-                JSON.stringify({
-                  event: 'STUDIES_FETCH_VARIATION_SUCCESS',
-                  requestId,
-                  correlationId,
-                  originalQuery: supplementName,
-                  translatedQuery: searchTerm,
-                  successfulVariation: variation,
-                  variationIndex: i + 1,
-                  studiesFound: studies.length,
-                  timestamp: new Date().toISOString(),
-                })
-              );
-              break; // Stop trying variations once we find studies
-            }
+            return {
+              variation,
+              studies: variationStudies,
+              success: variationStudies.length > 0,
+            };
           } catch (error: any) {
             console.warn(
               JSON.stringify({
@@ -553,8 +574,53 @@ export async function POST(request: NextRequest) {
                 timestamp: new Date().toISOString(),
               })
             );
-            // Continue to next variation
+            return {
+              variation,
+              studies: [],
+              success: false,
+            };
           }
+        });
+
+        // Wait for all variations (with timeout)
+        const VARIATION_SEARCH_TIMEOUT = 30000; // 30 seconds max for all variation searches
+        const variationResults = await Promise.race([
+          Promise.all(variationPromises),
+          new Promise<Array<{ variation: string; studies: any[]; success: boolean }>>((resolve) => 
+            setTimeout(() => resolve([]), VARIATION_SEARCH_TIMEOUT)
+          ),
+        ]);
+
+        // Find first successful variation
+        const successfulResult = variationResults.find(r => r.success);
+        if (successfulResult) {
+          studies = successfulResult.studies;
+          searchTerm = successfulResult.variation;
+          
+          console.log(
+            JSON.stringify({
+              event: 'STUDIES_FETCH_VARIATION_SUCCESS',
+              requestId,
+              correlationId,
+              originalQuery: supplementName,
+              translatedQuery: searchTerm,
+              successfulVariation: successfulResult.variation,
+              studiesFound: studies.length,
+              timestamp: new Date().toISOString(),
+            })
+          );
+        } else {
+          console.log(
+            JSON.stringify({
+              event: 'STUDIES_FETCH_VARIATIONS_NO_SUCCESS',
+              requestId,
+              correlationId,
+              originalQuery: supplementName,
+              translatedQuery: searchTerm,
+              variationsTried: variationsToTry.length,
+              timestamp: new Date().toISOString(),
+            })
+          );
         }
       } catch (error: any) {
         console.error(
