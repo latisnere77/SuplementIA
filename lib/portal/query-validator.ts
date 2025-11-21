@@ -244,8 +244,8 @@ export function validateSupplementQuery(query: string): ValidationResult {
     // Solo bloquear si es CLARAMENTE no relacionado con suplementos
 
     const looksLikeIngredient =
-      // Palabras con letras (mínimo 3 chars)
-      /^[a-z]{3,}(-[a-z]{2,})*$/i.test(normalized) ||
+      // Palabras con letras y números (mínimo 3 chars) - PERMITE CoQ10, B12, etc
+      /^[a-z0-9]{3,}(-[a-z0-9]{2,})*$/i.test(normalized) ||
 
       // Terminaciones científicas comunes
       /acid|ine|ate|ol|um|in|an|en$/i.test(normalized) ||
@@ -258,6 +258,9 @@ export function validateSupplementQuery(query: string): ValidationResult {
 
       // Nombres científicos (dos palabras con mayúscula)
       /^[A-Z][a-z]+\s+[a-z]+$/i.test(query) ||
+
+      // Suplementos con números (CoQ10, B12, Omega-3, Q10, etc.)
+      /[a-z]+\d+|[a-z]-\d+|\d+[a-z]+/i.test(normalized) ||
 
       // Múltiples palabras (ej: "bacopa monnieri", "lion mane")
       words.length >= 2 && words.every(w => w.length >= 3);
