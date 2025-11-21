@@ -113,6 +113,8 @@ export async function handler(
             supplementId,
             generatedAt: new Date().toISOString(),
             cached: true,
+            hasRealData: studies && studies.length > 0,
+            studiesUsed: studies?.length || 0,
           },
         };
 
@@ -189,6 +191,8 @@ export async function handler(
         bedrockDuration: bedrockMetadata.duration,
         tokensUsed: bedrockMetadata.tokensUsed,
         cached: false,
+        hasRealData: studies && studies.length > 0,
+        studiesUsed: studies?.length || 0,
       },
     };
 

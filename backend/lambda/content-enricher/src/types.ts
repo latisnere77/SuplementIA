@@ -133,6 +133,8 @@ export interface EnrichmentResponse {
     bedrockDuration?: number;
     tokensUsed?: number;
     cached?: boolean;
+    hasRealData?: boolean;
+    studiesUsed?: number;
   };
   error?: string;
   message?: string;
