@@ -11,7 +11,6 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import EvidenceAnalysisPanelNew from '@/components/portal/EvidenceAnalysisPanelNew';
-// import PersonalizationExplanation from '@/components/portal/PersonalizationExplanation'; // No longer used
 import ProductRecommendationsGrid from '@/components/portal/ProductRecommendationsGrid';
 import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
@@ -753,15 +752,6 @@ function ResultsPageContent() {
     );
   }
 
-  // Extract adjustments from ingredients - NO LONGER NEEDED
-  // const adjustments = recommendation.ingredients
-  //   .filter((ing) => ing.adjustedDose && ing.adjustmentReason)
-  //   .map((ing) => ({
-  //     ingredient: ing.name,
-  //     adjustment: ing.adjustedDose!,
-  //     reason: ing.adjustmentReason!,
-  //   }));
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 md:py-12">
@@ -855,15 +845,6 @@ function ResultsPageContent() {
             autoLoad={false}
           />
         </div>
-
-        {/* Personalization - COMENTADO: Ya no mostramos factores de personalización
-        <div className="mb-8">
-          <PersonalizationExplanation
-            factors={recommendation.personalization_factors}
-            adjustments={adjustments}
-          />
-        </div>
-        */}
 
         {/* Product Recommendations */}
         <div className="mb-8">
