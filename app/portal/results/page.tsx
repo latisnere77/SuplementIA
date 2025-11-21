@@ -691,8 +691,8 @@ function ResultsPageContent() {
     }
   };
 
-  // Show loading state
-  if (isLoading || (recommendation && !transformedEvidence)) {
+  // Show loading state (only while fetching, not while transforming)
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md px-4">
@@ -757,10 +757,20 @@ function ResultsPageContent() {
 
         {/* Evidence Analysis - NUEVO DISEÑO VISUAL */}
         <div className="mb-8">
-          <EvidenceAnalysisPanelNew
-            evidenceSummary={transformedEvidence}
-            supplementName={recommendation.category}
-          />
+          {transformedEvidence ? (
+            <EvidenceAnalysisPanelNew
+              evidenceSummary={transformedEvidence}
+              supplementName={recommendation.category}
+            />
+          ) : (
+            <div className="bg-white rounded-xl border-2 border-gray-200 p-8 text-center">
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+              </div>
+              <p className="text-gray-500 text-sm mt-4">Procesando evidencia científica...</p>
+            </div>
+          )}
         </div>
 
         {/* Scientific Studies from PubMed */}
