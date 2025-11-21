@@ -179,8 +179,10 @@ export async function GET(request: NextRequest): Promise<NextResponse<Autocomple
     );
 
   } catch (error) {
-    // 10. Manejo de errores
+    // 10. Manejo de errores - GRACEFUL DEGRADATION
     const duration = Date.now() - startTime;
+    const query = request.nextUrl.searchParams.get('q') || '';
+    const lang = (request.nextUrl.searchParams.get('lang') || 'en') as Language;
 
     // Log del error
     console.error(`[${requestId}] Autocomplete error:`, {
@@ -196,25 +198,32 @@ export async function GET(request: NextRequest): Promise<NextResponse<Autocomple
         endpoint: '/api/portal/autocomplete',
       },
       extra: {
-        query: request.nextUrl.searchParams.get('q'),
-        lang: request.nextUrl.searchParams.get('lang'),
+        query,
+        lang,
         duration,
       },
     });
 
+    // GRACEFUL DEGRADATION: Return empty suggestions instead of error
+    // This prevents UI disruption - better to show no suggestions than break the search
     return NextResponse.json(
       {
-        success: false,
-        error: 'Internal server error',
+        success: true,
+        suggestions: [],
         meta: {
           requestId,
-          query: '',
-          lang: 'en',
+          query,
+          lang,
           count: 0,
           duration,
         },
       },
-      { status: 500 }
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-cache', // Don't cache errors
+        },
+      }
     );
   }
 }
