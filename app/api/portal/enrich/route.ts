@@ -12,6 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { expandAbbreviation, detectAbbreviation } from '@/lib/services/abbreviation-expander';
 
 // Configure max duration for this route (Bedrock needs time)
 export const maxDuration = 120; // 120 seconds for content enrichment
@@ -57,8 +58,37 @@ export async function POST(request: NextRequest) {
       })
     );
 
+    // STEP 0: Intelligent abbreviation expansion & Spanish translation
+    // - Expand abbreviations: "HMB" → "beta-hydroxy beta-methylbutyrate"
+    // - Translate Spanish: "cúrcuma" → "turmeric"
+    // This ensures better PubMed results (PubMed is in English)
+    let searchTerm = supplementName;
+    let expansionMetadata = null;
+
+    console.log(`🧠 Checking if term needs expansion/translation: "${supplementName}"`);
+    try {
+      const expansion = await expandAbbreviation(supplementName);
+
+      // Use expanded term if LLM provided alternatives
+      if (expansion.alternatives.length > 0 && expansion.source === 'llm') {
+        searchTerm = expansion.alternatives[0]; // Use primary expanded/translated term
+        expansionMetadata = {
+          original: supplementName,
+          expanded: searchTerm,
+          alternatives: expansion.alternatives,
+          confidence: expansion.confidence,
+          isAbbreviation: expansion.isAbbreviation,
+        };
+        console.log(`✨ Transformed "${supplementName}" → "${searchTerm}"`);
+      } else {
+        console.log(`✓ No transformation needed for "${supplementName}"`);
+      }
+    } catch (error: any) {
+      console.warn(`⚠️  Expansion/translation failed: ${error.message}, using original term`);
+    }
+
     // STEP 1: Fetch REAL PubMed studies
-    console.log('📚 Fetching real PubMed studies...');
+    console.log(`📚 Fetching real PubMed studies for: ${searchTerm}...`);
 
     const studiesResponse = await fetch(STUDIES_API_URL, {
       method: 'POST',
@@ -66,7 +96,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        supplementName,
+        supplementName: searchTerm, // Use expanded term for better PubMed results
         maxResults: Math.min(maxStudies || 1, 1), // LIMIT: 1 study to reliably stay under 30s timeout
         filters: {
           rctOnly: rctOnly || false, // Prioritize RCTs
@@ -162,6 +192,7 @@ export async function POST(request: NextRequest) {
         hasRealData: true,
         intelligentSystem: true,
         studiesSource: 'PubMed',
+        ...(expansionMetadata ? { expansion: expansionMetadata } : {}),
       },
     });
   } catch (error: any) {

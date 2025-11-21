@@ -83,20 +83,23 @@ export function isLikelyAbbreviation(term: string): boolean {
 
 /**
  * Expand abbreviation using Claude Haiku
+ * Also handles Spanish→English translation for PubMed searches
  */
 async function expandWithLLM(term: string): Promise<string[]> {
   console.log(`[ABBREVIATION] Expanding "${term}" with Claude Haiku...`);
 
-  const prompt = `You are a supplement and biochemistry expert. A user searched for the supplement abbreviation "${term}".
+  const prompt = `You are a supplement and biochemistry expert. A user searched for the supplement term "${term}".
 
-Your task: Provide the full chemical or scientific names for this supplement abbreviation, optimized for PubMed searches.
+Your task: Provide the full chemical or scientific names optimized for PubMed searches.
 
 Rules:
-1. Return ONLY names that would find studies in PubMed
-2. Order by: most common scientific name first
-3. Include chemical names, brand names if very common
-4. Maximum 3-4 alternatives
-5. If you don't recognize it, return empty array
+1. If it's an ABBREVIATION (like HMB, BCAA, NAC), expand it to full chemical names
+2. If it's in SPANISH, translate it to English scientific names (PubMed is in English)
+3. Return ONLY names that would find studies in PubMed
+4. Order by: most common scientific name first
+5. Include chemical names, brand names if very common
+6. Maximum 3-4 alternatives
+7. If you don't recognize it or it's already in English, return empty array
 
 Return ONLY a JSON array, no explanation:
 ["primary name", "alternative name 1", "alternative name 2"]
@@ -105,6 +108,8 @@ Examples:
 - "HMB" → ["beta-hydroxy beta-methylbutyrate", "β-hydroxy-β-methylbutyrate", "leucine metabolite"]
 - "BCAA" → ["branched-chain amino acids", "leucine isoleucine valine"]
 - "NAC" → ["N-acetylcysteine", "N-acetyl-L-cysteine"]
+- "ashwagandha" → [] (already in English)
+- "ginseng" → [] (already in English)
 
 Now expand: "${term}"`;
 
@@ -162,7 +167,7 @@ Now expand: "${term}"`;
 // ====================================
 
 /**
- * Main function: Detect and expand abbreviation
+ * Main function: Detect and expand abbreviation OR translate Spanish terms
  *
  * @param term - The supplement term to analyze
  * @returns Expansion result with alternatives
@@ -170,6 +175,10 @@ Now expand: "${term}"`;
  * @example
  * const result = await expandAbbreviation('HMB');
  * // result.alternatives = ['beta-hydroxy beta-methylbutyrate', ...]
+ *
+ * @example
+ * const result = await expandAbbreviation('cúrcuma');
+ * // result.alternatives = ['turmeric', 'curcumin']
  */
 export async function expandAbbreviation(
   term: string
@@ -181,40 +190,30 @@ export async function expandAbbreviation(
   // 1. Check if it's an abbreviation
   const isAbbr = isLikelyAbbreviation(trimmed);
 
-  if (!isAbbr) {
-    console.log(`[ABBREVIATION] Not an abbreviation, using original term`);
-    return {
-      original: trimmed,
-      isAbbreviation: false,
-      alternatives: [trimmed],
-      confidence: 1.0,
-      source: 'none',
-    };
-  }
+  // 2. ALWAYS try LLM expansion (handles both abbreviations AND Spanish translation)
+  // The LLM will return empty array if no expansion/translation needed
+  console.log(`[ABBREVIATION] ${isAbbr ? 'Detected abbreviation' : 'Checking for translation'}, calling LLM...`);
 
-  console.log(`[ABBREVIATION] Detected abbreviation, expanding...`);
-
-  // 2. Try to expand with LLM
   const llmAlternatives = await expandWithLLM(trimmed);
 
   if (llmAlternatives.length > 0) {
     return {
       original: trimmed,
-      isAbbreviation: true,
+      isAbbreviation: isAbbr,
       alternatives: llmAlternatives,
       confidence: 0.9,
       source: 'llm',
     };
   }
 
-  // 3. Fallback: use original term
-  console.log(`[ABBREVIATION] Could not expand, using original term`);
+  // 3. Fallback: use original term (no expansion needed)
+  console.log(`[ABBREVIATION] No expansion needed, using original term`);
   return {
     original: trimmed,
-    isAbbreviation: true,
+    isAbbreviation: isAbbr,
     alternatives: [trimmed],
-    confidence: 0.5,
-    source: 'heuristic',
+    confidence: 1.0, // High confidence - term is already good
+    source: isAbbr ? 'heuristic' : 'none',
   };
 }
 
