@@ -35,6 +35,17 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   const supplement = (recommendation as any).supplement || {};
   const evidenceSummary = recommendation.evidence_summary || {};
 
+  // DEBUG: Log transformation input
+  console.log('[transformRecommendationToEvidence] Input:', {
+    category: recommendation.category,
+    supplementName: supplement.name,
+    hasBenefits: Array.isArray(supplement.benefits),
+    benefitsCount: supplement.benefits?.length || 0,
+    hasDosage: !!supplement.dosage,
+    dosageType: typeof supplement.dosage,
+    ingredientsCount: evidenceSummary.ingredients?.length || 0,
+  });
+
   // Defensive: Ensure arrays exist
   const benefits = Array.isArray(supplement.benefits) ? supplement.benefits : [];
   const sideEffects = Array.isArray(supplement.side_effects) ? supplement.side_effects : [];
@@ -52,11 +63,18 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
       };
     }
     // Fallback if format doesn't match
+    console.warn('[transformRecommendationToEvidence] Failed to parse benefit:', benefit);
     return {
       condition: benefit,
       grade: 'C' as any,
       description: '',
     };
+  });
+
+  // DEBUG: Log parsed worksFor
+  console.log('[transformRecommendationToEvidence] Parsed worksFor:', {
+    count: worksFor.length,
+    items: worksFor.map(w => ({ condition: w.condition, grade: w.grade })),
   });
 
   // Parse side_effects to doesntWorkFor/limitedEvidence
@@ -71,7 +89,23 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     ? ingredients[0].grade
     : ('C' as any);
 
-  return {
+  // Transform dosage
+  const transformedDosage = typeof supplement.dosage === 'object' && supplement.dosage !== null ? {
+    effectiveDose: supplement.dosage.effectiveDose || supplement.dosage.optimalDose || 'No especificado',
+    commonDose: supplement.dosage.standard || supplement.dosage.optimalDose || 'Consultar con profesional',
+    timing: supplement.dosage.timing || 'Según indicaciones',
+    notes: supplement.dosage.notes || '',
+  } : undefined;
+
+  // DEBUG: Log dosage transformation
+  console.log('[transformRecommendationToEvidence] Dosage transformation:', {
+    inputType: typeof supplement.dosage,
+    inputKeys: supplement.dosage ? Object.keys(supplement.dosage) : [],
+    outputDefined: !!transformedDosage,
+    output: transformedDosage,
+  });
+
+  const result = {
     overallGrade,
     whatIsItFor: supplement.description || `Suplemento: ${recommendation.category}`,
     worksFor,
@@ -90,17 +124,22 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
       longTermStudies: evidenceSummary.researchSpanYears >= 5,
       safetyEstablished: true,
     },
-    // Transform dosage object from Lambda format to component format
-    dosage: typeof supplement.dosage === 'object' && supplement.dosage !== null ? {
-      effectiveDose: supplement.dosage.effectiveDose || supplement.dosage.optimalDose || 'No especificado',
-      commonDose: supplement.dosage.standard || supplement.dosage.optimalDose || 'Consultar con profesional',
-      timing: supplement.dosage.timing || 'Según indicaciones',
-      notes: supplement.dosage.notes || '',
-    } : undefined,
+    // Use transformed dosage
+    dosage: transformedDosage,
     sideEffects: Array.isArray(supplement.side_effects) ? supplement.side_effects : [],
     interactions: Array.isArray(supplement.interactions) ? supplement.interactions : [],
     contraindications: Array.isArray(supplement.warnings) ? supplement.warnings : [],
   };
+
+  // DEBUG: Log final result summary
+  console.log('[transformRecommendationToEvidence] Output summary:', {
+    overallGrade: result.overallGrade,
+    worksForCount: result.worksFor.length,
+    hasDosage: !!result.dosage,
+    ingredientsCount: result.ingredients.length,
+  });
+
+  return result;
 }
 
 interface Recommendation {
