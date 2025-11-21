@@ -38,6 +38,12 @@ export interface CachedEvidenceResult {
 
 const dynamoClient = new DynamoDBClient({
   region: process.env.AWS_REGION || 'us-east-1',
+  credentials: process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+    ? {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      }
+    : undefined, // Falls back to default credential chain if not provided
 });
 
 const TABLE_NAME = process.env.DYNAMODB_CACHE_TABLE || 'production-supplements-evidence-cache';
