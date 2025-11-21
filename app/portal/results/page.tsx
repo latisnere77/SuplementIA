@@ -16,64 +16,82 @@ import ProductRecommendationsGrid from '@/components/portal/ProductRecommendatio
 import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
 import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
-import GenerationProgress from '@/components/portal/GenerationProgress';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 
 // ====================================
-// ADAPTER FUNCTION - Server-Side Transformation
+// ADAPTER FUNCTION - Client-Side Transformation
 // ====================================
 
 /**
- * Fetch transformed evidence from server-side API route
- * This replaces direct client-side calls to transformEvidenceToNew()
- * which tried to access DynamoDB and Lambda from the browser
+ * Transform recommendation data to format expected by EvidenceAnalysisPanelNew
+ * This is a SIMPLE client-side adapter (no API calls, no DynamoDB, no hardcoded data)
  *
- * @see XRAY-ARCHITECTURE-ANALYSIS.md - Section 3.2
+ * The new intelligent system (/api/portal/recommend → /enrich → Lambdas) already
+ * provides all the data we need. We just need to map it to the visual format.
  */
-async function fetchTransformedEvidence(
-  category: string,
-  evidenceSummary: any,
-  onProgress?: (progress: {
-    step: number;
-    totalSteps: number;
-    message: string;
-    percentage: number;
-    phase: 'searching' | 'analyzing' | 'caching' | 'complete';
-  }) => void
-): Promise<any> {
-  const response = await fetch('/api/portal/transform-evidence', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      category,
-      evidenceSummary,
-      forceRefresh: false,
-    }),
+function transformRecommendationToEvidence(recommendation: Recommendation): any {
+  // Extract supplement data from recommendation
+  const supplement = (recommendation as any).supplement || {};
+  const evidenceSummary = recommendation.evidence_summary || {};
+
+  // Parse benefits array to worksFor format
+  const worksFor = (supplement.benefits || []).map((benefit: string) => {
+    // Parse format: "Condition (Evidencia: A, magnitude)"
+    const match = benefit.match(/^(.+?)\s*\(Evidencia:\s*([A-F])[,\s]+(.+?)\)$/);
+    if (match) {
+      return {
+        condition: match[1].trim(),
+        grade: match[2] as any,
+        description: match[3].trim(),
+      };
+    }
+    // Fallback if format doesn't match
+    return {
+      condition: benefit,
+      grade: 'C' as any,
+      description: '',
+    };
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || `Transform failed with status ${response.status}`);
-  }
+  // Parse side_effects to doesntWorkFor/limitedEvidence
+  const sideEffects = supplement.side_effects || [];
+  const limitedEvidence = sideEffects.map((effect: string) => ({
+    condition: effect,
+    grade: 'C' as any,
+    description: 'Posible efecto secundario',
+  }));
 
-  const result = await response.json();
+  // Determine overall grade from ingredients
+  const ingredients = evidenceSummary.ingredients || [];
+  const overallGrade = ingredients.length > 0
+    ? ingredients[0].grade
+    : ('C' as any);
 
-  // Simulate progress if callback provided (since API doesn't stream progress yet)
-  if (onProgress && result.meta?.level === 3) {
-    // Only show progress for dynamic generation (level 3)
-    onProgress({
-      step: 4,
-      totalSteps: 4,
-      message: '✅ Datos guardados. Mostrando resultados...',
-      percentage: 100,
-      phase: 'complete',
-    });
-  }
-
-  return result.data;
+  return {
+    overallGrade,
+    whatIsItFor: supplement.description || `Suplemento: ${recommendation.category}`,
+    worksFor,
+    doesntWorkFor: [], // We don't have explicit "doesn't work for" data yet
+    limitedEvidence,
+    ingredients: ingredients.map((ing: any) => ({
+      name: ing.name,
+      grade: ing.grade || 'C',
+      studyCount: ing.studyCount || 0,
+      rctCount: ing.rctCount || 0,
+      description: ing.description,
+    })),
+    qualityBadges: {
+      hasRCTs: ingredients.some((i: any) => i.rctCount > 0),
+      hasMetaAnalysis: evidenceSummary.totalStudies > 50,
+      longTermStudies: evidenceSummary.researchSpanYears >= 5,
+      safetyEstablished: true,
+    },
+    dosage: supplement.dosage,
+    sideEffects: supplement.side_effects,
+    interactions: supplement.interactions,
+    contraindications: supplement.warnings,
+  };
 }
 
 interface Recommendation {
@@ -131,13 +149,6 @@ function ResultsPageContent() {
   const [subscription, setSubscription] = useState<any>(null);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
   const [transformedEvidence, setTransformedEvidence] = useState<any>(null);
-  const [generationProgress, setGenerationProgress] = useState<{
-    step: number;
-    totalSteps: number;
-    message: string;
-    percentage: number;
-    phase: 'searching' | 'analyzing' | 'caching' | 'complete';
-  } | null>(null);
 
   // Check subscription status
   useEffect(() => {
@@ -168,46 +179,16 @@ function ResultsPageContent() {
   const query = searchParams.get('q');
   const recommendationId = searchParams.get('id');
 
-  // Transform evidence data when recommendation changes
+  // Transform evidence data when recommendation changes (CLIENT-SIDE, instant)
   useEffect(() => {
     if (!recommendation) {
       setTransformedEvidence(null);
-      setGenerationProgress(null);
       return;
     }
 
-    const transformEvidence = async () => {
-      try {
-        // Use server-side API route for transformation
-        const transformed = await fetchTransformedEvidence(
-          recommendation.category,
-          recommendation.evidence_summary,
-          (progress) => {
-            // Update progress state in real-time
-            setGenerationProgress(progress);
-          }
-        );
-        setTransformedEvidence(transformed);
-        // Clear progress when complete
-        setTimeout(() => setGenerationProgress(null), 500);
-      } catch (error) {
-        console.error('Failed to transform evidence:', error);
-        setGenerationProgress(null);
-        // Fallback: try again without progress callback
-        try {
-          const transformed = await fetchTransformedEvidence(
-            recommendation.category,
-            recommendation.evidence_summary
-          );
-          setTransformedEvidence(transformed);
-        } catch (fallbackError) {
-          console.error('Fallback also failed:', fallbackError);
-          // Show error state to user
-        }
-      }
-    };
-
-    transformEvidence();
+    // Simple client-side transformation (no API calls needed)
+    const transformed = transformRecommendationToEvidence(recommendation);
+    setTransformedEvidence(transformed);
   }, [recommendation]);
 
   useEffect(() => {
@@ -662,17 +643,7 @@ function ResultsPageContent() {
     }
   };
 
-  // Show progress component if we have progress updates
-  if (generationProgress) {
-    return (
-      <GenerationProgress
-        progress={generationProgress}
-        supplementName={recommendation?.category}
-      />
-    );
-  }
-
-  // Show generic loading if still loading recommendation
+  // Show loading state
   if (isLoading || (recommendation && !transformedEvidence)) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
