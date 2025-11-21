@@ -505,13 +505,15 @@ function ResultsPageContent() {
           // ASYNC PATTERN: Backend returned 202 with recommendation_id - start polling
           if (response.status === 202 && data.recommendation_id) {
             console.log('🔄 Starting async polling for recommendation:', data.recommendation_id);
-            
-            // Update URL immediately with recommendation ID
+
+            // Update URL immediately with recommendation ID (without navigation)
             if (typeof window !== 'undefined') {
               const newUrl = `/portal/results?id=${data.recommendation_id}`;
               const currentUrl = window.location.pathname + window.location.search;
               if (currentUrl !== newUrl) {
-                router.push(newUrl);
+                console.log('📝 Updating URL for polling:', newUrl);
+                window.history.replaceState({}, '', newUrl);
+                // DO NOT call router.push() - it causes unnecessary page reload
               }
             }
             
@@ -604,11 +606,14 @@ function ResultsPageContent() {
                 console.warn('Failed to cache recommendation:', cacheError);
               }
 
-              // Update URL with recommendation ID
+              // Update URL without navigating (use replaceState to avoid reload)
+              // This updates the browser URL without triggering a re-render or fetch
               const newUrl = `/portal/results?id=${data.recommendation.recommendation_id}`;
               const currentUrl = window.location.pathname + window.location.search;
               if (currentUrl !== newUrl) {
-                router.push(newUrl);
+                console.log('📝 Updating URL without navigation:', newUrl);
+                window.history.replaceState({}, '', newUrl);
+                // DO NOT call router.push() - it causes unnecessary navigation
               }
             }
           } else {
