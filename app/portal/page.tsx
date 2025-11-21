@@ -5,11 +5,10 @@
 
 'use client';
 
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon } from 'lucide-react';
-import { Combobox, Transition } from '@headlessui/react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -239,142 +238,112 @@ export default function PortalPage() {
               transition={{ duration: 1, delay: 0.9 }}
               className="relative max-w-2xl mx-auto"
             >
-              <Combobox
-                value={searchQuery}
-                onChange={(value) => {
-                  console.log('[PortalPage] Combobox onChange:', value);
-                  if (value) {
-                    handleSearch(value);
-                  }
-                }}
-              >
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400 z-10 pointer-events-none" />
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400 z-10 pointer-events-none" />
 
-                  <Combobox.Input
-                    className="h-14 w-full pl-12 pr-24 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
-                    onChange={(e) => {
-                      console.log('[PortalPage] Input onChange:', e.target.value);
-                      setSearchQuery(e.target.value);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (searchQuery.trim()) {
-                          handleSearch(searchQuery);
-                        }
+                <input
+                  type="text"
+                  value={searchQuery}
+                  className="h-14 w-full pl-12 pr-24 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
+                  onChange={(e) => {
+                    console.log('[PortalPage] Input onChange:', e.target.value);
+                    setSearchQuery(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (searchQuery.trim()) {
+                        handleSearch(searchQuery);
                       }
-                    }}
-                    placeholder=""
-                    autoComplete="off"
-                  />
+                    }
+                  }}
+                  placeholder=""
+                  autoComplete="off"
+                />
 
-                  {/* Animated Placeholder */}
-                  <div className="absolute inset-0 flex items-center pl-12 pointer-events-none">
-                    <AnimatePresence mode="wait">
-                      {!searchQuery && (
-                        <motion.p
-                          key={currentPlaceholder}
-                          initial={{ y: 5, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          exit={{ y: -15, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: 'linear' }}
-                          className="text-gray-500 dark:text-gray-400 text-base truncate"
-                        >
-                          {placeholders[currentPlaceholder]}
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Search Button or Loading Spinner */}
-                  {isLoading || isLoadingSuggestions ? (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => searchQuery.trim() && handleSearch(searchQuery)}
-                      disabled={!searchQuery.trim()}
-                      className={cn(
-                        "absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg font-semibold transition-all duration-200",
-                        searchQuery.trim()
-                          ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transform hover:scale-105"
-                          : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                      )}
-                    >
-                      {language === 'es' ? 'Ir' : 'Go'}
-                    </button>
-                  )}
-
-                  {/* Autocomplete Dropdown - Solo se muestra cuando hay query Y (hay sugerencias O está cargando) */}
-                  {searchQuery.length >= 2 && (
-                    <Transition
-                      as={Fragment}
-                      show={searchQuery.length >= 2}
-                      leave="transition ease-in duration-100"
-                      leaveFrom="opacity-100"
-                      leaveTo="opacity-0"
-                    >
-                      <Combobox.Options
-                        static
-                        className="absolute z-[9999] mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-[400px] overflow-y-scroll py-2 overscroll-contain"
-                        style={{ scrollBehavior: 'smooth' }}
+                {/* Animated Placeholder */}
+                <div className="absolute inset-0 flex items-center pl-12 pointer-events-none">
+                  <AnimatePresence mode="wait">
+                    {!searchQuery && (
+                      <motion.p
+                        key={currentPlaceholder}
+                        initial={{ y: 5, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -15, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'linear' }}
+                        className="text-gray-500 dark:text-gray-400 text-base truncate"
                       >
-                        {isLoadingSuggestions ? (
-                          <div className="px-4 py-3 flex items-center gap-3 text-gray-500">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                            <span className="text-sm">{t('autocomplete.loading')}</span>
-                          </div>
-                        ) : suggestions.length === 0 ? (
-                          <div className="px-4 py-3 text-sm text-gray-500">
-                            {t('autocomplete.no.results')}
-                          </div>
-                        ) : (
-                          suggestions.map((suggestion, idx) => (
-                            <Combobox.Option
-                              key={`${suggestion.text}-${idx}`}
-                              value={suggestion.text}
-                              className={({ active }) =>
-                                cn(
-                                  'relative cursor-pointer select-none py-3 px-4 transition-colors',
-                                  active ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100' : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                )
-                              }
-                              onClick={() => {
-                                console.log('[PortalPage] Option clicked:', suggestion.text);
-                              }}
-                            >
-                              {({ active }) => (
-                                <div className="flex items-center gap-3 w-full">
-                                  {/* Icon based on type */}
-                                  {suggestion.type === 'category' ? (
-                                    <TrendingUp className={cn('h-4 w-4 flex-shrink-0', active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400')} />
-                                  ) : (
-                                    <Search className={cn('h-4 w-4 flex-shrink-0', active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400')} />
-                                  )}
-
-                                  {/* Suggestion text */}
-                                  <span className={cn('text-sm font-medium flex-1 min-w-0', active ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100')}>
-                                    {suggestion.text}
-                                  </span>
-
-                                  {/* Type label */}
-                                  {suggestion.type !== 'supplement' && (
-                                    <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                                      {suggestion.type === 'category' ? t('autocomplete.categories') : 'Condition'}
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </Combobox.Option>
-                          ))
-                        )}
-                      </Combobox.Options>
-                    </Transition>
-                  )}
+                        {placeholders[currentPlaceholder]}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </Combobox>
+
+                {/* Search Button or Loading Spinner */}
+                {isLoading || isLoadingSuggestions ? (
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => searchQuery.trim() && handleSearch(searchQuery)}
+                    disabled={!searchQuery.trim()}
+                    className={cn(
+                      "absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg font-semibold transition-all duration-200",
+                      searchQuery.trim()
+                        ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transform hover:scale-105"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                    )}
+                  >
+                    {language === 'es' ? 'Ir' : 'Go'}
+                  </button>
+                )}
+
+                {/* Autocomplete Dropdown - Simple version without Combobox */}
+                {searchQuery.length >= 2 && (suggestions.length > 0 || isLoadingSuggestions) && (
+                  <div className="absolute z-[9999] mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 max-h-[400px] overflow-y-auto py-2">
+                    {isLoadingSuggestions ? (
+                      <div className="px-4 py-3 flex items-center gap-3 text-gray-500">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                        <span className="text-sm">{t('autocomplete.loading')}</span>
+                      </div>
+                    ) : (
+                      suggestions.map((suggestion, idx) => (
+                        <button
+                          key={`${suggestion.text}-${idx}`}
+                          onClick={() => {
+                            console.log('[PortalPage] Suggestion clicked:', suggestion.text);
+                            setSearchQuery(suggestion.text);
+                            handleSearch(suggestion.text);
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            {/* Icon based on type */}
+                            {suggestion.type === 'category' ? (
+                              <TrendingUp className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                            ) : (
+                              <Search className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                            )}
+
+                            {/* Suggestion text */}
+                            <span className="text-sm font-medium flex-1 min-w-0 text-gray-900 dark:text-gray-100">
+                              {suggestion.text}
+                            </span>
+
+                            {/* Type label */}
+                            {suggestion.type !== 'supplement' && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                                {suggestion.type === 'category' ? t('autocomplete.categories') : 'Condition'}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Validation Error Message */}
               <AnimatePresence>
