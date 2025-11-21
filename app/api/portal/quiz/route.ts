@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
       if (!recommendationResponse.ok) {
         const errorText = await recommendationResponse.text();
         let errorData: any;
-        
+
         try {
           errorData = JSON.parse(errorText);
         } catch {
@@ -211,17 +211,23 @@ export async function POST(request: NextRequest) {
           backendResponse: errorData,
         });
 
-        // Return error instead of falling back to mock
+        // GRACEFUL FALLBACK: Use mock data when backend fails (502, 500, etc.)
+        console.warn(`⚠️  Backend returned ${recommendationResponse.status}, falling back to demo mode`);
+        const mockRecommendation = getMockRecommendation(sanitizedCategory);
+
         return NextResponse.json(
           {
-            success: false,
-            error: 'Backend API error',
-            message: `Backend returned ${recommendationResponse.status}: ${errorData.message || errorText.substring(0, 200)}`,
-            status: recommendationResponse.status,
-            requestId,
-            backendError: errorData,
+            success: true,
+            quiz_id: quizId,
+            recommendation: {
+              ...mockRecommendation,
+              quiz_id: quizId,
+            },
+            demo: true,
+            fallback: true,
+            fallbackReason: `Backend returned ${recommendationResponse.status}`,
           },
-          { status: recommendationResponse.status }
+          { status: 200 }
         );
       }
 
@@ -295,18 +301,24 @@ export async function POST(request: NextRequest) {
         backendUrl: QUIZ_API_URL,
         errorType: apiError.name,
       });
-      
-      // Return error instead of falling back to mock
+
+      // GRACEFUL FALLBACK: Use mock data when backend is unreachable
+      console.warn(`⚠️  Backend unreachable (${apiError.message}), falling back to demo mode`);
+      const mockRecommendation = getMockRecommendation(sanitizedCategory);
+
       return NextResponse.json(
         {
-          success: false,
-          error: 'Backend API call failed',
-          message: apiError.message,
-          errorType: apiError.name,
-          requestId,
-          backendUrl: QUIZ_API_URL,
+          success: true,
+          quiz_id: quizId,
+          recommendation: {
+            ...mockRecommendation,
+            quiz_id: quizId,
+          },
+          demo: true,
+          fallback: true,
+          fallbackReason: `Backend unreachable: ${apiError.message}`,
         },
-        { status: 503 } // Service Unavailable
+        { status: 200 }
       );
     }
   } catch (error: any) {
