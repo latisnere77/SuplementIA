@@ -640,8 +640,11 @@ function ResultsPageContent() {
               category: data.recommendation.category,
               ingredientsCount: data.recommendation.ingredients?.length || 0,
             });
-            
-            setRecommendation(data.recommendation);
+
+            if (isMounted) {
+              setRecommendation(data.recommendation);
+              setIsLoading(false); // Stop loading spinner
+            }
 
             // CACHE: Save to localStorage for later retrieval
             if (data.recommendation.recommendation_id && typeof window !== 'undefined') {
