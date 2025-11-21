@@ -270,7 +270,20 @@ function transformToRecommendation(
       warnings: enrichedContent.warnings || enrichedContent.contraindications || [],
       interactions: enrichedContent.interactions || [],
     },
-    // Evidence and studies
+    // Evidence summary (frontend expects this structure)
+    evidence_summary: {
+      totalStudies: metadata?.studiesUsed || 0,
+      totalParticipants: enrichedContent.totalParticipants || 0,
+      efficacyPercentage: enrichedContent.efficacyPercentage || 0,
+      researchSpanYears: enrichedContent.researchSpanYears || 10,
+      ingredients: enrichedContent.ingredients || [{
+        name: enrichedContent.name || category,
+        grade: enrichedContent.evidenceGrade || 'C',
+        studyCount: metadata?.studiesUsed || 0,
+        rctCount: metadata?.rctCount || 0,
+      }],
+    },
+    // Evidence and studies (legacy, keep for compatibility)
     evidence: {
       quality: enrichedContent.evidenceQuality || enrichedContent.evidence_quality || 'moderate',
       studies_count: metadata?.studiesUsed || 0,
