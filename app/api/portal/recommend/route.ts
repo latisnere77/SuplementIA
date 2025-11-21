@@ -263,12 +263,16 @@ function transformToRecommendation(
     // Main supplement recommendation
     supplement: {
       name: enrichedContent.name || category,
-      description: enrichedContent.description || enrichedContent.overview || '',
+      description: enrichedContent.whatIsIt || enrichedContent.description || enrichedContent.overview || '',
       dosage: enrichedContent.dosage || 'Consultar con profesional de salud',
-      benefits: enrichedContent.benefits || [],
-      side_effects: enrichedContent.sideEffects || enrichedContent.side_effects || [],
-      warnings: enrichedContent.warnings || enrichedContent.contraindications || [],
-      interactions: enrichedContent.interactions || [],
+      // Extract benefits from worksFor array
+      benefits: enrichedContent.worksFor?.map((w: any) => `${w.condition} (Evidencia: ${w.evidenceGrade}, ${w.magnitude})`) || [],
+      // Extract side effects from safety.sideEffects
+      side_effects: enrichedContent.safety?.sideEffects?.map((s: any) => `${s.effect} (${s.frequency}, ${s.severity})`) || [],
+      // Extract warnings from safety.contraindications
+      warnings: enrichedContent.safety?.contraindications || [],
+      // Extract interactions from safety.interactions
+      interactions: enrichedContent.safety?.interactions?.map((i: any) => `${i.medication}: ${i.description}`) || [],
     },
     // Evidence summary (frontend expects this structure)
     evidence_summary: {
