@@ -913,7 +913,6 @@ function ResultsPageContent() {
           
           if (!hasNoData) return null;
           
-          return (() => {
           const suggestion = suggestSupplementCorrection(recommendation.category);
           return (
             <div className="mb-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
