@@ -92,20 +92,32 @@ async function expandWithLLM(term: string): Promise<string[]> {
 
 Your task: Provide the full chemical or scientific names optimized for PubMed searches.
 
-CRITICAL RULES:
-1. If it's an ABBREVIATION (like HMB, BCAA, NAC), expand it to full chemical names
-2. If it's in SPANISH, you MUST translate it to English scientific names (PubMed is in English)
-   - Spanish herbs/spices: "cilantro" → "coriander", "perejil" → "parsley", "romero" → "rosemary"
-   - Spanish vitamins: "vitamina c" → "vitamin c", "vitamina d" → "vitamin d"
-   - Spanish minerals: "magnesio" → "magnesium", "calcio" → "calcium"
-   - ALWAYS translate Spanish terms - PubMed searches require English
-3. Return ONLY names that would find studies in PubMed
-4. Order by: most common scientific name first
-5. Include chemical names, brand names if very common
-6. Maximum 3-4 alternatives
-7. If it's already in English and not an abbreviation, return empty array ONLY if you're certain
+🚨 CRITICAL RULES - MUST FOLLOW:
 
-IMPORTANT: Be aggressive with Spanish→English translation. If you detect Spanish, translate it immediately.
+1. ABBREVIATIONS: If it's an abbreviation (HMB, BCAA, NAC, DHEA), expand to full chemical name
+2. SPANISH DETECTION: If the term contains ANY of these patterns, it's Spanish and MUST be translated:
+   - Ends in: -ina, -ino, -eno, -ano, -ina, -osa (niacina, colageno, magnesio, espirulina, glucosa)
+   - Contains: ácido, acido, vitamina, hierro, calcio, zinc, cobre, aceite, extracto
+   - Is a Spanish word: teanina, fosfatidilserina, curcuma, jengibre, cilantro, etc.
+
+3. TRANSLATION REQUIREMENT:
+   - PubMed is ONLY in English - NEVER return Spanish terms
+   - ALWAYS translate Spanish → English, no exceptions
+   - If unsure, translate anyway (better to translate than fail)
+
+4. Return ONLY names that would find studies in PubMed (English scientific names)
+5. Order by: most common scientific name first
+6. Include chemical names, alternatives
+7. Maximum 3-4 alternatives
+8. If it's already in English and not an abbreviation, return empty array
+
+🔥 SPANISH AUTO-TRANSLATION RULE:
+If you detect ANY Spanish characteristics in "${term}", you MUST translate it to English.
+Examples of Spanish patterns to detect:
+- "-ina" ending: niacina→niacin, teanina→theanine, espirulina→spirulina, fosfatidilserina→phosphatidylserine
+- "-eno" ending: colageno→collagen
+- "-io" ending: magnesio→magnesium, calcio→calcium
+- Accent marks: ácido→acid, cúrcuma→turmeric
 
 Return ONLY a JSON array, no explanation:
 ["primary name", "alternative name 1", "alternative name 2"]
@@ -125,6 +137,7 @@ Examples:
 - "colageno" → ["collagen", "collagen peptides"] (Spanish→English translation)
 - "l-teanina" → ["l-theanine", "theanine"] (Spanish→English translation)
 - "espirulina" → ["spirulina", "Arthrospira platensis"] (Spanish→English translation)
+- "fosfatidilserina" → ["phosphatidylserine", "PS"] (Spanish→English translation)
 - "ashwagandha" → [] (already in English)
 - "ginseng" → [] (already in English)
 
