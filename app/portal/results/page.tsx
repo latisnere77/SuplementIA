@@ -574,16 +574,8 @@ function ResultsPageContent() {
           const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           console.log(`🔖 Job ID: ${jobId} - Query: "${normalizedQuery}" → "${category}"`);
 
-          // NEW: Use async enrichment for ingredient searches to avoid timeouts
-          if (isIngredientSearch) {
-            console.log(`🚀 Using async enrichment for ingredient: "${searchTerm}"`);
-            setAsyncSupplementName(searchTerm);
-            setUseAsyncEnrichment(true);
-            setIsLoading(true);
-            return; // AsyncEnrichmentLoader will handle the rest
-          }
-
-          // For category searches, use the quiz endpoint (fast, no timeout risk)
+          // Use quiz endpoint for all searches (ingredients and categories)
+          // The quiz endpoint already handles enrichment with proper timeout handling
           const response = await fetch('/api/portal/quiz', {
             method: 'POST',
             headers: { 
