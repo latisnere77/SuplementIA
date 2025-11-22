@@ -4,16 +4,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-const client = new DynamoDBClient({ region: 'us-east-1' });
-const docClient = DynamoDBDocumentClient.from(client);
-
-const CACHE_TABLE = 'suplementia-content-enricher-cache';
 
 export async function GET(
   request: NextRequest,
@@ -35,50 +28,73 @@ export async function GET(
   }
 
   try {
-    // Check if result is in cache
-    const result = await docClient.send(
-      new GetCommand({
-        TableName: CACHE_TABLE,
-        Key: { supplementId: supplementName },
-      })
-    );
+    // Instead of querying DynamoDB directly (requires AWS credentials),
+    // we call the enrich endpoint which already has the logic to check cache
+    // and return immediately if cached
+    const enrichUrl = `${request.nextUrl.origin}/api/portal/enrich`;
+    
+    const enrichResponse = await fetch(enrichUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Job-ID': jobId,
+      },
+      body: JSON.stringify({
+        supplementName,
+        maxStudies: 10,
+        forceRefresh: false,
+      }),
+      // Short timeout - if it takes too long, it's still processing
+      signal: AbortSignal.timeout(5000), // 5 seconds
+    });
 
-    if (result.Item) {
-      console.log(`✅ Cache hit for ${supplementName} - Job ${jobId}`);
+    if (enrichResponse.ok) {
+      const data = await enrichResponse.json();
       
-      // Return the cached enrichment data
+      // If we got data quickly, it was cached
+      console.log(`✅ Enrichment completed for ${supplementName} - Job ${jobId}`);
       return NextResponse.json({
         success: true,
         status: 'completed',
         jobId,
         supplement: supplementName,
-        data: result.Item.enrichedData,
-        metadata: {
-          cachedAt: result.Item.createdAt,
-          ttl: result.Item.ttl,
-        },
+        data: data.data || data,
+        metadata: data.metadata,
+      });
+    } else if (enrichResponse.status === 404) {
+      // No data found yet
+      console.log(`⏳ Still processing ${supplementName} - Job ${jobId}`);
+      return NextResponse.json({
+        success: true,
+        status: 'processing',
+        jobId,
+        supplement: supplementName,
+        message: 'Enrichment in progress',
+      });
+    } else {
+      // Error
+      const errorData = await enrichResponse.json().catch(() => ({}));
+      throw new Error(errorData.error || `Enrich API returned ${enrichResponse.status}`);
+    }
+  } catch (error: any) {
+    // If timeout or error, assume still processing
+    if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+      console.log(`⏳ Still processing ${supplementName} - Job ${jobId} (timeout)`);
+      return NextResponse.json({
+        success: true,
+        status: 'processing',
+        jobId,
+        supplement: supplementName,
+        message: 'Enrichment in progress',
       });
     }
-
-    // Not in cache yet - still processing
-    console.log(`⏳ Still processing ${supplementName} - Job ${jobId}`);
-    return NextResponse.json({
-      success: true,
-      status: 'processing',
-      jobId,
-      supplement: supplementName,
-      message: 'Enrichment in progress',
-    });
-  } catch (error: any) {
+    
     console.error(`❌ Enrichment status check error - Job ${jobId}:`, error);
-    return NextResponse.json(
-      {
-        success: false,
-        status: 'error',
-        jobId,
-        error: error.message,
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      success: false,
+      status: 'error',
+      jobId,
+      error: error.message,
+    }, { status: 500 });
   }
 }
