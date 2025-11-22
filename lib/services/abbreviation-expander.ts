@@ -77,6 +77,106 @@ export function isLikelyAbbreviation(term: string): boolean {
   return patterns.some(pattern => pattern.test(trimmed));
 }
 
+/**
+ * Detect if a term contains Spanish characteristics
+ * This is a fallback safety net in case LLM fails to translate
+ *
+ * Spanish patterns:
+ * - Ends in: -ina, -ino, -eno, -ano, -osa, -ato
+ * - Contains: ácido, acido, vitamina
+ * - Accent marks: á, é, í, ó, ú, ñ
+ */
+function detectSpanishTerm(term: string): boolean {
+  const lower = term.toLowerCase();
+
+  // Pattern 1: Spanish endings
+  const spanishEndings = ['-ina', '-ino', '-eno', '-ano', '-osa', '-ato'];
+  const hasSpanishEnding = spanishEndings.some(ending => {
+    // Check if ANY word in the term has this ending
+    const words = lower.split(/\s+/);
+    return words.some(word => word.endsWith(ending) && word.length > 4);
+  });
+
+  // Pattern 2: Spanish keywords
+  const spanishKeywords = ['ácido', 'acido', 'vitamina', 'hierro', 'calcio', 'extracto'];
+  const hasSpanishKeyword = spanishKeywords.some(keyword => lower.includes(keyword));
+
+  // Pattern 3: Spanish accent marks
+  const hasAccent = /[áéíóúñ]/.test(lower);
+
+  return hasSpanishEnding || hasSpanishKeyword || hasAccent;
+}
+
+/**
+ * Programmatic Spanish→English translation fallback
+ * Used when LLM fails to translate Spanish terms
+ *
+ * This is a SIMPLE pattern-based translator for common supplement terms
+ */
+function translateSpanishProgrammatically(term: string): string | null {
+  const lower = term.toLowerCase().trim();
+
+  // Common Spanish→English supplement translations
+  const translations: Record<string, string> = {
+    // Single words
+    'magnesio': 'magnesium',
+    'calcio': 'calcium',
+    'hierro': 'iron',
+    'zinc': 'zinc',
+    'cobre': 'copper',
+    'creatina': 'creatine',
+    'melatonina': 'melatonin',
+    'colageno': 'collagen',
+    'espirulina': 'spirulina',
+    'astaxantina': 'astaxanthin',
+    'curcuma': 'turmeric',
+    'cúrcuma': 'turmeric',
+    'jengibre': 'ginger',
+    'cilantro': 'coriander',
+    'niacina': 'niacin',
+    'biotina': 'biotin',
+    'tiamina': 'thiamine',
+    'riboflavina': 'riboflavin',
+    'vitamina': 'vitamin',
+
+    // Compound terms
+    'acido hialuronico': 'hyaluronic acid',
+    'ácido hialuronico': 'hyaluronic acid',
+    'acido folico': 'folic acid',
+    'ácido fólico': 'folic acid',
+    'acido alfa lipoico': 'alpha lipoic acid',
+    'ácido alfa lipoico': 'alpha lipoic acid',
+    'l-teanina': 'l-theanine',
+    'fosfatidilserina': 'phosphatidylserine',
+    'citrulina malato': 'citrulline malate',
+    'beta alanina': 'beta alanine',
+    'beta-alanina': 'beta-alanine',
+    'extracto de te verde': 'green tea extract',
+    'aceite de pescado': 'fish oil',
+  };
+
+  // Direct lookup
+  if (translations[lower]) {
+    return translations[lower];
+  }
+
+  // Pattern-based translation for terms not in dictionary
+  // This handles simple endings transformation
+  let translated = lower;
+
+  // Transform common patterns
+  if (translated.endsWith('eno')) {
+    translated = translated.replace(/eno$/, 'en'); // colageno → collagen
+  } else if (translated.endsWith('io')) {
+    translated = translated.replace(/io$/, 'ium'); // magnesio → magnesium
+  } else if (translated.endsWith('ato')) {
+    translated = translated.replace(/ato$/, 'ate'); // malato → malate
+  }
+
+  // Only return if we actually transformed something
+  return translated !== lower ? translated : null;
+}
+
 // ====================================
 // LLM-BASED EXPANSION
 // ====================================
@@ -290,7 +390,19 @@ export async function expandAbbreviation(
     })
   );
 
-  // 2. ALWAYS try LLM expansion (handles both abbreviations AND Spanish translation)
+  // 2. Detect if term is Spanish BEFORE calling LLM (fallback safety net)
+  const isSpanish = detectSpanishTerm(trimmed);
+
+  console.log(
+    JSON.stringify({
+      event: 'SPANISH_DETECTION',
+      term: trimmed,
+      isSpanish,
+      timestamp: new Date().toISOString(),
+    })
+  );
+
+  // 3. ALWAYS try LLM expansion (handles both abbreviations AND Spanish translation)
   // The LLM will return empty array if no expansion/translation needed
   const llmStartTime = Date.now();
   const llmAlternatives = await expandWithLLM(trimmed);
@@ -301,6 +413,7 @@ export async function expandAbbreviation(
       event: 'ABBREVIATION_LLM_COMPLETE',
       term: trimmed,
       isAbbreviation: isAbbr,
+      isSpanish,
       alternativesCount: llmAlternatives.length,
       alternatives: llmAlternatives,
       llmDuration,
@@ -308,6 +421,7 @@ export async function expandAbbreviation(
     })
   );
 
+  // 4. If LLM returned results, use them
   if (llmAlternatives.length > 0) {
     const totalDuration = Date.now() - startTime;
     console.log(
@@ -332,14 +446,54 @@ export async function expandAbbreviation(
     };
   }
 
-  // 3. Fallback: use original term (no expansion needed)
+  // 5. CRITICAL FALLBACK: If Spanish term detected but LLM returned empty, use programmatic translation
+  // This is a safety net for when Claude Haiku fails to translate Spanish terms
+  if (isSpanish && llmAlternatives.length === 0) {
+    console.warn(
+      JSON.stringify({
+        event: 'SPANISH_LLM_FAILURE_FALLBACK',
+        term: trimmed,
+        reason: 'llm_failed_to_translate_spanish_term',
+        action: 'using_programmatic_translation',
+        timestamp: new Date().toISOString(),
+      })
+    );
+
+    // Simple programmatic Spanish→English translation for common patterns
+    const programmaticTranslation = translateSpanishProgrammatically(trimmed);
+
+    if (programmaticTranslation) {
+      const totalDuration = Date.now() - startTime;
+      console.log(
+        JSON.stringify({
+          event: 'SPANISH_FALLBACK_SUCCESS',
+          term: trimmed,
+          translatedTo: programmaticTranslation,
+          source: 'programmatic_fallback',
+          totalDuration,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      return {
+        original: trimmed,
+        isAbbreviation: false,
+        alternatives: [programmaticTranslation],
+        confidence: 0.7, // Lower confidence than LLM
+        source: 'heuristic',
+      };
+    }
+  }
+
+  // 6. Final fallback: use original term (no expansion needed)
   const totalDuration = Date.now() - startTime;
   console.log(
     JSON.stringify({
       event: 'ABBREVIATION_NO_EXPANSION',
       term: trimmed,
       isAbbreviation: isAbbr,
-      reason: 'llm_returned_empty_or_no_expansion_needed',
+      isSpanish,
+      reason: isSpanish ? 'spanish_term_but_no_translation_available' : 'llm_returned_empty_or_no_expansion_needed',
       source: isAbbr ? 'heuristic' : 'none',
       confidence: 1.0,
       totalDuration,
