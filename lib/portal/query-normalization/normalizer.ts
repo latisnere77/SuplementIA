@@ -129,6 +129,12 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'ashwaganda': { canonical: 'Ashwagandha', category: 'herb' },
   'withania': { canonical: 'Ashwagandha', category: 'herb' },
 
+  'ginseng': { canonical: 'Ginseng', category: 'herb' },
+  'ginseng coreano': { canonical: 'Ginseng', category: 'herb' },
+  'panax ginseng': { canonical: 'Ginseng', category: 'herb' },
+  'ginseng rojo': { canonical: 'Ginseng', category: 'herb' },
+  'korean ginseng': { canonical: 'Ginseng', category: 'herb' },
+
   'curcuma': { canonical: 'Turmeric', category: 'herb' },
   'cúrcuma': { canonical: 'Turmeric', category: 'herb' },
   'curcumin': { canonical: 'Turmeric', category: 'herb' },
