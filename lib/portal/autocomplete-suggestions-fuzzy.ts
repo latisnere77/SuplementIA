@@ -11,8 +11,9 @@ export type Language = 'en' | 'es';
 
 // PubMed fallback configuration
 const PUBMED_API_URL = process.env.STUDIES_API_URL || 'https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search';
-const FALLBACK_SCORE_THRESHOLD = 60; // Use PubMed if local score < 60%
+const FALLBACK_SCORE_THRESHOLD = 75; // Use PubMed if local score < 75% (increased from 60)
 const PUBMED_CACHE_TTL = 3600000; // 1 hour cache
+const PUBMED_MIN_RESULTS = 3; // Try PubMed if we have fewer than 3 good matches
 
 // In-memory cache for PubMed lookups
 interface CacheEntry {
@@ -33,21 +34,28 @@ export interface AutocompleteSuggestion {
 
 /**
  * Fuse.js configuration for fuzzy search
- * - threshold: 0.4 = moderate tolerance to typos (0 = exact match, 1 = match anything)
+ * - threshold: 0.25 = stricter matching (0 = exact match, 1 = match anything)
  * - distance: 100 = how far to search for a match
  * - keys: fields to search in (name, aliases, healthConditions)
+ *
+ * OPTIMIZED for better autocomplete relevance:
+ * - Lower threshold (0.4 → 0.25) = fewer irrelevant matches
+ * - Higher name weight (0.5 → 0.6) = prioritize name matches
+ * - Lower condition weight (0.2 → 0.1) = reduce noise from health conditions
  */
 const fuseOptions: IFuseOptions<SupplementEntry> = {
   keys: [
-    { name: 'name', weight: 0.5 },           // Name has highest weight
+    { name: 'name', weight: 0.6 },           // Name has highest weight (increased)
     { name: 'aliases', weight: 0.3 },        // Aliases are important for typos
-    { name: 'healthConditions', weight: 0.2 } // Health conditions have lower weight
+    { name: 'healthConditions', weight: 0.1 } // Health conditions have lower weight (reduced)
   ],
-  threshold: 0.4,         // 0.4 = moderate typo tolerance
+  threshold: 0.25,        // 0.25 = stricter matching for better relevance
   distance: 100,          // Distance for fuzzy matching
   includeScore: true,     // Include score in results
   minMatchCharLength: 2,  // Minimum 2 characters to match
   ignoreLocation: true,   // Don't consider location in string
+  findAllMatches: false,  // Only find best matches
+  useExtendedSearch: true, // Enable prefix search
 };
 
 // Create Fuse instances for each language (cached)
@@ -151,7 +159,20 @@ export async function getSuggestions(
   // Transform results to AutocompleteSuggestion format
   const suggestions: AutocompleteSuggestion[] = results.map(result => {
     const item = result.item;
-    const score = result.score !== undefined ? (1 - result.score) * 100 : 50;
+    let score = result.score !== undefined ? (1 - result.score) * 100 : 50;
+
+    // BONUS: Prefix matching gets +15 points
+    // If user types "cre" and supplement is "Creatina", boost score
+    const normalizedName = item.name.toLowerCase();
+    const lowerQuery = normalizedQuery.toLowerCase();
+    if (normalizedName.startsWith(lowerQuery)) {
+      score = Math.min(100, score + 15); // Boost but cap at 100
+    }
+
+    // BONUS: Exact match gets +20 points
+    if (normalizedName === lowerQuery) {
+      score = 100; // Perfect match
+    }
 
     // Determine type
     let type: 'supplement' | 'condition' | 'category';
@@ -176,8 +197,16 @@ export async function getSuggestions(
   suggestions.sort((a, b) => b.score - a.score);
 
   // Check if we should use PubMed fallback
+  // Use fallback if:
+  // 1. No results at all
+  // 2. Best score is low (< 75%)
+  // 3. We have fewer than 3 good results (helps with edge cases)
   const bestScore = suggestions[0]?.score || 0;
-  const shouldUseFallback = suggestions.length === 0 || bestScore < FALLBACK_SCORE_THRESHOLD;
+  const goodResults = suggestions.filter(s => s.score >= 70).length;
+  const shouldUseFallback =
+    suggestions.length === 0 ||
+    bestScore < FALLBACK_SCORE_THRESHOLD ||
+    goodResults < PUBMED_MIN_RESULTS;
 
   if (shouldUseFallback && normalizedQuery.length >= 3) {
     // Try PubMed fallback for supplements not in local database
