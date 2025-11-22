@@ -26,6 +26,7 @@ export interface EnrichRequest {
   supplementName: string;
   category?: string;
   forceRefresh?: boolean;
+  jobId?: string;
   // Study filters
   maxStudies?: number;
   rctOnly?: boolean;
@@ -42,6 +43,10 @@ export async function POST(request: NextRequest) {
   try {
     const body: EnrichRequest = await request.json();
     supplementName = body.supplementName || 'unknown';
+    
+    const jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    console.log(`🔖 [Job ${jobId}] Enrich endpoint - Supplement: "${supplementName}"`);
 
     // Validate request
     if (!body.supplementName) {
@@ -64,6 +69,7 @@ export async function POST(request: NextRequest) {
         event: 'ORCHESTRATION_START',
         requestId,
         correlationId,
+        jobId,
         supplementName,
         originalQuery: supplementName,
         category,
@@ -313,11 +319,13 @@ export async function POST(request: NextRequest) {
           headers: { 
             'Content-Type': 'application/json',
             'X-Request-ID': correlationId,
+            'X-Job-ID': jobId,
           },
           body: JSON.stringify({
             supplementName: term,
             maxResults: Math.min(optimizedMaxStudies, 10),
             filters,
+            jobId,
           }),
         });
 
@@ -736,12 +744,14 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'application/json',
         'X-Request-ID': correlationId,
+        'X-Job-ID': jobId,
       },
       body: JSON.stringify({
         supplementId: supplementName,
         category: category || 'general',
         forceRefresh: forceRefresh || false,
         studies, // CRITICAL: Pass real PubMed studies to Claude
+        jobId,
       }),
     });
 

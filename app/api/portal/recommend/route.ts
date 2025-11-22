@@ -41,11 +41,14 @@ function getBaseUrl(): string {
  */
 export async function POST(request: NextRequest) {
   const requestId = crypto.randomUUID();
+  const jobId = request.headers.get('X-Job-ID') || body?.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const startTime = Date.now();
 
   try {
     const body = await request.json();
     const { category, age, gender, location, sensitivities = [], quiz_id } = body;
+
+    console.log(`🔖 [Job ${jobId}] Recommend endpoint - Category: "${category}"`);
 
     portalLogger.logRequest({
       requestId,
@@ -117,6 +120,7 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'application/json',
         'X-Request-ID': requestId,
+        'X-Job-ID': jobId,
       },
       body: JSON.stringify({
         supplementName: sanitizedCategory,
@@ -125,6 +129,7 @@ export async function POST(request: NextRequest) {
         maxStudies: 10, // Use up to 10 studies for comprehensive analysis
         rctOnly: false,
         yearFrom: 2010,
+        jobId,
       }),
       signal: AbortSignal.timeout(115000), // 115s timeout (less than maxDuration of 120s)
     });

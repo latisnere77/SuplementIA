@@ -70,6 +70,7 @@ function detectClimate(location: string): string {
 
 export async function POST(request: NextRequest) {
   const requestId = crypto.randomUUID();
+  const jobId = request.headers.get('X-Job-ID') || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   let quizId: string | undefined;
   
   try {
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
 
     portalLogger.logRequest({
       requestId,
+      jobId,
       endpoint: '/api/portal/quiz',
       method: 'POST',
       category,
@@ -178,6 +180,7 @@ export async function POST(request: NextRequest) {
           Accept: 'application/json',
           'User-Agent': 'SuplementIA-Portal-API/1.0',
           'X-Request-ID': requestId,
+          'X-Job-ID': jobId,
         },
         method: 'POST',
         body: JSON.stringify({
@@ -189,6 +192,7 @@ export async function POST(request: NextRequest) {
           climate,
           sensitivities,
           quiz_id: quizId,
+          jobId,
         }),
         signal: AbortSignal.timeout(120000), // 120s timeout to allow recommend endpoint to complete (enrich can take 30-60s without cache)
       });

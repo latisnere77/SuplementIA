@@ -567,14 +567,22 @@ function ResultsPageContent() {
           // For category searches, use the mapped category
           const category = matchedCategory || searchTerm;
 
+          // Generate Job ID for complete traceability
+          const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          console.log(`🔖 Job ID: ${jobId} - Query: "${normalizedQuery}" → "${category}"`);
+
           const response = await fetch('/api/portal/quiz', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Job-ID': jobId,
+            },
             body: JSON.stringify({
               category,
               age: 35, // Default - in production, get from user profile
               gender: 'male', // Default
               location: 'CDMX', // Default
+              jobId, // Include in body for backend logging
             }),
           });
 
