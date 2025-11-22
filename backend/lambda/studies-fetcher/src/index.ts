@@ -8,6 +8,7 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-l
 import { searchPubMed } from './pubmed';
 import { config, CORS_HEADERS } from './config';
 import type { StudySearchRequest, StudiesResponse } from './types';
+import { translateToEnglish } from './translator';
 
 // Wrap AWS SDK if X-Ray is enabled
 if (config.xrayEnabled) {
@@ -89,17 +90,52 @@ export async function handler(
       })
     );
 
-    // Search PubMed
+    // Translate Spanish to English if needed
+    const translationSubsegment = subsegment?.addNewSubsegment?.('translation');
+    const originalTerm = request.supplementName;
+    const translatedTerm = await translateToEnglish(originalTerm);
+    
+    if (translationSubsegment) {
+      translationSubsegment.addAnnotation('original', originalTerm);
+      translationSubsegment.addAnnotation('translated', translatedTerm);
+      translationSubsegment.addAnnotation('wasTranslated', originalTerm !== translatedTerm);
+    }
+    translationSubsegment?.close();
+    
+    // Use translated term for PubMed search
+    const searchTerm = translatedTerm;
+    
+    if (originalTerm !== translatedTerm) {
+      console.log(
+        JSON.stringify({
+          event: 'TERM_TRANSLATED',
+          requestId: context.awsRequestId,
+          correlationId,
+          original: originalTerm,
+          translated: translatedTerm,
+          timestamp: new Date().toISOString(),
+        })
+      );
+    }
+
+    // Search PubMed with translated term
     const searchSubsegment = subsegment?.addNewSubsegment?.('pubmed-search');
     const searchStartTime = Date.now();
     
     try {
       if (searchSubsegment) {
-        searchSubsegment.addAnnotation('searchQuery', request.supplementName);
+        searchSubsegment.addAnnotation('searchQuery', searchTerm);
+        searchSubsegment.addAnnotation('originalQuery', originalTerm);
         searchSubsegment.addMetadata('filters', request.filters || {});
       }
 
-      const studies = await searchPubMed(request);
+      // Update request with translated term
+      const translatedRequest = {
+        ...request,
+        supplementName: searchTerm,
+      };
+
+      const studies = await searchPubMed(translatedRequest);
 
       const searchDuration = Date.now() - searchStartTime;
       const studyTypes = studies.map((s: any) => s.studyType || 'unknown');
