@@ -192,11 +192,12 @@ export async function POST(request: NextRequest) {
 
       try {
         // Add timeout to prevent slow LLM calls from blocking the entire request
-        const LLM_EXPANSION_TIMEOUT = 8000; // 8 seconds max
+        // Increased from 8s to 15s to account for production latency
+        const LLM_EXPANSION_TIMEOUT = 15000; // 15 seconds max
         const expansion = await Promise.race([
           expandAbbreviation(supplementName),
           new Promise<any>((_, reject) => 
-            setTimeout(() => reject(new Error('LLM expansion timeout')), LLM_EXPANSION_TIMEOUT)
+            setTimeout(() => reject(new Error('LLM expansion timeout after 15s')), LLM_EXPANSION_TIMEOUT)
           ),
         ]);
 
@@ -284,15 +285,35 @@ export async function POST(request: NextRequest) {
             event: 'QUERY_TRANSLATION_FAILED',
             requestId,
             correlationId,
+            jobId,
             originalQuery: supplementName,
             translatedQuery: supplementName,
             error: error.message,
             errorStack: error.stack,
             errorName: error.name,
+            errorCode: error.code,
             fallback: 'using_original',
+            awsRegion: process.env.AWS_REGION,
+            hasAwsCredentials: !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY),
             timestamp: new Date().toISOString(),
           })
         );
+        
+        // Log warning if this is a Spanish term that failed to translate
+        if (/[áéíóúñ]/.test(supplementName) || supplementName.endsWith('ina') || supplementName.endsWith('ino')) {
+          console.warn(
+            JSON.stringify({
+              event: 'SPANISH_TERM_TRANSLATION_FAILED',
+              requestId,
+              correlationId,
+              jobId,
+              term: supplementName,
+              error: error.message,
+              suggestion: 'Check AWS credentials and Bedrock access',
+              timestamp: new Date().toISOString(),
+            })
+          );
+        }
       }
     }
 
