@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       jobId,
       supplementName,
       message: 'Enrichment started in background',
-      pollUrl: `/api/portal/status/${jobId}?supplement=${encodeURIComponent(supplementName)}`,
+      pollUrl: `/api/portal/enrichment-status/${jobId}?supplement=${encodeURIComponent(supplementName)}`,
       pollInterval: 2000, // Poll every 2 seconds
     }, { status: 202 }); // 202 Accepted
 

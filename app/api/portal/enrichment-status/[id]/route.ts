@@ -1,6 +1,6 @@
 /**
- * Status API Route
- * Check if enrichment is complete for a given job
+ * Enrichment Status API Route
+ * Check if enrichment is complete for a given job by querying DynamoDB cache
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -17,12 +17,12 @@ const CACHE_TABLE = 'suplementia-content-enricher-cache';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { jobId: string } }
+  { params }: { params: { id: string } }
 ) {
-  const jobId = params.jobId;
+  const jobId = params.id;
   const supplementName = request.nextUrl.searchParams.get('supplement');
 
-  console.log(`🔍 Status check - Job ID: ${jobId}, Supplement: ${supplementName}`);
+  console.log(`🔍 Enrichment status check - Job ID: ${jobId}, Supplement: ${supplementName}`);
 
   if (!supplementName) {
     return NextResponse.json(
@@ -70,7 +70,7 @@ export async function GET(
       message: 'Enrichment in progress',
     });
   } catch (error: any) {
-    console.error(`❌ Status check error - Job ${jobId}:`, error);
+    console.error(`❌ Enrichment status check error - Job ${jobId}:`, error);
     return NextResponse.json(
       {
         success: false,
