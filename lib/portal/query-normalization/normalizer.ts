@@ -88,8 +88,10 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'omega 3': { canonical: 'Omega-3', category: 'fatty_acid' },
   'omega-3': { canonical: 'Omega-3', category: 'fatty_acid' },
   'omega3': { canonical: 'Omega-3', category: 'fatty_acid' },
+  'omega': { canonical: 'Omega-3', category: 'fatty_acid' },
   'fish oil': { canonical: 'Omega-3', category: 'fatty_acid' },
   'aceite de pescado': { canonical: 'Omega-3', category: 'fatty_acid' },
+  'aceite pescado': { canonical: 'Omega-3', category: 'fatty_acid' },
   'dha': { canonical: 'Omega-3 DHA', category: 'fatty_acid' },
   'epa': { canonical: 'Omega-3 EPA', category: 'fatty_acid' },
 
@@ -265,26 +267,56 @@ function generateVariations(canonical: string): string[] {
 }
 
 /**
- * Fuzzy matching using Levenshtein distance
+ * Fuzzy matching using multiple strategies
+ * Strategy 1: Levenshtein distance (typos, missing chars)
+ * Strategy 2: Substring matching (partial matches)
+ * Strategy 3: Word-boundary matching (handles hyphens, spaces)
  */
 function findFuzzyMatch(
   query: string
 ): { key: string; confidence: number } | null {
-  const threshold = 2; // Max edit distance
-  let bestMatch: { key: string; distance: number } | null = null;
+  const threshold = 4; // Increased from 2 to capture more variations
+  let bestMatch: { key: string; distance: number; matchType: string } | null = null;
+
+  // Normalize query: remove hyphens, extra spaces
+  const normalizedQuery = query.replace(/[-\s]+/g, ' ').trim();
+  const compactQuery = query.replace(/[-\s]+/g, ''); // "lcarnitina"
 
   for (const key of Object.keys(NORMALIZATION_MAP)) {
-    const distance = levenshteinDistance(query, key);
-    if (distance <= threshold && distance > 0) {
-      if (!bestMatch || distance < bestMatch.distance) {
-        bestMatch = { key, distance };
+    const normalizedKey = key.replace(/[-\s]+/g, ' ').trim();
+    const compactKey = key.replace(/[-\s]+/g, '');
+
+    // Strategy 1: Exact Levenshtein on normalized strings
+    const distance = levenshteinDistance(normalizedQuery, normalizedKey);
+
+    // Strategy 2: Compact matching (ignore hyphens/spaces entirely)
+    const compactDistance = levenshteinDistance(compactQuery, compactKey);
+
+    // Strategy 3: Substring matching (contains)
+    const isSubstring = normalizedKey.includes(normalizedQuery) || normalizedQuery.includes(normalizedKey);
+
+    // Pick best strategy
+    const minDistance = Math.min(distance, compactDistance);
+    const finalDistance = isSubstring ? Math.min(minDistance, 1) : minDistance;
+
+    if (finalDistance <= threshold && finalDistance > 0) {
+      if (!bestMatch || finalDistance < bestMatch.distance) {
+        bestMatch = {
+          key,
+          distance: finalDistance,
+          matchType: isSubstring ? 'substring' : (finalDistance === compactDistance ? 'compact' : 'normal')
+        };
       }
     }
   }
 
   if (bestMatch) {
-    // Confidence: 1.0 for distance=1, 0.8 for distance=2
-    const confidence = 1 - (bestMatch.distance / (threshold + 1));
+    // Improved confidence calculation
+    // distance=1 → 0.95, distance=2 → 0.85, distance=3 → 0.70, distance=4 → 0.50
+    const confidence = Math.max(0.5, 1 - (bestMatch.distance / (threshold + 1)));
+
+    console.log(`Fuzzy match found: "${query}" → "${bestMatch.key}" (distance: ${bestMatch.distance}, type: ${bestMatch.matchType}, confidence: ${confidence.toFixed(2)})`);
+
     return { key: bestMatch.key, confidence };
   }
 
