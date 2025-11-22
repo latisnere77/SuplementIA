@@ -51,7 +51,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { category, forceRefresh, maxStudies, rctOnly, yearFrom, yearTo } = body;
+    const { category, forceRefresh, rctOnly, yearFrom, yearTo } = body;
+
+    // OPTIMIZATION: Reduce studies for extremely popular supplements to avoid timeout
+    // These supplements have 100K+ studies and cause Lambda to timeout
+    const popularSupplements = ['vitamin d', 'vitamin c', 'omega 3', 'magnesium', 'calcium', 'iron'];
+    const isPopular = popularSupplements.some(s => supplementName.toLowerCase().includes(s));
+    const optimizedMaxStudies = isPopular ? 5 : (body.maxStudies || 10);
 
     console.log(
       JSON.stringify({
@@ -61,7 +67,8 @@ export async function POST(request: NextRequest) {
         supplementName,
         originalQuery: supplementName,
         category,
-        maxStudies: maxStudies || 10,
+        maxStudies: optimizedMaxStudies,
+        isPopularSupplement: isPopular,
         rctOnly: rctOnly || false,
         timestamp: new Date().toISOString(),
       })
@@ -279,7 +286,7 @@ export async function POST(request: NextRequest) {
         originalQuery: supplementName,
         translatedQuery: searchTerm,
         searchTerm,
-        maxStudies: maxStudies || 10,
+        maxStudies: optimizedMaxStudies,
         timestamp: new Date().toISOString(),
       })
     );
@@ -309,7 +316,7 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             supplementName: term,
-            maxResults: Math.min(maxStudies || 10, 10),
+            maxResults: Math.min(optimizedMaxStudies, 10),
             filters,
           }),
         });
