@@ -268,6 +268,13 @@ export default function PortalPage() {
                         console.log('[PortalPage] Input onChange:', e.target.value);
                         setSearchQuery(e.target.value);
                       }}
+                      onKeyDown={(e) => {
+                        // Detectar Enter para realizar búsqueda
+                        if (e.key === 'Enter' && searchQuery.trim()) {
+                          e.preventDefault();
+                          handleSearch(searchQuery);
+                        }
+                      }}
                       displayValue={() => searchQuery}
                       placeholder=""
                       autoComplete="off"
