@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       'omega 3': 'omega-3 fatty acids',
       'omega-3': 'omega-3 fatty acids',
       'vitamina a': 'vitamin a',
-      'vitamina b': 'vitamin b',
+      'vitamina b': 'vitamin b complex',
       'vitamina b12': 'vitamin b12',
       'vitamina b6': 'vitamin b6',
       'vitamina c': 'vitamin c',
