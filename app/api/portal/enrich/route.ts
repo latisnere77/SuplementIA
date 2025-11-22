@@ -99,6 +99,14 @@ export async function POST(request: NextRequest) {
       'nac': 'N-acetylcysteine',
       'coq10': 'coenzyme q10',
       '5-htp': '5-hydroxytryptophan',
+      
+      // Common supplements that don't need translation (performance optimization)
+      'rhodiola': 'rhodiola',
+      'rhodiola rosea': 'rhodiola rosea',
+      'ashwagandha': 'ashwagandha',
+      'ginseng': 'ginseng',
+      'berberine': 'berberine',
+      'berberina': 'berberine',
 
       // Note: The LLM now handles ALL Spanish→English translations intelligently
       // We removed hardcoded translations to allow the system to scale automatically
@@ -129,7 +137,7 @@ export async function POST(request: NextRequest) {
         })
       );
     } else {
-      // Try LLM expansion
+      // Try LLM expansion with timeout
       console.log(
         JSON.stringify({
           event: 'QUERY_LLM_EXPANSION_START',
@@ -141,7 +149,14 @@ export async function POST(request: NextRequest) {
       );
 
       try {
-        const expansion = await expandAbbreviation(supplementName);
+        // Add timeout to prevent slow LLM calls from blocking the entire request
+        const LLM_EXPANSION_TIMEOUT = 8000; // 8 seconds max
+        const expansion = await Promise.race([
+          expandAbbreviation(supplementName),
+          new Promise<any>((_, reject) => 
+            setTimeout(() => reject(new Error('LLM expansion timeout')), LLM_EXPANSION_TIMEOUT)
+          ),
+        ]);
 
         console.log(
           JSON.stringify({

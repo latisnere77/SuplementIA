@@ -7,6 +7,7 @@ import AWSXRay from 'aws-xray-sdk-core';
 import { config } from './config';
 import { BedrockRequest, BedrockResponse, EnrichedContent, PubMedStudy } from './types';
 import { buildEnrichmentPrompt, validateEnrichedContent } from './prompts';
+import { retryWithBackoff } from './retry';
 
 // Initialize Bedrock client
 const baseClient = new BedrockRuntimeClient({ region: config.region });
@@ -74,14 +75,19 @@ export async function generateEnrichedContent(
     })
   );
 
-  // Call Bedrock
-  const response = await client.send(
-    new InvokeModelCommand({
-      modelId: config.modelId,
-      contentType: 'application/json',
-      accept: 'application/json',
-      body: JSON.stringify(bedrockRequest),
-    })
+  // Call Bedrock with automatic retry on transient errors
+  const response = await retryWithBackoff(
+    async () => {
+      return await client.send(
+        new InvokeModelCommand({
+          modelId: config.modelId,
+          contentType: 'application/json',
+          accept: 'application/json',
+          body: JSON.stringify(bedrockRequest),
+        })
+      );
+    },
+    `generateEnrichedContent-${supplementId}`
   );
 
   const duration = Date.now() - startTime;
@@ -96,6 +102,9 @@ export async function generateEnrichedContent(
   const contentText = '{' + responseBody.content[0].text;
   const tokensUsed = responseBody.usage.input_tokens + responseBody.usage.output_tokens;
 
+  // Calculate token usage metrics
+  const percentageUsed = (responseBody.usage.output_tokens / config.maxTokens * 100);
+
   console.log(
     JSON.stringify({
       operation: 'BedrockResponse',
@@ -104,8 +113,43 @@ export async function generateEnrichedContent(
       tokensUsed,
       inputTokens: responseBody.usage.input_tokens,
       outputTokens: responseBody.usage.output_tokens,
+      stopReason: responseBody.stop_reason || 'unknown',
+      maxTokensConfig: config.maxTokens,
+      percentageUsed: percentageUsed.toFixed(1),
     })
   );
+
+  // Alert if approaching token limit
+  if (percentageUsed > 90) {
+    console.warn(
+      JSON.stringify({
+        event: 'NEAR_TOKEN_LIMIT',
+        supplementId,
+        outputTokens: responseBody.usage.output_tokens,
+        maxTokens: config.maxTokens,
+        percentageUsed: percentageUsed.toFixed(1),
+        stopReason: responseBody.stop_reason,
+        recommendation: 'Consider increasing max_tokens or simplifying prompt',
+      })
+    );
+  }
+
+  // Alert on unexpected stop_reason
+  if (responseBody.stop_reason &&
+      responseBody.stop_reason !== 'end_turn' &&
+      responseBody.stop_reason !== 'tool_use') {
+    console.error(
+      JSON.stringify({
+        event: 'UNEXPECTED_STOP_REASON',
+        supplementId,
+        stopReason: responseBody.stop_reason,
+        expectedReasons: ['end_turn', 'tool_use'],
+        outputTokens: responseBody.usage.output_tokens,
+        maxTokens: config.maxTokens,
+        percentageUsed: percentageUsed.toFixed(1),
+      })
+    );
+  }
 
   /**
    * Sanitize and repair common JSON errors from LLM responses
@@ -214,7 +258,7 @@ export async function generateEnrichedContent(
         if (text[i] === '}') braces.push(i);
       }
 
-      for (const bracePos of braces.slice(0, 5)) { // Try first 5 closing braces
+      for (const bracePos of braces.slice(0, 20)) { // Try first 20 closing braces (increased from 5 to handle CloudWatch log contamination)
         const candidate = text.substring(firstBrace, bracePos + 1);
         try {
           return JSON.parse(sanitizeJSON(candidate));

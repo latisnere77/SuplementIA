@@ -9,8 +9,12 @@ import { Context } from 'aws-lambda';
 import AWSXRay from 'aws-xray-sdk-core';
 import { config, CORS_HEADERS } from './config';
 import { generateEnrichedContent } from './bedrock';
+import { generateEnrichedContentWithToolUse } from './bedrockConverse';
 import { getFromCache, saveToCacheAsync } from './cache';
 import { EnrichmentRequest, EnrichmentResponse } from './types';
+
+// Feature flag to enable Tool Use API (will be controlled via environment variable)
+const USE_TOOL_API = process.env.USE_TOOL_API === 'true';
 
 interface LambdaEvent {
   httpMethod?: string;
@@ -180,15 +184,23 @@ export async function handler(
         reason: forceRefresh ? 'force_refresh' : 'cache_miss',
         studiesProvided: studiesCount,
         studyTypes: uniqueStudyTypes,
+        useToolAPI: USE_TOOL_API,
         timestamp: new Date().toISOString(),
       })
     );
 
-    const { content, metadata: bedrockMetadata } = await generateEnrichedContent(
-      supplementId,
-      category || 'general',
-      studies // Pass real PubMed studies to Claude
-    );
+    // Choose API based on feature flag
+    const { content, metadata: bedrockMetadata } = USE_TOOL_API
+      ? await generateEnrichedContentWithToolUse(
+          supplementId,
+          category || 'general',
+          studies // Pass real PubMed studies to Claude
+        )
+      : await generateEnrichedContent(
+          supplementId,
+          category || 'general',
+          studies // Pass real PubMed studies to Claude
+        );
 
     enrichedContent = content;
 

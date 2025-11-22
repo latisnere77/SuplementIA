@@ -117,11 +117,42 @@ export interface BedrockResponse {
     input_tokens: number;
     output_tokens: number;
   };
+  stop_reason?: 'end_turn' | 'max_tokens' | 'stop_sequence' | 'tool_use';
 }
 
 export interface ContentBlock {
   type: 'text';
   text: string;
+}
+
+/**
+ * Bedrock Converse API Response types
+ */
+export interface ConverseResponse {
+  output: {
+    message: {
+      role: 'assistant';
+      content: ConverseContentBlock[];
+    };
+  };
+  stopReason: 'end_turn' | 'max_tokens' | 'stop_sequence' | 'tool_use' | 'content_filtered';
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+  };
+  metrics?: {
+    latencyMs: number;
+  };
+}
+
+export interface ConverseContentBlock {
+  text?: string;
+  toolUse?: {
+    toolUseId: string;
+    name: string;
+    input: any; // Tool-specific input (EnrichedContent in our case)
+  };
 }
 
 export interface EnrichmentResponse {

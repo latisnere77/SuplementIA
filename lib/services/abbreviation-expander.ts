@@ -404,8 +404,32 @@ export async function expandAbbreviation(
 
   // 3. ALWAYS try LLM expansion (handles both abbreviations AND Spanish translation)
   // The LLM will return empty array if no expansion/translation needed
+  // Add timeout to prevent slow LLM calls from blocking the entire request
   const llmStartTime = Date.now();
-  const llmAlternatives = await expandWithLLM(trimmed);
+  const LLM_TIMEOUT = 5000; // 5 seconds max for LLM expansion
+  
+  let llmAlternatives: string[] = [];
+  try {
+    llmAlternatives = await Promise.race([
+      expandWithLLM(trimmed),
+      new Promise<string[]>((_, reject) => 
+        setTimeout(() => reject(new Error('LLM expansion timeout')), LLM_TIMEOUT)
+      ),
+    ]);
+  } catch (error: any) {
+    console.warn(
+      JSON.stringify({
+        event: 'ABBREVIATION_LLM_TIMEOUT',
+        term: trimmed,
+        error: error.message,
+        timeout: LLM_TIMEOUT,
+        fallback: 'using_original_term',
+        timestamp: new Date().toISOString(),
+      })
+    );
+    llmAlternatives = [];
+  }
+  
   const llmDuration = Date.now() - llmStartTime;
 
   console.log(
