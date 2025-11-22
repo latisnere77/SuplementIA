@@ -958,12 +958,20 @@ function ResultsPageContent() {
           )}
         </div>
 
-        {/* Warning banner if no real data - Only show if BOTH are 0 */}
+        {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
         {(() => {
           const metadata = (recommendation as any)._enrichment_metadata || {};
+          const supplement = (recommendation as any).supplement || {};
           const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
           const metadataStudiesUsed = metadata.studiesUsed || 0;
-          const hasNoData = totalStudies === 0 && metadataStudiesUsed === 0;
+          
+          // Check if there's actual evidence data (worksFor, dosage, etc.)
+          const hasWorksFor = Array.isArray(supplement.worksFor) && supplement.worksFor.length > 0;
+          const hasDosage = supplement.dosage && typeof supplement.dosage === 'object';
+          const hasEvidenceData = hasWorksFor || hasDosage;
+          
+          // Only show warning if NO studies AND NO evidence data
+          const hasNoData = totalStudies === 0 && metadataStudiesUsed === 0 && !hasEvidenceData;
           
           if (!hasNoData) return null;
           
