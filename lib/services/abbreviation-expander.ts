@@ -95,14 +95,17 @@ Your task: Provide the full chemical or scientific names optimized for PubMed se
 🚨 CRITICAL RULES - MUST FOLLOW:
 
 1. ABBREVIATIONS: If it's an abbreviation (HMB, BCAA, NAC, DHEA), expand to full chemical name
-2. SPANISH DETECTION: If the term contains ANY of these patterns, it's Spanish and MUST be translated:
-   - Ends in: -ina, -ino, -eno, -ano, -ina, -osa (niacina, colageno, magnesio, espirulina, glucosa)
+
+2. SPANISH DETECTION: If ANY word in the term contains these patterns, it's Spanish and MUST be translated:
+   - Ends in: -ina, -ino, -eno, -ano, -osa, -ato (niacina, colageno, magnesio, espirulina, glucosa, malato)
    - Contains: ácido, acido, vitamina, hierro, calcio, zinc, cobre, aceite, extracto
-   - Is a Spanish word: teanina, fosfatidilserina, curcuma, jengibre, cilantro, etc.
+   - Multi-word Spanish compounds: "citrulina malato", "acido hialuronico", etc.
+   - ANY Spanish word in a compound term means ENTIRE term must be translated
 
 3. TRANSLATION REQUIREMENT:
    - PubMed is ONLY in English - NEVER return Spanish terms
    - ALWAYS translate Spanish → English, no exceptions
+   - For compound terms (e.g., "citrulina malato"), translate BOTH words ("citrulline malate")
    - If unsure, translate anyway (better to translate than fail)
 
 4. Return ONLY names that would find studies in PubMed (English scientific names)
@@ -112,11 +115,13 @@ Your task: Provide the full chemical or scientific names optimized for PubMed se
 8. If it's already in English and not an abbreviation, return empty array
 
 🔥 SPANISH AUTO-TRANSLATION RULE:
-If you detect ANY Spanish characteristics in "${term}", you MUST translate it to English.
+If you detect ANY Spanish characteristics in ANY word of "${term}", you MUST translate the ENTIRE term to English.
 Examples of Spanish patterns to detect:
-- "-ina" ending: niacina→niacin, teanina→theanine, espirulina→spirulina, fosfatidilserina→phosphatidylserine
-- "-eno" ending: colageno→collagen
-- "-io" ending: magnesio→magnesium, calcio→calcium
+- Single word with "-ina": niacina→niacin, teanina→theanine, espirulina→spirulina, astaxantina→astaxanthin
+- Single word with "-eno": colageno→collagen
+- Single word with "-io": magnesio→magnesium, calcio→calcium
+- Single word with "-ato": malato→malate
+- Compound terms: citrulina malato→citrulline malate (translate BOTH words)
 - Accent marks: ácido→acid, cúrcuma→turmeric
 
 Return ONLY a JSON array, no explanation:
@@ -139,6 +144,7 @@ Examples:
 - "espirulina" → ["spirulina", "Arthrospira platensis"] (Spanish→English translation)
 - "fosfatidilserina" → ["phosphatidylserine", "PS"] (Spanish→English translation)
 - "astaxantina" → ["astaxanthin"] (Spanish→English translation)
+- "citrulina malato" → ["citrulline malate", "l-citrulline malate"] (Spanish→English translation)
 - "ashwagandha" → [] (already in English)
 - "ginseng" → [] (already in English)
 
