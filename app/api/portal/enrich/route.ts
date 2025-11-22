@@ -191,28 +191,49 @@ export async function POST(request: NextRequest) {
 
         // Use expanded term if LLM provided alternatives
         if (expansion.alternatives.length > 0 && expansion.source === 'llm') {
-          searchTerm = expansion.alternatives[0]; // Use primary expanded/translated term
-          expansionMetadata = {
-            original: supplementName,
-            expanded: searchTerm,
-            alternatives: expansion.alternatives,
-            confidence: expansion.confidence,
-            isAbbreviation: expansion.isAbbreviation,
-            source: 'llm',
-          };
-          console.log(
-            JSON.stringify({
-              event: 'QUERY_TRANSLATED',
-              requestId,
-              correlationId,
-              originalQuery: supplementName,
-              translatedQuery: searchTerm,
-              translationMethod: 'llm',
-              confidence: expansion.confidence,
+          // Check if LLM actually provided a different term (not just echoing back)
+          const expandedTerm = expansion.alternatives[0];
+          const isDifferent = expandedTerm.toLowerCase() !== supplementName.toLowerCase();
+          
+          if (isDifferent) {
+            // LLM provided a translation/expansion
+            searchTerm = expandedTerm;
+            expansionMetadata = {
+              original: supplementName,
+              expanded: searchTerm,
               alternatives: expansion.alternatives,
-              timestamp: new Date().toISOString(),
-            })
-          );
+              confidence: expansion.confidence,
+              isAbbreviation: expansion.isAbbreviation,
+              source: 'llm',
+            };
+            console.log(
+              JSON.stringify({
+                event: 'QUERY_TRANSLATED',
+                requestId,
+                correlationId,
+                originalQuery: supplementName,
+                translatedQuery: searchTerm,
+                translationMethod: 'llm',
+                confidence: expansion.confidence,
+                alternatives: expansion.alternatives,
+                timestamp: new Date().toISOString(),
+              })
+            );
+          } else {
+            // LLM returned same term - no translation needed
+            console.log(
+              JSON.stringify({
+                event: 'QUERY_NO_TRANSLATION_NEEDED',
+                requestId,
+                correlationId,
+                originalQuery: supplementName,
+                translatedQuery: supplementName,
+                translationMethod: 'llm_same_term',
+                reason: 'llm_returned_same_term',
+                timestamp: new Date().toISOString(),
+              })
+            );
+          }
         } else {
           console.warn(
             JSON.stringify({

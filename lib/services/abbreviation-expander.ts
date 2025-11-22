@@ -181,20 +181,627 @@ function translateSpanishProgrammatically(term: string): string | null {
 // ====================================
 
 /**
- * Expand abbreviation using Claude Haiku
- * Also handles Spanish→English translation for PubMed searches
+ * Expand abbreviation using Claude Haiku with Prompt Caching
+ * Handles:
+ * - Spanish→English translation
+ * - Abbreviation expansion
+ * - Scientific name suggestions
  */
 async function expandWithLLM(term: string): Promise<string[]> {
   console.log(`[ABBREVIATION] Expanding "${term}" with Claude Haiku...`);
 
-  // ULTRA-OPTIMIZED PROMPT con Prompt Caching
-  // Estrategia: Prompt minimalista para máxima velocidad
-  // El system prompt (cacheado) contiene las instrucciones
-  // El user prompt solo contiene el término a traducir
-  const prompt = `Translate to English for PubMed: "${term}"
+  // SYSTEM PROMPT with Prompt Caching (>2048 tokens for cache eligibility)
+  // This prompt is cached for 5 minutes, reducing latency from 2-5s to 200-500ms
+  const systemPrompt = `You are an expert in supplement terminology and PubMed search optimization.
 
-Return JSON array: ["translation"] or [] if already English.`;
+Your task: Given a supplement term, provide the BEST search terms for finding studies in PubMed.
 
+RULES:
+1. Spanish terms → Translate to English
+2. Abbreviations → Expand to full name
+3. Common names → Add scientific name if helpful
+4. Already optimal → Return empty array []
+5. Return ONLY a JSON array, no explanation
+
+OUTPUT FORMAT:
+- If translation/expansion needed: ["primary_term", "alternative_term", ...]
+- If already optimal: []
+- Maximum 3 alternatives
+
+EXAMPLES:
+
+Spanish Translation:
+Input: "menta"
+Output: ["peppermint", "mentha"]
+
+Input: "jengibre"
+Output: ["ginger", "zingiber officinale"]
+
+Input: "cúrcuma"
+Output: ["turmeric", "curcumin"]
+
+Input: "magnesio"
+Output: ["magnesium"]
+
+Input: "berberina"
+Output: ["berberine"]
+
+Input: "colageno"
+Output: ["collagen"]
+
+Input: "melatonina"
+Output: ["melatonin"]
+
+Input: "valeriana"
+Output: ["valerian", "valeriana officinalis"]
+
+Input: "manzanilla"
+Output: ["chamomile", "matricaria"]
+
+Input: "lavanda"
+Output: ["lavender", "lavandula"]
+
+Abbreviation Expansion:
+Input: "HMB"
+Output: ["beta-hydroxy beta-methylbutyrate", "HMB"]
+
+Input: "NAC"
+Output: ["N-acetylcysteine", "N-acetyl-L-cysteine"]
+
+Input: "BCAA"
+Output: ["branched-chain amino acids", "leucine isoleucine valine"]
+
+Input: "CoQ10"
+Output: ["coenzyme q10", "ubiquinone"]
+
+Input: "5-HTP"
+Output: ["5-hydroxytryptophan"]
+
+Input: "CBD"
+Output: ["cannabidiol"]
+
+Input: "DHEA"
+Output: ["dehydroepiandrosterone"]
+
+Scientific Names (when helpful):
+Input: "saw palmetto"
+Output: ["saw palmetto", "serenoa repens"]
+
+Input: "ginkgo"
+Output: ["ginkgo", "ginkgo biloba"]
+
+Input: "ashwagandha"
+Output: ["ashwagandha", "withania somnifera"]
+
+Input: "rhodiola"
+Output: ["rhodiola", "rhodiola rosea"]
+
+Input: "panax ginseng"
+Output: ["ginseng", "panax ginseng"]
+
+Input: "milk thistle"
+Output: ["milk thistle", "silybum marianum"]
+
+Input: "st john's wort"
+Output: ["st johns wort", "hypericum perforatum"]
+
+Already Optimal (no change needed):
+Input: "magnesium"
+Output: []
+
+Input: "vitamin d"
+Output: []
+
+Input: "omega-3"
+Output: []
+
+Input: "creatine"
+Output: []
+
+Input: "protein"
+Output: []
+
+Input: "caffeine"
+Output: []
+
+Input: "zinc"
+Output: []
+
+Input: "iron"
+Output: []
+
+MORE SPANISH TRANSLATIONS:
+Input: "acido folico"
+Output: ["folic acid"]
+
+Input: "ácido fólico"
+Output: ["folic acid"]
+
+Input: "acido hialuronico"
+Output: ["hyaluronic acid"]
+
+Input: "ácido hialurónico"
+Output: ["hyaluronic acid"]
+
+Input: "acido alfa lipoico"
+Output: ["alpha lipoic acid"]
+
+Input: "ácido alfa lipoico"
+Output: ["alpha lipoic acid"]
+
+Input: "l-teanina"
+Output: ["l-theanine"]
+
+Input: "fosfatidilserina"
+Output: ["phosphatidylserine"]
+
+Input: "citrulina malato"
+Output: ["citrulline malate"]
+
+Input: "beta alanina"
+Output: ["beta alanine"]
+
+Input: "beta-alanina"
+Output: ["beta-alanine"]
+
+Input: "extracto de te verde"
+Output: ["green tea extract"]
+
+Input: "aceite de pescado"
+Output: ["fish oil"]
+
+Input: "espirulina"
+Output: ["spirulina"]
+
+Input: "astaxantina"
+Output: ["astaxanthin"]
+
+Input: "cilantro"
+Output: ["coriander", "cilantro"]
+
+Input: "niacina"
+Output: ["niacin", "vitamin b3"]
+
+Input: "biotina"
+Output: ["biotin", "vitamin b7"]
+
+Input: "tiamina"
+Output: ["thiamine", "vitamin b1"]
+
+Input: "riboflavina"
+Output: ["riboflavin", "vitamin b2"]
+
+Input: "vitamina"
+Output: ["vitamin"]
+
+Input: "calcio"
+Output: ["calcium"]
+
+Input: "hierro"
+Output: ["iron"]
+
+Input: "cobre"
+Output: ["copper"]
+
+Input: "creatina"
+Output: ["creatine"]
+
+Input: "colageno"
+Output: ["collagen"]
+
+Input: "colágeno"
+Output: ["collagen"]
+
+Input: "glucosamina"
+Output: ["glucosamine"]
+
+Input: "condroitina"
+Output: ["chondroitin"]
+
+Input: "acai"
+Output: ["acai", "acai berry"]
+
+Input: "açaí"
+Output: ["acai", "acai berry"]
+
+Input: "guarana"
+Output: ["guarana"]
+
+Input: "guaraná"
+Output: ["guarana"]
+
+Input: "maca"
+Output: ["maca", "lepidium meyenii"]
+
+Input: "quinoa"
+Output: ["quinoa"]
+
+Input: "chia"
+Output: ["chia", "chia seeds"]
+
+Input: "lino"
+Output: ["flax", "flaxseed"]
+
+Input: "semillas de lino"
+Output: ["flax seeds", "flaxseed"]
+
+Input: "aceite de coco"
+Output: ["coconut oil"]
+
+Input: "aceite de oliva"
+Output: ["olive oil"]
+
+Input: "te verde"
+Output: ["green tea"]
+
+Input: "té verde"
+Output: ["green tea"]
+
+Input: "te negro"
+Output: ["black tea"]
+
+Input: "té negro"
+Output: ["black tea"]
+
+Input: "te blanco"
+Output: ["white tea"]
+
+Input: "té blanco"
+Output: ["white tea"]
+
+Input: "rooibos"
+Output: ["rooibos"]
+
+Input: "hibisco"
+Output: ["hibiscus"]
+
+Input: "equinacea"
+Output: ["echinacea"]
+
+Input: "ginkgo biloba"
+Output: ["ginkgo biloba"]
+
+Input: "ginseng"
+Output: ["ginseng"]
+
+Input: "eleuterococo"
+Output: ["eleuthero", "siberian ginseng"]
+
+Input: "regaliz"
+Output: ["licorice", "glycyrrhiza"]
+
+Input: "diente de leon"
+Output: ["dandelion", "taraxacum"]
+
+Input: "diente de león"
+Output: ["dandelion", "taraxacum"]
+
+Input: "ortiga"
+Output: ["nettle", "urtica"]
+
+Input: "cola de caballo"
+Output: ["horsetail", "equisetum"]
+
+Input: "aloe vera"
+Output: ["aloe vera"]
+
+Input: "sábila"
+Output: ["aloe vera"]
+
+Input: "propóleo"
+Output: ["propolis"]
+
+Input: "jalea real"
+Output: ["royal jelly"]
+
+Input: "polen"
+Output: ["bee pollen"]
+
+Input: "miel"
+Output: ["honey"]
+
+Input: "canela"
+Output: ["cinnamon"]
+
+Input: "clavo"
+Output: ["clove"]
+
+Input: "nuez moscada"
+Output: ["nutmeg"]
+
+Input: "cardamomo"
+Output: ["cardamom"]
+
+Input: "azafrán"
+Output: ["saffron"]
+
+Input: "pimienta negra"
+Output: ["black pepper", "piperine"]
+
+Input: "ajo"
+Output: ["garlic", "allium sativum"]
+
+Input: "cebolla"
+Output: ["onion"]
+
+Input: "tomate"
+Output: ["tomato", "lycopene"]
+
+Input: "zanahoria"
+Output: ["carrot", "beta carotene"]
+
+Input: "espinaca"
+Output: ["spinach"]
+
+Input: "brócoli"
+Output: ["broccoli"]
+
+Input: "broccoli"
+Output: ["broccoli"]
+
+Input: "col rizada"
+Output: ["kale"]
+
+Input: "kale"
+Output: ["kale"]
+
+Input: "arándano"
+Output: ["blueberry"]
+
+Input: "arándano rojo"
+Output: ["cranberry"]
+
+Input: "fresa"
+Output: ["strawberry"]
+
+Input: "frambuesa"
+Output: ["raspberry"]
+
+Input: "mora"
+Output: ["blackberry"]
+
+Input: "cereza"
+Output: ["cherry"]
+
+Input: "granada"
+Output: ["pomegranate"]
+
+Input: "uva"
+Output: ["grape", "resveratrol"]
+
+Input: "naranja"
+Output: ["orange", "vitamin c"]
+
+Input: "limón"
+Output: ["lemon", "vitamin c"]
+
+Input: "lima"
+Output: ["lime"]
+
+Input: "pomelo"
+Output: ["grapefruit"]
+
+Input: "mandarina"
+Output: ["tangerine", "mandarin"]
+
+Input: "kiwi"
+Output: ["kiwi"]
+
+Input: "papaya"
+Output: ["papaya"]
+
+Input: "mango"
+Output: ["mango"]
+
+Input: "piña"
+Output: ["pineapple", "bromelain"]
+
+Input: "plátano"
+Output: ["banana"]
+
+Input: "banana"
+Output: ["banana"]
+
+Input: "aguacate"
+Output: ["avocado"]
+
+Input: "palta"
+Output: ["avocado"]
+
+MORE ABBREVIATIONS:
+Input: "EPA"
+Output: ["eicosapentaenoic acid", "EPA"]
+
+Input: "DHA"
+Output: ["docosahexaenoic acid", "DHA"]
+
+Input: "ALA"
+Output: ["alpha-linolenic acid", "ALA"]
+
+Input: "GLA"
+Output: ["gamma-linolenic acid", "GLA"]
+
+Input: "CLA"
+Output: ["conjugated linoleic acid", "CLA"]
+
+Input: "MCT"
+Output: ["medium-chain triglycerides", "MCT"]
+
+Input: "SAMe"
+Output: ["S-adenosylmethionine", "SAMe"]
+
+Input: "TMG"
+Output: ["trimethylglycine", "betaine"]
+
+Input: "DMG"
+Output: ["dimethylglycine", "DMG"]
+
+Input: "MSM"
+Output: ["methylsulfonylmethane", "MSM"]
+
+Input: "GABA"
+Output: ["gamma-aminobutyric acid", "GABA"]
+
+Input: "DMAE"
+Output: ["dimethylaminoethanol", "DMAE"]
+
+Input: "PQQ"
+Output: ["pyrroloquinoline quinone", "PQQ"]
+
+Input: "NMN"
+Output: ["nicotinamide mononucleotide", "NMN"]
+
+Input: "NR"
+Output: ["nicotinamide riboside", "NR"]
+
+Input: "NAD"
+Output: ["nicotinamide adenine dinucleotide", "NAD"]
+
+Input: "ATP"
+Output: ["adenosine triphosphate", "ATP"]
+
+Input: "ADP"
+Output: ["adenosine diphosphate", "ADP"]
+
+Input: "AMP"
+Output: ["adenosine monophosphate", "AMP"]
+
+Input: "GMP"
+Output: ["guanosine monophosphate", "GMP"]
+
+Input: "IMP"
+Output: ["inosine monophosphate", "IMP"]
+
+Input: "UMP"
+Output: ["uridine monophosphate", "UMP"]
+
+Input: "CMP"
+Output: ["cytidine monophosphate", "CMP"]
+
+MORE SCIENTIFIC NAMES:
+Input: "turmeric"
+Output: ["turmeric", "curcuma longa"]
+
+Input: "ginger"
+Output: ["ginger", "zingiber officinale"]
+
+Input: "garlic"
+Output: ["garlic", "allium sativum"]
+
+Input: "green tea"
+Output: ["green tea", "camellia sinensis"]
+
+Input: "black pepper"
+Output: ["black pepper", "piper nigrum"]
+
+Input: "cinnamon"
+Output: ["cinnamon", "cinnamomum"]
+
+Input: "fenugreek"
+Output: ["fenugreek", "trigonella foenum-graecum"]
+
+Input: "tribulus"
+Output: ["tribulus", "tribulus terrestris"]
+
+Input: "bacopa"
+Output: ["bacopa", "bacopa monnieri"]
+
+Input: "mucuna"
+Output: ["mucuna", "mucuna pruriens"]
+
+Input: "tongkat ali"
+Output: ["tongkat ali", "eurycoma longifolia"]
+
+Input: "maca"
+Output: ["maca", "lepidium meyenii"]
+
+Input: "cordyceps"
+Output: ["cordyceps", "cordyceps sinensis"]
+
+Input: "reishi"
+Output: ["reishi", "ganoderma lucidum"]
+
+Input: "lions mane"
+Output: ["lions mane", "hericium erinaceus"]
+
+Input: "chaga"
+Output: ["chaga", "inonotus obliquus"]
+
+Input: "shiitake"
+Output: ["shiitake", "lentinula edodes"]
+
+Input: "maitake"
+Output: ["maitake", "grifola frondosa"]
+
+Input: "turkey tail"
+Output: ["turkey tail", "trametes versicolor"]
+
+Input: "valerian"
+Output: ["valerian", "valeriana officinalis"]
+
+Input: "passionflower"
+Output: ["passionflower", "passiflora incarnata"]
+
+Input: "lemon balm"
+Output: ["lemon balm", "melissa officinalis"]
+
+Input: "chamomile"
+Output: ["chamomile", "matricaria chamomilla"]
+
+Input: "lavender"
+Output: ["lavender", "lavandula angustifolia"]
+
+Input: "peppermint"
+Output: ["peppermint", "mentha piperita"]
+
+Input: "spearmint"
+Output: ["spearmint", "mentha spicata"]
+
+Input: "rosemary"
+Output: ["rosemary", "rosmarinus officinalis"]
+
+Input: "thyme"
+Output: ["thyme", "thymus vulgaris"]
+
+Input: "oregano"
+Output: ["oregano", "origanum vulgare"]
+
+Input: "basil"
+Output: ["basil", "ocimum basilicum"]
+
+Input: "sage"
+Output: ["sage", "salvia officinalis"]
+
+Input: "echinacea"
+Output: ["echinacea", "echinacea purpurea"]
+
+Input: "elderberry"
+Output: ["elderberry", "sambucus nigra"]
+
+Input: "hawthorn"
+Output: ["hawthorn", "crataegus"]
+
+Input: "bilberry"
+Output: ["bilberry", "vaccinium myrtillus"]
+
+Input: "cranberry"
+Output: ["cranberry", "vaccinium macrocarpon"]
+
+Input: "blueberry"
+Output: ["blueberry", "vaccinium corymbosum"]
+
+IMPORTANT GUIDELINES:
+- For English terms that are already good for PubMed, return []
+- For terms that need scientific names, include both common and scientific
+- For Spanish terms, ALWAYS translate to English
+- For abbreviations, ALWAYS expand to full name
+- Keep alternatives relevant and useful for PubMed searches
+- Maximum 3 alternatives per term
+- Prioritize terms that will find the most relevant studies
+- Scientific names are especially helpful for herbs and botanicals
+- Common supplement names (magnesium, vitamin d, etc) don't need alternatives`;
+
+  const userPrompt = `"${term}"`;
 
   try {
     const command = new InvokeModelCommand({
@@ -203,13 +810,19 @@ Return JSON array: ["translation"] or [] if already English.`;
       accept: 'application/json',
       body: JSON.stringify({
         anthropic_version: 'bedrock-2023-05-31',
-        max_tokens: 100,
+        max_tokens: 150,
         temperature: 0,
-        system: 'You are a supplement translation expert. Translate Spanish supplement terms to English for PubMed. Expand abbreviations. Return ONLY JSON arrays: ["term"] or []',
+        system: [
+          {
+            type: 'text',
+            text: systemPrompt,
+            cache_control: { type: 'ephemeral' }, // Enable prompt caching
+          },
+        ],
         messages: [
           {
             role: 'user',
-            content: prompt,
+            content: userPrompt,
           },
         ],
       }),
@@ -219,14 +832,24 @@ Return JSON array: ["translation"] or [] if already English.`;
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
     
+    // Extract cache metrics
+    const usage = responseBody.usage || {};
+    const cacheReadTokens = usage.cache_read_input_tokens || 0;
+    const cacheWriteTokens = usage.cache_creation_input_tokens || 0;
+    const cacheHit = cacheReadTokens > 0;
+    
     console.log(
       JSON.stringify({
         event: 'LLM_EXPANSION_RESPONSE',
         term,
         rawResponse: content,
         responseLength: content.length,
-        inputTokens: responseBody.usage?.input_tokens || 0,
-        outputTokens: responseBody.usage?.output_tokens || 0,
+        inputTokens: usage.input_tokens || 0,
+        outputTokens: usage.output_tokens || 0,
+        cacheReadTokens,
+        cacheWriteTokens,
+        cacheHit,
+        cacheSavings: cacheHit ? `${Math.round((cacheReadTokens / (usage.input_tokens || 1)) * 100)}%` : '0%',
         timestamp: new Date().toISOString(),
       })
     );
