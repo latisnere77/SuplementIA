@@ -107,6 +107,21 @@ export async function POST(request: NextRequest) {
       'ginseng': 'ginseng',
       'berberine': 'berberine',
       'berberina': 'berberine',
+      
+      // Common Spanish→English translations (high-traffic terms)
+      'menta': 'peppermint',
+      'jengibre': 'ginger',
+      'curcuma': 'turmeric',
+      'cúrcuma': 'turmeric',
+      'magnesio': 'magnesium',
+      'calcio': 'calcium',
+      'hierro': 'iron',
+      'colageno': 'collagen',
+      'colágeno': 'collagen',
+      'melatonina': 'melatonin',
+      'valeriana': 'valerian',
+      'manzanilla': 'chamomile',
+      'lavanda': 'lavender',
 
       // Note: The LLM now handles ALL Spanish→English translations intelligently
       // We removed hardcoded translations to allow the system to scale automatically
