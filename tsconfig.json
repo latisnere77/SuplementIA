@@ -17,5 +17,5 @@
     "paths": { "@/*": ["./*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "infrastructure", "scripts", "backend/lambda", "mcp-servers", "backup-legacy-system", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": ["node_modules", "infrastructure", "scripts", "backend/lambda", "mcp-servers", "backup-legacy-system", "_archived", "**/*.test.ts", "**/*.test.tsx"]
 }

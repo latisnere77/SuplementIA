@@ -50,7 +50,6 @@ const MODEL_ID = 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
  */
 export function isLikelyAbbreviation(term: string): boolean {
   const trimmed = term.trim();
-  const normalized = trimmed.toUpperCase();
 
   // Skip if too long (likely not an abbreviation)
   if (trimmed.length > 10) {
@@ -198,8 +197,6 @@ Return JSON array: ["translation"] or [] if already English.`;
 
 
   try {
-    // OPTIMIZED PROMPT: Simple y directo sin prompt caching por ahora
-    // El prompt caching requiere más testing para asegurar compatibilidad
     const command = new InvokeModelCommand({
       modelId: MODEL_ID,
       contentType: 'application/json',
@@ -221,13 +218,15 @@ Return JSON array: ["translation"] or [] if already English.`;
     const response = await bedrockClient.send(command);
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
-
+    
     console.log(
       JSON.stringify({
         event: 'LLM_EXPANSION_RESPONSE',
         term,
         rawResponse: content,
         responseLength: content.length,
+        inputTokens: responseBody.usage?.input_tokens || 0,
+        outputTokens: responseBody.usage?.output_tokens || 0,
         timestamp: new Date().toISOString(),
       })
     );
@@ -240,7 +239,7 @@ Return JSON array: ["translation"] or [] if already English.`;
         JSON.stringify({
           event: 'LLM_EXPANSION_NO_JSON',
           term,
-          rawResponse: content.substring(0, 500), // First 500 chars
+          rawResponse: content.substring(0, 500),
           timestamp: new Date().toISOString(),
         })
       );
@@ -250,13 +249,13 @@ Return JSON array: ["translation"] or [] if already English.`;
     let alternatives: string[] = [];
     try {
       alternatives = JSON.parse(jsonMatch[0]) as string[];
-    } catch (parseError: any) {
+    } catch (parseError) {
       console.error(
         JSON.stringify({
           event: 'LLM_EXPANSION_JSON_PARSE_ERROR',
           term,
           jsonMatch: jsonMatch[0].substring(0, 500),
-          error: parseError.message,
+          error: parseError instanceof Error ? parseError.message : 'Unknown error',
           timestamp: new Date().toISOString(),
         })
       );
@@ -281,14 +280,14 @@ Return JSON array: ["translation"] or [] if already English.`;
 
     return validated;
 
-  } catch (error: any) {
+  } catch (error) {
     console.error(
       JSON.stringify({
         event: 'LLM_EXPANSION_ERROR',
         term,
-        error: error.message,
-        errorStack: error.stack,
-        errorName: error.name,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        errorStack: error instanceof Error ? error.stack : undefined,
+        errorName: error instanceof Error ? error.name : 'Unknown',
         timestamp: new Date().toISOString(),
       })
     );
@@ -366,12 +365,12 @@ export async function expandAbbreviation(
         setTimeout(() => reject(new Error('LLM expansion timeout')), LLM_TIMEOUT)
       ),
     ]);
-  } catch (error: any) {
+  } catch (error) {
     console.warn(
       JSON.stringify({
         event: 'ABBREVIATION_LLM_TIMEOUT',
         term: trimmed,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         timeout: LLM_TIMEOUT,
         fallback: 'using_original_term',
         timestamp: new Date().toISOString(),
@@ -551,7 +550,14 @@ Generate variations for: "${trimmed}"`;
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
 
-    
+    console.log(
+      JSON.stringify({
+        event: 'SEARCH_VARIATIONS_LLM_RESPONSE',
+        term: trimmed,
+        rawResponse: content.substring(0, 500),
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     // Parse JSON array from response
     const jsonMatch = content.match(/\[[\s\S]*\]/);
@@ -571,13 +577,13 @@ Generate variations for: "${trimmed}"`;
     let variations: string[] = [];
     try {
       variations = JSON.parse(jsonMatch[0]) as string[];
-    } catch (parseError: any) {
+    } catch (parseError) {
       console.error(
         JSON.stringify({
           event: 'SEARCH_VARIATIONS_JSON_PARSE_ERROR',
           term: trimmed,
           jsonMatch: jsonMatch[0].substring(0, 500),
-          error: parseError.message,
+          error: parseError instanceof Error ? parseError.message : 'Unknown error',
           timestamp: new Date().toISOString(),
         })
       );
@@ -592,18 +598,26 @@ Generate variations for: "${trimmed}"`;
     // Always include original term as first option
     const finalVariations = [trimmed, ...validated.filter(v => v.toLowerCase() !== trimmed.toLowerCase())];
 
-    
+    console.log(
+      JSON.stringify({
+        event: 'SEARCH_VARIATIONS_SUCCESS',
+        term: trimmed,
+        variationsCount: finalVariations.length,
+        variations: finalVariations,
+        timestamp: new Date().toISOString(),
+      })
+    );
 
     return finalVariations;
 
-  } catch (error: any) {
+  } catch (error) {
     console.error(
       JSON.stringify({
         event: 'SEARCH_VARIATIONS_ERROR',
         term: trimmed,
-        error: error.message,
-        errorStack: error.stack,
-        errorName: error.name,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        errorStack: error instanceof Error ? error.stack : undefined,
+        errorName: error instanceof Error ? error.name : 'Unknown',
         timestamp: new Date().toISOString(),
       })
     );
