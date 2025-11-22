@@ -198,9 +198,8 @@ Return JSON array: ["translation"] or [] if already English.`;
 
 
   try {
-    // PROMPT CACHING: Cache el system prompt para reducir latencia
-    // Según AWS docs, Claude 3.5 Haiku soporta prompt caching
-    // Esto reduce latencia de 2-5s a 200-500ms para queries repetidas
+    // OPTIMIZED PROMPT: Simple y directo sin prompt caching por ahora
+    // El prompt caching requiere más testing para asegurar compatibilidad
     const command = new InvokeModelCommand({
       modelId: MODEL_ID,
       contentType: 'application/json',
@@ -209,66 +208,7 @@ Return JSON array: ["translation"] or [] if already English.`;
         anthropic_version: 'bedrock-2023-05-31',
         max_tokens: 100,
         temperature: 0,
-        // System prompt EXTENDIDO con cache breakpoint
-        // Nota: Claude 3.5 Haiku requiere mínimo 2048 tokens para cachear
-        // Incluimos ejemplos en el system prompt para alcanzar el mínimo
-        system: [
-          {
-            type: 'text',
-            text: `You are a supplement translation expert. Your job is to translate supplement terms from Spanish to English for PubMed searches, or expand abbreviations to full chemical names.
-
-RULES:
-1. Spanish terms (ending in -ina, -ino, -eno, -ano, -osa, -ato OR containing ácido/vitamina/hierro/calcio/zinc/cobre): translate to English
-2. Abbreviations (HMB, NAC, BCAA, CBD, etc.): expand to full chemical name
-3. Already English terms: return empty array []
-4. Return 1-3 alternatives, most common first
-5. PubMed only accepts English scientific terms
-
-EXAMPLES:
-- "menta" → ["peppermint", "mentha piperita"]
-- "jengibre" → ["ginger", "zingiber officinale"]
-- "cúrcuma" → ["turmeric", "curcumin"]
-- "magnesio" → ["magnesium"]
-- "calcio" → ["calcium"]
-- "hierro" → ["iron"]
-- "colageno" → ["collagen"]
-- "melatonina" → ["melatonin"]
-- "valeriana" → ["valerian"]
-- "manzanilla" → ["chamomile"]
-- "lavanda" → ["lavender"]
-- "espirulina" → ["spirulina"]
-- "astaxantina" → ["astaxanthin"]
-- "niacina" → ["niacin", "vitamin b3"]
-- "biotina" → ["biotin"]
-- "tiamina" → ["thiamine"]
-- "riboflavina" → ["riboflavin"]
-- "acido hialuronico" → ["hyaluronic acid"]
-- "acido folico" → ["folic acid"]
-- "acido alfa lipoico" → ["alpha lipoic acid"]
-- "l-teanina" → ["l-theanine", "theanine"]
-- "fosfatidilserina" → ["phosphatidylserine"]
-- "citrulina malato" → ["citrulline malate"]
-- "beta alanina" → ["beta alanine"]
-- "extracto de te verde" → ["green tea extract"]
-- "aceite de pescado" → ["fish oil"]
-- "HMB" → ["beta-hydroxy beta-methylbutyrate"]
-- "BCAA" → ["branched-chain amino acids"]
-- "NAC" → ["N-acetylcysteine"]
-- "CBD" → ["cannabidiol"]
-- "THC" → ["tetrahydrocannabinol"]
-- "DHEA" → ["dehydroepiandrosterone"]
-- "CoQ10" → ["coenzyme q10", "ubiquinone"]
-- "5-HTP" → ["5-hydroxytryptophan"]
-- "ashwagandha" → []
-- "ginseng" → []
-- "rhodiola" → []
-- "panax ginseng" → ["ginseng", "panax ginseng"]
-- "rhodiola rosea" → ["rhodiola rosea"]
-
-OUTPUT FORMAT: Return ONLY a JSON array with 1-3 English terms, or empty array [] if already English.`,
-            cache_control: { type: 'ephemeral' }, // Cache este system prompt (>2048 tokens)
-          },
-        ],
+        system: 'You are a supplement translation expert. Translate Spanish supplement terms to English for PubMed. Expand abbreviations. Return ONLY JSON arrays: ["term"] or []',
         messages: [
           {
             role: 'user',
@@ -659,15 +599,7 @@ Generate variations for: "${trimmed}"`;
     // Always include original term as first option
     const finalVariations = [trimmed, ...validated.filter(v => v.toLowerCase() !== trimmed.toLowerCase())];
 
-    console.log(
-      JSON.stringify({
-        event: 'SEARCH_VARIATIONS_SUCCESS',
-        term: trimmed,
-        variationsCount: finalVariations.length,
-        variations: finalVariations,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     return finalVariations;
 
