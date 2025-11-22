@@ -59,8 +59,19 @@ export async function POST(request: NextRequest) {
     const { category, forceRefresh, rctOnly, yearFrom, yearTo } = body;
 
     // OPTIMIZATION: Reduce studies for extremely popular supplements to avoid timeout
-    // These supplements have 100K+ studies and cause Lambda to timeout
-    const popularSupplements = ['vitamin d', 'vitamin c', 'omega 3', 'magnesium', 'calcium', 'iron'];
+    // These supplements have 20K+ studies and cause Lambda to timeout on Vercel (10s limit)
+    const popularSupplements = [
+      'vitamin d',      // 112K+ studies
+      'vitamin c',      // 95K+ studies
+      'omega 3',        // 45K+ studies
+      'magnesium',      // 38K+ studies
+      'calcium',        // 52K+ studies
+      'iron',           // 41K+ studies
+      'chondroitin',    // 24K+ studies
+      'glucosamine',    // 26K+ studies
+      'condroitina',    // Spanish for chondroitin
+      'glucosamina',    // Spanish for glucosamine
+    ];
     const isPopular = popularSupplements.some(s => supplementName.toLowerCase().includes(s));
     const optimizedMaxStudies = isPopular ? 5 : (body.maxStudies || 10);
 
@@ -789,19 +800,7 @@ export async function POST(request: NextRequest) {
 
     const enrichData = await enrichResponse.json();
 
-    console.log(
-      JSON.stringify({
-        event: 'CONTENT_ENRICH_SUCCESS',
-        requestId,
-        correlationId,
-        originalQuery: supplementName,
-        translatedQuery: searchTerm,
-        supplementId: supplementName,
-        duration: enrichDuration,
-        hasData: !!enrichData.data,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     const duration = Date.now() - startTime;
 
