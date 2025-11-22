@@ -163,7 +163,7 @@ export default function EvidenceAnalysisPanelNew({
             <h3 className="text-lg font-bold text-gray-900 mb-3">
               ¿Para qué sirve?
             </h3>
-            <p className="text-xl text-gray-700 leading-relaxed">
+            <p className="text-xl text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
               {evidenceSummary.whatIsItFor}
             </p>
           </div>
@@ -265,7 +265,7 @@ export default function EvidenceAnalysisPanelNew({
                 {evidenceSummary.sideEffects.common.map((effect, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span className="text-gray-700 text-base">{effect}</span>
+                    <span className="text-gray-700 text-base break-words">{effect}</span>
                   </li>
                 ))}
               </ul>
@@ -279,7 +279,7 @@ export default function EvidenceAnalysisPanelNew({
                 {evidenceSummary.sideEffects.rare.map((effect, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="inline-block w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span className="text-gray-700 text-base">{effect}</span>
+                    <span className="text-gray-700 text-base break-words">{effect}</span>
                   </li>
                 ))}
               </ul>
@@ -325,7 +325,7 @@ export default function EvidenceAnalysisPanelNew({
                         {interaction.severity}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-700">{interaction.description}</p>
+                    <p className="text-sm text-gray-700 break-words">{interaction.description}</p>
                   </div>
                 ))}
               </div>
@@ -401,7 +401,7 @@ export default function EvidenceAnalysisPanelNew({
                     {mechanism.evidenceLevel}
                   </span>
                 </div>
-                <p className="text-sm text-gray-700">{mechanism.description}</p>
+                <p className="text-sm text-gray-700 break-words">{mechanism.description}</p>
               </div>
             ))}
           </div>
@@ -431,7 +431,7 @@ export default function EvidenceAnalysisPanelNew({
                     </div>
 
                     {ingredient.description && (
-                      <p className="text-sm text-gray-600 mb-2">
+                      <p className="text-sm text-gray-600 mb-2 break-words">
                         {ingredient.description}
                       </p>
                     )}

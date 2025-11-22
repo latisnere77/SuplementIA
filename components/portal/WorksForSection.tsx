@@ -70,13 +70,13 @@ export default function WorksForSection({
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-gray-900 break-words">
                           {item.condition}
                         </span>
                         <SupplementGradeBadge grade={item.grade} size="sm" />
                       </div>
                       {item.description && (
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-gray-600 mt-1 break-words">
                           {item.description}
                         </p>
                       )}
@@ -109,13 +109,13 @@ export default function WorksForSection({
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-gray-900 break-words">
                           {item.condition}
                         </span>
                         <SupplementGradeBadge grade={item.grade} size="sm" />
                       </div>
                       {item.description && (
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-gray-600 mt-1 break-words">
                           {item.description}
                         </p>
                       )}
@@ -150,11 +150,11 @@ export default function WorksForSection({
                   <Minus className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900">{item.condition}</span>
+                      <span className="font-medium text-gray-900 break-words">{item.condition}</span>
                       <SupplementGradeBadge grade={item.grade} size="sm" />
                     </div>
                     {item.description && (
-                      <p className="text-xs text-gray-600 mt-0.5">{item.description}</p>
+                      <p className="text-xs text-gray-600 mt-0.5 break-words">{item.description}</p>
                     )}
                   </div>
                 </li>
