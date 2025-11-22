@@ -207,7 +207,7 @@ export async function handler(
         requestId,
         correlationId,
         originalStudies: studies.length,
-        summarizedStudies: processedStudies.length,
+        summarizedStudies: processedStudies?.length || 0,
         timestamp: new Date().toISOString(),
       }));
     }

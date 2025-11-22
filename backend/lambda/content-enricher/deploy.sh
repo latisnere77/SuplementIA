@@ -38,15 +38,23 @@ echo ""
 
 # Create deployment package
 echo "📦 Creating deployment package..."
-cd dist
+rm -f deployment.zip
+
+# Create a temporary directory for packaging
+mkdir -p package
+cp -r dist/* package/
+
+# Copy only production dependencies (much faster)
+echo "📦 Copying production dependencies..."
+npm install --production --prefix package 2>/dev/null
+
+# Create zip from package directory
+cd package
 zip -r ../deployment.zip . -q
 cd ..
 
-# Add node_modules to package
-echo "📦 Adding node_modules..."
-cd node_modules
-zip -r ../deployment.zip . -q -x "*/test/*" -x "*/tests/*" -x "*/.bin/*"
-cd ..
+# Clean up
+rm -rf package
 
 # Update Lambda function
 echo "🚀 Updating Lambda function..."
