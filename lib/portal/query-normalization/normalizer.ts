@@ -119,6 +119,13 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'creatine': { canonical: 'Creatine', category: 'amino_acid' },
   'creatine monohydrate': { canonical: 'Creatine Monohydrate', category: 'amino_acid' },
 
+  'fenilalanina': { canonical: 'L-Phenylalanine', category: 'amino_acid' },
+  'phenylalanine': { canonical: 'L-Phenylalanine', category: 'amino_acid' },
+  'l-fenilalanina': { canonical: 'L-Phenylalanine', category: 'amino_acid' },
+  'l-phenylalanine': { canonical: 'L-Phenylalanine', category: 'amino_acid' },
+  'l fenilalanina': { canonical: 'L-Phenylalanine', category: 'amino_acid' },
+  'l phenylalanine': { canonical: 'L-Phenylalanine', category: 'amino_acid' },
+
   'proteina': { canonical: 'Protein', category: 'protein' },
   'protein': { canonical: 'Protein', category: 'protein' },
   'whey protein': { canonical: 'Whey Protein', category: 'protein' },
