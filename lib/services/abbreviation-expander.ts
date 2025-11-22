@@ -138,6 +138,7 @@ Examples:
 - "l-teanina" → ["l-theanine", "theanine"] (Spanish→English translation)
 - "espirulina" → ["spirulina", "Arthrospira platensis"] (Spanish→English translation)
 - "fosfatidilserina" → ["phosphatidylserine", "PS"] (Spanish→English translation)
+- "astaxantina" → ["astaxanthin"] (Spanish→English translation)
 - "ashwagandha" → [] (already in English)
 - "ginseng" → [] (already in English)
 
