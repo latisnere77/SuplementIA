@@ -105,6 +105,7 @@ export async function POST(request: NextRequest) {
       'rhodiola rosea': 'rhodiola rosea',
       'ashwagandha': 'ashwagandha',
       'ginseng': 'ginseng',
+      'panax ginseng': 'ginseng', // Normalizar a término más común
       'berberine': 'berberine',
       'berberina': 'berberine',
       
