@@ -45,7 +45,9 @@ export async function generateEnrichedContent(
     })
   );
 
-  // Prepare Bedrock request
+  // Prepare Bedrock request with JSON prefilling technique
+  // Adding an assistant message that starts with "{" forces Claude to continue
+  // with valid JSON, significantly reducing malformed JSON responses
   const bedrockRequest: BedrockRequest = {
     anthropic_version: 'bedrock-2023-05-31',
     max_tokens: config.maxTokens,
@@ -54,6 +56,10 @@ export async function generateEnrichedContent(
       {
         role: 'user',
         content: prompt,
+      },
+      {
+        role: 'assistant',
+        content: '{',
       },
     ],
   };
@@ -85,7 +91,9 @@ export async function generateEnrichedContent(
     new TextDecoder().decode(response.body)
   );
 
-  const contentText = responseBody.content[0].text;
+  // Extract content text and prepend the "{" that we used for prefilling
+  // Since we prefilled with "{", Claude's response continues from there
+  const contentText = '{' + responseBody.content[0].text;
   const tokensUsed = responseBody.usage.input_tokens + responseBody.usage.output_tokens;
 
   console.log(
