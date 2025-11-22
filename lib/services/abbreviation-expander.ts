@@ -123,6 +123,8 @@ Examples:
 - "magnesio" → ["magnesium"] (Spanish→English translation)
 - "acido hialuronico" → ["hyaluronic acid", "sodium hyaluronate"] (Spanish→English translation)
 - "colageno" → ["collagen", "collagen peptides"] (Spanish→English translation)
+- "l-teanina" → ["l-theanine", "theanine"] (Spanish→English translation)
+- "espirulina" → ["spirulina", "Arthrospira platensis"] (Spanish→English translation)
 - "ashwagandha" → [] (already in English)
 - "ginseng" → [] (already in English)
 
