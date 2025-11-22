@@ -40,21 +40,25 @@ echo ""
 echo "📦 Creating deployment package..."
 rm -f deployment.zip
 
-# Create a temporary directory for packaging
-mkdir -p package
-cp -r dist/* package/
+# Use AWS SAM build (much faster and handles dependencies correctly)
+echo "📦 Packaging with production dependencies..."
 
-# Copy only production dependencies (much faster)
-echo "📦 Copying production dependencies..."
-npm install --production --prefix package 2>/dev/null
+# Create temp directory
+mkdir -p .deploy-temp
+cp -r dist/* .deploy-temp/
+cp package.json .deploy-temp/
+cp package-lock.json .deploy-temp/ 2>/dev/null || true
 
-# Create zip from package directory
-cd package
-zip -r ../deployment.zip . -q
+# Install production dependencies in temp
+cd .deploy-temp
+npm install --production --no-optional 2>&1 | grep -v "npm WARN" || true
+
+# Create zip
+zip -r ../deployment.zip . -q -x "*.map" -x "*/test/*" -x "*/tests/*"
 cd ..
 
 # Clean up
-rm -rf package
+rm -rf .deploy-temp
 
 # Update Lambda function
 echo "🚀 Updating Lambda function..."

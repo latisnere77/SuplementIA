@@ -192,24 +192,37 @@ export async function handler(
     // OPTIMIZATION: Summarize studies first to reduce tokens by 60%
     let processedStudies = studies;
     if (studies && studies.length > 0) {
-      const { summarizeStudies } = await import('./studySummarizer');
-      const summaries = await summarizeStudies(studies);
-      
-      // Convert summaries back to study format for compatibility
-      processedStudies = summaries.map(s => ({
-        ...studies.find(study => study.pmid === s.pmid),
-        abstract: s.summary, // Replace long abstract with short summary
-        findings: undefined, // Remove findings to save tokens
-      })) as any;
+      try {
+        const { summarizeStudies } = await import('./studySummarizer');
+        const summaries = await summarizeStudies(studies);
+        
+        // Convert summaries back to study format for compatibility
+        processedStudies = summaries.map(s => ({
+          ...studies.find(study => study.pmid === s.pmid),
+          abstract: s.summary, // Replace long abstract with short summary
+          findings: undefined, // Remove findings to save tokens
+        })) as any;
 
-      console.log(JSON.stringify({
-        event: 'STUDIES_SUMMARIZED',
-        requestId,
-        correlationId,
-        originalStudies: studies.length,
-        summarizedStudies: processedStudies?.length || 0,
-        timestamp: new Date().toISOString(),
-      }));
+        console.log(JSON.stringify({
+          event: 'STUDIES_SUMMARIZED',
+          requestId,
+          correlationId,
+          originalStudies: studies.length,
+          summarizedStudies: processedStudies?.length || 0,
+          timestamp: new Date().toISOString(),
+        }));
+      } catch (error) {
+        console.error(JSON.stringify({
+          event: 'STUDIES_SUMMARIZATION_FAILED',
+          requestId,
+          correlationId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+          fallback: 'using_original_studies',
+          timestamp: new Date().toISOString(),
+        }));
+        // Fallback: use original studies
+        processedStudies = studies;
+      }
     }
 
     // Choose API based on feature flag
