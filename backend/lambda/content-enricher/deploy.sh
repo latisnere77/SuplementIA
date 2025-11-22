@@ -1,147 +1,101 @@
 #!/bin/bash
 
-#
-# Deploy Script for Content Enricher
-# Builds TypeScript and deploys to AWS Lambda
-#
+# Deploy Content Enricher Lambda with optimizations
+# Phase 1: Quick wins - Switch to Haiku + Study Summarization
 
-set -e  # Exit on error
+set -e
 
-echo "🚀 Deploying Content Enricher (Bedrock Integration)"
+echo "🚀 Deploying Content Enricher Lambda (Optimized)"
 echo "================================================"
-
-# Configuration
-STACK_NAME=${STACK_NAME:-"suplementia-content-enricher"}
-ENVIRONMENT=${ENVIRONMENT:-"staging"}
-REGION=${AWS_REGION:-"us-east-1"}
-S3_BUCKET=${S3_BUCKET:-"suplementia-deployments"}
-CACHE_SERVICE_URL=${CACHE_SERVICE_URL:-""}
-
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-# Verificar Node.js y npm
-echo "📦 Node.js version: $(node --version)"
-echo "📦 npm version: $(npm --version)"
 echo ""
+
+# Check if we're in the right directory
+if [ ! -f "package.json" ]; then
+  echo "❌ Error: Must run from content-enricher directory"
+  exit 1
+fi
 
 # Install dependencies
-if [ ! -d "node_modules" ]; then
-    echo "📥 Installing dependencies..."
-    npm install
-else
-    echo "✅ Dependencies already installed"
-fi
-echo ""
+echo "📦 Installing dependencies..."
+npm install
 
 # Build TypeScript
 echo "🔨 Building TypeScript..."
 npm run build
 
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ Build successful${NC}"
-else
-    echo -e "${RED}❌ Build failed${NC}"
-    exit 1
-fi
-echo ""
-
-# Verify S3 bucket exists
-echo "🪣 Checking S3 bucket: $S3_BUCKET"
-if aws s3 ls "s3://$S3_BUCKET" 2>&1 | grep -q 'NoSuchBucket'; then
-    echo -e "${YELLOW}⚠️  Bucket doesn't exist, creating...${NC}"
-    aws s3 mb "s3://$S3_BUCKET" --region "$REGION"
-else
-    echo -e "${GREEN}✅ Bucket exists${NC}"
-fi
-echo ""
-
-# Package Lambda
-echo "📦 Packaging Lambda..."
-sam package \
-    --template-file template.yaml \
-    --output-template-file packaged.yaml \
-    --s3-bucket "$S3_BUCKET" \
-    --s3-prefix "content-enricher" \
-    --region "$REGION"
-
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ Package created${NC}"
-else
-    echo -e "${RED}❌ Packaging failed${NC}"
-    exit 1
-fi
-echo ""
-
-# Deploy to AWS
-echo "🚀 Deploying to AWS..."
-echo "   Stack: $STACK_NAME"
-echo "   Environment: $ENVIRONMENT"
-echo "   Region: $REGION"
-echo "   Cache Service URL: ${CACHE_SERVICE_URL:-'Not configured'}"
-echo ""
-
-sam deploy \
-    --template-file packaged.yaml \
-    --stack-name "$STACK_NAME" \
-    --capabilities CAPABILITY_IAM \
-    --parameter-overrides \
-        Environment="$ENVIRONMENT" \
-        CacheServiceUrl="$CACHE_SERVICE_URL" \
-    --region "$REGION" \
-    --no-fail-on-empty-changeset
-
-if [ $? -eq 0 ]; then
-    echo ""
-    echo -e "${GREEN}🎉 Deployment successful!${NC}"
-    echo ""
-
-    # Get API endpoint
-    API_URL=$(aws cloudformation describe-stacks \
-        --stack-name "$STACK_NAME" \
-        --region "$REGION" \
-        --query 'Stacks[0].Outputs[?OutputKey==`ContentEnricherApi`].OutputValue' \
-        --output text)
-
-    if [ -n "$API_URL" ]; then
-        echo "📝 API Endpoint: $API_URL"
-        echo ""
-        echo "🧪 Test the API:"
-        echo "   curl -X POST $API_URL \\"
-        echo "     -H 'Content-Type: application/json' \\"
-        echo "     -d '{\"supplementId\": \"ashwagandha\", \"category\": \"stress\"}'"
-        echo ""
-    fi
-
-    # Show X-Ray traces
-    echo "🗺️  View X-Ray traces:"
-    echo "   aws xray get-trace-summaries \\"
-    echo "     --start-time \$(date -u -v-5M +%s) \\"
-    echo "     --end-time \$(date -u +%s) \\"
-    echo "     --filter-expression 'annotation.module = \"content-enricher\"'"
-    echo ""
-
-    # Show CloudWatch logs
-    echo "📊 View logs:"
-    echo "   aws logs tail /aws/lambda/suplementia-content-enricher-$ENVIRONMENT --follow"
-    echo ""
-else
-    echo -e "${RED}❌ Deployment failed${NC}"
-    exit 1
+# Check if build was successful
+if [ ! -d "dist" ]; then
+  echo "❌ Error: Build failed - dist directory not found"
+  exit 1
 fi
 
-# Cleanup
+# Get Lambda function name from environment or use default
+FUNCTION_NAME=${LAMBDA_FUNCTION_NAME:-"suplementia-content-enricher-dev"}
+
+echo ""
+echo "📤 Deploying to Lambda: $FUNCTION_NAME"
+echo ""
+
+# Create deployment package
+echo "📦 Creating deployment package..."
+cd dist
+zip -r ../deployment.zip . -q
+cd ..
+
+# Add node_modules to package
+echo "📦 Adding node_modules..."
+cd node_modules
+zip -r ../deployment.zip . -q -x "*/test/*" -x "*/tests/*" -x "*/.bin/*"
+cd ..
+
+# Update Lambda function
+echo "🚀 Updating Lambda function..."
+aws lambda update-function-code \
+  --function-name "$FUNCTION_NAME" \
+  --zip-file fileb://deployment.zip \
+  --region us-east-1
+
+# Wait for update to complete
+echo "⏳ Waiting for update to complete..."
+aws lambda wait function-updated \
+  --function-name "$FUNCTION_NAME" \
+  --region us-east-1
+
+# Update environment variables
+echo "⚙️  Updating environment variables..."
+aws lambda update-function-configuration \
+  --function-name "$FUNCTION_NAME" \
+  --environment "Variables={
+    BEDROCK_MODEL_ID=us.anthropic.claude-3-5-haiku-20241022-v1:0,
+    MAX_TOKENS=3000,
+    TEMPERATURE=0.3,
+    USE_TOOL_API=true,
+    XRAY_ENABLED=true
+  }" \
+  --timeout 30 \
+  --memory-size 1024 \
+  --region us-east-1
+
+# Wait for configuration update
+echo "⏳ Waiting for configuration update..."
+aws lambda wait function-updated \
+  --function-name "$FUNCTION_NAME" \
+  --region us-east-1
+
+# Clean up
 echo "🧹 Cleaning up..."
-rm -f packaged.yaml
+rm deployment.zip
 
 echo ""
-echo -e "${GREEN}✅ Content Enricher deployed successfully!${NC}"
+echo "✅ Deployment complete!"
 echo ""
-echo "⚠️  IMPORTANT:"
-echo "   1. Verify IAM role has Bedrock permissions"
-echo "   2. Test with a real supplement (e.g., ashwagandha)"
-echo "   3. Check Bedrock quota limits"
-echo "   4. Monitor costs (Bedrock charges per token)"
+echo "📊 Configuration:"
+echo "  - Model: Claude 3.5 Haiku"
+echo "  - Max Tokens: 3000"
+echo "  - Timeout: 30 seconds"
+echo "  - Memory: 1024 MB"
+echo "  - Study Summarization: Enabled"
+echo ""
+echo "🧪 Test the deployment:"
+echo "  aws lambda invoke --function-name $FUNCTION_NAME --payload '{\"supplementId\":\"vitamin d\"}' response.json"
+echo ""

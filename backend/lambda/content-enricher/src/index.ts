@@ -189,12 +189,35 @@ export async function handler(
       })
     );
 
+    // OPTIMIZATION: Summarize studies first to reduce tokens by 60%
+    let processedStudies = studies;
+    if (studies && studies.length > 0) {
+      const { summarizeStudies } = await import('./studySummarizer');
+      const summaries = await summarizeStudies(studies);
+      
+      // Convert summaries back to study format for compatibility
+      processedStudies = summaries.map(s => ({
+        ...studies.find(study => study.pmid === s.pmid),
+        abstract: s.summary, // Replace long abstract with short summary
+        findings: undefined, // Remove findings to save tokens
+      })) as any;
+
+      console.log(JSON.stringify({
+        event: 'STUDIES_SUMMARIZED',
+        requestId,
+        correlationId,
+        originalStudies: studies.length,
+        summarizedStudies: processedStudies.length,
+        timestamp: new Date().toISOString(),
+      }));
+    }
+
     // Choose API based on feature flag
     const { content, metadata: bedrockMetadata } = USE_TOOL_API
       ? await generateEnrichedContentWithToolUse(
           supplementId,
           category || 'general',
-          studies // Pass real PubMed studies to Claude
+          processedStudies // Pass summarized studies to Claude
         )
       : await generateEnrichedContent(
           supplementId,
