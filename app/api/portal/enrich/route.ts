@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
       // Top abbreviations (performance-critical - these are ACRONYMS not translations)
       'cbd': 'cannabidiol',
       'thc': 'tetrahydrocannabinol',
+      'dhea': 'dehydroepiandrosterone',
       'hmb': 'beta-hydroxy beta-methylbutyrate',
       'bcaa': 'branched-chain amino acids',
       'nac': 'N-acetylcysteine',

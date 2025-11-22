@@ -114,6 +114,8 @@ Examples:
 - "HMB" → ["beta-hydroxy beta-methylbutyrate", "β-hydroxy-β-methylbutyrate", "leucine metabolite"]
 - "BCAA" → ["branched-chain amino acids", "leucine isoleucine valine"]
 - "NAC" → ["N-acetylcysteine", "N-acetyl-L-cysteine"]
+- "DHEA" → ["dehydroepiandrosterone", "DHEA hormone"]
+- "CoQ10" → ["coenzyme q10", "ubiquinone"]
 - "cilantro" → ["coriander", "Coriandrum sativum"] (Spanish→English translation)
 - "jengibre" → ["ginger", "Zingiber officinale"] (Spanish→English translation)
 - "cúrcuma" → ["turmeric", "curcumin"] (Spanish→English translation)
