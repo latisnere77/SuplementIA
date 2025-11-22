@@ -24,7 +24,7 @@ Parameters:
 
 Globals:
   Function:
-    Timeout: 90  # Bedrock needs time to analyze studies
+    Timeout: 120  # Increased for Vercel Pro (60s) + buffer for Bedrock analysis
     MemorySize: 1024
     Runtime: nodejs20.x
     Tracing: Active  # Enable X-Ray

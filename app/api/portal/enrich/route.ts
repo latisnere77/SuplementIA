@@ -740,38 +740,11 @@ export async function POST(request: NextRequest) {
     const baseTerm = expansionMetadata?.expanded || supplementName;
     const usedVariationForLogging = searchTerm !== supplementName && searchTerm !== baseTerm;
     
-    console.log(
-      JSON.stringify({
-        event: 'STUDIES_FETCHED',
-        requestId,
-        correlationId,
-        originalQuery: supplementName,
-        translatedQuery: baseTerm,
-        finalSearchTerm: searchTerm,
-        usedVariation: usedVariationForLogging,
-        studiesFound: studies.length,
-        studyTypes: studies.map((s: any) => s.studyType),
-        studyIds: studies.map((s: any) => s.pmid || s.id).filter(Boolean),
-        translationMethod: expansionMetadata?.source || 'none',
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     // STEP 2: Pass real studies to content-enricher
     const enrichStartTime = Date.now();
-    console.log(
-      JSON.stringify({
-        event: 'CONTENT_ENRICH_START',
-        requestId,
-        correlationId,
-        originalQuery: supplementName,
-        translatedQuery: searchTerm,
-        supplementId: supplementName,
-        studiesCount: studies.length,
-        lambdaUrl: ENRICHER_API_URL,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     const enrichResponse = await fetch(ENRICHER_API_URL, {
       method: 'POST',
@@ -787,6 +760,9 @@ export async function POST(request: NextRequest) {
         studies, // CRITICAL: Pass real PubMed studies to Claude
         jobId,
       }),
+      // Increase timeout to 60s for complex supplements (schisandra, rhodiola, etc.)
+      // Default fetch timeout is ~30s which causes timeouts for supplements with 10 studies
+      signal: AbortSignal.timeout(60000), // 60 seconds
     });
 
     const enrichDuration = Date.now() - enrichStartTime;
