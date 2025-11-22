@@ -85,86 +85,22 @@ export async function POST(request: NextRequest) {
       })
     );
 
-    // Common abbreviations fallback map (in case LLM fails)
-    // Also includes Spanish-to-English translations for common supplements
+    // MINIMAL fallback map for ONLY the most common abbreviations
+    // This is a performance optimization to avoid LLM calls for high-traffic abbreviations
+    // The LLM (Claude Haiku in abbreviation-expander.ts) handles EVERYTHING ELSE intelligently,
+    // including ALL Spanish translations (niacina, magnesio, etc)
     const COMMON_ABBREVIATIONS: Record<string, string> = {
-      // Abbreviations
+      // Top abbreviations (performance-critical - these are ACRONYMS not translations)
       'cbd': 'cannabidiol',
+      'thc': 'tetrahydrocannabinol',
       'hmb': 'beta-hydroxy beta-methylbutyrate',
       'bcaa': 'branched-chain amino acids',
       'nac': 'N-acetylcysteine',
-      'epa': 'eicosapentaenoic acid',
-      'dha': 'docosahexaenoic acid',
-      'ala': 'alpha-linolenic acid',
+      'coq10': 'coenzyme q10',
       '5-htp': '5-hydroxytryptophan',
-      'sam-e': 'S-adenosyl methionine',
-      'dmae': 'dimethylaminoethanol',
-      'copper peptides': 'copper tripeptide-1', // GHK-Cu
-      'ghk-cu': 'copper tripeptide-1',
-      // Spanish translations (PubMed is in English)
-      'jengibre': 'ginger',
-      'cúrcuma': 'turmeric',
-      'curcuma': 'turmeric',
-      'omega 3': 'omega-3 fatty acids',
-      'omega-3': 'omega-3 fatty acids',
-      'vitamina a': 'vitamin a',
-      'vitamina b': 'vitamin b complex',
-      'vitamina b12': 'vitamin b12',
-      'vitamina b6': 'vitamin b6',
-      'vitamina c': 'vitamin c',
-      'vitamina d': 'vitamin d',
-      'vitamina d3': 'vitamin d3',
-      'vitamina e': 'vitamin e',
-      'vitamina k': 'vitamin k',
-      'acido folico': 'folic acid',
-      'ácido fólico': 'folic acid',
-      'magnesio': 'magnesium',
-      'glicinato de magnesio': 'magnesium glycinate',
-      'citrato de magnesio': 'magnesium citrate',
-      'oxido de magnesio': 'magnesium oxide',
-      'óxido de magnesio': 'magnesium oxide',
-      'cloruro de magnesio': 'magnesium chloride',
-      'zinc': 'zinc',
-      'glicinato de zinc': 'zinc glycinate',
-      'picolinato de zinc': 'zinc picolinate',
-      'hierro': 'iron',
-      'calcio': 'calcium',
-      'citrato de calcio': 'calcium citrate',
-      'carbonato de calcio': 'calcium carbonate',
-      'proteína': 'protein',
-      'proteina': 'protein',
-      'creatina': 'creatine',
-      'cafeína': 'caffeine',
-      'cafeina': 'caffeine',
-      'melatonina': 'melatonin',
-      'colágeno': 'collagen',
-      'colageno': 'collagen',
-      'ashwagandha': 'ashwagandha',
-      'rhodiola': 'rhodiola',
-      'ginseng': 'ginseng',
-      'maca': 'maca',
-      'espirulina': 'spirulina',
-      'chlorella': 'chlorella',
-      'probióticos': 'probiotics',
-      'probioticos': 'probiotics',
-      'prebióticos': 'prebiotics',
-      'prebioticos': 'prebiotics',
-      // Herbs and spices (Spanish → English)
-      'cilantro': 'coriander',
-      'perejil': 'parsley',
-      'romero': 'rosemary',
-      'albahaca': 'basil',
-      'orégano': 'oregano',
-      'oregano': 'oregano',
-      'tomillo': 'thyme',
-      'menta': 'mint',
-      'canela': 'cinnamon',
-      'comino': 'cumin',
-      'ajo': 'garlic',
-      'cebolla': 'onion',
-      'pimienta': 'pepper',
-      'pimienta negra': 'black pepper',
-      'pimienta cayena': 'cayenne pepper',
+
+      // Note: The LLM now handles ALL Spanish→English translations intelligently
+      // We removed hardcoded translations to allow the system to scale automatically
     };
 
     // First check common abbreviations map
@@ -246,7 +182,7 @@ export async function POST(request: NextRequest) {
             })
           );
         } else {
-          console.log(
+          console.warn(
             JSON.stringify({
               event: 'QUERY_NO_TRANSLATION',
               requestId,
@@ -257,6 +193,8 @@ export async function POST(request: NextRequest) {
               reason: expansion.source === 'llm' ? 'llm_returned_empty' : 'no_expansion_needed',
               llmSource: expansion.source,
               alternativesCount: expansion.alternatives.length,
+              // IMPORTANT: If LLM returns empty for Spanish terms, this is a bug
+              potentialBug: /^[a-záéíóúñ]+$/i.test(supplementName) ? 'spanish_term_not_translated' : false,
               timestamp: new Date().toISOString(),
             })
           );

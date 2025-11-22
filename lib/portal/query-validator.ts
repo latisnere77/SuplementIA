@@ -21,7 +21,8 @@ export interface ValidationResult {
  */
 const VALID_SUPPLEMENTS = new Set([
   // Suplementos populares
-  'ashwagandha', 'cbd', 'cannabidiol', 'melatonin', 'melatonina', 'creatine', 'creatina',
+  'ashwagandha', 'cbd', 'cannabidiol', 'thc', 'tetrahydrocannabinol', 'cannabis', 'hemp', 'cáñamo', 'canamo',
+  'melatonin', 'melatonina', 'creatine', 'creatina',
   'protein', 'proteina', 'whey', 'collagen', 'colageno', 'caffeine', 'cafeina',
   'bcaa', 'glutamine', 'glutamina', 'beta-alanine', 'beta-alanina',
   'l-carnitine', 'l-carnitina', 'coq10', 'rhodiola', 'ginseng',
@@ -132,10 +133,9 @@ const BLOCKED_TERMS = new Set([
   'adderall', 'ritalin', 'xanax', 'valium',
   'prozac', 'zoloft', 'lexapro',
 
-  // Drogas ilegales
+  // Drogas ilegales (excluyendo cannabis/cannabinoides que tienen usos médicos legítimos)
   'cocaine', 'cocaina', 'heroin', 'heroina',
   'methamphetamine', 'metanfetamina', 'meth',
-  'marijuana', 'marihuana', 'cannabis', 'weed',
   'lsd', 'ecstasy', 'mdma', 'ketamine', 'ketamina',
 
   // Esteroides anabólicos

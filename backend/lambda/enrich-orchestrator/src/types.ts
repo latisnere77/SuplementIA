@@ -135,8 +135,6 @@ export interface EnrichmentResponse {
     cached?: boolean;
     hasRealData?: boolean;
     studiesUsed?: number;
-    requestId?: string;
-    correlationId?: string;
   };
   error?: string;
   message?: string;

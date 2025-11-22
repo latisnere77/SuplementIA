@@ -200,41 +200,9 @@ IMPORTANTE - CALIDAD SOBRE CANTIDAD:
 - PRIORIZA NÚMEROS Y DATOS ESPECÍFICOS en todas las descripciones
 - Incluye RANGOS cuando sea apropiado (ej: "8-15%", "300-600mg")
 
-🚨 REGLAS CRÍTICAS DE JSON - CUMPLIMIENTO OBLIGATORIO:
-1. TODOS los valores numéricos DEBEN ser números válidos (no símbolos como >, <, ~)
-   ❌ INCORRECTO: "totalParticipants": >1000
-   ✅ CORRECTO: "totalParticipants": 1000
-   ✅ CORRECTO (si impreciso): "totalParticipants": 1500 (y explicar en "notes": "Aproximadamente >1000")
-
-2. NUNCA uses valores no-JSON como N/A, null sin comillas, undefined
-   ❌ INCORRECTO: "totalParticipants": N/A
-   ❌ INCORRECTO: "totalParticipants": null
-   ✅ CORRECTO: "totalParticipants": 0 (y explicar en "notes": "No reportado")
-   ✅ CORRECTO: Omitir el campo completamente si es opcional
-
-3. TODOS los strings DEBEN estar entre comillas dobles, sin truncar
-   ❌ INCORRECTO: "notes": "no reportad
-   ✅ CORRECTO: "notes": "no reportado"
-
-4. NUNCA uses comas finales antes de } o ]
-   ❌ INCORRECTO: {"key": "value",}
-   ✅ CORRECTO: {"key": "value"}
-
-5. Todos los campos string deben estar COMPLETOS (no truncados)
-   ❌ INCORRECTO: "description": "Este suplemento ayuda a
-   ✅ CORRECTO: "description": "Este suplemento ayuda a mejorar la función cognitiva"
-
-6. Si un número es aproximado, usa el número entero MÁS CERCANO y explica en "notes"
-   ✅ EJEMPLO: "totalParticipants": 1500, "notes": "Aproximadamente >1000 participantes combinados"
-
-7. Verifica que TODO el JSON esté bien formado antes de responder
-   - Verifica que todas las comillas estén cerradas
-   - Verifica que todos los corchetes [] y llaves {} estén balanceados
-   - Verifica que NO haya caracteres especiales sin escapar
-
 RECUERDA: Este análisis será usado por personas para tomar decisiones de salud. SÉ PRECISO, DETALLADO Y HONESTO.
 
-Responde ÚNICAMENTE con el JSON VÁLIDO, sin texto antes o después, sin markdown code blocks.`;
+Responde ÚNICAMENTE con el JSON, sin texto antes o después, sin markdown code blocks.`;
 
 /**
  * Build studies context from real PubMed data

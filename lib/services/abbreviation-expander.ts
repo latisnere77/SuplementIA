@@ -117,6 +117,10 @@ Examples:
 - "cilantro" → ["coriander", "Coriandrum sativum"] (Spanish→English translation)
 - "jengibre" → ["ginger", "Zingiber officinale"] (Spanish→English translation)
 - "cúrcuma" → ["turmeric", "curcumin"] (Spanish→English translation)
+- "niacina" → ["niacin", "vitamin b3", "nicotinic acid"] (Spanish→English translation)
+- "magnesio" → ["magnesium"] (Spanish→English translation)
+- "acido hialuronico" → ["hyaluronic acid", "sodium hyaluronate"] (Spanish→English translation)
+- "colageno" → ["collagen", "collagen peptides"] (Spanish→English translation)
 - "ashwagandha" → [] (already in English)
 - "ginseng" → [] (already in English)
 
@@ -481,9 +485,9 @@ function generateBasicVariations(term: string): string[] {
     `${term} supplement`,
     `${term} extract`,
   ];
-  
+
   // Remove duplicates and return
-  return [...new Set(variations)];
+  return Array.from(new Set(variations));
 }
 
 // ====================================

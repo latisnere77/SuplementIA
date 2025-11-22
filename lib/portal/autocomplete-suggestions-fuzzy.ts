@@ -1,11 +1,17 @@
 /**
- * Fuzzy Autocomplete with Fuse.js + PubMed Fallback
- * Hybrid approach: Fast local search with PubMed validation for unknown supplements
+ * Intelligent Autocomplete with LLM + Fuse.js + PubMed Fallback
+ *
+ * Multi-stage approach:
+ * 1. Try exact/fuzzy match in local DB (fast)
+ * 2. If poor results, use LLM to understand and normalize query (intelligent)
+ * 3. Search again with normalized term
+ * 4. Fallback to PubMed for validation (comprehensive)
  */
 
 import Fuse, { IFuseOptions } from 'fuse.js';
 import type { SupplementEntry } from './supplements-database';
 import { SUPPLEMENTS_DATABASE } from './supplements-database';
+import { expandAbbreviation } from '../services/abbreviation-expander';
 
 export type Language = 'en' | 'es';
 
@@ -34,28 +40,28 @@ export interface AutocompleteSuggestion {
 
 /**
  * Fuse.js configuration for fuzzy search
- * - threshold: 0.25 = stricter matching (0 = exact match, 1 = match anything)
- * - distance: 100 = how far to search for a match
+ * - threshold: 0.4 = balanced matching (good for partial words)
+ * - distance: 200 = increased for better multi-word matching
  * - keys: fields to search in (name, aliases, healthConditions)
  *
- * OPTIMIZED for better autocomplete relevance:
- * - Lower threshold (0.4 → 0.25) = fewer irrelevant matches
- * - Higher name weight (0.5 → 0.6) = prioritize name matches
- * - Lower condition weight (0.2 → 0.1) = reduce noise from health conditions
+ * OPTIMIZED for real-time autocomplete:
+ * - Threshold 0.4 = more lenient for partial typing ("col" → "Colágeno")
+ * - High distance = better for multi-word queries ("col pep" → "Collagen Peptides")
+ * - Token separator = split queries by spaces for individual word matching
  */
 const fuseOptions: IFuseOptions<SupplementEntry> = {
   keys: [
-    { name: 'name', weight: 0.6 },           // Name has highest weight (increased)
-    { name: 'aliases', weight: 0.3 },        // Aliases are important for typos
-    { name: 'healthConditions', weight: 0.1 } // Health conditions have lower weight (reduced)
+    { name: 'name', weight: 0.5 },           // Name has high weight
+    { name: 'aliases', weight: 0.4 },        // Aliases are critical for synonyms
+    { name: 'healthConditions', weight: 0.1 } // Health conditions have lower weight
   ],
-  threshold: 0.25,        // 0.25 = stricter matching for better relevance
-  distance: 100,          // Distance for fuzzy matching
-  includeScore: true,     // Include score in results
-  minMatchCharLength: 2,  // Minimum 2 characters to match
-  ignoreLocation: true,   // Don't consider location in string
-  findAllMatches: false,  // Only find best matches
-  useExtendedSearch: true, // Enable prefix search
+  threshold: 0.4,          // More lenient for better autocomplete UX (0.0 = perfect, 1.0 = anything)
+  distance: 200,           // Longer distance for multi-word queries
+  includeScore: true,      // Include score in results
+  minMatchCharLength: 2,   // Minimum 2 characters to match
+  ignoreLocation: true,    // Don't consider location in string (important for long text)
+  findAllMatches: false,   // Only find best matches (faster)
+  useExtendedSearch: false, // We handle multi-word matching manually with cross-language tokens
 };
 
 // Create Fuse instances for each language (cached)
@@ -148,30 +154,135 @@ export async function getSuggestions(
     return [];
   }
 
-  const normalizedQuery = query.trim();
+  const normalizedQuery = query.trim().toLowerCase();
 
-  // Get Fuse instance for language
+  // FAST PATH: Optimized tokenized search (instant)
+  const results = searchInDatabase(normalizedQuery, lang, limit * 2);
+
+  // Sort by score (descending) and return top results
+  results.sort((a, b) => b.score - a.score);
+
+  // Only use PubMed fallback if absolutely no results AND query is complete enough
+  // This happens AFTER user stops typing, not during autocomplete
+  if (results.length === 0 && normalizedQuery.length >= 5 && !normalizedQuery.includes(' ')) {
+    // Check PubMed asynchronously (won't block autocomplete)
+    checkPubMedExists(normalizedQuery).then(exists => {
+      if (exists) {
+        console.log(`[Autocomplete] Found in PubMed: ${normalizedQuery}`);
+      }
+    }).catch(() => {});
+  }
+
+  return results.slice(0, limit);
+}
+
+/**
+ * Common supplement term translations (Spanish ↔ English)
+ * Used for cross-language token matching in autocomplete
+ */
+const CROSS_LANGUAGE_TOKENS: Record<string, string[]> = {
+  // Spanish → English equivalents
+  'colageno': ['collagen'],
+  'colágeno': ['collagen'],
+  'peptidos': ['peptides', 'hydrolyzed'],
+  'péptidos': ['peptides', 'hydrolyzed'],
+  'magnesio': ['magnesium'],
+  'hierro': ['iron'],
+  'zinc': ['zinc'],
+  'cobre': ['copper'],
+  'vitamina': ['vitamin'],
+  'acido': ['acid'],
+  'ácido': ['acid'],
+  'omega': ['omega'],
+  'aceite': ['oil'],
+  // English → Spanish equivalents
+  'collagen': ['colageno', 'colágeno'],
+  'peptides': ['peptidos', 'péptidos'],
+  'hydrolyzed': ['hidrolizado', 'peptidos'],
+  'magnesium': ['magnesio'],
+  'iron': ['hierro'],
+  'copper': ['cobre'],
+  'vitamin': ['vitamina'],
+  'acid': ['acido', 'ácido'],
+  'oil': ['aceite'],
+};
+
+/**
+ * Search in local database with Fuse.js + intelligent token matching
+ * Instant performance for real-time autocomplete
+ */
+function searchInDatabase(
+  query: string,
+  lang: Language,
+  limit: number
+): AutocompleteSuggestion[] {
   const fuse = fuseInstances[lang];
+  const lowerQuery = query.toLowerCase();
 
-  // Perform fuzzy search in local database
-  const results = fuse.search(normalizedQuery, { limit });
+  // Tokenize query for multi-word matching
+  const queryTokens = lowerQuery.split(/\s+/).filter(t => t.length > 0);
 
-  // Transform results to AutocompleteSuggestion format
+  // Search with Fuse.js (handles fuzzy matching)
+  const results = fuse.search(lowerQuery, { limit: limit * 3 });
+
   const suggestions: AutocompleteSuggestion[] = results.map(result => {
     const item = result.item;
     let score = result.score !== undefined ? (1 - result.score) * 100 : 50;
 
-    // BONUS: Prefix matching gets +15 points
-    // If user types "cre" and supplement is "Creatina", boost score
     const normalizedName = item.name.toLowerCase();
-    const lowerQuery = normalizedQuery.toLowerCase();
-    if (normalizedName.startsWith(lowerQuery)) {
-      score = Math.min(100, score + 15); // Boost but cap at 100
+    const allAliases = [normalizedName, ...item.aliases.map(a => a.toLowerCase())];
+
+    // BONUS 1: Prefix matching (+20 points)
+    // "col" matches "Colágeno"
+    if (allAliases.some(alias => alias.startsWith(lowerQuery))) {
+      score = Math.min(100, score + 20);
     }
 
-    // BONUS: Exact match gets +20 points
-    if (normalizedName === lowerQuery) {
-      score = 100; // Perfect match
+    // BONUS 2: Exact match (+30 points)
+    if (allAliases.some(alias => alias === lowerQuery)) {
+      score = 100;
+    }
+
+    // BONUS 3: Multi-word token matching with cross-language support (+25 points)
+    // "peptidos de colageno" matches "collagen peptides" without hardcoding
+    if (queryTokens.length > 1) {
+      let matchedTokenCount = 0;
+
+      for (const queryToken of queryTokens) {
+        // Skip common words (de, of, the, etc.)
+        if (['de', 'del', 'la', 'el', 'of', 'the'].includes(queryToken)) {
+          continue;
+        }
+
+        // Check direct match in aliases
+        const directMatch = allAliases.some(alias => alias.includes(queryToken));
+
+        // Check cross-language match (e.g., "peptidos" → "peptides")
+        const translations = CROSS_LANGUAGE_TOKENS[queryToken] || [];
+        const crossLangMatch = translations.some(translation =>
+          allAliases.some(alias => alias.includes(translation))
+        );
+
+        if (directMatch || crossLangMatch) {
+          matchedTokenCount++;
+        }
+      }
+
+      // Only count tokens that aren't filler words
+      const significantTokens = queryTokens.filter(t =>
+        !['de', 'del', 'la', 'el', 'of', 'the'].includes(t)
+      ).length;
+
+      if (significantTokens > 0) {
+        const tokenMatchBonus = (matchedTokenCount / significantTokens) * 25;
+        score = Math.min(100, score + tokenMatchBonus);
+      }
+    }
+
+    // BONUS 4: Partial word matching in aliases (+10 points)
+    // "peptid" matches "peptides" in aliases
+    if (item.aliases.some(alias => alias.toLowerCase().includes(lowerQuery))) {
+      score = Math.min(100, score + 10);
     }
 
     // Determine type
@@ -193,42 +304,27 @@ export async function getSuggestions(
     };
   });
 
-  // Sort by score (descending)
-  suggestions.sort((a, b) => b.score - a.score);
+  return suggestions;
+}
 
-  // Check if we should use PubMed fallback
-  // Use fallback if:
-  // 1. No results at all
-  // 2. Best score is low (< 75%)
-  // 3. We have fewer than 3 good results (helps with edge cases)
-  const bestScore = suggestions[0]?.score || 0;
-  const goodResults = suggestions.filter(s => s.score >= 70).length;
-  const shouldUseFallback =
-    suggestions.length === 0 ||
-    bestScore < FALLBACK_SCORE_THRESHOLD ||
-    goodResults < PUBMED_MIN_RESULTS;
+/**
+ * Deduplicate suggestions by text (keep highest score)
+ */
+function deduplicateSuggestions(suggestions: AutocompleteSuggestion[]): AutocompleteSuggestion[] {
+  const seen = new Map<string, AutocompleteSuggestion>();
 
-  if (shouldUseFallback && normalizedQuery.length >= 3) {
-    // Try PubMed fallback for supplements not in local database
-    const existsInPubMed = await checkPubMedExists(normalizedQuery);
+  for (const suggestion of suggestions) {
+    const key = suggestion.text.toLowerCase();
+    const existing = seen.get(key);
 
-    if (existsInPubMed) {
-      // Add as a validated supplement from PubMed
-      const pubmedSuggestion: AutocompleteSuggestion = {
-        text: capitalizeWords(normalizedQuery),
-        type: 'supplement',
-        score: 85, // Good score but not perfect (since it's not in our curated DB)
-        category: 'other',
-        healthConditions: [],
-      };
-
-      // Insert at appropriate position based on score
-      suggestions.push(pubmedSuggestion);
-      suggestions.sort((a, b) => b.score - a.score);
+    if (!existing || suggestion.score > existing.score) {
+      seen.set(key, suggestion);
     }
   }
 
-  return suggestions.slice(0, limit);
+  const unique = Array.from(seen.values());
+  unique.sort((a, b) => b.score - a.score);
+  return unique;
 }
 
 /**

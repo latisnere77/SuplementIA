@@ -1,0 +1,23 @@
+{
+  "name": "suplementia-enrich-orchestrator",
+  "version": "1.0.0",
+  "description": "Enrich Orchestrator Lambda - handles full enrich flow without Vercel timeout",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "package": "npm run build && npm run package:zip",
+    "package:zip": "cd dist && zip -r ../enrich-orchestrator.zip . && cd ..",
+    "deploy": "npm run package && aws lambda update-function-code --function-name suplementia-enrich-orchestrator-dev --zip-file fileb://enrich-orchestrator.zip",
+    "create": "npm run package && aws lambda create-function --function-name suplementia-enrich-orchestrator-dev --runtime nodejs20.x --role arn:aws:iam::239378269775:role/suplementia-lambda-execution-role-dev --handler index.handler --zip-file fileb://enrich-orchestrator.zip --timeout 300 --memory-size 1024 --environment Variables={ENVIRONMENT=dev,XRAY_ENABLED=true,STUDIES_API_URL=https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search,ENRICHER_API_URL=https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/,BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0,ANTHROPIC_VERSION=bedrock-2023-05-31}"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.1",
+    "@aws-sdk/client-bedrock-runtime": "^3.511.0",
+    "aws-xray-sdk-core": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.130",
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3"
+  }
+}

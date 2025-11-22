@@ -99,25 +99,57 @@ export async function generateEnrichedContent(
     })
   );
 
-  // Sanitize JSON by removing control characters and fixing common issues
+  /**
+   * Sanitize and repair common JSON errors from LLM responses
+   * This is a robust multi-stage sanitization process
+   */
   const sanitizeJSON = (str: string): string => {
-    // Remove control characters
-    let cleaned = str.replace(/[\x00-\x1F\x7F]/g, (match) => {
+    let cleaned = str;
+
+    // Stage 1: Remove control characters (except tabs, newlines in strings)
+    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (match) => {
       if (match === '\t' || match === '\n' || match === '\r') {
         return ' ';
       }
       return '';
     });
 
-    // Fix trailing commas before } or ]
+    // Stage 2: Fix invalid number values with symbols
+    // >1000 → 1000, <50 → 50, ~100 → 100
+    cleaned = cleaned.replace(/:\s*([><~±≈])(\d+)/g, ': $2');
+
+    // Stage 3: Fix N/A, null, undefined values → 0 or empty string
+    cleaned = cleaned.replace(/:\s*N\/A\s*(,|]|})/g, ': 0$1');
+    cleaned = cleaned.replace(/:\s*undefined\s*(,|]|})/g, ': 0$1');
+    cleaned = cleaned.replace(/:\s*null\s*(,|]|})/g, ': 0$1');
+
+    // Stage 4: Fix numbers with commas (European style): 1,500 → 1500
+    cleaned = cleaned.replace(/:\s*(\d{1,3}(?:,\d{3})+)\s*(,|]|})/g, (_match, num, end) => {
+      return `: ${num.replace(/,/g, '')}${end}`;
+    });
+
+    // Stage 5: Fix trailing commas before } or ]
     cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
 
-    // Fix unescaped quotes in string values (heuristic)
-    // This is a simple fix - may need refinement
+    // Stage 6: Fix missing commas between array elements
+    cleaned = cleaned.replace(/"\s*\n\s*"/g, '",\n"');
+    cleaned = cleaned.replace(/}\s*\n\s*{/g, '},\n{');
+    cleaned = cleaned.replace(/]\s*\n\s*\[/g, '],\n[');
+
+    // Stage 7: Fix unescaped quotes in string values
     cleaned = cleaned.replace(/:\s*"([^"]*)"([^",}\]]*?)"/g, (match, p1, p2) => {
-      // If there's text after closing quote before comma/brace, it's likely an unescaped quote
       if (p2.trim() && !p2.trim().startsWith(',') && !p2.trim().startsWith('}') && !p2.trim().startsWith(']')) {
         return `: "${p1}\\"${p2}"`;
+      }
+      return match;
+    });
+
+    // Stage 8: Fix truncated strings (strings that don't close properly)
+    // Find strings that start but don't end properly before a comma or brace
+    cleaned = cleaned.replace(/:\s*"([^"]*?)\s*(,|}|])/g, (match, content, end) => {
+      // If the content doesn't have a closing quote, add it
+      if (!content.includes('"')) {
+        return `: "${content}"${end}`;
       }
       return match;
     });
@@ -125,40 +157,98 @@ export async function generateEnrichedContent(
     return cleaned;
   };
 
+  /**
+   * Multi-stage JSON parsing with progressive fallback strategies
+   */
+  const parseJSONWithFallback = (text: string): EnrichedContent => {
+    // Strategy 1: Direct parse with sanitization
+    try {
+      return JSON.parse(sanitizeJSON(text));
+    } catch (error1: any) {
+      console.warn(`Strategy 1 failed (direct parse): ${error1.message}`);
+    }
+
+    // Strategy 2: Extract from markdown code block
+    const markdownMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (markdownMatch) {
+      try {
+        return JSON.parse(sanitizeJSON(markdownMatch[1]));
+      } catch (error2: any) {
+        console.warn(`Strategy 2 failed (markdown): ${error2.message}`);
+      }
+    }
+
+    // Strategy 3: Extract JSON between first { and last }
+    const firstBrace = text.indexOf('{');
+    const lastBrace = text.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      const extracted = text.substring(firstBrace, lastBrace + 1);
+      try {
+        return JSON.parse(sanitizeJSON(extracted));
+      } catch (error3: any) {
+        console.warn(`Strategy 3 failed (extraction): ${error3.message}`);
+
+        // Get error position for debugging
+        const errorPos = parseInt(error3.message.match(/\d+/)?.[0] || '0');
+        const snippet = extracted.substring(
+          Math.max(0, errorPos - 100),
+          Math.min(extracted.length, errorPos + 100)
+        );
+        console.error(`JSON error context: ...${snippet}...`);
+      }
+    }
+
+    // Strategy 4: Try aggressive repair - remove everything after last valid }
+    try {
+      // Find all closing braces and try from the last one backwards
+      const braces = [];
+      for (let i = text.length - 1; i >= 0; i--) {
+        if (text[i] === '}') braces.push(i);
+      }
+
+      for (const bracePos of braces.slice(0, 5)) { // Try first 5 closing braces
+        const candidate = text.substring(firstBrace, bracePos + 1);
+        try {
+          return JSON.parse(sanitizeJSON(candidate));
+        } catch (e) {
+          // Try next brace
+          continue;
+        }
+      }
+    } catch (error4: any) {
+      console.warn(`Strategy 4 failed (aggressive repair): ${error4.message}`);
+    }
+
+    // All strategies failed
+    throw new Error(
+      'Failed to parse JSON from Bedrock response after all repair strategies. ' +
+      'The LLM may have generated severely malformed JSON.'
+    );
+  };
+
   // Parse JSON from Claude's response with enhanced error handling
   let enrichedData: EnrichedContent;
 
   try {
-    enrichedData = JSON.parse(sanitizeJSON(contentText));
+    enrichedData = parseJSONWithFallback(contentText);
   } catch (parseError: any) {
-    console.warn(`Initial JSON parse failed: ${parseError.message}`);
+    // Log detailed error for debugging
+    console.error(
+      JSON.stringify({
+        event: 'JSON_PARSE_FAILED_ALL_STRATEGIES',
+        supplementId,
+        error: parseError.message,
+        responseLength: contentText.length,
+        responsePreview: contentText.substring(0, 500),
+        timestamp: new Date().toISOString(),
+      })
+    );
 
-    // Sometimes Claude wraps JSON in markdown code blocks
-    const jsonMatch = contentText.match(/```json\s*([\s\S]*?)\s*```/);
-    if (jsonMatch) {
-      try {
-        enrichedData = JSON.parse(sanitizeJSON(jsonMatch[1]));
-      } catch (e: any) {
-        console.error(`Markdown JSON parse failed: ${e.message}`);
-        throw new Error(`Failed to parse JSON from markdown block: ${e.message}`);
-      }
-    } else {
-      // Try to extract JSON between first { and last }
-      const firstBrace = contentText.indexOf('{');
-      const lastBrace = contentText.lastIndexOf('}');
-      if (firstBrace !== -1 && lastBrace !== -1) {
-        const jsonStr = contentText.substring(firstBrace, lastBrace + 1);
-        try {
-          enrichedData = JSON.parse(sanitizeJSON(jsonStr));
-        } catch (e: any) {
-          console.error(`Extracted JSON parse failed: ${e.message}`);
-          console.error(`JSON snippet around error: ${jsonStr.substring(Math.max(0, parseInt(e.message.match(/\d+/)?.[0] || '0') - 50), Math.min(jsonStr.length, parseInt(e.message.match(/\d+/)?.[0] || '0') + 50))}`);
-          throw new Error(`Failed to parse extracted JSON: ${e.message}`);
-        }
-      } else {
-        throw new Error('Failed to parse JSON from Bedrock response - no valid JSON structure found');
-      }
-    }
+    // Re-throw with more context
+    throw new Error(
+      `Failed to parse enriched content JSON: ${parseError.message}. ` +
+      `This indicates the LLM generated invalid JSON despite repair attempts.`
+    );
   }
 
   // Validate structure
