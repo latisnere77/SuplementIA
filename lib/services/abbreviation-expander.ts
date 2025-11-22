@@ -30,7 +30,7 @@ export interface AbbreviationExpansion {
 // ====================================
 
 const bedrockClient = new BedrockRuntimeClient({
-  region: process.env.AWS_REGION || 'us-east-1',
+  region: (process.env.AWS_REGION || 'us-east-1').trim(),
 });
 
 // Use Haiku for fast, cheap abbreviation expansion
