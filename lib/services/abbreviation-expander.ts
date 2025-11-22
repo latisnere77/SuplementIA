@@ -551,14 +551,7 @@ Generate variations for: "${trimmed}"`;
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
 
-    console.log(
-      JSON.stringify({
-        event: 'SEARCH_VARIATIONS_LLM_RESPONSE',
-        term: trimmed,
-        rawResponse: content,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     // Parse JSON array from response
     const jsonMatch = content.match(/\[[\s\S]*\]/);
