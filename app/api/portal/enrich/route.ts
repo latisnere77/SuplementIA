@@ -807,23 +807,7 @@ export async function POST(request: NextRequest) {
     const finalBaseTerm = expansionMetadata?.expanded || supplementName;
     const usedVariation = searchTerm !== supplementName && searchTerm !== finalBaseTerm;
 
-    console.log(
-      JSON.stringify({
-        event: 'ORCHESTRATION_SUCCESS',
-        requestId,
-        correlationId,
-        originalQuery: supplementName,
-        translatedQuery: finalBaseTerm,
-        finalSearchTerm: searchTerm,
-        usedVariation,
-        supplementName,
-        duration,
-        studiesUsed: studies.length,
-        hasRealData: true,
-        translationApplied: !!expansionMetadata,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
     
     // Add metadata about the intelligent system
     return NextResponse.json({

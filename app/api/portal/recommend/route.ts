@@ -41,17 +41,19 @@ function getBaseUrl(): string {
  */
 export async function POST(request: NextRequest) {
   const requestId = crypto.randomUUID();
-  const jobId = request.headers.get('X-Job-ID') || body?.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const startTime = Date.now();
 
   try {
     const body = await request.json();
     const { category, age, gender, location, sensitivities = [], quiz_id } = body;
+    
+    const jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     console.log(`🔖 [Job ${jobId}] Recommend endpoint - Category: "${category}"`);
 
     portalLogger.logRequest({
       requestId,
+      jobId,
       endpoint: '/api/portal/recommend',
       method: 'POST',
       category,
