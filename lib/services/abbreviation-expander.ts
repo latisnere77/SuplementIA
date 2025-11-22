@@ -188,67 +188,43 @@ function translateSpanishProgrammatically(term: string): string | null {
 async function expandWithLLM(term: string): Promise<string[]> {
   console.log(`[ABBREVIATION] Expanding "${term}" with Claude Haiku...`);
 
-  const prompt = `You are a supplement and biochemistry expert. A user searched for the supplement term "${term}".
+  // OPTIMIZED PROMPT: Siguiendo mejores prácticas de Anthropic
+  // - Estructura clara con XML tags
+  // - Instrucciones concisas y directas
+  // - Ejemplos bien formateados
+  // - Output format explícito
+  const prompt = `You are a supplement translation expert. Translate supplement terms from Spanish to English for PubMed searches.
 
-Your task: Provide the full chemical or scientific names optimized for PubMed searches.
+<term>${term}</term>
 
-🚨 CRITICAL RULES - MUST FOLLOW:
+<instructions>
+1. If Spanish (ends in -ina, -ino, -eno, -ano, -osa, -ato OR contains ácido/vitamina/hierro/calcio): translate to English
+2. If abbreviation (HMB, NAC, BCAA): expand to full chemical name
+3. If already English: return empty array []
+4. Return 1-3 alternatives, most common first
+5. PubMed only accepts English terms
+</instructions>
 
-1. ABBREVIATIONS: If it's an abbreviation (HMB, BCAA, NAC, DHEA), expand to full chemical name
+<examples>
+<example>
+Input: "menta"
+Output: ["peppermint", "mentha piperita"]
+</example>
+<example>
+Input: "jengibre"
+Output: ["ginger", "zingiber officinale"]
+</example>
+<example>
+Input: "HMB"
+Output: ["beta-hydroxy beta-methylbutyrate"]
+</example>
+<example>
+Input: "ashwagandha"
+Output: []
+</example>
+</examples>
 
-2. SPANISH DETECTION: If ANY word in the term contains these patterns, it's Spanish and MUST be translated:
-   - Ends in: -ina, -ino, -eno, -ano, -osa, -ato (niacina, colageno, magnesio, espirulina, glucosa, malato)
-   - Contains: ácido, acido, vitamina, hierro, calcio, zinc, cobre, aceite, extracto
-   - Multi-word Spanish compounds: "citrulina malato", "acido hialuronico", etc.
-   - ANY Spanish word in a compound term means ENTIRE term must be translated
-
-3. TRANSLATION REQUIREMENT:
-   - PubMed is ONLY in English - NEVER return Spanish terms
-   - ALWAYS translate Spanish → English, no exceptions
-   - For compound terms (e.g., "citrulina malato"), translate BOTH words ("citrulline malate")
-   - If unsure, translate anyway (better to translate than fail)
-
-4. Return ONLY names that would find studies in PubMed (English scientific names)
-5. Order by: most common scientific name first
-6. Include chemical names, alternatives
-7. Maximum 3-4 alternatives
-8. If it's already in English and not an abbreviation, return empty array
-
-🔥 SPANISH AUTO-TRANSLATION RULE:
-If you detect ANY Spanish characteristics in ANY word of "${term}", you MUST translate the ENTIRE term to English.
-Examples of Spanish patterns to detect:
-- Single word with "-ina": niacina→niacin, teanina→theanine, espirulina→spirulina, astaxantina→astaxanthin
-- Single word with "-eno": colageno→collagen
-- Single word with "-io": magnesio→magnesium, calcio→calcium
-- Single word with "-ato": malato→malate
-- Compound terms: citrulina malato→citrulline malate (translate BOTH words)
-- Accent marks: ácido→acid, cúrcuma→turmeric
-
-Return ONLY a JSON array, no explanation:
-["primary name", "alternative name 1", "alternative name 2"]
-
-Examples:
-- "HMB" → ["beta-hydroxy beta-methylbutyrate", "β-hydroxy-β-methylbutyrate", "leucine metabolite"]
-- "BCAA" → ["branched-chain amino acids", "leucine isoleucine valine"]
-- "NAC" → ["N-acetylcysteine", "N-acetyl-L-cysteine"]
-- "DHEA" → ["dehydroepiandrosterone", "DHEA hormone"]
-- "CoQ10" → ["coenzyme q10", "ubiquinone"]
-- "cilantro" → ["coriander", "Coriandrum sativum"] (Spanish→English translation)
-- "jengibre" → ["ginger", "Zingiber officinale"] (Spanish→English translation)
-- "cúrcuma" → ["turmeric", "curcumin"] (Spanish→English translation)
-- "niacina" → ["niacin", "vitamin b3", "nicotinic acid"] (Spanish→English translation)
-- "magnesio" → ["magnesium"] (Spanish→English translation)
-- "acido hialuronico" → ["hyaluronic acid", "sodium hyaluronate"] (Spanish→English translation)
-- "colageno" → ["collagen", "collagen peptides"] (Spanish→English translation)
-- "l-teanina" → ["l-theanine", "theanine"] (Spanish→English translation)
-- "espirulina" → ["spirulina", "Arthrospira platensis"] (Spanish→English translation)
-- "fosfatidilserina" → ["phosphatidylserine", "PS"] (Spanish→English translation)
-- "astaxantina" → ["astaxanthin"] (Spanish→English translation)
-- "citrulina malato" → ["citrulline malate", "l-citrulline malate"] (Spanish→English translation)
-- "ashwagandha" → [] (already in English)
-- "ginseng" → [] (already in English)
-
-Now expand: "${term}"`;
+Return ONLY a JSON array: ["term1", "term2"] or []`;
 
   try {
     const command = new InvokeModelCommand({
@@ -257,8 +233,9 @@ Now expand: "${term}"`;
       accept: 'application/json',
       body: JSON.stringify({
         anthropic_version: 'bedrock-2023-05-31',
-        max_tokens: 200,
-        temperature: 0.1, // Low temperature for consistency
+        max_tokens: 100, // Reducido de 200 a 100 (más rápido, suficiente para JSON array)
+        temperature: 0, // 0 para máxima consistencia y velocidad
+        system: 'You are a supplement translation expert. Translate Spanish supplement terms to English for PubMed. Return ONLY JSON arrays.', // System prompt más eficiente
         messages: [
           {
             role: 'user',
