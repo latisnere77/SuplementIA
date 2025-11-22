@@ -11,31 +11,31 @@ const LOADING_STAGES = [
     icon: '🔍',
     message: 'Buscando estudios científicos en PubMed',
     detail: 'Conectando con la base de datos más grande de investigación médica...',
-    duration: 10000, // 10s
+    duration: 0, // 0-8s (0-13%)
   },
   {
     icon: '📚',
     message: 'Analizando estudios clínicos',
     detail: 'Revisando ensayos controlados aleatorios y meta-análisis...',
-    duration: 20000, // 20s adicionales (30s total)
+    duration: 8000, // 8-20s (13-33%)
   },
   {
     icon: '🧠',
     message: 'Extrayendo información científica',
     detail: 'Procesando dosificaciones, efectividad y seguridad...',
-    duration: 30000, // 30s adicionales (60s total)
+    duration: 20000, // 20-40s (33-67%)
   },
   {
     icon: '⚡',
     message: 'Generando recomendaciones personalizadas',
     detail: 'Adaptando la información a tu perfil...',
-    duration: 45000, // 15s adicionales (75s total)
+    duration: 40000, // 40-55s (67-92%)
   },
   {
     icon: '✅',
-    message: 'Casi listo',
+    message: 'Finalizando',
     detail: 'Preparando los resultados finales...',
-    duration: 60000, // 15s adicionales (90s total)
+    duration: 55000, // 55-60s (92-100%)
   },
 ];
 
@@ -46,10 +46,11 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
   useEffect(() => {
     const startTime = Date.now();
 
-    // Update progress bar smoothly
+    // Update progress bar smoothly - reaches 100% at 60 seconds
     const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      const newProgress = Math.min((elapsed / 90000) * 100, 95); // Cap at 95%
+      // Progress reaches 100% at 60 seconds (matches typical cache miss time)
+      const newProgress = Math.min((elapsed / 60000) * 100, 100);
       setProgress(newProgress);
     }, 100);
 
