@@ -136,6 +136,8 @@ export async function POST(request: NextRequest) {
       'valeriana': 'valerian',
       'manzanilla': 'chamomile',
       'lavanda': 'lavender',
+      'condroitina': 'chondroitin',
+      'glucosamina': 'glucosamine',
 
       // Note: The LLM now handles ALL Spanish→English translations intelligently
       // We removed hardcoded translations to allow the system to scale automatically
