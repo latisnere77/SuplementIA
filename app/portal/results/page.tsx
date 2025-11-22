@@ -16,6 +16,7 @@ import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
 import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
 import IntelligentLoadingSpinner from '@/components/portal/IntelligentLoadingSpinner';
+import AsyncEnrichmentLoader from '@/components/portal/AsyncEnrichmentLoader';
 import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
@@ -229,6 +230,8 @@ function ResultsPageContent() {
   const [subscription, setSubscription] = useState<any>(null);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
   const [transformedEvidence, setTransformedEvidence] = useState<any>(null);
+  const [useAsyncEnrichment, setUseAsyncEnrichment] = useState(false);
+  const [asyncSupplementName, setAsyncSupplementName] = useState<string | null>(null);
 
   // Check subscription status
   useEffect(() => {
@@ -571,6 +574,16 @@ function ResultsPageContent() {
           const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           console.log(`🔖 Job ID: ${jobId} - Query: "${normalizedQuery}" → "${category}"`);
 
+          // NEW: Use async enrichment for ingredient searches to avoid timeouts
+          if (isIngredientSearch) {
+            console.log(`🚀 Using async enrichment for ingredient: "${searchTerm}"`);
+            setAsyncSupplementName(searchTerm);
+            setUseAsyncEnrichment(true);
+            setIsLoading(true);
+            return; // AsyncEnrichmentLoader will handle the rest
+          }
+
+          // For category searches, use the quiz endpoint (fast, no timeout risk)
           const response = await fetch('/api/portal/quiz', {
             method: 'POST',
             headers: { 
@@ -846,6 +859,47 @@ function ResultsPageContent() {
 
   // Show loading state (only while fetching, not while transforming)
   if (isLoading) {
+    // Use async enrichment loader for ingredient searches
+    if (useAsyncEnrichment && asyncSupplementName) {
+      return (
+        <AsyncEnrichmentLoader
+          supplementName={asyncSupplementName}
+          onComplete={(data) => {
+            console.log('✅ Async enrichment completed:', data);
+            // Transform enrichment data to recommendation format
+            const mockRecommendation: Recommendation = {
+              recommendation_id: `rec_${Date.now()}`,
+              quiz_id: `quiz_${Date.now()}`,
+              category: asyncSupplementName,
+              evidence_summary: {
+                totalStudies: data.metadata?.studiesUsed || 0,
+                totalParticipants: 0,
+                efficacyPercentage: 75,
+                researchSpanYears: 10,
+                ingredients: [],
+              },
+              ingredients: [],
+              products: [],
+              personalization_factors: {},
+              supplement: data, // Store enrichment data
+              _enrichment_metadata: data.metadata,
+            } as any;
+            
+            setRecommendation(mockRecommendation);
+            setIsLoading(false);
+            setUseAsyncEnrichment(false);
+          }}
+          onError={(error) => {
+            console.error('❌ Async enrichment failed:', error);
+            setError(error);
+            setIsLoading(false);
+            setUseAsyncEnrichment(false);
+          }}
+        />
+      );
+    }
+    
+    // Default loading spinner for category searches
     return <IntelligentLoadingSpinner supplementName={query || undefined} />;
   }
 
