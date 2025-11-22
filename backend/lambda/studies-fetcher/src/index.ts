@@ -117,7 +117,6 @@ export async function handler(
       searchSubsegment?.close();
 
       const duration = Date.now() - startTime;
-      const searchDuration = Date.now() - searchStartTime;
 
       // Build success response
       const response: StudiesResponse = {

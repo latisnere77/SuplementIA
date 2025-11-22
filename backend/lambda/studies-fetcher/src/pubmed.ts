@@ -56,8 +56,9 @@ export async function searchPubMed(request: StudySearchRequest): Promise<Study[]
 function buildSearchQuery(supplementName: string, filters: any): string {
   const parts: string[] = [];
 
-  // Main search term
-  parts.push(`"${supplementName}"[Title/Abstract]`);
+  // Main search term - use smart query building for better recall
+  const mainQuery = buildMainTermQuery(supplementName);
+  parts.push(mainQuery);
 
   // Add study type filters
   if (filters.studyTypes && filters.studyTypes.length > 0) {
@@ -83,6 +84,50 @@ function buildSearchQuery(supplementName: string, filters: any): string {
   console.log('PubMed query:', query);
 
   return query;
+}
+
+/**
+ * Build main search term query with smart flexibility
+ *
+ * Strategy based on official PubMed documentation:
+ * - Single words: Let PubMed do automatic term mapping (MeSH, synonyms)
+ * - Multi-word terms: Use AND logic to find all studies containing all words
+ *   (better recall than exact phrase matching)
+ *
+ * Examples:
+ * - "magnesium" → magnesium[tiab]
+ *   → Triggers PubMed automatic term mapping (MeSH hierarchies, synonyms)
+ *
+ * - "magnesium glycinate" → (magnesium[tiab] AND glycinate[tiab])
+ *   → Finds studies with BOTH words in any order, avoiding overly restrictive exact phrase
+ *
+ * - "omega-3 fatty acids" → (omega-3[tiab] AND fatty[tiab] AND acids[tiab])
+ *   → Maximizes recall by finding all combinations of these terms
+ *
+ * Note: Using [tiab] (Title/Abstract) instead of [Title/Abstract] per official docs
+ */
+function buildMainTermQuery(supplementName: string): string {
+  // Remove extra spaces and normalize
+  const normalized = supplementName.trim().replace(/\s+/g, ' ');
+
+  // Split into words (handle hyphens as single words: "omega-3" stays together)
+  const words = normalized.split(' ').filter(w => w.length > 0);
+
+  // Single word: use simple search to allow PubMed automatic term mapping
+  // PubMed will apply MeSH hierarchies and synonyms automatically
+  if (words.length === 1) {
+    return `${normalized}[tiab]`;
+  }
+
+  // Multiple words: use AND for better recall
+  // This finds studies with ALL words present, even if not in exact phrase order
+  // Much better recall than exact phrase matching with quotes
+  const wordQueries = words.map(word => {
+    // Keep hyphens intact (e.g., "omega-3" stays as one term)
+    return `${word}[tiab]`;
+  });
+
+  return `(${wordQueries.join(' AND ')})`;
 }
 
 /**
