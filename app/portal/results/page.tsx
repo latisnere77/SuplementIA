@@ -935,46 +935,9 @@ function ResultsPageContent() {
 
   // Show loading state (only while fetching, not while transforming)
   if (isLoading) {
-    // Use streaming results for better UX
-    return (
-      <StreamingResults
-        supplementName={query || 'supplement'}
-        onComplete={(data) => {
-          console.log('✅ Streaming completed:', data);
-          // Transform streaming data to recommendation format
-          if (data.recommendation) {
-            setRecommendation(data.recommendation);
-          } else {
-            // Fallback: create recommendation from enrichment data
-            const mockRecommendation: Recommendation = {
-              recommendation_id: `rec_${Date.now()}`,
-              quiz_id: `quiz_${Date.now()}`,
-              category: query || 'supplement',
-              evidence_summary: {
-                totalStudies: data.metadata?.studiesUsed || 0,
-                totalParticipants: 0,
-                efficacyPercentage: 75,
-                researchSpanYears: 10,
-                ingredients: [],
-              },
-              ingredients: [],
-              products: [],
-              personalization_factors: {},
-              supplement: data, // Store enrichment data
-              _enrichment_metadata: data.metadata,
-            } as any;
-            
-            setRecommendation(mockRecommendation);
-          }
-          setIsLoading(false);
-        }}
-        onError={(error) => {
-          console.error('❌ Streaming failed:', error);
-          setError(error);
-          setIsLoading(false);
-        }}
-      />
-    );
+    // Default loading spinner for searches
+    // TODO: Integrate StreamingResults properly with the quiz/recommend flow
+    return <IntelligentLoadingSpinner supplementName={query || undefined} />;
   }
 
   if (error || !recommendation) {
