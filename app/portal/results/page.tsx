@@ -18,6 +18,7 @@ import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
 import IntelligentLoadingSpinner from '@/components/portal/IntelligentLoadingSpinner';
 import AsyncEnrichmentLoader from '@/components/portal/AsyncEnrichmentLoader';
 import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
+import { StreamingResults } from '@/components/portal/StreamingResults';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { suggestSupplementCorrection } from '@/lib/portal/supplement-suggestions';
@@ -857,18 +858,21 @@ function ResultsPageContent() {
 
   // Show loading state (only while fetching, not while transforming)
   if (isLoading) {
-    // Use async enrichment loader for ingredient searches
-    if (useAsyncEnrichment && asyncSupplementName) {
-      return (
-        <AsyncEnrichmentLoader
-          supplementName={asyncSupplementName}
-          onComplete={(data) => {
-            console.log('✅ Async enrichment completed:', data);
-            // Transform enrichment data to recommendation format
+    // Use streaming results for better UX
+    return (
+      <StreamingResults
+        supplementName={query || 'supplement'}
+        onComplete={(data) => {
+          console.log('✅ Streaming completed:', data);
+          // Transform streaming data to recommendation format
+          if (data.recommendation) {
+            setRecommendation(data.recommendation);
+          } else {
+            // Fallback: create recommendation from enrichment data
             const mockRecommendation: Recommendation = {
               recommendation_id: `rec_${Date.now()}`,
               quiz_id: `quiz_${Date.now()}`,
-              category: asyncSupplementName,
+              category: query || 'supplement',
               evidence_summary: {
                 totalStudies: data.metadata?.studiesUsed || 0,
                 totalParticipants: 0,
@@ -884,21 +888,16 @@ function ResultsPageContent() {
             } as any;
             
             setRecommendation(mockRecommendation);
-            setIsLoading(false);
-            setUseAsyncEnrichment(false);
-          }}
-          onError={(error) => {
-            console.error('❌ Async enrichment failed:', error);
-            setError(error);
-            setIsLoading(false);
-            setUseAsyncEnrichment(false);
-          }}
-        />
-      );
-    }
-    
-    // Default loading spinner for category searches
-    return <IntelligentLoadingSpinner supplementName={query || undefined} />;
+          }
+          setIsLoading(false);
+        }}
+        onError={(error) => {
+          console.error('❌ Streaming failed:', error);
+          setError(error);
+          setIsLoading(false);
+        }}
+      />
+    );
   }
 
   if (error || !recommendation) {
