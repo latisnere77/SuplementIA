@@ -5,7 +5,7 @@
 
 import { Study } from '../types';
 import { StudyScore, scoreStudies } from './scorer';
-import { StudySentiment, analyzeBatch, getSentimentDistribution } from './sentiment';
+import { StudySentiment, analyzeBatch } from './sentiment';
 
 export interface ScoredStudy {
   study: Study;

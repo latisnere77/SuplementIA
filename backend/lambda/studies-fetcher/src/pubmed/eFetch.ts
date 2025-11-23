@@ -54,13 +54,14 @@ export async function eFetch(options: EFetchOptions): Promise<Study[]> {
 
   return articles
     .map((article: any) => parseArticle(article))
-    .filter((study): study is Study => study !== null);
+    .filter((study: Study | null): study is Study => study !== null);
 }
 
 /**
  * Parse PubMed article XML to Study object
  */
 function parseArticle(article: any): Study | null {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   try {
     const citation = article.MedlineCitation[0];
     const articleData = citation.Article[0];
@@ -107,7 +108,7 @@ function parseArticle(article: any): Study | null {
     const journal = articleData.Journal?.Title?.[0] || '';
 
     // Study type
-    const studyType = extractStudyType(articleData);
+    const studyType = extractStudyType(articleData) as any;
 
     // DOI
     const doi = extractDOI(article);

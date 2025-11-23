@@ -68,7 +68,7 @@ export async function eSearch(options: ESearchOptions): Promise<ESearchResult> {
 
   const url = pubmedClient.buildUrl('esearch', params);
   const response = await pubmedClient.request(url);
-  const data = await response.json();
+  const data = await response.json() as any;
 
   const result = data.esearchresult;
 

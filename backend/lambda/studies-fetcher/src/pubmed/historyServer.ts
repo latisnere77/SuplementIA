@@ -3,7 +3,7 @@
  * Manages WebEnv and QueryKey for efficient multi-search operations
  */
 
-import { eSearch, ESearchResult } from './eSearch';
+import { eSearch } from './eSearch';
 import { eFetch } from './eFetch';
 import { Study } from '../types';
 

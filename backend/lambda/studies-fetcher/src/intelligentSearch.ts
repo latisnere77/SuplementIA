@@ -3,7 +3,7 @@
  * Uses multiple search strategies to find both positive and negative studies
  */
 
-import { Study, StudySearchRequest } from './types';
+import { Study } from './types';
 import { searchPubMed } from './pubmed';
 
 export interface IntelligentSearchOptions {
