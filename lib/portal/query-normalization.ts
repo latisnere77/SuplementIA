@@ -6,186 +6,189 @@
 // Common typos and their corrections
 const TYPO_CORRECTIONS: Record<string, string> = {
   // Magnesio
-  'magenesio': 'magnesio',
-  'magnesio': 'magnesium',
-  'glicinato de magenesio': 'magnesium glycinate',
-  'glicinato de magnesio': 'magnesium glycinate',
-  'citrato de magenesio': 'magnesium citrate',
-  'citrato de magnesio': 'magnesium citrate',
-  'oxido de magnesio': 'magnesium oxide',
-  'óxido de magnesio': 'magnesium oxide',
-  'malato de magnesio': 'magnesium malate',
-  'treonato de magnesio': 'magnesium threonate',
+  'magenesio': 'Magnesium',
+  'magnesio': 'Magnesium',
+  'glicinato de magenesio': 'Magnesium Glycinate',
+  'glicinato de magnesio': 'Magnesium Glycinate',
+  'citrato de magenesio': 'Magnesium Citrate',
+  'citrato de magnesio': 'Magnesium Citrate',
+  'oxido de magnesio': 'Magnesium Oxide',
+  'óxido de magnesio': 'Magnesium Oxide',
+  'malato de magnesio': 'Magnesium Malate',
+  'treonato de magnesio': 'Magnesium Threonate',
   
   // Zinc
-  'zinc': 'zinc',
-  'cinc': 'zinc',
-  'picolinato de zinc': 'zinc picolinate',
-  'gluconato de zinc': 'zinc gluconate',
-  'citrato de zinc': 'zinc citrate',
+  'zinc': 'Zinc',
+  'cinc': 'Zinc',
+  'picolinato de zinc': 'Zinc Picolinate',
+  'gluconato de zinc': 'Zinc Gluconate',
+  'citrato de zinc': 'Zinc Citrate',
   
   // Vitaminas
-  'vitamina d': 'vitamin d',
-  'vitamina d3': 'vitamin d3',
-  'colecalciferol': 'cholecalciferol',
-  'vitamina c': 'vitamin c',
-  'acido ascorbico': 'ascorbic acid',
-  'ácido ascórbico': 'ascorbic acid',
-  'vitamina b12': 'vitamin b12',
-  'cobalamina': 'cobalamin',
+  'vitamina d': 'Vitamin D',
+  'vitamina d3': 'Vitamin D3',
+  'colecalciferol': 'Cholecalciferol',
+  'vitamina c': 'Vitamin C',
+  'acido ascorbico': 'Ascorbic Acid',
+  'ácido ascórbico': 'Ascorbic Acid',
+  'vitamina b12': 'Vitamin B12',
+  'cobalamina': 'Cobalamin',
   
   // Omega
-  'omega 3': 'omega-3',
-  'omega-3': 'omega-3',
-  'omega 6': 'omega-6',
-  'omega-6': 'omega-6',
-  'aceite de pescado': 'fish oil',
-  'epa': 'epa',
-  'dha': 'dha',
+  'omega 3': 'Omega-3',
+  'omega-3': 'Omega-3',
+  'omega 6': 'Omega-6',
+  'omega-6': 'Omega-6',
+  'aceite de pescado': 'Fish Oil',
+  'epa': 'EPA',
+  'dha': 'DHA',
   
   // Aminoácidos
-  'l-carnitina': 'l-carnitine',
-  'carnitina': 'l-carnitine',
-  'l-teanina': 'l-theanine',
-  'teanina': 'l-theanine',
-  'l-glutamina': 'l-glutamine',
-  'glutamina': 'l-glutamine',
+  'l-carnitina': 'L-Carnitine',
+  'l carnitina': 'L-Carnitine', // with space instead of hyphen
+  'carnitina': 'L-Carnitine',
+  'l-teanina': 'L-Theanine',
+  'l teanina': 'L-Theanine', // with space instead of hyphen
+  'teanina': 'L-Theanine',
+  'l-glutamina': 'L-Glutamine',
+  'l glutamina': 'L-Glutamine', // with space instead of hyphen
+  'glutamina': 'L-Glutamine',
   
   // Adaptógenos
-  'ashwagandha': 'ashwagandha',
-  'rhodiola': 'rhodiola',
-  'ginseng': 'ginseng',
+  'ashwagandha': 'Ashwagandha',
+  'rhodiola': 'Rhodiola',
+  'ginseng': 'Ginseng',
   
   // Superfoods y Algas
-  'espirulina': 'spirulina',
-  'spirulina': 'spirulina',
-  'chlorella': 'chlorella',
-  'clorella': 'chlorella',
-  'alga espirulina': 'spirulina',
-  'alga chlorella': 'chlorella',
+  'espirulina': 'Spirulina',
+  'spirulina': 'Spirulina',
+  'chlorella': 'Chlorella',
+  'clorella': 'Chlorella',
+  'alga espirulina': 'Spirulina',
+  'alga chlorella': 'Chlorella',
   
   // Probióticos y Prebióticos
-  'probioticos': 'probiotics',
-  'probióticos': 'probiotics',
-  'prebioticos': 'prebiotics',
-  'prebióticos': 'prebiotics',
-  'lactobacillus': 'lactobacillus',
-  'bifidobacterium': 'bifidobacterium',
+  'probioticos': 'Probiotics',
+  'probióticos': 'Probiotics',
+  'prebioticos': 'Prebiotics',
+  'prebióticos': 'Prebiotics',
+  'lactobacillus': 'Lactobacillus',
+  'bifidobacterium': 'Bifidobacterium',
   
   // Hierbas y Extractos
-  'curcuma': 'turmeric',
-  'cúrcuma': 'turmeric',
-  'curcumina': 'curcumin',
-  'jengibre': 'ginger',
-  'te verde': 'green tea',
-  'té verde': 'green tea',
-  'maca': 'maca',
-  'raiz de maca': 'maca root',
-  'raíz de maca': 'maca root',
-  'ginkgo': 'ginkgo biloba',
-  'ginkgo biloba': 'ginkgo biloba',
-  'saw palmetto': 'saw palmetto',
-  'palma enana': 'saw palmetto',
-  'tribulus': 'tribulus terrestris',
-  'tribulus terrestris': 'tribulus terrestris',
+  'curcuma': 'Turmeric',
+  'cúrcuma': 'Turmeric',
+  'curcumina': 'Curcumin',
+  'jengibre': 'Ginger',
+  'te verde': 'Green Tea',
+  'té verde': 'Green Tea',
+  'maca': 'Maca',
+  'raiz de maca': 'Maca Root',
+  'raíz de maca': 'Maca Root',
+  'ginkgo': 'Ginkgo Biloba',
+  'ginkgo biloba': 'Ginkgo Biloba',
+  'saw palmetto': 'Saw Palmetto',
+  'palma enana': 'Saw Palmetto',
+  'tribulus': 'Tribulus Terrestris',
+  'tribulus terrestris': 'Tribulus Terrestris',
   
   // Antioxidantes
-  'coenzima q10': 'coq10',
-  'coenzima q': 'coq10',
-  'co q10': 'coq10',
-  'coq10': 'coq10',
-  'resveratrol': 'resveratrol',
-  'astaxantina': 'astaxanthin',
-  'astaxanthin': 'astaxanthin',
-  'licopeno': 'lycopene',
-  'lycopene': 'lycopene',
+  'coenzima q10': 'CoQ10',
+  'coenzima q': 'CoQ10',
+  'co q10': 'CoQ10',
+  'coq10': 'CoQ10',
+  'resveratrol': 'Resveratrol',
+  'astaxantina': 'Astaxanthin',
+  'astaxanthin': 'Astaxanthin',
+  'licopeno': 'Lycopene',
+  'lycopene': 'Lycopene',
   
   // Minerales adicionales
-  'hierro': 'iron',
-  'calcio': 'calcium',
-  'potasio': 'potassium',
-  'selenio': 'selenium',
-  'cromo': 'chromium',
-  'cobre': 'copper',
-  'manganeso': 'manganese',
-  'yodo': 'iodine',
-  'molibdeno': 'molybdenum',
-  'boro': 'boron',
+  'hierro': 'Iron',
+  'calcio': 'Calcium',
+  'potasio': 'Potassium',
+  'selenio': 'Selenium',
+  'cromo': 'Chromium',
+  'cobre': 'Copper',
+  'manganeso': 'Manganese',
+  'yodo': 'Iodine',
+  'molibdeno': 'Molybdenum',
+  'boro': 'Boron',
   
   // Ácidos Grasos
-  'acido alfa lipoico': 'alpha lipoic acid',
-  'ácido alfa lipoico': 'alpha lipoic acid',
-  'ala': 'alpha lipoic acid',
-  'cla': 'conjugated linoleic acid',
-  'acido linoleico conjugado': 'conjugated linoleic acid',
-  'ácido linoleico conjugado': 'conjugated linoleic acid',
+  'acido alfa lipoico': 'Alpha Lipoic Acid',
+  'ácido alfa lipoico': 'Alpha Lipoic Acid',
+  'ala': 'Alpha Lipoic Acid',
+  'cla': 'Conjugated Linoleic Acid',
+  'acido linoleico conjugado': 'Conjugated Linoleic Acid',
+  'ácido linoleico conjugado': 'Conjugated Linoleic Acid',
   
   // Fibras
-  'psyllium': 'psyllium',
-  'psilio': 'psyllium',
-  'glucomanano': 'glucomannan',
-  'glucomannan': 'glucomannan',
-  'inulina': 'inulin',
-  'inulin': 'inulin',
+  'psyllium': 'Psyllium',
+  'psilio': 'Psyllium',
+  'glucomanano': 'Glucomannan',
+  'glucomannan': 'Glucomannan',
+  'inulina': 'Inulin',
+  'inulin': 'Inulin',
   
   // Otros
-  'creatina': 'creatine',
-  'colageno': 'collagen',
-  'colágeno': 'collagen',
-  'proteina': 'protein',
-  'proteína': 'protein',
-  'whey': 'whey protein',
-  'suero de leche': 'whey protein',
-  'bcaa': 'bcaa',
-  'aminoacidos ramificados': 'bcaa',
-  'aminoácidos ramificados': 'bcaa',
-  'beta alanina': 'beta-alanine',
-  'beta-alanina': 'beta-alanine',
-  'hmb': 'hmb',
-  'citrulina': 'citrulline',
-  'citrulline': 'citrulline',
-  'arginina': 'arginine',
-  'arginine': 'arginine',
+  'creatina': 'Creatine',
+  'colageno': 'Collagen',
+  'colágeno': 'Collagen',
+  'proteina': 'Protein',
+  'proteína': 'Protein',
+  'whey': 'Whey Protein',
+  'suero de leche': 'Whey Protein',
+  'bcaa': 'BCAA',
+  'aminoacidos ramificados': 'BCAA',
+  'aminoácidos ramificados': 'BCAA',
+  'beta alanina': 'Beta-Alanine',
+  'beta-alanina': 'Beta-Alanine',
+  'hmb': 'HMB',
+  'citrulina': 'Citrulline',
+  'citrulline': 'Citrulline',
+  'arginina': 'Arginine',
+  'arginine': 'Arginine',
 };
 
 // Chemical forms mapping (for specific compound searches)
 const CHEMICAL_FORMS: Record<string, { base: string; form: string }> = {
-  'magnesium glycinate': { base: 'magnesium', form: 'glycinate' },
-  'magnesium citrate': { base: 'magnesium', form: 'citrate' },
-  'magnesium oxide': { base: 'magnesium', form: 'oxide' },
-  'magnesium malate': { base: 'magnesium', form: 'malate' },
-  'magnesium threonate': { base: 'magnesium', form: 'threonate' },
-  'zinc picolinate': { base: 'zinc', form: 'picolinate' },
-  'zinc gluconate': { base: 'zinc', form: 'gluconate' },
-  'zinc citrate': { base: 'zinc', form: 'citrate' },
+  'Magnesium Glycinate': { base: 'Magnesium', form: 'Glycinate' },
+  'Magnesium Citrate': { base: 'Magnesium', form: 'Citrate' },
+  'Magnesium Oxide': { base: 'Magnesium', form: 'Oxide' },
+  'Magnesium Malate': { base: 'Magnesium', form: 'Malate' },
+  'Magnesium Threonate': { base: 'Magnesium', form: 'Threonate' },
+  'Zinc Picolinate': { base: 'Zinc', form: 'Picolinate' },
+  'Zinc Gluconate': { base: 'Zinc', form: 'Gluconate' },
+  'Zinc Citrate': { base: 'Zinc', form: 'Citrate' },
 };
 
 // Spanish to English common terms
 const SPANISH_TO_ENGLISH: Record<string, string> = {
-  'magnesio': 'magnesium',
-  'zinc': 'zinc',
-  'cinc': 'zinc',
-  'hierro': 'iron',
-  'calcio': 'calcium',
-  'potasio': 'potassium',
-  'selenio': 'selenium',
-  'cromo': 'chromium',
-  'cobre': 'copper',
-  'manganeso': 'manganese',
-  'yodo': 'iodine',
-  'vitamina': 'vitamin',
-  'proteina': 'protein',
-  'proteína': 'protein',
-  'aminoacido': 'amino acid',
-  'aminoácido': 'amino acid',
-  'acido': 'acid',
-  'ácido': 'acid',
-  'aceite': 'oil',
-  'extracto': 'extract',
-  'polvo': 'powder',
-  'capsula': 'capsule',
-  'cápsula': 'capsule',
-  'tableta': 'tablet',
+  'magnesio': 'Magnesium',
+  'zinc': 'Zinc',
+  'cinc': 'Zinc',
+  'hierro': 'Iron',
+  'calcio': 'Calcium',
+  'potasio': 'Potassium',
+  'selenio': 'Selenium',
+  'cromo': 'Chromium',
+  'cobre': 'Copper',
+  'manganeso': 'Manganese',
+  'yodo': 'Iodine',
+  'vitamina': 'Vitamin',
+  'proteina': 'Protein',
+  'proteína': 'Protein',
+  'aminoacido': 'Amino Acid',
+  'aminoácido': 'Amino Acid',
+  'acido': 'Acid',
+  'ácido': 'Acid',
+  'aceite': 'Oil',
+  'extracto': 'Extract',
+  'polvo': 'Powder',
+  'capsula': 'Capsule',
+  'cápsula': 'Capsule',
+  'tableta': 'Tablet',
 };
 
 export interface NormalizedQuery {
@@ -197,73 +200,121 @@ export interface NormalizedQuery {
 }
 
 /**
+ * Clean and normalize a query string for matching
+ * - Removes extra spaces
+ * - Converts to lowercase
+ * - Removes accents
+ * - Trims whitespace
+ */
+function cleanQuery(query: string): string {
+  return query
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ') // Multiple spaces → single space
+    .normalize('NFD') // Decompose accented characters
+    .replace(/[\u0300-\u036f]/g, ''); // Remove accent marks
+}
+
+/**
  * Normalize a search query by correcting typos and translating to English
+ * Handles:
+ * - Case insensitivity (VitAMin D → Vitamin D)
+ * - Extra spaces (vitamin  d → Vitamin D)
+ * - Accents (vitamína d → Vitamin D)
+ * - Typos via fuzzy matching (vitamina d → Vitamin D)
+ * - Spanish→English translation (magnesio → Magnesium)
  */
 export function normalizeQuery(query: string): NormalizedQuery {
   const original = query.trim();
-  const lowerQuery = original.toLowerCase();
+  const cleanedQuery = cleanQuery(original);
   const corrections: string[] = [];
   const suggestions: string[] = [];
   
-  // Step 1: Check for exact typo corrections
-  if (TYPO_CORRECTIONS[lowerQuery]) {
-    const corrected = TYPO_CORRECTIONS[lowerQuery];
-    corrections.push(`Typo corrected: "${original}" → "${corrected}"`);
-    return {
-      original,
-      normalized: corrected,
-      confidence: 1.0,
-      corrections,
-      suggestions,
-    };
+  // Step 1: Check for exact match in TYPO_CORRECTIONS (case-insensitive, accent-insensitive)
+  for (const [key, value] of Object.entries(TYPO_CORRECTIONS)) {
+    if (cleanQuery(key) === cleanedQuery) {
+      corrections.push(`Exact match: "${original}" → "${value}"`);
+      return {
+        original,
+        normalized: value,
+        confidence: 1.0,
+        corrections,
+        suggestions,
+      };
+    }
   }
   
-  // Step 2: Check for partial matches (word-by-word)
-  const words = lowerQuery.split(/\s+/);
+  // Step 2: Check for partial matches (word-by-word translation)
+  const words = cleanedQuery.split(/\s+/);
   const translatedWords = words.map(word => {
-    // Check typo corrections first
-    if (TYPO_CORRECTIONS[word]) {
-      corrections.push(`Word corrected: "${word}" → "${TYPO_CORRECTIONS[word]}"`);
-      return TYPO_CORRECTIONS[word];
+    // Check typo corrections first (case-insensitive)
+    for (const [key, value] of Object.entries(TYPO_CORRECTIONS)) {
+      if (cleanQuery(key) === word) {
+        corrections.push(`Word corrected: "${word}" → "${value}"`);
+        return value;
+      }
     }
-    // Then check Spanish→English
-    if (SPANISH_TO_ENGLISH[word]) {
-      corrections.push(`Translated: "${word}" → "${SPANISH_TO_ENGLISH[word]}"`);
-      return SPANISH_TO_ENGLISH[word];
+    
+    // Then check Spanish→English (case-insensitive)
+    for (const [key, value] of Object.entries(SPANISH_TO_ENGLISH)) {
+      if (cleanQuery(key) === word) {
+        corrections.push(`Translated: "${word}" → "${value}"`);
+        return value;
+      }
     }
-    return word;
+    
+    // Keep original word if no match (capitalize first letter)
+    return word.charAt(0).toUpperCase() + word.slice(1);
   });
   
   const partiallyNormalized = translatedWords.join(' ');
   
-  // Step 3: Check if the partially normalized query matches a known compound
-  if (TYPO_CORRECTIONS[partiallyNormalized]) {
-    const final = TYPO_CORRECTIONS[partiallyNormalized];
-    corrections.push(`Compound matched: "${partiallyNormalized}" → "${final}"`);
-    return {
-      original,
-      normalized: final,
-      confidence: 0.9,
-      corrections,
-      suggestions,
-    };
+  // Step 3: Check if the partially normalized query matches a known compound (case-insensitive)
+  for (const [key, value] of Object.entries(TYPO_CORRECTIONS)) {
+    if (cleanQuery(key) === cleanQuery(partiallyNormalized)) {
+      corrections.push(`Compound matched: "${partiallyNormalized}" → "${value}"`);
+      return {
+        original,
+        normalized: value,
+        confidence: 0.9,
+        corrections,
+        suggestions,
+      };
+    }
   }
   
-  // Step 4: Check for chemical forms
-  if (CHEMICAL_FORMS[partiallyNormalized]) {
-    const { base, form } = CHEMICAL_FORMS[partiallyNormalized];
-    suggestions.push(`Searching for ${form} form of ${base}`);
-    suggestions.push(`If no results, will fallback to ${base} (all forms)`);
-    return {
-      original,
-      normalized: partiallyNormalized,
-      confidence: 0.95,
-      corrections,
-      suggestions,
-    };
+  // Step 4: Check for chemical forms (case-insensitive)
+  for (const [key, value] of Object.entries(CHEMICAL_FORMS)) {
+    if (cleanQuery(key) === cleanQuery(partiallyNormalized)) {
+      const { base, form } = value;
+      suggestions.push(`Searching for ${form} form of ${base}`);
+      suggestions.push(`If no results, will fallback to ${base} (all forms)`);
+      return {
+        original,
+        normalized: key, // Use the properly capitalized version from dictionary
+        confidence: 0.95,
+        corrections,
+        suggestions,
+      };
+    }
   }
   
-  // Step 5: If we made any corrections, return the partially normalized version
+  // Step 5: Try fuzzy matching if no exact match found
+  if (corrections.length === 0) {
+    const fuzzyMatch = findFuzzyMatch(cleanedQuery);
+    if (fuzzyMatch) {
+      corrections.push(`Fuzzy match: "${original}" → "${fuzzyMatch.match}" (distance: ${fuzzyMatch.distance})`);
+      return {
+        original,
+        normalized: fuzzyMatch.match,
+        confidence: 0.7 - (fuzzyMatch.distance * 0.1), // Lower confidence for higher distance
+        corrections,
+        suggestions: [`Did you mean "${fuzzyMatch.match}"?`],
+      };
+    }
+  }
+  
+  // Step 6: If we made any corrections, return the partially normalized version
   if (corrections.length > 0) {
     return {
       original,
@@ -274,25 +325,88 @@ export function normalizeQuery(query: string): NormalizedQuery {
     };
   }
   
-  // Step 6: No corrections needed
+  // Step 7: No corrections needed - capitalize first letter of each word
+  const capitalizedQuery = original
+    .trim()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+  
   return {
     original,
-    normalized: original,
+    normalized: capitalizedQuery,
     confidence: 0.5, // Low confidence - might be a new/unknown term
     corrections: [],
-    suggestions: ['No corrections applied - using original query'],
+    suggestions: ['No corrections applied - using original query with capitalization'],
   };
 }
 
 /**
+ * Simple Levenshtein distance calculation
+ * Measures the minimum number of single-character edits needed to change one word into another
+ */
+function levenshteinDistance(a: string, b: string): number {
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1,     // insertion
+          matrix[i - 1][j] + 1      // deletion
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+/**
+ * Find fuzzy match in TYPO_CORRECTIONS dictionary
+ * Returns the best match within threshold (max distance of 3)
+ */
+function findFuzzyMatch(query: string): { match: string; distance: number } | null {
+  const threshold = 3;
+  let bestMatch: { match: string; distance: number } | null = null;
+  
+  for (const [key, value] of Object.entries(TYPO_CORRECTIONS)) {
+    const cleanedKey = cleanQuery(key);
+    const distance = levenshteinDistance(query, cleanedKey);
+    
+    if (distance <= threshold && distance > 0) {
+      if (!bestMatch || distance < bestMatch.distance) {
+        bestMatch = { match: value, distance };
+      }
+    }
+  }
+  
+  return bestMatch;
+}
+
+/**
  * Extract base compound from a chemical form query
- * Example: "magnesium glycinate" → "magnesium"
+ * Example: "Magnesium Glycinate" → "Magnesium"
  */
 export function extractBaseCompound(query: string): string | null {
-  const normalized = query.toLowerCase().trim();
+  const normalized = query.trim();
   
-  if (CHEMICAL_FORMS[normalized]) {
-    return CHEMICAL_FORMS[normalized].base;
+  // Check if it's a known chemical form (case-insensitive lookup)
+  for (const [key, value] of Object.entries(CHEMICAL_FORMS)) {
+    if (key.toLowerCase() === normalized.toLowerCase()) {
+      return value.base;
+    }
   }
   
   // Try to extract base from common patterns
@@ -305,8 +419,14 @@ export function extractBaseCompound(query: string): string | null {
     const match = normalized.match(pattern);
     if (match) {
       const potentialBase = match[2] || match[1];
-      // Translate if Spanish
-      return SPANISH_TO_ENGLISH[potentialBase] || potentialBase;
+      // Translate if Spanish (case-insensitive lookup)
+      for (const [spanishKey, englishValue] of Object.entries(SPANISH_TO_ENGLISH)) {
+        if (spanishKey.toLowerCase() === potentialBase.toLowerCase()) {
+          return englishValue;
+        }
+      }
+      // Capitalize first letter if not found in dictionary
+      return potentialBase.charAt(0).toUpperCase() + potentialBase.slice(1).toLowerCase();
     }
   }
   
