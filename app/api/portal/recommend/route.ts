@@ -308,19 +308,7 @@ export async function POST(request: NextRequest) {
     // CRITICAL VALIDATION: Ensure we have real scientific data
     const hasRealData = metadata.hasRealData === true && (metadata.studiesUsed || 0) > 0;
 
-    console.log(
-      JSON.stringify({
-        event: 'RECOMMEND_VALIDATION_CHECK',
-        requestId,
-        category: sanitizedCategory,
-        originalCategory: category,
-        hasRealData,
-        studiesUsed: metadata.studiesUsed || 0,
-        metadataHasRealData: metadata.hasRealData,
-        metadataKeys: Object.keys(metadata),
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     if (!hasRealData) {
       console.error(
