@@ -13,9 +13,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { expandAbbreviation, detectAbbreviation, generateSearchVariations } from '@/lib/services/abbreviation-expander';
+import { studiesCache, enrichmentCache } from '@/lib/cache/simple-cache';
+import { TimeoutManager, TIMEOUTS } from '@/lib/resilience/timeout-manager';
+import { globalRateLimiter } from '@/lib/resilience/rate-limiter';
 
 // Configure max duration for this route (Bedrock needs time)
-export const maxDuration = 120; // 120 seconds for content enrichment
+export const maxDuration = 100; // 100 seconds (reduced from 120 for safety)
 export const dynamic = 'force-dynamic'; // Disable static optimization
 
 // Lambda endpoints
@@ -40,6 +43,9 @@ export async function POST(request: NextRequest) {
   const correlationId = request.headers.get('X-Request-ID') || requestId;
   let supplementName = 'unknown';
 
+  // Initialize timeout manager
+  const timeoutManager = new TimeoutManager(TIMEOUTS.TOTAL_REQUEST);
+
   try {
     const body: EnrichRequest = await request.json();
     supplementName = body.supplementName || 'unknown';
@@ -47,6 +53,41 @@ export async function POST(request: NextRequest) {
     const jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     console.log(`🔖 [Job ${jobId}] Enrich endpoint - Supplement: "${supplementName}"`);
+
+    // 1. RATE LIMITING
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     request.headers.get('x-real-ip') || 
+                     'unknown';
+    
+    const rateLimit = globalRateLimiter.check(clientIp);
+    
+    if (!rateLimit.allowed) {
+      console.warn(
+        JSON.stringify({
+          event: 'RATE_LIMIT_EXCEEDED',
+          requestId,
+          clientIp,
+          resetAt: new Date(rateLimit.resetAt).toISOString(),
+          timestamp: new Date().toISOString(),
+        })
+      );
+      
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'rate_limit_exceeded',
+          message: 'Demasiadas solicitudes. Por favor, espera un momento.',
+          resetAt: rateLimit.resetAt,
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+            'X-RateLimit-Reset': rateLimit.resetAt.toString(),
+          },
+        }
+      );
+    }
 
     // Validate request
     if (!body.supplementName) {
@@ -57,6 +98,36 @@ export async function POST(request: NextRequest) {
     }
 
     const { category, forceRefresh, rctOnly, yearFrom, yearTo } = body;
+
+    // 2. CHECK CACHE (unless forceRefresh)
+    if (!forceRefresh) {
+      const cacheKey = `enrich:${supplementName.toLowerCase()}:${category || 'general'}`;
+      const cached = enrichmentCache.get(cacheKey);
+      
+      if (cached) {
+        console.log(
+          JSON.stringify({
+            event: 'CACHE_HIT',
+            requestId,
+            correlationId,
+            supplementName,
+            cacheKey,
+            timestamp: new Date().toISOString(),
+          })
+        );
+        
+        return NextResponse.json({
+          ...cached,
+          metadata: {
+            ...cached.metadata,
+            fromCache: true,
+            cacheHit: true,
+            requestId,
+            correlationId,
+          },
+        });
+      }
+    }
 
     // OPTIMIZATION: Reduce studies for extremely popular supplements to avoid timeout
     // These supplements have 20K+ studies and cause Lambda to timeout on Vercel (10s limit)
@@ -105,6 +176,7 @@ export async function POST(request: NextRequest) {
         requestId,
         correlationId,
         originalQuery: supplementName,
+        budgetRemaining: timeoutManager.getRemainingBudget(),
         timestamp: new Date().toISOString(),
       })
     );
@@ -191,15 +263,12 @@ export async function POST(request: NextRequest) {
       );
 
       try {
-        // Add timeout to prevent slow LLM calls from blocking the entire request
-        // Increased from 8s to 15s to account for production latency
-        const LLM_EXPANSION_TIMEOUT = 15000; // 15 seconds max
-        const expansion = await Promise.race([
-          expandAbbreviation(supplementName),
-          new Promise<any>((_, reject) => 
-            setTimeout(() => reject(new Error('LLM expansion timeout after 15s')), LLM_EXPANSION_TIMEOUT)
-          ),
-        ]);
+        // Use timeout manager for translation
+        const expansion = await timeoutManager.executeWithBudget(
+          () => expandAbbreviation(supplementName),
+          TIMEOUTS.TRANSLATION,
+          'translation'
+        );
 
         console.log(
           JSON.stringify({
@@ -327,9 +396,33 @@ export async function POST(request: NextRequest) {
         translatedQuery: searchTerm,
         searchTerm,
         maxStudies: optimizedMaxStudies,
+        budgetRemaining: timeoutManager.getRemainingBudget(),
         timestamp: new Date().toISOString(),
       })
     );
+
+    // Check studies cache
+    const studiesCacheKey = `studies:${searchTerm.toLowerCase()}:${JSON.stringify({ rctOnly, yearFrom, yearTo })}`;
+    let studies: any[] = [];
+    let studiesFromCache = false;
+
+    if (!forceRefresh) {
+      const cachedStudies = studiesCache.get(studiesCacheKey);
+      if (cachedStudies) {
+        studies = cachedStudies;
+        studiesFromCache = true;
+        console.log(
+          JSON.stringify({
+            event: 'STUDIES_CACHE_HIT',
+            requestId,
+            correlationId,
+            searchTerm,
+            studiesCount: studies.length,
+            timestamp: new Date().toISOString(),
+          })
+        );
+      }
+    }
 
     // Helper to fetch studies with specific filters
     const fetchStudies = async (term: string, filters: any, attempt: number) => {
@@ -348,20 +441,25 @@ export async function POST(request: NextRequest) {
       );
 
       try {
-        const response = await fetch(STUDIES_API_URL, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'X-Request-ID': correlationId,
-            'X-Job-ID': jobId,
-          },
-          body: JSON.stringify({
-            supplementName: term,
-            maxResults: Math.min(optimizedMaxStudies, 10),
-            filters,
-            jobId,
+        // Use timeout manager for studies fetch
+        const response = await timeoutManager.executeWithBudget(
+          () => fetch(STUDIES_API_URL, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Request-ID': correlationId,
+              'X-Job-ID': jobId,
+            },
+            body: JSON.stringify({
+              supplementName: term,
+              maxResults: Math.min(optimizedMaxStudies, 10),
+              filters,
+              jobId,
+            }),
           }),
-        });
+          TIMEOUTS.STUDIES_FETCH,
+          'studies-fetch'
+        );
 
         const fetchDuration = Date.now() - fetchStartTime;
         const responseData = await response.json().catch(() => ({ success: false }));
@@ -400,43 +498,45 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    // Attempt 1: Strict filters (High quality evidence)
-    const strictFilters = {
-      rctOnly: rctOnly || false,
-      yearFrom: yearFrom || 2010,
-      yearTo: yearTo,
-      humanStudiesOnly: true,
-      studyTypes: [
-        'randomized controlled trial',
-        'meta-analysis',
-        'systematic review',
-      ],
-    };
-
+    // Only fetch if not from cache
     let studiesResponse;
     let studiesData;
-    let studies: any[] = [];
 
-    try {
-      const result = await fetchStudies(searchTerm, strictFilters, 1);
-      studiesResponse = result.response;
-      studiesData = result.data;
-      studies = studiesData.success ? studiesData.data?.studies || [] : [];
-    } catch (error: any) {
-      console.error(
-        JSON.stringify({
-          event: 'STUDIES_FETCH_ATTEMPT_FAILED',
-          requestId,
-          correlationId,
-          attempt: 1,
-          error: error.message,
-          timestamp: new Date().toISOString(),
-        })
-      );
+    if (!studiesFromCache) {
+      // Attempt 1: Strict filters (High quality evidence)
+      const strictFilters = {
+        rctOnly: rctOnly || false,
+        yearFrom: yearFrom || 2010,
+        yearTo: yearTo,
+        humanStudiesOnly: true,
+        studyTypes: [
+          'randomized controlled trial',
+          'meta-analysis',
+          'systematic review',
+        ],
+      };
+
+      try {
+        const result = await fetchStudies(searchTerm, strictFilters, 1);
+        studiesResponse = result.response;
+        studiesData = result.data;
+        studies = studiesData.success ? studiesData.data?.studies || [] : [];
+      } catch (error: any) {
+        console.error(
+          JSON.stringify({
+            event: 'STUDIES_FETCH_ATTEMPT_FAILED',
+            requestId,
+            correlationId,
+            attempt: 1,
+            error: error.message,
+            timestamp: new Date().toISOString(),
+          })
+        );
+      }
     }
 
-    // Attempt 2: Relaxed filters (If no strict studies found)
-    if (studies.length === 0) {
+    // Attempt 2: Relaxed filters (If no strict studies found and not from cache)
+    if (studies.length === 0 && !studiesFromCache) {
       const relaxedFilters = {
         rctOnly: false,
         yearFrom: 2000, // Look back further
@@ -477,9 +577,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Attempt 3: Ultra-relaxed filters (If still no studies)
+    // Attempt 3: Ultra-relaxed filters (If still no studies and not from cache)
     // Sometimes "humanStudiesOnly" filter in PubMed is imperfect or studies are very new
-    if (studies.length === 0) {
+    if (studies.length === 0 && !studiesFromCache) {
       const ultraRelaxedFilters = {
         rctOnly: false,
         yearFrom: 1990,
@@ -519,8 +619,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // STEP 1.5: If no studies found, generate and try search variations
-    if (studies.length === 0) {
+    // STEP 1.5: If no studies found, generate and try search variations (not from cache)
+    if (studies.length === 0 && !studiesFromCache) {
       console.log(
         JSON.stringify({
           event: 'STUDIES_FETCH_VARIATIONS_START',
@@ -736,6 +836,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Cache studies for future requests
+    if (!studiesFromCache && studies.length > 0) {
+      studiesCache.set(studiesCacheKey, studies);
+      console.log(
+        JSON.stringify({
+          event: 'STUDIES_CACHED',
+          requestId,
+          correlationId,
+          searchTerm,
+          studiesCount: studies.length,
+          timestamp: new Date().toISOString(),
+        })
+      );
+    }
+
     // Determine if we used a variation
     const baseTerm = expansionMetadata?.expanded || supplementName;
     const usedVariationForLogging = searchTerm !== supplementName && searchTerm !== baseTerm;
@@ -745,25 +860,36 @@ export async function POST(request: NextRequest) {
     // STEP 2: Pass real studies to content-enricher
     const enrichStartTime = Date.now();
     
+    console.log(
+      JSON.stringify({
+        event: 'ENRICHMENT_START',
+        requestId,
+        correlationId,
+        budgetRemaining: timeoutManager.getRemainingBudget(),
+        timestamp: new Date().toISOString(),
+      })
+    );
 
-    const enrichResponse = await fetch(ENRICHER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Request-ID': correlationId,
-        'X-Job-ID': jobId,
-      },
-      body: JSON.stringify({
-        supplementId: supplementName,
-        category: category || 'general',
-        forceRefresh: forceRefresh || false,
-        studies, // CRITICAL: Pass real PubMed studies to Claude
-        jobId,
+    const enrichResponse = await timeoutManager.executeWithBudget(
+      () => fetch(ENRICHER_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-ID': correlationId,
+          'X-Job-ID': jobId,
+        },
+        body: JSON.stringify({
+          supplementId: supplementName,
+          category: category || 'general',
+          forceRefresh: forceRefresh || false,
+          studies, // CRITICAL: Pass real PubMed studies to Claude
+          ranking: rankedData, // NEW: Pass ranking to save in cache
+          jobId,
+        }),
       }),
-      // Increase timeout to 60s for complex supplements (schisandra, rhodiola, etc.)
-      // Default fetch timeout is ~30s which causes timeouts for supplements with 10 studies
-      signal: AbortSignal.timeout(60000), // 60 seconds
-    });
+      TIMEOUTS.ENRICHMENT,
+      'enrichment'
+    );
 
     const enrichDuration = Date.now() - enrichStartTime;
 
@@ -797,8 +923,6 @@ export async function POST(request: NextRequest) {
 
     const enrichData = await enrichResponse.json();
 
-    
-
     const duration = Date.now() - startTime;
 
     // Determine if we used a variation (reuse baseTerm from earlier)
@@ -809,23 +933,8 @@ export async function POST(request: NextRequest) {
     // studiesData comes from the studies-fetcher lambda response
     const rankedData = studiesData?.data?.ranked || null;
     
-    console.log(
-      JSON.stringify({
-        event: 'RANKING_DATA_EXTRACTED',
-        requestId,
-        correlationId,
-        hasStudiesData: !!studiesData,
-        hasRankedData: !!rankedData,
-        positiveCount: rankedData?.positive?.length || 0,
-        negativeCount: rankedData?.negative?.length || 0,
-        consensus: rankedData?.metadata?.consensus || null,
-        timestamp: new Date().toISOString(),
-      })
-    );
-    
-    // DUAL RESPONSE PATTERN: Include both enriched content AND ranked studies
-    // This allows frontend to show both independently without modifying content-enricher
-    return NextResponse.json({
+    // Build response
+    const response = {
       ...enrichData,
       data: {
         ...enrichData.data,
@@ -849,12 +958,29 @@ export async function POST(request: NextRequest) {
         translatedQuery: finalBaseTerm,
         finalSearchTerm: searchTerm,
         usedVariation,
+        studiesFromCache,
         ...(expansionMetadata ? { expansion: expansionMetadata } : {}),
         // Ranking metadata for quick access
         hasRanking: !!rankedData,
         rankingMetadata: rankedData?.metadata || null,
       },
-    });
+    };
+
+    // Cache enrichment result
+    const cacheKey = `enrich:${supplementName.toLowerCase()}:${category || 'general'}`;
+    enrichmentCache.set(cacheKey, response);
+    
+    console.log(
+      JSON.stringify({
+        event: 'ENRICHMENT_CACHED',
+        requestId,
+        correlationId,
+        cacheKey,
+        timestamp: new Date().toISOString(),
+      })
+    );
+    
+    return NextResponse.json(response);
   } catch (error: any) {
     const duration = Date.now() - startTime;
     console.error(

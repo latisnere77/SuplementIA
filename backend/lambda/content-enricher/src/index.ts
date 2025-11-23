@@ -63,7 +63,7 @@ export async function handler(
       return createErrorResponse(400, 'Missing request body or query parameters', requestId);
     }
 
-    const { supplementId, category, forceRefresh, studies, contentType = 'standard' } = request;
+    const { supplementId, category, forceRefresh, studies, ranking, contentType = 'standard' } = request;
 
     // Validate supplementId
     if (!supplementId || supplementId.trim().length === 0) {
@@ -242,9 +242,17 @@ export async function handler(
 
     enrichedContent = content;
 
-    // Save to cache (await to ensure it completes before Lambda freezes)
+    // Save to cache with ranking metadata (await to ensure it completes before Lambda freezes)
     try {
-      await saveToCacheAsync(supplementId, enrichedContent);
+      const cacheMetadata = ranking ? {
+        studies: {
+          ranked: ranking,
+          all: studies || [],
+          total: studies?.length || 0,
+        },
+      } : undefined;
+      
+      await saveToCacheAsync(supplementId, enrichedContent, cacheMetadata);
     } catch (err) {
       console.error('Failed to save to cache (non-fatal):', err);
     }

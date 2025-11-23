@@ -16,7 +16,8 @@ const CACHE_TTL_DAYS = 7; // Cache expires after 7 days
  */
 export async function saveToCacheAsync(
   supplementId: string,
-  data: EnrichedContent | ExamineStyleContent
+  data: EnrichedContent | ExamineStyleContent,
+  metadata?: any
 ): Promise<void> {
   try {
     const ttl = Math.floor(Date.now() / 1000) + (CACHE_TTL_DAYS * 24 * 60 * 60);
@@ -26,6 +27,8 @@ export async function saveToCacheAsync(
         operation: 'CacheSave',
         supplementId,
         table: TABLE_NAME,
+        hasMetadata: !!metadata,
+        hasRanking: !!metadata?.studies?.ranked,
       })
     );
 
@@ -35,6 +38,7 @@ export async function saveToCacheAsync(
         Item: {
           supplementId,
           data,
+          ...(metadata ? { metadata } : {}),
           createdAt: new Date().toISOString(),
           ttl,
           version: '1.0.0',
@@ -46,6 +50,7 @@ export async function saveToCacheAsync(
       JSON.stringify({
         operation: 'CacheSaveSuccess',
         supplementId,
+        hasRanking: !!metadata?.studies?.ranked,
       })
     );
   } catch (error: any) {

@@ -23,6 +23,7 @@ export interface EnrichmentRequest {
   category?: string;
   forceRefresh?: boolean;
   studies?: PubMedStudy[]; // Real PubMed studies from studies-fetcher
+  ranking?: any; // NEW: Intelligent ranking from studies-fetcher
   contentType?: 'standard' | 'examine-style'; // NEW: Content format type
 }
 
