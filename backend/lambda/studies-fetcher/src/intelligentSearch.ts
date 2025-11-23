@@ -146,13 +146,7 @@ export async function intelligentPubMedSearch(
     }
   }
 
-  console.log(JSON.stringify({
-    event: 'INTELLIGENT_SEARCH_COMPLETE',
-    supplementName,
-    totalStudies: allStudies.length,
-    uniquePMIDs: seenPMIDs.size,
-    timestamp: new Date().toISOString(),
-  }));
+  
 
   return allStudies;
 }

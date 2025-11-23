@@ -58,6 +58,14 @@ infrastructure/lambda/*/*.zip
 response.json
 deploy.log
 deployment-outputs.json
+test-search.html
+build-output*.log
+COMMIT-MESSAGE.txt
+
+# Temporary documentation (should be organized in docs/)
+*-TEMP.md
+*-WIP.md
+*-DRAFT.md
 
 # Ignore route config but not Next.js API routes
 route.config.ts

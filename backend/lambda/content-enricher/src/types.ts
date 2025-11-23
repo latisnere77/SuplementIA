@@ -23,6 +23,7 @@ export interface EnrichmentRequest {
   category?: string;
   forceRefresh?: boolean;
   studies?: PubMedStudy[]; // Real PubMed studies from studies-fetcher
+  contentType?: 'standard' | 'examine-style'; // NEW: Content format type
 }
 
 export interface EnrichedContent {
@@ -157,7 +158,7 @@ export interface ConverseContentBlock {
 
 export interface EnrichmentResponse {
   success: boolean;
-  data?: EnrichedContent;
+  data?: EnrichedContent | ExamineStyleContent; // Support both formats
   metadata?: {
     supplementId: string;
     generatedAt: string;
@@ -168,7 +169,67 @@ export interface EnrichmentResponse {
     studiesUsed?: number;
     requestId?: string;
     correlationId?: string;
+    contentType?: 'standard' | 'examine-style'; // NEW: Track content type
   };
   error?: string;
   message?: string;
+}
+
+/**
+ * Examine.com-style content structure
+ */
+export interface ExamineStyleContent {
+  overview: {
+    whatIsIt: string;
+    functions: string[];
+    sources: string[];
+  };
+  benefitsByCondition: BenefitByCondition[];
+  dosage: ExamineDosage;
+  safety: ExamineSafety;
+  mechanisms: ExamineMechanism[];
+}
+
+export interface BenefitByCondition {
+  condition: string;
+  effect: 'Small' | 'Moderate' | 'Large' | 'No effect';
+  quantitativeData: string;
+  evidence: string;
+  context?: string;
+  studyTypes: string[];
+}
+
+export interface ExamineDosage {
+  effectiveDose: string;
+  commonDose: string;
+  timing: string;
+  forms: Array<{
+    name: string;
+    bioavailability?: string;
+    notes?: string;
+  }>;
+  notes?: string;
+}
+
+export interface ExamineSafety {
+  sideEffects: {
+    common: string[];
+    rare: string[];
+    severity: string;
+  };
+  interactions: {
+    medications: Array<{
+      medication: string;
+      severity: 'Mild' | 'Moderate' | 'Severe';
+      description: string;
+    }>;
+  };
+  contraindications: string[];
+  pregnancyLactation?: string;
+}
+
+export interface ExamineMechanism {
+  name: string;
+  description: string;
+  evidenceLevel: 'strong' | 'moderate' | 'weak';
 }

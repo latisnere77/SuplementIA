@@ -39,9 +39,24 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'fish oil': 'Omega-3',
   'aceite de pescado': 'Omega-3',
 
-  // Magnesium
+  // Magnesium and forms
   'magnesio': 'Magnesium',
+  'magenesio': 'Magnesium', // common typo
   'mg': 'Magnesium',
+  'glicinato de magnesio': 'Magnesium Glycinate',
+  'glicinato de magenesio': 'Magnesium Glycinate', // typo
+  'magnesium glycinate': 'Magnesium Glycinate',
+  'citrato de magnesio': 'Magnesium Citrate',
+  'citrato de magenesio': 'Magnesium Citrate', // typo
+  'magnesium citrate': 'Magnesium Citrate',
+  'oxido de magnesio': 'Magnesium Oxide',
+  'óxido de magnesio': 'Magnesium Oxide',
+  'magnesium oxide': 'Magnesium Oxide',
+  'malato de magnesio': 'Magnesium Malate',
+  'magnesium malate': 'Magnesium Malate',
+  'treonato de magnesio': 'Magnesium Threonate',
+  'magnesium threonate': 'Magnesium Threonate',
+  'magnesium l-threonate': 'Magnesium Threonate',
 
   // Zinc
   'zinc': 'Zinc',
@@ -128,6 +143,14 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'hierro': 'Iron',
   'potasio': 'Potassium',
 
+  // Superfoods and Algae
+  'espirulina': 'Spirulina',
+  'spirulina': 'Spirulina',
+  'alga espirulina': 'Spirulina',
+  'chlorella': 'Chlorella',
+  'clorella': 'Chlorella',
+  'alga chlorella': 'Chlorella',
+  
   // Herbal variations
   'ginseng': 'Ginseng',
   'ginsen': 'Ginseng',
@@ -138,6 +161,12 @@ const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
   'raiz de maca': 'Maca Root',
   'jengibre': 'Ginger',
   'ginger': 'Ginger',
+  'ginkgo': 'Ginkgo Biloba',
+  'ginkgo biloba': 'Ginkgo Biloba',
+  'saw palmetto': 'Saw Palmetto',
+  'palma enana': 'Saw Palmetto',
+  'tribulus': 'Tribulus Terrestris',
+  'tribulus terrestris': 'Tribulus Terrestris',
 
   // ========== CARNITINA / L-CARNITINE VARIATIONS (ADDED 2025-11-21) ==========
   // Spanish variations

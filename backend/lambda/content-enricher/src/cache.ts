@@ -4,7 +4,7 @@
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
-import { EnrichedContent } from './types';
+import { EnrichedContent, ExamineStyleContent } from './types';
 
 const dynamoClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -16,7 +16,7 @@ const CACHE_TTL_DAYS = 7; // Cache expires after 7 days
  */
 export async function saveToCacheAsync(
   supplementId: string,
-  data: EnrichedContent
+  data: EnrichedContent | ExamineStyleContent
 ): Promise<void> {
   try {
     const ttl = Math.floor(Date.now() / 1000) + (CACHE_TTL_DAYS * 24 * 60 * 60);
@@ -59,7 +59,7 @@ export async function saveToCacheAsync(
  */
 export async function getFromCache(
   supplementId: string
-): Promise<EnrichedContent | null> {
+): Promise<EnrichedContent | ExamineStyleContent | null> {
   try {
     const result = await docClient.send(
       new GetCommand({
@@ -93,7 +93,7 @@ export async function getFromCache(
       })
     );
 
-    return result.Item.data as EnrichedContent;
+    return result.Item.data as EnrichedContent | ExamineStyleContent;
   } catch (error: any) {
     // Don't throw - cache read is optional
     console.warn('DynamoDB cache read error (non-fatal):', error.message);

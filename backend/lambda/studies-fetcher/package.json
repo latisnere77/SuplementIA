@@ -12,11 +12,17 @@
     "package:zip": "cd dist && zip -r ../studies-fetcher.zip . && cd ..",
     "deploy": "npm run package && aws lambda update-function-code --function-name suplementia-studies-fetcher --zip-file fileb://studies-fetcher.zip"
   },
-  "keywords": ["pubmed", "studies", "research", "scientific"],
+  "keywords": [
+    "pubmed",
+    "studies",
+    "research",
+    "scientific"
+  ],
   "author": "Suplementia",
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.490.0",
+    "@aws-sdk/client-secrets-manager": "^3.936.0",
     "aws-xray-sdk-core": "^3.5.3",
     "xml2js": "^0.6.2"
   },

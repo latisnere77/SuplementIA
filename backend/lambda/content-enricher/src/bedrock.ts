@@ -5,8 +5,9 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import AWSXRay from 'aws-xray-sdk-core';
 import { config } from './config';
-import { BedrockRequest, BedrockResponse, EnrichedContent, PubMedStudy } from './types';
+import { BedrockRequest, BedrockResponse, EnrichedContent, ExamineStyleContent, PubMedStudy } from './types';
 import { buildEnrichmentPrompt, validateEnrichedContent } from './prompts';
+import { buildExamineStylePrompt, validateExamineStyleContent } from './prompts-examine-style';
 import { retryWithBackoff } from './retry';
 
 // Initialize Bedrock client
@@ -23,9 +24,10 @@ const client = config.xrayEnabled
 export async function generateEnrichedContent(
   supplementId: string,
   category: string = 'general',
-  studies?: PubMedStudy[]
+  studies?: PubMedStudy[],
+  contentType: 'standard' | 'examine-style' = 'standard'
 ): Promise<{
-  content: EnrichedContent;
+  content: EnrichedContent | ExamineStyleContent;
   metadata: {
     tokensUsed: number;
     duration: number;
@@ -34,13 +36,16 @@ export async function generateEnrichedContent(
 }> {
   const startTime = Date.now();
 
-  // Build prompt with optional studies
-  const prompt = buildEnrichmentPrompt(supplementId, category, studies);
+  // Build prompt based on content type
+  const prompt = contentType === 'examine-style'
+    ? buildExamineStylePrompt(supplementId, category, studies)
+    : buildEnrichmentPrompt(supplementId, category, studies);
 
   console.log(
     JSON.stringify({
       operation: 'BuildPrompt',
       supplementId,
+      contentType,
       studiesProvided: studies?.length || 0,
       hasRealData: studies && studies.length > 0,
     })
@@ -279,7 +284,7 @@ export async function generateEnrichedContent(
   };
 
   // Parse JSON from Claude's response with enhanced error handling
-  let enrichedData: EnrichedContent;
+  let enrichedData: any;
 
   try {
     enrichedData = parseJSONWithFallback(contentText);
@@ -289,6 +294,7 @@ export async function generateEnrichedContent(
       JSON.stringify({
         event: 'JSON_PARSE_FAILED_ALL_STRATEGIES',
         supplementId,
+        contentType,
         error: parseError.message,
         responseLength: contentText.length,
         responsePreview: contentText.substring(0, 500),
@@ -303,8 +309,11 @@ export async function generateEnrichedContent(
     );
   }
 
-  // Validate structure
-  const validation = validateEnrichedContent(enrichedData);
+  // Validate structure based on content type
+  const validation = contentType === 'examine-style'
+    ? validateExamineStyleContent(enrichedData)
+    : validateEnrichedContent(enrichedData);
+    
   if (!validation.valid) {
     console.error('Validation errors:', validation.errors);
     throw new Error(`Invalid enriched content structure: ${validation.errors.join(', ')}`);

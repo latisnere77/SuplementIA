@@ -79,7 +79,7 @@ export async function GET(
   } catch (error: any) {
     // If timeout or error, assume still processing
     if (error.name === 'AbortError' || error.name === 'TimeoutError') {
-      console.log(`⏳ Still processing ${supplementName} - Job ${jobId} (timeout)`);
+      
       return NextResponse.json({
         success: true,
         status: 'processing',

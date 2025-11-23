@@ -35,6 +35,54 @@ npm install
 npm run dev
 ```
 
+## Documentation
+
+📚 **[Complete Documentation Index](docs/INDEX.md)**
+
+### Quick Links:
+- **[Examine-Style Format](docs/examine-style/EXAMINE-STYLE-INDEX.md)** - New quantitative content format
+- **[Intelligent Search](docs/intelligent-search/INTELLIGENT-SEARCH-INDEX.md)** - Advanced search system
+- **[Architecture Specs](.kiro/specs/modern-architecture/)** - System architecture
+- **[Fixes & Solutions](docs/fixes/)** - Troubleshooting guides
+
+## Project Structure
+
+```
+suplementia/
+├── app/                    # Next.js app directory
+├── components/             # React components
+├── lib/                    # Shared utilities
+├── backend/               # AWS Lambda functions
+│   └── lambda/
+│       ├── content-enricher/    # Content generation
+│       └── studies-fetcher/     # PubMed integration
+├── docs/                  # Documentation
+│   ├── examine-style/     # Examine-style format docs
+│   ├── intelligent-search/# Search system docs
+│   ├── fixes/            # Problem solutions
+│   └── archive/          # Historical docs
+└── scripts/              # Utility scripts
+```
+
 ## Deployment
 
-See `docs/PORTAL_SETUP.md` for deployment instructions.
+### Lambda Functions:
+```bash
+# Content Enricher
+cd backend/lambda/content-enricher
+npm run build
+./deploy.sh
+
+# Studies Fetcher
+cd backend/lambda/studies-fetcher
+npm run build
+./deploy.sh
+```
+
+### Frontend:
+```bash
+# Vercel deployment
+vercel --prod
+```
+
+See [docs/examine-style/EXAMINE-STYLE-READY-TO-DEPLOY.md](docs/examine-style/EXAMINE-STYLE-READY-TO-DEPLOY.md) for detailed deployment guide.

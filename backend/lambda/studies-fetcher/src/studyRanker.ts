@@ -126,14 +126,7 @@ export async function rankAndBalanceStudies(
     negative.length
   );
 
-  console.log(JSON.stringify({
-    event: 'RANKING_COMPLETE',
-    positive: topPositiveStudies.length,
-    negative: topNegativeStudies.length,
-    consensus,
-    confidenceScore,
-    timestamp: new Date().toISOString(),
-  }));
+  
 
   return {
     positive: topPositiveStudies,

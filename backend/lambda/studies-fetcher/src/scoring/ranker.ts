@@ -102,14 +102,7 @@ export async function rankStudies(
     neutral.length
   );
 
-  console.log(JSON.stringify({
-    event: 'RANKING_COMPLETE',
-    positive: topPositiveStudies.length,
-    negative: topNegativeStudies.length,
-    consensus: metadata.consensus,
-    confidence: metadata.confidenceScore,
-    timestamp: new Date().toISOString(),
-  }));
+  
 
   return {
     positive: topPositiveStudies,

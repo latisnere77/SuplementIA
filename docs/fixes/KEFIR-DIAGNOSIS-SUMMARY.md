@@ -133,3 +133,4 @@ Se identificaron y corrigieron múltiples problemas en el flujo de datos:
 
 Todas las correcciones están implementadas y documentadas. El sistema ahora preserva correctamente el metadata en todos los escenarios.
 
+

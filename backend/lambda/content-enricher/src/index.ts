@@ -63,7 +63,7 @@ export async function handler(
       return createErrorResponse(400, 'Missing request body or query parameters', requestId);
     }
 
-    const { supplementId, category, forceRefresh, studies } = request;
+    const { supplementId, category, forceRefresh, studies, contentType = 'standard' } = request;
 
     // Validate supplementId
     if (!supplementId || supplementId.trim().length === 0) {
@@ -106,6 +106,7 @@ export async function handler(
         correlationId,
         supplementId,
         category: category || 'general',
+        contentType: contentType || 'standard',
         forceRefresh: forceRefresh || false,
         studiesProvided: studiesCount,
         hasRealData: studiesCount > 0,
@@ -235,7 +236,8 @@ export async function handler(
       : await generateEnrichedContent(
           supplementId,
           category || 'general',
-          studies // Pass real PubMed studies to Claude
+          studies, // Pass real PubMed studies to Claude
+          contentType // Pass content type for format selection
         );
 
     enrichedContent = content;
@@ -249,36 +251,46 @@ export async function handler(
 
     const duration = Date.now() - startTime;
 
-    // Log success
-    console.log(
-      JSON.stringify({
-        event: 'CONTENT_ENRICH_SUCCESS',
-        requestId,
-        correlationId,
-        supplementId,
-        duration,
-        bedrockDuration: bedrockMetadata.duration,
-        tokensUsed: bedrockMetadata.tokensUsed,
-        studiesUsed: studiesCount,
-        hasRealData: studiesCount > 0,
-        mechanismsCount: enrichedContent.mechanisms?.length || 0,
-        worksForCount: enrichedContent.worksFor?.length || 0,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    // Log success (handle both content types)
+    const logData: any = {
+      event: 'CONTENT_ENRICH_SUCCESS',
+      requestId,
+      correlationId,
+      supplementId,
+      contentType,
+      duration,
+      bedrockDuration: bedrockMetadata.duration,
+      tokensUsed: bedrockMetadata.tokensUsed,
+      studiesUsed: studiesCount,
+      hasRealData: studiesCount > 0,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Add format-specific metrics
+    if (contentType === 'examine-style') {
+      const examineContent = enrichedContent as any;
+      logData.benefitsCount = examineContent.benefitsByCondition?.length || 0;
+      logData.mechanismsCount = examineContent.mechanisms?.length || 0;
+    } else {
+      const standardContent = enrichedContent as any;
+      logData.mechanismsCount = standardContent.mechanisms?.length || 0;
+      logData.worksForCount = standardContent.worksFor?.length || 0;
+    }
+
+    console.log(JSON.stringify(logData));
 
     // Add metadata to X-Ray
     if (subsegment) {
       subsegment.addAnnotation('success', true);
       subsegment.addAnnotation('studiesUsed', studiesCount);
+      subsegment.addAnnotation('contentType', contentType);
       subsegment.addMetadata('bedrock', {
         duration: bedrockMetadata.duration,
         tokensUsed: bedrockMetadata.tokensUsed,
       });
       subsegment.addMetadata('response', {
         duration,
-        mechanismsCount: enrichedContent.mechanisms?.length || 0,
-        worksForCount: enrichedContent.worksFor?.length || 0,
+        contentType,
         hasRealData: studiesCount > 0,
         studiesUsed: studiesCount,
       });

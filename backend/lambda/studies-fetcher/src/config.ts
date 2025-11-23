@@ -2,14 +2,52 @@
  * Configuration for Studies Fetcher
  */
 
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+
+let cachedApiKey: string | null = null;
+
+/**
+ * Load PubMed API key from AWS Secrets Manager
+ */
+async function loadPubMedApiKey(): Promise<string> {
+  if (cachedApiKey !== null) {
+    return cachedApiKey;
+  }
+
+  try {
+    const client = new SecretsManagerClient({ region: 'us-east-1' });
+    const command = new GetSecretValueCommand({
+      SecretId: 'suplementia/pubmed-api-key',
+    });
+    
+    const response = await client.send(command);
+    const secret = JSON.parse(response.SecretString || '{}');
+    cachedApiKey = secret.api_key || '';
+    
+    console.log('✅ PubMed API key loaded from Secrets Manager');
+    return cachedApiKey || '';
+  } catch (error) {
+    console.warn('⚠️  Failed to load PubMed API key from Secrets Manager:', error);
+    return '';
+  }
+}
+
 export const config = {
   // PubMed E-utilities
   pubmedBaseUrl: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
 
-  // API Key (optional but recommended for higher rate limits)
+  // API Key (loaded from Secrets Manager)
   // Without key: 3 requests/second
   // With key: 10 requests/second
-  pubmedApiKey: process.env.PUBMED_API_KEY || '',
+  get pubmedApiKey(): string {
+    return cachedApiKey || '';
+  },
+  set pubmedApiKey(value: string) {
+    cachedApiKey = value;
+  },
+  
+  // Function to load API key
+  loadApiKey: loadPubMedApiKey,
 
   // Default search parameters
   defaultMaxResults: parseInt(process.env.DEFAULT_MAX_RESULTS || '10'),

@@ -98,3 +98,4 @@
 2. **Optimizar Bedrock**: Reducir tiempo de procesamiento para evitar timeouts
 3. **Considerar procesamiento asíncrono**: Para requests que tardan más de 30 segundos
 
+

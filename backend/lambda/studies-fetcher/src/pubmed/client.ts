@@ -7,18 +7,43 @@ import { config } from '../config';
 
 export class PubMedClient {
   private lastRequestTime = 0;
-  private readonly minDelay: number;
+  private minDelay: number;
+  private apiKeyLoaded = false;
 
   constructor() {
-    // With API key: 10 req/sec (100ms delay)
-    // Without API key: 3 req/sec (334ms delay)
-    this.minDelay = config.pubmedApiKey ? 100 : 334;
+    // Initial delay (will be updated after loading API key)
+    this.minDelay = 334; // 3 req/sec without key
+  }
+
+  /**
+   * Initialize client (load API key from Secrets Manager)
+   */
+  async initialize(): Promise<void> {
+    if (this.apiKeyLoaded) return;
+
+    try {
+      const apiKey = await config.loadApiKey();
+      if (apiKey) {
+        config.pubmedApiKey = apiKey;
+        this.minDelay = 100; // 10 req/sec with key
+        console.log('✅ PubMed client initialized with API key');
+      } else {
+        console.log('⚠️  PubMed client initialized without API key (3 req/sec limit)');
+      }
+      this.apiKeyLoaded = true;
+    } catch (error) {
+      console.error('Failed to initialize PubMed client:', error);
+      this.apiKeyLoaded = true; // Don't retry
+    }
   }
 
   /**
    * Make a rate-limited request to PubMed
    */
   async request(url: string): Promise<Response> {
+    // Ensure API key is loaded
+    await this.initialize();
+    
     await this.throttle();
 
     const urlWithKey = this.addApiKey(url);
