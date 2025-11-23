@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
+import { normalizeQuery } from '@/lib/portal/query-normalization';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -102,6 +103,23 @@ export async function POST(request: NextRequest) {
     // Sanitize category
     const sanitizedCategory = sanitizeQuery(category);
 
+    // Normalize query (Spanish→English, typo correction)
+    const normalized = normalizeQuery(sanitizedCategory);
+    const searchTerm = normalized.normalized;
+
+    console.log(
+      JSON.stringify({
+        event: 'QUERY_NORMALIZED',
+        requestId,
+        original: category,
+        sanitized: sanitizedCategory,
+        normalized: searchTerm,
+        confidence: normalized.confidence,
+        corrections: normalized.corrections,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
     // Call our intelligent enrichment system with extended timeout
     const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich`;
     const enrichStartTime = Date.now();
@@ -110,7 +128,7 @@ export async function POST(request: NextRequest) {
       JSON.stringify({
         event: 'RECOMMEND_ENRICH_CALL_START',
         requestId,
-        category: sanitizedCategory,
+        category: searchTerm,
         originalCategory: category,
         enrichApiUrl: ENRICH_API_URL,
         timestamp: new Date().toISOString(),
@@ -125,8 +143,8 @@ export async function POST(request: NextRequest) {
         'X-Job-ID': jobId,
       },
       body: JSON.stringify({
-        supplementName: sanitizedCategory,
-        category: sanitizedCategory,
+        supplementName: searchTerm,
+        category: searchTerm,
         forceRefresh: false, // Use cache when available (96% faster: 1s vs 30s)
         maxStudies: 10, // Use up to 10 studies for comprehensive analysis
         rctOnly: false,
