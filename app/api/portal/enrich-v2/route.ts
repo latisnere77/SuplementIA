@@ -1,341 +1,171 @@
 /**
- * OPTIMIZED Supplement Evidence Enrichment API (v2)
- *
- * PERFORMANCE IMPROVEMENTS:
- * - 3-level cache strategy (fresh/stale/miss)
- * - Stale-while-revalidate pattern
- * - Parallel PubMed fetching
- * - Reduced Bedrock tokens
- * - No Lambda cold starts (always warm)
- *
- * EXPECTED PERFORMANCE:
- * - Cache hit (< 7 days): 50-100ms (100x faster)
- * - Stale cache (7-30 days): 50-100ms + background refresh
- * - Cache miss: 5.7s (2.3x faster than old system)
+ * Simplified Content Enrichment API Route (v2)
+ * Minimal implementation without complex dependencies
+ * 
+ * This is a simplified version created to avoid TDZ issues in the original enrich endpoint.
+ * Once we identify the root cause, we can merge improvements back.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCachedEvidence, saveCachedEvidence } from '@/lib/services/dynamodb-cache';
-import { searchSupplementInPubMed } from '@/lib/services/medical-mcp-client';
-import { analyzeStudiesWithBedrock } from '@/lib/services/bedrock-analyzer';
-import type { SupplementEvidenceData } from '@/lib/portal/supplements-evidence-data';
 
-// ==========================================
-// TYPES
-// ==========================================
+export const runtime = 'nodejs';
+export const maxDuration = 100;
+export const dynamic = 'force-dynamic';
 
-interface EnrichV2Request {
-  supplementName: string;
-  forceRefresh?: boolean;
+// Simple UUID generator
+function generateRequestId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
-
-interface EnrichV2Response {
-  success: boolean;
-  data?: SupplementEvidenceData;
-  metadata: {
-    cacheStatus: 'fresh' | 'stale' | 'miss';
-    cached: boolean;
-    generatedAt?: string;
-    refreshing?: boolean;
-    performance: {
-      totalTime: number;
-      cacheCheckTime?: number;
-      searchTime?: number;
-      analysisTime?: number;
-      cacheSaveTime?: number;
-    };
-  };
-  error?: string;
-}
-
-// ==========================================
-// CACHE TIMING THRESHOLDS
-// ==========================================
-
-const FRESH_THRESHOLD_DAYS = 7;
-const STALE_THRESHOLD_DAYS = 30;
-const FRESH_THRESHOLD_MS = FRESH_THRESHOLD_DAYS * 24 * 60 * 60 * 1000;
-const STALE_THRESHOLD_MS = STALE_THRESHOLD_DAYS * 24 * 60 * 60 * 1000;
-
-// ==========================================
-// MAIN HANDLER
-// ==========================================
 
 export async function POST(request: NextRequest) {
+  const requestId = generateRequestId();
   const startTime = Date.now();
-  const performance: EnrichV2Response['metadata']['performance'] = { totalTime: 0 };
-
+  
   try {
-    const body: EnrichV2Request = await request.json();
-    const { supplementName, forceRefresh = false } = body;
-
-    if (!supplementName || typeof supplementName !== 'string') {
+    const body = await request.json();
+    const { supplementName, maxStudies = 10, category, forceRefresh = false } = body;
+    
+    console.log(`[enrich-v2] Request ${requestId}: ${supplementName}`);
+    
+    // Validate input
+    if (!supplementName) {
       return NextResponse.json(
-        {
-          success: false,
-          error: 'supplementName is required and must be a string',
-          metadata: { cacheStatus: 'miss', cached: false, performance },
-        } as EnrichV2Response,
+        { success: false, error: 'supplementName is required' },
         { status: 400 }
       );
     }
-
-    console.log(`[ENRICH-V2] Processing: ${supplementName} (forceRefresh: ${forceRefresh})`);
-
-    // LEVEL 1: Check cache (unless force refresh)
-    if (!forceRefresh) {
-      const cacheCheckStart = Date.now();
-      const cachedData = await getCachedEvidence(supplementName);
-      performance.cacheCheckTime = Date.now() - cacheCheckStart;
-
-      if (cachedData) {
-        const cacheAge = Date.now() - new Date(cachedData.generatedAt).getTime();
-
-        // FRESH CACHE (< 7 days): Return immediately
-        if (cacheAge < FRESH_THRESHOLD_MS) {
-          console.log(`[CACHE HIT - FRESH] Age: ${Math.floor(cacheAge / (1000 * 60 * 60 * 24))} days`);
-          performance.totalTime = Date.now() - startTime;
-
-          return NextResponse.json({
-            success: true,
-            data: cachedData.evidenceData,
-            metadata: {
-              cacheStatus: 'fresh',
-              cached: true,
-              generatedAt: cachedData.generatedAt,
-              performance,
-            },
-          } as EnrichV2Response);
-        }
-
-        // STALE CACHE (7-30 days): Return + refresh in background
-        if (cacheAge < STALE_THRESHOLD_MS) {
-          console.log(`[CACHE HIT - STALE] Age: ${Math.floor(cacheAge / (1000 * 60 * 60 * 24))} days. Returning stale data + refreshing in background...`);
-
-          // Trigger background refresh (fire-and-forget)
-          refreshInBackground(supplementName).catch(err => {
-            console.error(`[BACKGROUND REFRESH FAILED] ${supplementName}:`, err);
-          });
-
-          performance.totalTime = Date.now() - startTime;
-
-          return NextResponse.json({
-            success: true,
-            data: cachedData.evidenceData,
-            metadata: {
-              cacheStatus: 'stale',
-              cached: true,
-              generatedAt: cachedData.generatedAt,
-              refreshing: true,
-              performance,
-            },
-          } as EnrichV2Response);
-        }
-
-        // EXPIRED CACHE (> 30 days): Fall through to regenerate
-        console.log(`[CACHE EXPIRED] Age: ${Math.floor(cacheAge / (1000 * 60 * 60 * 24))} days. Regenerating...`);
-      } else {
-        console.log(`[CACHE MISS] No cached data found for: ${supplementName}`);
-      }
-    } else {
-      console.log(`[FORCE REFRESH] Skipping cache check`);
+    
+    // Step 1: Fetch studies from Lambda
+    const studiesUrl = process.env.STUDIES_API_URL || 
+      'https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search';
+    
+    console.log(`[enrich-v2] Fetching studies from: ${studiesUrl}`);
+    
+    const studiesResponse = await fetch(studiesUrl, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Request-ID': requestId,
+      },
+      body: JSON.stringify({
+        supplementName,
+        maxResults: Math.min(maxStudies, 10),
+        rctOnly: false,
+        yearFrom: 2010,
+        humanStudiesOnly: true,
+      }),
+      signal: AbortSignal.timeout(30000), // 30s timeout
+    });
+    
+    if (!studiesResponse.ok) {
+      const errorText = await studiesResponse.text();
+      console.error(`[enrich-v2] Studies fetch failed: ${studiesResponse.status}`, errorText);
+      throw new Error(`Studies fetch failed: ${studiesResponse.status}`);
     }
-
-    // LEVEL 2: Generate fresh data
-    const freshData = await generateFreshEvidence(supplementName, performance);
-
-    performance.totalTime = Date.now() - startTime;
-
+    
+    const studiesData = await studiesResponse.json();
+    console.log(`[enrich-v2] Found ${studiesData.studies?.length || 0} studies`);
+    
+    // Check if we have studies
+    if (!studiesData.studies || studiesData.studies.length === 0) {
+      console.log(`[enrich-v2] No studies found for: ${supplementName}`);
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No encontramos estudios científicos para "${supplementName}".`,
+          suggestion: 'Verifica la ortografía o intenta con un término más específico.',
+          requestId,
+        },
+        { status: 404 }
+      );
+    }
+    
+    // Step 2: Enrich with Claude via content-enricher Lambda
+    const enricherUrl = process.env.ENRICHER_API_URL ||
+      'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
+    
+    console.log(`[enrich-v2] Enriching with Claude via: ${enricherUrl}`);
+    
+    const enrichResponse = await fetch(enricherUrl, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Request-ID': requestId,
+      },
+      body: JSON.stringify({
+        supplementId: supplementName,
+        category: category || 'general',
+        forceRefresh: forceRefresh || false,
+        studies: studiesData.studies,
+      }),
+      signal: AbortSignal.timeout(60000), // 60s timeout for Claude
+    });
+    
+    if (!enrichResponse.ok) {
+      const errorText = await enrichResponse.text();
+      console.error(`[enrich-v2] Enrichment failed: ${enrichResponse.status}`, errorText);
+      throw new Error(`Enrichment failed: ${enrichResponse.status}`);
+    }
+    
+    const enrichedData = await enrichResponse.json();
+    const duration = Date.now() - startTime;
+    
+    console.log(`[enrich-v2] Success in ${duration}ms`);
+    
     return NextResponse.json({
       success: true,
-      data: freshData,
+      ...enrichedData,
       metadata: {
-        cacheStatus: 'miss',
-        cached: false,
-        generatedAt: new Date().toISOString(),
-        performance,
+        ...enrichedData.metadata,
+        requestId,
+        duration,
+        studiesCount: studiesData.studies.length,
+        version: 'v2-simplified',
       },
-    } as EnrichV2Response);
-
+    });
+    
   } catch (error: any) {
-    console.error('[ENRICH-V2 ERROR]', error);
-    performance.totalTime = Date.now() - startTime;
-
+    const duration = Date.now() - startTime;
+    console.error(`[enrich-v2] Error after ${duration}ms:`, error);
+    
     return NextResponse.json(
       {
         success: false,
         error: error.message || 'Internal server error',
-        metadata: {
-          cacheStatus: 'miss',
-          cached: false,
-          performance,
-        },
-      } as EnrichV2Response,
+        requestId,
+        duration,
+      },
       { status: 500 }
     );
   }
 }
 
-// ==========================================
-// CORE GENERATION LOGIC
-// ==========================================
-
-async function generateFreshEvidence(
-  supplementName: string,
-  performance: EnrichV2Response['metadata']['performance']
-): Promise<SupplementEvidenceData> {
-  console.log(`[GENERATE] Starting fresh generation for: ${supplementName}`);
-
-  // STEP 1: Search PubMed (optimized with parallel fetching)
-  const searchStart = Date.now();
-  const studies = await searchSupplementInPubMed(supplementName, {
-    maxResults: 20, // Will be ranked and filtered to top 12 in medical-mcp-client
-    filterRCTs: true,
-    filterMetaAnalyses: true,
-    minYear: 2010,
-  });
-  performance.searchTime = Date.now() - searchStart;
-
-  console.log(`[PUBMED] Found ${studies.length} studies in ${performance.searchTime}ms`);
-
-  if (studies.length === 0) {
-    console.log(`[NO STUDIES] Generating fallback data`);
-    const fallbackData = generateFallbackData(supplementName);
-
-    // Save fallback to cache (async, non-blocking)
-    saveToCacheAsync(supplementName, fallbackData, { total: 0, rct: 0, metaAnalysis: 0 });
-
-    return fallbackData;
+// Support GET requests for testing
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const supplementName = searchParams.get('supplementName');
+  
+  if (!supplementName) {
+    return NextResponse.json(
+      { success: false, error: 'supplementName query parameter required' },
+      { status: 400 }
+    );
   }
-
-  // STEP 2: Analyze with Bedrock (optimized with truncated abstracts)
-  const analysisStart = Date.now();
-  const analysis = await analyzeStudiesWithBedrock(supplementName, studies);
-  performance.analysisTime = Date.now() - analysisStart;
-
-  console.log(`[BEDROCK] Analysis complete in ${performance.analysisTime}ms - Grade: ${analysis.overallGrade}`);
-
-  // STEP 3: Format as SupplementEvidenceData
-  const evidenceData = formatAsEvidenceData(supplementName, analysis, studies);
-
-  // STEP 4: Save to cache (async, non-blocking)
-  const cacheSaveStart = Date.now();
-  saveToCacheAsync(supplementName, evidenceData, analysis.studyCount).catch(err => {
-    console.error(`[CACHE SAVE FAILED] ${supplementName}:`, err);
-  });
-  performance.cacheSaveTime = Date.now() - cacheSaveStart;
-
-  return evidenceData;
-}
-
-// ==========================================
-// BACKGROUND REFRESH
-// ==========================================
-
-/**
- * Refresh stale cache data in the background (fire-and-forget)
- * User gets instant response with stale data while this runs
- */
-async function refreshInBackground(supplementName: string): Promise<void> {
-  console.log(`[BACKGROUND REFRESH] Starting for: ${supplementName}`);
-
-  try {
-    const performance: EnrichV2Response['metadata']['performance'] = { totalTime: 0 };
-    const freshData = await generateFreshEvidence(supplementName, performance);
-    console.log(`[BACKGROUND REFRESH COMPLETE] ${supplementName} in ${performance.totalTime}ms`);
-  } catch (error) {
-    console.error(`[BACKGROUND REFRESH ERROR] ${supplementName}:`, error);
-    throw error;
-  }
-}
-
-// ==========================================
-// FORMATTING
-// ==========================================
-
-function formatAsEvidenceData(
-  supplementName: string,
-  analysis: Awaited<ReturnType<typeof analyzeStudiesWithBedrock>>,
-  studies: Awaited<ReturnType<typeof searchSupplementInPubMed>>
-): SupplementEvidenceData {
-  return {
-    overallGrade: analysis.overallGrade,
-    whatIsItFor: analysis.whatIsItFor,
-    worksFor: analysis.worksFor,
-    doesntWorkFor: analysis.doesntWorkFor,
-    limitedEvidence: analysis.limitedEvidence,
-
-    qualityBadges: {
-      hasRCTs: analysis.studyCount.rct > 0,
-      hasMetaAnalysis: analysis.studyCount.metaAnalysis > 0,
-      longTermStudies: studies.some(s => s.year < new Date().getFullYear() - 5),
-      safetyEstablished: true,
-    },
-
-    ingredients: [
-      {
-        name: supplementName,
-        grade: analysis.overallGrade,
-        studyCount: analysis.studyCount.total,
-        rctCount: analysis.studyCount.rct,
-        description: `Based on ${analysis.studyCount.total} peer-reviewed studies`,
-      },
-    ],
-  };
-}
-
-function generateFallbackData(supplementName: string): SupplementEvidenceData {
-  return {
-    overallGrade: 'C',
-    whatIsItFor: `Información limitada disponible sobre ${supplementName}. Se requiere más investigación.`,
-    worksFor: [],
-    doesntWorkFor: [],
-    limitedEvidence: [
-      {
-        condition: 'Beneficios potenciales',
-        grade: 'C',
-        description: 'Evidencia insuficiente en la literatura científica',
-      },
-    ],
-    qualityBadges: {
-      hasRCTs: false,
-      hasMetaAnalysis: false,
-      longTermStudies: false,
-      safetyEstablished: false,
-    },
-    ingredients: [
-      {
-        name: supplementName,
-        grade: 'C',
-        studyCount: 0,
-        rctCount: 0,
-        description: 'Información limitada disponible',
-      },
-    ],
-  };
-}
-
-// ==========================================
-// ASYNC CACHE SAVE (NON-BLOCKING)
-// ==========================================
-
-function saveToCacheAsync(
-  supplementName: string,
-  evidenceData: SupplementEvidenceData,
-  studyCount: { total: number; rct: number; metaAnalysis: number }
-): Promise<void> {
-  // Fire-and-forget: Don't await, don't block the response
-  return saveCachedEvidence(supplementName, evidenceData, {
-    studyQuality: determineStudyQuality(studyCount),
-    studyCount: studyCount.total,
-    rctCount: studyCount.rct,
-    metaAnalysisCount: studyCount.metaAnalysis,
-    pubmedIds: [], // Could extract from studies if needed
-  });
-}
-
-function determineStudyQuality(studyCount: { total: number; rct: number; metaAnalysis: number }): 'high' | 'medium' | 'low' {
-  if (studyCount.metaAnalysis >= 2 && studyCount.rct >= 10) return 'high';
-  if (studyCount.rct >= 5) return 'medium';
-  return 'low';
+  
+  const category = searchParams.get('category') || 'general';
+  const maxStudies = parseInt(searchParams.get('maxStudies') || '10');
+  
+  // Forward to POST handler
+  return POST(
+    new NextRequest(request.url, {
+      method: 'POST',
+      headers: request.headers,
+      body: JSON.stringify({
+        supplementName,
+        category,
+        maxStudies,
+      }),
+    })
+  );
 }

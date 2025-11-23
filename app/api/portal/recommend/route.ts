@@ -121,7 +121,8 @@ export async function POST(request: NextRequest) {
     );
 
     // Call our intelligent enrichment system with extended timeout
-    const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich`;
+    // Using enrich-v2 (simplified version) to avoid TDZ issues
+    const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich-v2`;
     const enrichStartTime = Date.now();
     
     console.log(
