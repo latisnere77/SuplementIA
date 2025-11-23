@@ -806,7 +806,22 @@ export async function POST(request: NextRequest) {
     const usedVariation = searchTerm !== supplementName && searchTerm !== finalBaseTerm;
 
     // Extract ranking data from studiesData if available
+    // studiesData comes from the studies-fetcher lambda response
     const rankedData = studiesData?.data?.ranked || null;
+    
+    console.log(
+      JSON.stringify({
+        event: 'RANKING_DATA_EXTRACTED',
+        requestId,
+        correlationId,
+        hasStudiesData: !!studiesData,
+        hasRankedData: !!rankedData,
+        positiveCount: rankedData?.positive?.length || 0,
+        negativeCount: rankedData?.negative?.length || 0,
+        consensus: rankedData?.metadata?.consensus || null,
+        timestamp: new Date().toISOString(),
+      })
+    );
     
     // Add metadata about the intelligent system
     return NextResponse.json({
