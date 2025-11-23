@@ -823,9 +823,19 @@ export async function POST(request: NextRequest) {
       })
     );
     
-    // Add metadata about the intelligent system
+    // DUAL RESPONSE PATTERN: Include both enriched content AND ranked studies
+    // This allows frontend to show both independently without modifying content-enricher
     return NextResponse.json({
       ...enrichData,
+      data: {
+        ...enrichData.data,
+        // Add studies object with ranking (NEW)
+        studies: {
+          ranked: rankedData,
+          all: studies,
+          total: studies.length,
+        },
+      },
       metadata: {
         ...enrichData.metadata,
         orchestrationDuration: duration,
@@ -840,8 +850,9 @@ export async function POST(request: NextRequest) {
         finalSearchTerm: searchTerm,
         usedVariation,
         ...(expansionMetadata ? { expansion: expansionMetadata } : {}),
-        // Include intelligent ranking if available
-        ...(rankedData ? { ranked: rankedData } : {}),
+        // Ranking metadata for quick access
+        hasRanking: !!rankedData,
+        rankingMetadata: rankedData?.metadata || null,
       },
     });
   } catch (error: any) {
