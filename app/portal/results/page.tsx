@@ -19,6 +19,8 @@ import IntelligentLoadingSpinner from '@/components/portal/IntelligentLoadingSpi
 import AsyncEnrichmentLoader from '@/components/portal/AsyncEnrichmentLoader';
 import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
 import { StreamingResults } from '@/components/portal/StreamingResults';
+import { ExamineStyleView } from '@/components/portal/ExamineStyleView';
+import { ViewToggle, type ViewMode } from '@/components/portal/ViewToggle';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { suggestSupplementCorrection } from '@/lib/portal/supplement-suggestions';
@@ -182,6 +184,62 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   return result;
 }
 
+/**
+ * Transform recommendation data to Examine.com style format
+ * Focuses on quantitative data and precise measurements
+ */
+function transformToExamineFormat(recommendation: Recommendation): any {
+  const supplement = (recommendation as any).supplement || {};
+  
+  return {
+    overview: {
+      whatIsIt: supplement.description || supplement.whatIsIt || `Suplemento: ${recommendation.category}`,
+      functions: supplement.primaryUses || supplement.functions || [],
+      sources: supplement.sources || [],
+    },
+    benefitsByCondition: (supplement.worksFor || []).map((item: any) => ({
+      condition: item.condition || '',
+      effect: item.magnitude || item.effectSize || 'Moderate',
+      quantitativeData: item.quantitativeData || item.notes || 'Ver estudios para detalles',
+      evidence: `${item.studyCount || 0} estudios${item.participants ? `, ${item.participants} participantes` : ''}`,
+      context: item.context || item.notes || '',
+      studyTypes: item.studyTypes || ['RCT', 'Meta-analysis'],
+    })),
+    dosage: {
+      effectiveDose: supplement.dosage?.effectiveDose || supplement.dosage?.optimalDose || 'Consultar con profesional',
+      commonDose: supplement.dosage?.standard || supplement.dosage?.commonDose || 'Consultar con profesional',
+      timing: supplement.dosage?.timing || 'Según indicaciones',
+      forms: (supplement.dosage?.forms || []).map((form: any) => ({
+        name: form.form || form.name || '',
+        bioavailability: form.bioavailability || '',
+        notes: form.notes || form.description || '',
+      })),
+      notes: supplement.dosage?.notes || '',
+    },
+    safety: {
+      sideEffects: {
+        common: (supplement.sideEffects || [])
+          .filter((e: any) => typeof e === 'string' || e.frequency === 'Common')
+          .map((e: any) => typeof e === 'string' ? e : e.effect),
+        rare: (supplement.sideEffects || [])
+          .filter((e: any) => typeof e === 'object' && e.frequency === 'Rare')
+          .map((e: any) => e.effect),
+        severity: supplement.safety?.overallRating || 'Generally mild',
+      },
+      interactions: {
+        medications: (supplement.interactions || []).map((i: any) => ({
+          medication: typeof i === 'string' ? i : i.medication,
+          severity: typeof i === 'object' ? i.severity : 'Moderate',
+          description: typeof i === 'object' ? i.description : '',
+        })),
+      },
+      contraindications: supplement.contraindications || [],
+      pregnancyLactation: supplement.safety?.pregnancyCategory || 'Consultar con médico',
+    },
+    mechanisms: supplement.mechanisms || [],
+  };
+}
+
 interface Recommendation {
   recommendation_id: string;
   quiz_id: string;
@@ -237,6 +295,8 @@ function ResultsPageContent() {
   const [subscription, setSubscription] = useState<any>(null);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
   const [transformedEvidence, setTransformedEvidence] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('standard');
+  const [examineContent, setExamineContent] = useState<any>(null);
   const [useAsyncEnrichment, setUseAsyncEnrichment] = useState(false);
   const [asyncSupplementName, setAsyncSupplementName] = useState<string | null>(null);
 
@@ -296,6 +356,10 @@ function ResultsPageContent() {
     // Simple client-side transformation (no API calls needed)
     const transformed = transformRecommendationToEvidence(recommendation);
     setTransformedEvidence(transformed);
+    
+    // Also transform to Examine format
+    const examineFormatted = transformToExamineFormat(recommendation);
+    setExamineContent(examineFormatted);
   }, [recommendation]);
 
   useEffect(() => {
@@ -1017,10 +1081,25 @@ function ResultsPageContent() {
         {/* Evidence Analysis - NUEVO DISEÑO VISUAL */}
         <div className="mb-8">
           {transformedEvidence ? (
-            <EvidenceAnalysisPanelNew
-              evidenceSummary={transformedEvidence}
-              supplementName={recommendation.category}
-            />
+            <>
+              {/* View Toggle */}
+              <ViewToggle mode={viewMode} onChange={setViewMode} />
+              
+              {/* Conditional Rendering based on view mode */}
+              {viewMode === 'standard' ? (
+                <EvidenceAnalysisPanelNew
+                  evidenceSummary={transformedEvidence}
+                  supplementName={recommendation.category}
+                />
+              ) : (
+                examineContent && (
+                  <ExamineStyleView
+                    content={examineContent}
+                    supplementName={recommendation.category}
+                  />
+                )
+              )}
+            </>
           ) : (
             <div className="bg-white rounded-xl border-2 border-gray-200 p-8 text-center">
               <div className="animate-pulse">
