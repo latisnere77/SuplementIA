@@ -12,6 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
 import { expandAbbreviation, detectAbbreviation, generateSearchVariations } from '@/lib/services/abbreviation-expander';
 import { studiesCache, enrichmentCache } from '@/lib/cache/simple-cache';
 import { TimeoutManager, TIMEOUTS } from '@/lib/resilience/timeout-manager';
@@ -39,7 +40,7 @@ export interface EnrichRequest {
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  const requestId = crypto.randomUUID();
+  const requestId = randomUUID();
   const correlationId = request.headers.get('X-Request-ID') || requestId;
   let supplementName = 'unknown';
 
