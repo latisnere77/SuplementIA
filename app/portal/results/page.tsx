@@ -21,12 +21,14 @@ import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
 import { StreamingResults } from '@/components/portal/StreamingResults';
 import { ExamineStyleView } from '@/components/portal/ExamineStyleView';
 import { ViewToggle, type ViewMode } from '@/components/portal/ViewToggle';
+import { ErrorState } from '@/components/portal/ErrorState';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { suggestSupplementCorrection } from '@/lib/portal/supplement-suggestions';
 import { searchAnalytics } from '@/lib/portal/search-analytics';
 import { traceSearch } from '@/lib/portal/xray-client';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
+import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 
 // ====================================
 // ADAPTER FUNCTION - Client-Side Transformation
@@ -291,6 +293,7 @@ function ResultsPageContent() {
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
   const { user } = useAuth();
+  const isOnline = useOnlineStatus();
   const [showPaywall, setShowPaywall] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
@@ -323,6 +326,16 @@ function ResultsPageContent() {
 
     checkSubscription();
   }, [user]);
+
+  // Handle offline/online status
+  useEffect(() => {
+    if (!isOnline) {
+      setError('Sin conexión a internet. Verifica tu red y vuelve a intentar.');
+    } else if (error === 'Sin conexión a internet. Verifica tu red y vuelve a intentar.') {
+      // Clear offline error when connection is restored
+      setError(null);
+    }
+  }, [isOnline, error]);
 
   const isFreeUser = !subscription || subscription.plan_id === 'free';
 
@@ -968,38 +981,41 @@ function ResultsPageContent() {
     // Try to extract suggestion from error message
     const suggestionMatch = error?.match(/¿Quizás buscabas "([^"]+)"\?/);
     const suggestedSupplement = suggestionMatch ? suggestionMatch[1] : null;
+    
+    // Build suggestions array
+    const suggestions: string[] = [];
+    if (suggestedSupplement) {
+      suggestions.push(suggestedSupplement);
+    }
+    // Add popular supplements as fallback
+    if (suggestions.length === 0) {
+      suggestions.push('Ashwagandha', 'Omega-3', 'Vitamin D', 'Magnesium');
+    }
 
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md px-4">
-          <div className="mb-6 text-6xl">🔍</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            {suggestedSupplement ? 'Suplemento no encontrado' : t('common.error')}
-          </h2>
-          <p className="text-gray-600 mb-6 whitespace-pre-line">{error || 'Recommendation not found'}</p>
-
-          {suggestedSupplement && (
-            <button
-              onClick={() => router.push(`/portal/results?q=${encodeURIComponent(suggestedSupplement)}`)}
-              className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors mb-3 w-full"
-            >
-              Buscar "{suggestedSupplement}"
-            </button>
-          )}
-
-          <button
-            onClick={() => router.push('/portal')}
-            className={`${suggestedSupplement ? 'bg-gray-500 hover:bg-gray-600' : 'bg-blue-500 hover:bg-blue-600'} text-white px-6 py-3 rounded-lg font-semibold transition-colors w-full`}
-          >
-            {t('results.back')}
-          </button>
-        </div>
-      </div>
+      <ErrorState
+        error={error || 'Recommendation not found'}
+        supplementName={query || 'supplement'}
+        onRetry={() => window.location.reload()}
+        suggestions={suggestions}
+      />
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Offline Banner */}
+      {!isOnline && (
+        <div className="fixed top-0 left-0 right-0 bg-red-600 text-white p-3 text-center z-50 shadow-lg">
+          <div className="flex items-center justify-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414" />
+            </svg>
+            <span className="font-medium">Sin conexión a internet</span>
+          </div>
+        </div>
+      )}
+      
       {/* Legal Disclaimer Banner */}
       <LegalDisclaimer />
 
