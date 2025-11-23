@@ -1,6 +1,6 @@
 /**
  * Studies Fetcher Lambda Handler
- * Fetches real scientific studies from PubMed
+ * Fetches real scientific studies from PubMed with intelligent ranking
  */
 
 import * as AWSXRay from 'aws-xray-sdk-core';
@@ -9,6 +9,10 @@ import { searchPubMed } from './pubmed';
 import { config, CORS_HEADERS } from './config';
 import type { StudySearchRequest, StudiesResponse } from './types';
 import { translateToEnglish } from './translator';
+
+// Feature flags
+const USE_INTELLIGENT_SEARCH = process.env.USE_INTELLIGENT_SEARCH === 'true';
+const USE_INTELLIGENT_RANKING = process.env.USE_INTELLIGENT_RANKING === 'true';
 
 // Wrap AWS SDK if X-Ray is enabled
 if (config.xrayEnabled) {
@@ -129,13 +133,39 @@ export async function handler(
         searchSubsegment.addMetadata('filters', request.filters || {});
       }
 
-      // Update request with translated term
-      const translatedRequest = {
-        ...request,
-        supplementName: searchTerm,
-      };
-
-      const studies = await searchPubMed(translatedRequest);
+      let studies: any[];
+      
+      if (USE_INTELLIGENT_SEARCH) {
+        // Use new intelligent multi-strategy search
+        console.log(JSON.stringify({
+          event: 'USING_INTELLIGENT_SEARCH',
+          requestId: context.awsRequestId,
+          correlationId,
+          timestamp: new Date().toISOString(),
+        }));
+        
+        const { multiStrategySearch } = await import('./search/strategies');
+        studies = await multiStrategySearch(searchTerm, {
+          maxResults: request.maxResults || 200,
+          includeNegativeSearch: true,
+          includeSystematicReviews: true,
+        });
+        
+        console.log(JSON.stringify({
+          event: 'INTELLIGENT_SEARCH_COMPLETE',
+          requestId: context.awsRequestId,
+          correlationId,
+          studiesFound: studies.length,
+          timestamp: new Date().toISOString(),
+        }));
+      } else {
+        // Use traditional search
+        const translatedRequest = {
+          ...request,
+          supplementName: searchTerm,
+        };
+        studies = await searchPubMed(translatedRequest);
+      }
 
       const searchDuration = Date.now() - searchStartTime;
       const studyTypes = studies.map((s: any) => s.studyType || 'unknown');
@@ -152,6 +182,77 @@ export async function handler(
       }
       searchSubsegment?.close();
 
+      let rankedResults: any = null;
+      
+      if (USE_INTELLIGENT_RANKING && studies.length > 0) {
+        const rankingSubsegment = subsegment?.addNewSubsegment?.('intelligent-ranking');
+        const rankingStartTime = Date.now();
+        
+        try {
+          console.log(JSON.stringify({
+            event: 'USING_INTELLIGENT_RANKING',
+            requestId: context.awsRequestId,
+            correlationId,
+            studiesCount: studies.length,
+            timestamp: new Date().toISOString(),
+          }));
+          
+          const { rankStudies } = await import('./scoring/ranker');
+          rankedResults = await rankStudies(studies, searchTerm, {
+            topPositive: 5,
+            topNegative: 5,
+            minConfidence: 0.5,
+          });
+          
+          const rankingDuration = Date.now() - rankingStartTime;
+          
+          if (rankingSubsegment) {
+            rankingSubsegment.addAnnotation('success', true);
+            rankingSubsegment.addAnnotation('consensus', rankedResults.metadata.consensus);
+            rankingSubsegment.addAnnotation('confidenceScore', rankedResults.metadata.confidenceScore);
+            rankingSubsegment.addMetadata('ranking', {
+              positive: rankedResults.positive.length,
+              negative: rankedResults.negative.length,
+              consensus: rankedResults.metadata.consensus,
+              confidence: rankedResults.metadata.confidenceScore,
+              duration: rankingDuration,
+            });
+          }
+          
+          console.log(JSON.stringify({
+            event: 'INTELLIGENT_RANKING_COMPLETE',
+            requestId: context.awsRequestId,
+            correlationId,
+            consensus: rankedResults.metadata.consensus,
+            confidenceScore: rankedResults.metadata.confidenceScore,
+            positive: rankedResults.positive.length,
+            negative: rankedResults.negative.length,
+            totalPositive: rankedResults.metadata.totalPositive,
+            totalNegative: rankedResults.metadata.totalNegative,
+            totalNeutral: rankedResults.metadata.totalNeutral,
+            duration: rankingDuration,
+            timestamp: new Date().toISOString(),
+          }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            event: 'INTELLIGENT_RANKING_ERROR',
+            requestId: context.awsRequestId,
+            correlationId,
+            error: (error as Error).message,
+            stack: (error as Error).stack,
+            fallback: 'using_unranked_studies',
+            timestamp: new Date().toISOString(),
+          }));
+          
+          if (rankingSubsegment) {
+            rankingSubsegment.addAnnotation('success', false);
+            rankingSubsegment.addError(error as Error);
+          }
+        } finally {
+          rankingSubsegment?.close();
+        }
+      }
+
       const duration = Date.now() - startTime;
 
       // Build success response
@@ -161,11 +262,38 @@ export async function handler(
           studies,
           totalFound: studies.length,
           searchQuery: request.supplementName,
+          // Add ranked results if available
+          ...(rankedResults && {
+            ranked: {
+              positive: rankedResults.positive.map((s: any) => ({
+                ...s.study,
+                score: s.score.totalScore,
+                scoreBreakdown: s.score.breakdown,
+                sentiment: s.sentiment.sentiment,
+                sentimentConfidence: s.sentiment.confidence,
+                sentimentReasoning: s.sentiment.reasoning,
+              })),
+              negative: rankedResults.negative.map((s: any) => ({
+                ...s.study,
+                score: s.score.totalScore,
+                scoreBreakdown: s.score.breakdown,
+                sentiment: s.sentiment.sentiment,
+                sentimentConfidence: s.sentiment.confidence,
+                sentimentReasoning: s.sentiment.reasoning,
+              })),
+              metadata: rankedResults.metadata,
+            },
+          }),
         },
         metadata: {
           supplementName: request.supplementName,
           searchDuration: duration,
           source: 'pubmed',
+          ...(rankedResults && {
+            intelligentRanking: true,
+            consensus: rankedResults.metadata.consensus,
+            confidenceScore: rankedResults.metadata.confidenceScore,
+          }),
         },
       };
 
@@ -366,7 +494,7 @@ async function saveToCacheAsync(supplementName: string, studies: any[]): Promise
     if (!response.ok) {
       console.warn(`Cache save failed: ${response.status} ${response.statusText}`);
     } else {
-      console.log(`Studies cached successfully for: ${supplementName}`);
+      
     }
   } catch (error: any) {
     // Non-fatal - log and continue
