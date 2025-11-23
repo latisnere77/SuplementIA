@@ -64,10 +64,13 @@ export async function POST(request: NextRequest) {
     }
     
     const studiesData = await studiesResponse.json();
-    console.log(`[enrich-v2] Found ${studiesData.studies?.length || 0} studies`);
+    
+    // Lambda returns { success: true, data: { studies: [...] } }
+    const studies = studiesData.data?.studies || studiesData.studies || [];
+    console.log(`[enrich-v2] Found ${studies.length} studies`);
     
     // Check if we have studies
-    if (!studiesData.studies || studiesData.studies.length === 0) {
+    if (studies.length === 0) {
       console.log(`[enrich-v2] No studies found for: ${supplementName}`);
       return NextResponse.json(
         {
@@ -97,7 +100,7 @@ export async function POST(request: NextRequest) {
         supplementId: supplementName,
         category: category || 'general',
         forceRefresh: forceRefresh || false,
-        studies: studiesData.studies,
+        studies: studies,
       }),
       signal: AbortSignal.timeout(60000), // 60s timeout for Claude
     });
@@ -120,7 +123,7 @@ export async function POST(request: NextRequest) {
         ...enrichedData.metadata,
         requestId,
         duration,
-        studiesCount: studiesData.studies.length,
+        studiesCount: studies.length,
         version: 'v2-simplified',
       },
     });
