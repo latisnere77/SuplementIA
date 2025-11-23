@@ -805,7 +805,8 @@ export async function POST(request: NextRequest) {
     const finalBaseTerm = expansionMetadata?.expanded || supplementName;
     const usedVariation = searchTerm !== supplementName && searchTerm !== finalBaseTerm;
 
-    
+    // Extract ranking data from studiesData if available
+    const rankedData = studiesData?.data?.ranked || null;
     
     // Add metadata about the intelligent system
     return NextResponse.json({
@@ -824,6 +825,8 @@ export async function POST(request: NextRequest) {
         finalSearchTerm: searchTerm,
         usedVariation,
         ...(expansionMetadata ? { expansion: expansionMetadata } : {}),
+        // Include intelligent ranking if available
+        ...(rankedData ? { ranked: rankedData } : {}),
       },
     });
   } catch (error: any) {
