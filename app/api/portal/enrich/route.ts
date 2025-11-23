@@ -12,11 +12,15 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { randomUUID } from 'crypto';
 import { expandAbbreviation, detectAbbreviation, generateSearchVariations } from '@/lib/services/abbreviation-expander';
 import { studiesCache, enrichmentCache } from '@/lib/cache/simple-cache';
 import { TimeoutManager, TIMEOUTS } from '@/lib/resilience/timeout-manager';
 import { globalRateLimiter } from '@/lib/resilience/rate-limiter';
+
+// UUID generation helper (avoiding crypto import issues in Edge Runtime)
+function generateUUID(): string {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${Math.random().toString(36).substr(2, 9)}`;
+}
 
 // Configure max duration for this route (Bedrock needs time)
 export const maxDuration = 100; // 100 seconds (reduced from 120 for safety)
@@ -40,7 +44,7 @@ export interface EnrichRequest {
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  const requestId = randomUUID();
+  const requestId = generateUUID();
   const correlationId = request.headers.get('X-Request-ID') || requestId;
   let supplementName = 'unknown';
 
