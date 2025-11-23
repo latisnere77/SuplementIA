@@ -19,7 +19,7 @@ import IntelligentLoadingSpinner from '@/components/portal/IntelligentLoadingSpi
 import AsyncEnrichmentLoader from '@/components/portal/AsyncEnrichmentLoader';
 import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
 import { StreamingResults } from '@/components/portal/StreamingResults';
-import { ExamineStyleView } from '@/components/portal/ExamineStyleView';
+import ExamineStyleView from '@/components/portal/ExamineStyleView';
 import { ViewToggle, type ViewMode } from '@/components/portal/ViewToggle';
 import { ErrorState } from '@/components/portal/ErrorState';
 import { useTranslation } from '@/lib/i18n/useTranslation';
