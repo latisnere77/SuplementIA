@@ -135,24 +135,84 @@ export async function POST(request: NextRequest) {
       })
     );
 
-    const enrichResponse = await fetch(ENRICH_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Request-ID': requestId,
-        'X-Job-ID': jobId,
-      },
-      body: JSON.stringify({
-        supplementName: searchTerm,
-        category: searchTerm,
-        forceRefresh: false, // Use cache when available (96% faster: 1s vs 30s)
-        maxStudies: 10, // Use up to 10 studies for comprehensive analysis
-        rctOnly: false,
-        yearFrom: 2010,
-        jobId,
-      }),
-      signal: AbortSignal.timeout(115000), // 115s timeout (less than maxDuration of 120s)
-    });
+    // Try sync first with shorter timeout (30s)
+    // If timeout, fall back to async processing
+    let enrichResponse;
+    let isAsync = false;
+    
+    try {
+      enrichResponse = await fetch(ENRICH_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-ID': requestId,
+          'X-Job-ID': jobId,
+        },
+        body: JSON.stringify({
+          supplementName: searchTerm,
+          category: searchTerm,
+          forceRefresh: false, // Use cache when available (96% faster: 1s vs 30s)
+          maxStudies: 10, // Use up to 10 studies for comprehensive analysis
+          rctOnly: false,
+          yearFrom: 2010,
+          jobId,
+        }),
+        signal: AbortSignal.timeout(30000), // 30s timeout - if longer, use async
+      });
+    } catch (error: any) {
+      // If timeout, switch to async processing
+      if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+        console.log(
+          JSON.stringify({
+            event: 'RECOMMEND_SWITCHING_TO_ASYNC',
+            requestId,
+            jobId,
+            category: searchTerm,
+            reason: 'sync_timeout_30s',
+            timestamp: new Date().toISOString(),
+          })
+        );
+        
+        isAsync = true;
+        
+        // Start async enrichment (fire and forget)
+        fetch(ENRICH_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Request-ID': requestId,
+            'X-Job-ID': jobId,
+          },
+          body: JSON.stringify({
+            supplementName: searchTerm,
+            category: searchTerm,
+            forceRefresh: false,
+            maxStudies: 10,
+            rctOnly: false,
+            yearFrom: 2010,
+            jobId,
+          }),
+        }).catch((err) => {
+          console.error('Background enrichment error:', err);
+        });
+        
+        // Return async response immediately
+        return NextResponse.json({
+          success: true,
+          status: 'processing',
+          jobId,
+          supplementName: searchTerm,
+          originalQuery: category,
+          message: 'Enrichment started in background',
+          pollUrl: `/api/portal/enrichment-status/${jobId}?supplement=${encodeURIComponent(searchTerm)}`,
+          pollInterval: 2000, // Poll every 2 seconds
+          estimatedTime: 60, // Estimated 60 seconds
+        }, { status: 202 }); // 202 Accepted
+      }
+      
+      // Other errors - rethrow
+      throw error;
+    }
 
     const enrichDuration = Date.now() - enrichStartTime;
 
@@ -307,20 +367,7 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    console.log(
-      JSON.stringify({
-        event: 'INTELLIGENT_RECOMMENDATION_SUCCESS',
-        requestId,
-        category: sanitizedCategory,
-        originalCategory: category,
-        studiesUsed: metadata.studiesUsed || 0,
-        hasRealData: true,
-        enrichDuration,
-        totalDuration: duration,
-        recommendationId: recommendation.recommendation_id,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     return NextResponse.json(
       {
