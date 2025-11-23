@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { Shield, Beaker, Users, Calendar, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import SupplementGrade, { SupplementGradeBadge, type GradeType } from './SupplementGrade';
 import WorksForSection, { type WorksForItem } from './WorksForSection';
+import IntelligentRankingSection from './IntelligentRankingSection';
 
 interface EvidenceBadge {
   type: 'rct' | 'meta' | 'longterm' | 'safe';
@@ -85,6 +86,23 @@ interface EvidenceSummaryNew {
     description: string;
     evidenceLevel: 'strong' | 'moderate' | 'weak';
   }>;
+
+  // NEW: Intelligent ranking from studies-fetcher
+  studies?: {
+    ranked?: {
+      positive: any[];
+      negative: any[];
+      metadata: {
+        consensus: 'strong_positive' | 'moderate_positive' | 'neutral' | 'moderate_negative' | 'strong_negative';
+        confidenceScore: number;
+        totalPositive: number;
+        totalNegative: number;
+        totalNeutral: number;
+      };
+    };
+    all?: any[];
+    total?: number;
+  };
 }
 
 interface EvidenceAnalysisPanelNewProps {
@@ -481,6 +499,19 @@ export default function EvidenceAnalysisPanelNew({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* INTELLIGENT RANKING SECTION */}
+      {evidenceSummary.studies?.ranked && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Análisis Inteligente de Evidencia
+          </h2>
+          <IntelligentRankingSection
+            ranked={evidenceSummary.studies.ranked}
+            supplementName={supplementName || 'este suplemento'}
+          />
         </div>
       )}
     </div>

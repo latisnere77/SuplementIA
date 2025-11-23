@@ -136,6 +136,10 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     };
   }) : [];
 
+  // Extract intelligent ranking from metadata
+  const metadata = (recommendation as any)._enrichment_metadata || {};
+  const studies = metadata.studies || null;
+
   const result = {
     overallGrade,
     whatIsItFor: supplement.description || `Suplemento: ${recommendation.category}`,
@@ -162,6 +166,8 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     sideEffects,
     interactions,
     contraindications,
+    // NEW: Include intelligent ranking
+    studies,
   };
 
   // DEBUG: Log final result summary
