@@ -26,9 +26,14 @@ function generateUUID(): string {
 export const maxDuration = 100; // 100 seconds (reduced from 120 for safety)
 export const dynamic = 'force-dynamic'; // Disable static optimization
 
-// Lambda endpoints
-const STUDIES_API_URL = process.env.STUDIES_API_URL || 'https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search';
-const ENRICHER_API_URL = process.env.ENRICHER_API_URL || 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
+// Lambda endpoints - using getters to avoid TDZ issues with process.env in Edge Runtime
+function getStudiesApiUrl(): string {
+  return process.env.STUDIES_API_URL || 'https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search';
+}
+
+function getEnricherApiUrl(): string {
+  return process.env.ENRICHER_API_URL || 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
+}
 
 export interface EnrichRequest {
   supplementName: string;
@@ -440,15 +445,16 @@ export async function POST(request: NextRequest) {
           attempt,
           searchTerm: term,
           filters,
-          lambdaUrl: STUDIES_API_URL,
+          lambdaUrl: getStudiesApiUrl(),
           timestamp: new Date().toISOString(),
         })
       );
 
       try {
         // Use timeout manager for studies fetch
+        const studiesApiUrl = getStudiesApiUrl();
         const response = await timeoutManager.executeWithBudget(
-          () => fetch(STUDIES_API_URL, {
+          () => fetch(studiesApiUrl, {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -875,8 +881,9 @@ export async function POST(request: NextRequest) {
       })
     );
 
+    const enricherApiUrl = getEnricherApiUrl();
     const enrichResponse = await timeoutManager.executeWithBudget(
-      () => fetch(ENRICHER_API_URL, {
+      () => fetch(enricherApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
