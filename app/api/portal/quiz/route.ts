@@ -69,7 +69,7 @@ function detectClimate(location: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const requestId = crypto.randomUUID();
+  const requestId = randomUUID();
   const jobId = request.headers.get('X-Job-ID') || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   let quizId: string | undefined;
   
