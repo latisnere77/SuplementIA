@@ -123,7 +123,6 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'saw palmetto': 'Saw Palmetto',
   'palma enana': 'Saw Palmetto',
   'tribulus': 'Tribulus Terrestris',
-  'tribulus terrestris': 'Tribulus Terrestris',
   
   // Hongos Medicinales
   'reishi': 'Ganoderma lucidum',
@@ -182,20 +181,15 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'resveratrol': 'Resveratrol',
   'astaxantina': 'Astaxanthin',
   'astaxanthin': 'Astaxanthin',
-  'licopeno': 'Lycopene',
-  'lycopene': 'Lycopene',
   
   // Minerales adicionales
   'hierro': 'Iron',
   'calcio': 'Calcium',
   'potasio': 'Potassium',
   'selenio': 'Selenium',
-  'cromo': 'Chromium',
   'cobre': 'Copper',
   'manganeso': 'Manganese',
   'yodo': 'Iodine',
-  'molibdeno': 'Molybdenum',
-  'boro': 'Boron',
   
   // Ácidos Grasos
   'acido alfa lipoico': 'Alpha Lipoic Acid',
@@ -239,8 +233,6 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'hmb': 'HMB',
   'citrulina': 'Citrulline',
   'citrulline': 'Citrulline',
-  'arginina': 'Arginine',
-  'arginine': 'Arginine',
   
   // Multivitamínicos y Multiminerales
   'multivitaminico': 'Multivitamin',
@@ -289,13 +281,9 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'dehydroepiandrosterone': 'DHEA',
   
   // Probióticos Específicos
-  'lactobacillus': 'Lactobacillus',
   'acidophilus': 'Acidophilus',
-  'bifidobacterium': 'Bifidobacterium',
   
   // Aminoácidos Adicionales
-  'arginina': 'Arginine',
-  'arginine': 'Arginine',
   'l-arginina': 'L-Arginine',
   'l-arginine': 'L-Arginine',
   'leucina': 'Leucine',
@@ -331,7 +319,6 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'gymnema': 'Gymnema Sylvestre',
   'gymnema sylvestre': 'Gymnema Sylvestre',
   'yohimbe': 'Yohimbe',
-  'tribulus terrestris': 'Tribulus Terrestris',
   'boswellia': 'Boswellia',
   'frankincense': 'Boswellia',
   'regaliz': 'Licorice',
@@ -346,13 +333,10 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'mangosteen': 'Mangosteen',
   'acai': 'Acai',
   'acai berry': 'Acai',
-  'resveratrol': 'Resveratrol',
   'quercetina': 'Quercetin',
   'quercetin': 'Quercetin',
   'luteina': 'Lutein',
   'lutein': 'Lutein',
-  'licopeno': 'Lycopene',
-  'lycopene': 'Lycopene',
   'zeaxantina': 'Zeaxanthin',
   'zeaxanthin': 'Zeaxanthin',
   'isoflavonas de soja': 'Soy Isoflavones',
@@ -387,8 +371,6 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'citicolina': 'Citicoline',
   'huperzina': 'Huperzine A',
   'huperzine': 'Huperzine A',
-  'fosfatidilserina': 'Phosphatidylserine',
-  'phosphatidylserine': 'Phosphatidylserine',
   'acido hialuronico': 'Hyaluronic Acid',
   'ácido hialurónico': 'Hyaluronic Acid',
   'hyaluronic acid': 'Hyaluronic Acid',
@@ -417,8 +399,6 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'papaina': 'Papain',
   'papain': 'Papain',
   'fos': 'FOS',
-  'prebioticos': 'Prebiotics',
-  'prebiotics': 'Prebiotics',
   
   // Otros Compuestos
   'aceite de oliva': 'Olive Oil',
@@ -502,6 +482,7 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'ácido gamma linolénico': 'GLA',
   'gamma linolenic acid': 'GLA',
   'fosfatidilserina': 'Phosphatidylserine',
+  'phosphatidylserine': 'Phosphatidylserine',
   'acido oleico': 'Oleic Acid',
   'ácido oleico': 'Oleic Acid',
   'oleic acid': 'Oleic Acid',
@@ -587,7 +568,10 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'akg': 'AKG',
   'citrulina malato': 'Citrulline Malate',
   'citrulline malate': 'Citrulline Malate',
-  'agmatina': 'Agmatine',
+  'agmatina': 'Agmatine Sulfate',
+  'agmatina sulfato': 'Agmatine Sulfate',
+  'agmatine': 'Agmatine Sulfate',
+  'agmatine sulfate': 'Agmatine Sulfate',
   'agmatine': 'Agmatine',
   'agmatina sulfato': 'Agmatine Sulfate',
   'agmatine sulfate': 'Agmatine Sulfate',
@@ -614,7 +598,6 @@ const SPANISH_TO_ENGLISH: Record<string, string> = {
   'calcio': 'Calcium',
   'potasio': 'Potassium',
   'selenio': 'Selenium',
-  'cromo': 'Chromium',
   'cobre': 'Copper',
   'manganeso': 'Manganese',
   'yodo': 'Iodine',
