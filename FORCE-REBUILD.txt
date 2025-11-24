@@ -1,4 +1,0 @@
-Force rebuild to clear Vercel cache and fix quiz endpoint 404
-Timestamp: 2025-11-23 13:30:00
-Issue: /api/portal/quiz returns 404 despite file existing
-Fix: Force complete rebuild with cache invalidation

@@ -1,18 +1,99 @@
 /**
  * PubMed Query Builder
- * Constructs optimized PubMed queries
+ * Constructs optimized PubMed queries with intelligent exclusion detection
  */
 
+import { SUPPLEMENT_KNOWLEDGE } from './supplementKnowledge';
+
 /**
- * Exclusion map to prevent confusion between similar supplement names
- * Maps supplement name to terms that should be explicitly excluded
+ * Calculate Levenshtein distance between two strings
  */
-const EXCLUSION_MAP: Record<string, string[]> = {
-  'ginger': ['ginseng', 'panax'],
-  'ginseng': ['ginger', 'zingiber'],
-  'ashwagandha': ['rhodiola', 'ginseng'],
-  'rhodiola': ['ashwagandha', 'ginseng'],
-};
+function levenshteinDistance(str1: string, str2: string): number {
+  const len1 = str1.length;
+  const len2 = str2.length;
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= len1; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= len2; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= len1; i++) {
+    for (let j = 1; j <= len2; j++) {
+      const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+
+  return matrix[len1][len2];
+}
+
+/**
+ * Calculate similarity ratio between two strings (0-1)
+ */
+function similarityRatio(str1: string, str2: string): number {
+  const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
+  const maxLen = Math.max(str1.length, str2.length);
+  return maxLen === 0 ? 1 : 1 - distance / maxLen;
+}
+
+/**
+ * Intelligently detect potential confusions for a supplement
+ */
+function detectPotentialConfusions(supplementName: string): string[] {
+  const normalized = supplementName.toLowerCase().trim();
+  const exclusions = new Set<string>();
+
+  // 1. Check explicit confusion risks from knowledge base
+  for (const info of Object.values(SUPPLEMENT_KNOWLEDGE)) {
+    const allNames = [...info.commonNames, ...info.scientificNames].map(n => n.toLowerCase());
+    
+    if (allNames.some(name => normalized.includes(name) || name.includes(normalized))) {
+      // This is our supplement, add its confusion risks
+      if (info.confusionRisk) {
+        info.confusionRisk.forEach(risk => exclusions.add(risk.toLowerCase()));
+      }
+    }
+  }
+
+  // 2. Detect phonetically similar supplements (high similarity but not exact match)
+  for (const info of Object.values(SUPPLEMENT_KNOWLEDGE)) {
+    const allNames = [...info.commonNames, ...info.scientificNames];
+    
+    for (const name of allNames) {
+      const similarity = similarityRatio(normalized, name.toLowerCase());
+      
+      // If similarity is high (0.6-0.95) but not exact, it's a potential confusion
+      if (similarity > 0.6 && similarity < 0.95) {
+        // Add all names of this confusing supplement
+        allNames.forEach(n => exclusions.add(n.toLowerCase()));
+        break;
+      }
+    }
+  }
+
+  // 3. Remove the search term itself and its variations
+  const searchTerms = new Set([normalized]);
+  const matchingInfo = Object.values(SUPPLEMENT_KNOWLEDGE).find(info =>
+    [...info.commonNames, ...info.scientificNames].some(n => 
+      n.toLowerCase() === normalized || normalized.includes(n.toLowerCase())
+    )
+  );
+  
+  if (matchingInfo) {
+    matchingInfo.commonNames.forEach(n => searchTerms.add(n.toLowerCase()));
+    matchingInfo.scientificNames.forEach(n => searchTerms.add(n.toLowerCase()));
+  }
+
+  // Filter out search terms from exclusions
+  return Array.from(exclusions).filter(exc => !searchTerms.has(exc));
+}
 
 export interface QueryOptions {
   supplementName: string;
@@ -35,11 +116,14 @@ export function buildMainQuery(options: QueryOptions): string {
   const mainTerm = buildMainTerm(supplementName, useProximity);
   parts.push(mainTerm);
 
-  // Add exclusions for similar supplements
+  // Add intelligent exclusions for similar supplements
   const exclusions = getExclusions(supplementName);
   if (exclusions.length > 0) {
+    console.log(`[QueryBuilder] Applying ${exclusions.length} exclusions for "${supplementName}":`, exclusions);
     const exclusionQueries = exclusions.map(term => `NOT ${term}[tiab]`);
     parts.push(...exclusionQueries);
+  } else {
+    console.log(`[QueryBuilder] No exclusions needed for "${supplementName}"`);
   }
 
   // Study type filters
@@ -64,11 +148,11 @@ export function buildMainQuery(options: QueryOptions): string {
 }
 
 /**
- * Get exclusion terms for a supplement
+ * Get intelligent exclusion terms for a supplement
+ * Uses knowledge base + similarity detection
  */
 function getExclusions(supplementName: string): string[] {
-  const normalized = supplementName.toLowerCase().trim();
-  return EXCLUSION_MAP[normalized] || [];
+  return detectPotentialConfusions(supplementName);
 }
 
 /**
