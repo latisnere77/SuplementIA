@@ -762,9 +762,12 @@ function ResultsPageContent() {
             const maxPollTime = 180000; // 3 minutes max
             const startTime = Date.now();
             
+            // Use statusUrl from response, or fallback to enrichment-status endpoint
+            const statusUrl = data.statusUrl || `/api/portal/enrichment-status/${data.recommendation_id}`;
+            
             const pollStatus = async () => {
               try {
-                const statusResponse = await fetch(`/api/portal/status/${data.recommendation_id}`);
+                const statusResponse = await fetch(statusUrl);
                 const statusData = await statusResponse.json();
                 
                 console.log('📊 Polling status:', {
