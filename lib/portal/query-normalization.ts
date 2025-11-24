@@ -572,9 +572,6 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'agmatina sulfato': 'Agmatine Sulfate',
   'agmatine': 'Agmatine Sulfate',
   'agmatine sulfate': 'Agmatine Sulfate',
-  'agmatine': 'Agmatine',
-  'agmatina sulfato': 'Agmatine Sulfate',
-  'agmatine sulfate': 'Agmatine Sulfate',
 };
 
 // Chemical forms mapping (for specific compound searches)
