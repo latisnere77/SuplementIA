@@ -427,13 +427,38 @@ function ResultsPageContent() {
       const retryDelay = Math.min(baseDelay * Math.pow(2, retryCount), 10000); // Max 10s
 
       try {
+        // QUICK WIN #1: Validate supplement parameter before making request
+        const supplement = searchParams.get('supplement');
+        if (!supplement) {
+          console.error('❌ Missing supplement parameter');
+          if (isMounted) {
+            setError('Información de suplemento no disponible. Por favor, genera una nueva búsqueda.');
+            setIsLoading(false);
+          }
+          return false;
+        }
+
+        // QUICK WIN #3: Exponential backoff (Fibonacci sequence)
+        const pollingIntervals = [2000, 3000, 5000, 8000, 13000, 21000];
+        const backoffDelay = pollingIntervals[Math.min(retryCount, pollingIntervals.length - 1)];
+        
         // Add timeout to frontend fetch (35s to allow for 30s backend timeout + overhead)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 35000);
         
-        console.log(`🔍 [${retryCount + 1}/${maxRetries + 1}] Fetching recommendation: ${recommendationId}`);
+        // QUICK WIN #2: Structured logging
+        console.log(JSON.stringify({
+          event: 'FETCH_RECOMMENDATION',
+          recommendationId,
+          supplement,
+          attempt: retryCount + 1,
+          maxRetries: maxRetries + 1,
+          backoffDelay,
+          timestamp: new Date().toISOString(),
+        }));
+        
         // Use enrichment-status endpoint instead of deprecated recommendation endpoint
-        const response = await fetch(`/api/portal/enrichment-status/${recommendationId}?supplement=${encodeURIComponent(searchParams.get('supplement') || '')}`, {
+        const response = await fetch(`/api/portal/enrichment-status/${recommendationId}?supplement=${encodeURIComponent(supplement)}`, {
           signal: controller.signal,
         });
         
@@ -447,10 +472,19 @@ function ResultsPageContent() {
             attempt: retryCount + 1,
           });
           
-          // Retry on 503 errors (service unavailable)
+          // Retry on 503 errors (service unavailable) with exponential backoff
           if (response.status === 503 && retryCount < maxRetries) {
-            console.log(`🔄 Retrying after ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
-            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            console.log(JSON.stringify({
+              event: 'RETRY_RECOMMENDATION',
+              recommendationId,
+              supplement,
+              attempt: retryCount + 1,
+              maxRetries,
+              backoffDelay,
+              reason: 'service_unavailable',
+              timestamp: new Date().toISOString(),
+            }));
+            await new Promise(resolve => setTimeout(resolve, backoffDelay));
             return fetchRecommendation(retryCount + 1);
           }
 
