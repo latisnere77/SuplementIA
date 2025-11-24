@@ -506,11 +506,18 @@ export const SUPPLEMENT_MAPPINGS: Record<string, SupplementMapping> = {
     normalizedName: 'Agmatine Sulfate',
     scientificName: 'Agmatine Sulfate',
     commonNames: ['Agmatine', 'Agmatina', 'Agmatine Sulfate', 'Agmatina Sulfato'],
-    pubmedQuery: '(agmatine OR agmatine sulfate) AND (neuroprotection OR pain OR depression OR cognitive OR clinical trial)',
+    pubmedQuery: '(agmatine OR agmatine sulfate) AND (neuroprotection OR pain OR depression OR cognitive)',
     pubmedFilters: {
       yearFrom: 2010,
       rctOnly: false,
-      maxStudies: 10,
+      maxStudies: 5, // Reduce to avoid timeout
+    },
+    cachedData: {
+      lastUpdated: '2025-11-24',
+      studyCount: 9,
+      evidenceGrade: 'C',
+      primaryUses: ['Neuroprotection', 'Pain Management', 'Mood Support'],
+      safetyProfile: 'safe',
     },
     category: 'amino-acid',
     popularity: 'high',
