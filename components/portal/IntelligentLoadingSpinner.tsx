@@ -46,12 +46,23 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
   useEffect(() => {
     const startTime = Date.now();
 
-    // Update progress bar smoothly - reaches 100% at 60 seconds
+    // Update progress bar smoothly - reaches 95% at 45 seconds, then slows down
+    // This prevents the bar from getting stuck at 60-70% when response arrives
     const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      // Progress reaches 100% at 60 seconds (matches typical cache miss time)
-      const newProgress = Math.min((elapsed / 60000) * 100, 100);
-      setProgress(newProgress);
+      
+      // Fast progress to 95% in 45 seconds, then slow crawl to 99%
+      let newProgress;
+      if (elapsed < 45000) {
+        // 0-45s: Linear progress to 95%
+        newProgress = (elapsed / 45000) * 95;
+      } else {
+        // 45s+: Slow crawl from 95% to 99% (never reaches 100% until actual completion)
+        const extraTime = elapsed - 45000;
+        newProgress = 95 + Math.min((extraTime / 30000) * 4, 4); // Max 99%
+      }
+      
+      setProgress(Math.min(newProgress, 99)); // Cap at 99% until real completion
     }, 100);
 
     // Update stages based on time
@@ -152,7 +163,7 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
               <div className="mt-0.5">💡</div>
               <p>
                 Estamos analizando estudios científicos reales de PubMed.
-                Este proceso puede tomar 60-120 segundos para garantizar
+                Este proceso puede tomar 30-60 segundos para garantizar
                 información precisa y verificable.
               </p>
             </div>

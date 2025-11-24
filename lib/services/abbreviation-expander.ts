@@ -1232,15 +1232,7 @@ Generate variations for: "${trimmed}"`;
     // Always include original term as first option
     const finalVariations = [trimmed, ...validated.filter(v => v.toLowerCase() !== trimmed.toLowerCase())];
 
-    console.log(
-      JSON.stringify({
-        event: 'SEARCH_VARIATIONS_SUCCESS',
-        term: trimmed,
-        variationsCount: finalVariations.length,
-        variations: finalVariations,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     return finalVariations;
 

@@ -442,9 +442,10 @@ function ResultsPageContent() {
         const pollingIntervals = [2000, 3000, 5000, 8000, 13000, 21000];
         const backoffDelay = pollingIntervals[Math.min(retryCount, pollingIntervals.length - 1)];
         
-        // Add timeout to frontend fetch (35s to allow for 30s backend timeout + overhead)
+        // Add timeout to frontend fetch (60s to allow for enrichment processing)
+        // Increased from 35s to handle complex supplements like berberine
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 35000);
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
         
         // QUICK WIN #2: Structured logging
         console.log(JSON.stringify({
