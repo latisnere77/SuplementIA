@@ -201,7 +201,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           status: 'processing',
-          jobId,
+          recommendation_id: jobId, // Quiz expects this field
+          jobId, // Keep for backward compatibility
           supplementName: searchTerm,
           originalQuery: category,
           message: 'Enrichment started in background',
