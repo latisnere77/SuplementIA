@@ -1,0 +1,230 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'ANKOSOFT Education Portal - DynamoDB Tables'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: staging
+    AllowedValues:
+      - staging
+      - production
+    Description: Environment name
+
+Resources:
+  # Portal Quizzes Table
+  PortalQuizzesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'ankosoft-portal-quizzes-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      
+      AttributeDefinitions:
+        - AttributeName: user_id
+          AttributeType: S
+        - AttributeName: quiz_id
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: N
+      
+      KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        - AttributeName: quiz_id
+          KeyType: RANGE
+      
+      GlobalSecondaryIndexes:
+        - IndexName: created_at-index
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+      
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      
+      Tags:
+        - Key: Project
+          Value: AnkoSoft
+        - Key: Component
+          Value: EducationPortal
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Portal Recommendations Table
+  PortalRecommendationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'ankosoft-portal-recommendations-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      
+      AttributeDefinitions:
+        - AttributeName: recommendation_id
+          AttributeType: S
+        - AttributeName: quiz_id
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: N
+      
+      KeySchema:
+        - AttributeName: recommendation_id
+          KeyType: HASH
+        - AttributeName: quiz_id
+          KeyType: RANGE
+      
+      GlobalSecondaryIndexes:
+        - IndexName: quiz_id-index
+          KeySchema:
+            - AttributeName: quiz_id
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+      
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      
+      Tags:
+        - Key: Project
+          Value: AnkoSoft
+        - Key: Component
+          Value: EducationPortal
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Portal Check-ins Table
+  PortalCheckinsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'ankosoft-portal-checkins-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      
+      AttributeDefinitions:
+        - AttributeName: checkin_id
+          AttributeType: S
+        - AttributeName: recommendation_id
+          AttributeType: S
+        - AttributeName: week_number
+          AttributeType: N
+      
+      KeySchema:
+        - AttributeName: checkin_id
+          KeyType: HASH
+        - AttributeName: recommendation_id
+          KeyType: RANGE
+      
+      GlobalSecondaryIndexes:
+        - IndexName: recommendation_id-index
+          KeySchema:
+            - AttributeName: recommendation_id
+              KeyType: HASH
+            - AttributeName: week_number
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+      
+      Tags:
+        - Key: Project
+          Value: AnkoSoft
+        - Key: Component
+          Value: EducationPortal
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Portal Referrals Table
+  PortalReferralsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'ankosoft-portal-referrals-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      
+      AttributeDefinitions:
+        - AttributeName: referral_id
+          AttributeType: S
+        - AttributeName: referrer_user_id
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+      
+      KeySchema:
+        - AttributeName: referral_id
+          KeyType: HASH
+        - AttributeName: referrer_user_id
+          KeyType: RANGE
+      
+      GlobalSecondaryIndexes:
+        - IndexName: referrer_user_id-index
+          KeySchema:
+            - AttributeName: referrer_user_id
+              KeyType: HASH
+            - AttributeName: status
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+      
+      Tags:
+        - Key: Project
+          Value: AnkoSoft
+        - Key: Component
+          Value: EducationPortal
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  PortalQuizzesTableName:
+    Description: Portal Quizzes Table Name
+    Value: !Ref PortalQuizzesTable
+    Export:
+      Name: !Sub '${AWS::StackName}-PortalQuizzesTable'
+  
+  PortalRecommendationsTableName:
+    Description: Portal Recommendations Table Name
+    Value: !Ref PortalRecommendationsTable
+    Export:
+      Name: !Sub '${AWS::StackName}-PortalRecommendationsTable'
+  
+  PortalCheckinsTableName:
+    Description: Portal Check-ins Table Name
+    Value: !Ref PortalCheckinsTable
+    Export:
+      Name: !Sub '${AWS::StackName}-PortalCheckinsTable'
+  
+  PortalReferralsTableName:
+    Description: Portal Referrals Table Name
+    Value: !Ref PortalReferralsTable
+    Export:
+      Name: !Sub '${AWS::StackName}-PortalReferralsTable'
+

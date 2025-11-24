@@ -1,0 +1,10 @@
+# Exclude MCP servers from Vercel build
+mcp-servers/
+
+# Exclude test scripts
+scripts/test-*.ts
+scripts/debug-*.ts
+
+# Exclude documentation
+*.md
+!README.md
