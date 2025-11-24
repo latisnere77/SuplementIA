@@ -69,12 +69,7 @@ export async function GET(
     }
     
     // Not cached yet - still processing
-    console.log(JSON.stringify({
-      event: 'ENRICHMENT_STATUS_PROCESSING',
-      jobId,
-      supplement: supplementName,
-      timestamp: new Date().toISOString(),
-    }));
+    
     
     return NextResponse.json({
       success: true,
