@@ -304,7 +304,7 @@ export async function POST(request: NextRequest) {
             recommendation_id: responseData.recommendation_id,
             status: 'processing',
             message: responseData.message || 'Recomendación en proceso',
-            statusUrl: responseData.statusUrl || `/api/portal/status/${responseData.recommendation_id}`,
+            statusUrl: responseData.statusUrl || `/api/portal/enrichment-status/${responseData.recommendation_id}`,
             estimatedTime: responseData.estimatedTime || '60-120 segundos',
             pollInterval: responseData.pollInterval || '3 segundos',
             requestId,
