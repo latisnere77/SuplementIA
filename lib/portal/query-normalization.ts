@@ -200,6 +200,8 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   // Ácidos Grasos
   'acido alfa lipoico': 'Alpha Lipoic Acid',
   'ácido alfa lipoico': 'Alpha Lipoic Acid',
+  'alpha lipoic acid': 'Alpha Lipoic Acid',
+  'alpha-lipoic acid': 'Alpha Lipoic Acid',
   'ala': 'Alpha Lipoic Acid',
   'cla': 'Conjugated Linoleic Acid',
   'acido linoleico conjugado': 'Conjugated Linoleic Acid',
