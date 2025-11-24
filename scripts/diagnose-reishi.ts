@@ -113,7 +113,7 @@ async function diagnoseReishi() {
   console.log('1. Add "reishi" → "Ganoderma lucidum" to query normalization');
   console.log('2. Add "reishi mushroom" as alternative search term');
   console.log('3. Implement LLM-based query expansion for unknown terms');
-  console.log('4. Add common mushroom supplements to the database');
+  
 }
 
 diagnoseReishi().catch(console.error);
