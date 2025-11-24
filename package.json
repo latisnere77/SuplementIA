@@ -9,8 +9,12 @@
     "start": "next start",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "predeploy": "npm run type-check && npm run build",
-    "deploy": "git push origin main"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "validate": "npm run type-check && npm run build && npm test -- --passWithNoTests",
+    "predeploy": "npm run validate",
+    "deploy": "git push origin main",
+    "prepare": "husky"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.936.0",
@@ -43,11 +47,20 @@
   "devDependencies": {
     "@aws-sdk/client-cloudwatch-logs": "^3.936.0",
     "@aws-sdk/client-xray": "^3.936.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "20.17.9",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "eslint": "^8.0.0",
     "eslint-config-next": "^14.2.33",
+    "fast-check": "^4.3.0",
+    "husky": "^9.1.7",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "lint-staged": "^16.2.7",
     "tsx": "^4.19.2"
   }
 }
