@@ -3,6 +3,17 @@
  * Constructs optimized PubMed queries
  */
 
+/**
+ * Exclusion map to prevent confusion between similar supplement names
+ * Maps supplement name to terms that should be explicitly excluded
+ */
+const EXCLUSION_MAP: Record<string, string[]> = {
+  'ginger': ['ginseng', 'panax'],
+  'ginseng': ['ginger', 'zingiber'],
+  'ashwagandha': ['rhodiola', 'ginseng'],
+  'rhodiola': ['ashwagandha', 'ginseng'],
+};
+
 export interface QueryOptions {
   supplementName: string;
   useProximity?: boolean;
@@ -24,6 +35,13 @@ export function buildMainQuery(options: QueryOptions): string {
   const mainTerm = buildMainTerm(supplementName, useProximity);
   parts.push(mainTerm);
 
+  // Add exclusions for similar supplements
+  const exclusions = getExclusions(supplementName);
+  if (exclusions.length > 0) {
+    const exclusionQueries = exclusions.map(term => `NOT ${term}[tiab]`);
+    parts.push(...exclusionQueries);
+  }
+
   // Study type filters
   if (options.studyTypes && options.studyTypes.length > 0) {
     const typeQueries = options.studyTypes.map(type => `"${type}"[pt]`);
@@ -43,6 +61,14 @@ export function buildMainQuery(options: QueryOptions): string {
   }
 
   return parts.join(' AND ');
+}
+
+/**
+ * Get exclusion terms for a supplement
+ */
+function getExclusions(supplementName: string): string[] {
+  const normalized = supplementName.toLowerCase().trim();
+  return EXCLUSION_MAP[normalized] || [];
 }
 
 /**

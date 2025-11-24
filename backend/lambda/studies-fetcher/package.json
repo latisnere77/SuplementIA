@@ -10,7 +10,7 @@
     "lint": "eslint src/**/*.ts",
     "package": "npm run build && npm run package:zip",
     "package:zip": "cd dist && zip -r ../studies-fetcher.zip . && cd ..",
-    "deploy": "npm run package && aws lambda update-function-code --function-name suplementia-studies-fetcher --zip-file fileb://studies-fetcher.zip"
+    "deploy": "npm run package && aws lambda update-function-code --function-name suplementia-studies-fetcher-dev --zip-file fileb://studies-fetcher.zip"
   },
   "keywords": [
     "pubmed",
