@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
-export const maxDuration = 100;
+export const maxDuration = 120; // Increased to 120s to allow Claude processing
 export const dynamic = 'force-dynamic';
 
 // Simple UUID generator
@@ -100,9 +100,9 @@ export async function POST(request: NextRequest) {
         supplementId: supplementName,
         category: category || 'general',
         forceRefresh: forceRefresh || false,
-        studies: studies,
+        studies: studies.slice(0, 5), // Limit to 5 studies to prevent timeout
       }),
-      signal: AbortSignal.timeout(60000), // 60s timeout for Claude
+      signal: AbortSignal.timeout(90000), // 90s timeout for Claude (increased from 60s)
     });
     
     if (!enrichResponse.ok) {
