@@ -11,6 +11,7 @@ import { randomUUID } from 'crypto';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
+import { fastLookup, getOptimizedEnrichmentParams } from '@/lib/portal/fast-lookup-service';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -126,10 +127,30 @@ export async function POST(request: NextRequest) {
       })
     );
 
+    // 🚀 FAST LOOKUP: Check if we have pre-calculated mappings
+    const lookupResult = await fastLookup(sanitizedCategory);
+    
+    console.log(
+      JSON.stringify({
+        event: 'FAST_LOOKUP_RESULT',
+        requestId,
+        cached: lookupResult.cached,
+        normalizedName: lookupResult.normalizedName,
+        scientificName: lookupResult.scientificName,
+        lookupTime: lookupResult.lookupTime,
+        category: lookupResult.category,
+        popularity: lookupResult.popularity,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
     // Call our intelligent enrichment system with extended timeout
     // Using enrich-v2 (simplified version) to avoid TDZ issues
     const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich-v2`;
     const enrichStartTime = Date.now();
+    
+    // 🚀 OPTIMIZATION: Use optimized parameters from mapping if available
+    const enrichParams = getOptimizedEnrichmentParams(sanitizedCategory);
     
     console.log(
       JSON.stringify({
@@ -138,6 +159,8 @@ export async function POST(request: NextRequest) {
         category: searchTerm,
         originalCategory: category,
         enrichApiUrl: ENRICH_API_URL,
+        optimizedParams: enrichParams,
+        usedMapping: lookupResult.cached,
         timestamp: new Date().toISOString(),
       })
     );
@@ -156,12 +179,14 @@ export async function POST(request: NextRequest) {
           'X-Job-ID': jobId,
         },
         body: JSON.stringify({
-          supplementName: searchTerm,
-          category: searchTerm,
+          supplementName: enrichParams.supplementName,
+          category: enrichParams.supplementName,
           forceRefresh: false, // Use cache when available (96% faster: 1s vs 30s)
-          maxStudies: 10, // Use up to 10 studies for comprehensive analysis
-          rctOnly: false,
-          yearFrom: 2010,
+          maxStudies: enrichParams.maxStudies || 10,
+          rctOnly: enrichParams.rctOnly || false,
+          yearFrom: enrichParams.yearFrom || 2010,
+          // 🚀 NEW: Pass optimized PubMed query if available
+          customPubMedQuery: enrichParams.pubmedQuery,
           jobId,
         }),
         signal: AbortSignal.timeout(30000), // 30s timeout - if longer, use async
@@ -247,19 +272,36 @@ export async function POST(request: NextRequest) {
         })
       );
 
-      // STRICT VALIDATION: DO NOT generate fake data
-      // Return 404 with clear message
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'insufficient_data',
-          message: `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
-          suggestion: 'Intenta buscar con un nombre más específico o verifica la ortografía.',
-          requestId,
-          category: sanitizedCategory,
-        },
-        { status: 404 }
-      );
+      // Differentiate between "no data" (404) vs system errors (500, timeout)
+      if (enrichResponse.status === 404 && errorData.error === 'insufficient_data') {
+        // TRUE 404: No studies found - this is expected for some supplements
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'insufficient_data',
+            message: errorData.message || `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
+            suggestion: errorData.suggestion || 'Intenta buscar con un nombre más específico o verifica la ortografía.',
+            requestId,
+            category: sanitizedCategory,
+          },
+          { status: 404 }
+        );
+      } else {
+        // SYSTEM ERROR: Lambda failed, timeout, or other server error
+        // Return 500 so frontend shows system error (red) not "no data" (yellow)
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'enrichment_failed',
+            message: `Hubo un error al procesar la información de "${sanitizedCategory}". Por favor, intenta de nuevo.`,
+            details: errorData.error || errorData.message || 'Enrichment service error',
+            statusCode: enrichResponse.status,
+            requestId,
+            category: sanitizedCategory,
+          },
+          { status: 500 }
+        );
+      }
     }
 
     const enrichData = await enrichResponse.json();
@@ -290,23 +332,39 @@ export async function POST(request: NextRequest) {
           success: enrichData.success,
           hasData: !!enrichData.data,
           enrichDataKeys: Object.keys(enrichData),
+          enrichError: enrichData.error,
           timestamp: new Date().toISOString(),
         })
       );
 
-      // STRICT VALIDATION: DO NOT generate fake data
-      // Return 404 with clear message
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'insufficient_data',
-          message: `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
-          suggestion: 'Intenta buscar con un nombre más específico o verifica la ortografía.',
-          requestId,
-          category: sanitizedCategory,
-        },
-        { status: 404 }
-      );
+      // Check if this is a true "no data" case or a system error
+      if (enrichData.error === 'insufficient_data') {
+        // TRUE insufficient data: No studies found
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'insufficient_data',
+            message: enrichData.message || `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
+            suggestion: enrichData.suggestion || 'Intenta buscar con un nombre más específico o verifica la ortografía.',
+            requestId,
+            category: sanitizedCategory,
+          },
+          { status: 404 }
+        );
+      } else {
+        // SYSTEM ERROR: Enrichment failed for technical reasons
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'enrichment_failed',
+            message: `Hubo un error al procesar la información de "${sanitizedCategory}". Por favor, intenta de nuevo.`,
+            details: enrichData.error || 'Enrichment processing error',
+            requestId,
+            category: sanitizedCategory,
+          },
+          { status: 500 }
+        );
+      }
     }
 
     // Transform enriched data to recommendation format
