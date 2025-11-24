@@ -92,11 +92,33 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'tribulus': 'Tribulus Terrestris',
   'tribulus terrestris': 'Tribulus Terrestris',
   
-  // Antioxidantes
+  // Antioxidantes y Coenzimas
   'coenzima q10': 'CoQ10',
   'coenzima q': 'CoQ10',
   'co q10': 'CoQ10',
   'coq10': 'CoQ10',
+  'pqq': 'PQQ',
+  'pirroloquinolina quinona': 'PQQ',
+  'pyrroloquinoline quinone': 'PQQ',
+  'nac': 'NAC',
+  'n-acetil cisteina': 'NAC',
+  'n-acetyl cysteine': 'NAC',
+  'sam': 'SAM-e',
+  's-adenosil metionina': 'SAM-e',
+  's-adenosyl methionine': 'SAM-e',
+  'same': 'SAM-e',
+  'tmg': 'TMG',
+  'trimetilglicina': 'TMG',
+  'trimethylglycine': 'TMG',
+  'betaina': 'Betaine',
+  'betaine': 'Betaine',
+  'nmn': 'NMN',
+  'nicotinamida mononucleotido': 'NMN',
+  'nicotinamide mononucleotide': 'NMN',
+  'nad': 'NAD+',
+  'nad+': 'NAD+',
+  'nicotinamida adenina dinucleotido': 'NAD+',
+  'nicotinamide adenine dinucleotide': 'NAD+',
   'resveratrol': 'Resveratrol',
   'astaxantina': 'Astaxanthin',
   'astaxanthin': 'Astaxanthin',
@@ -375,17 +397,27 @@ function levenshteinDistance(a: string, b: string): number {
 
 /**
  * Find fuzzy match in TYPO_CORRECTIONS dictionary
- * Returns the best match within threshold (max distance of 3)
+ * Uses relative similarity threshold to avoid false positives with short words
+ * Requires at least 60% similarity to consider a match
  */
 function findFuzzyMatch(query: string): { match: string; distance: number } | null {
-  const threshold = 3;
+  const minSimilarityThreshold = 0.6; // Minimum 60% similarity required
   let bestMatch: { match: string; distance: number } | null = null;
   
   for (const [key, value] of Object.entries(TYPO_CORRECTIONS)) {
     const cleanedKey = cleanQuery(key);
     const distance = levenshteinDistance(query, cleanedKey);
     
-    if (distance <= threshold && distance > 0) {
+    if (distance === 0) continue; // Skip exact matches (handled earlier)
+    
+    // Calculate similarity as a percentage
+    const maxLength = Math.max(query.length, cleanedKey.length);
+    const similarity = 1 - (distance / maxLength);
+    
+    // Only accept if similarity >= 60%
+    // This prevents false positives like PQQ → EPA (0% similar)
+    // But allows typos like "magenesio" → "magnesio" (89% similar)
+    if (similarity >= minSimilarityThreshold) {
       if (!bestMatch || distance < bestMatch.distance) {
         bestMatch = { match: value, distance };
       }
