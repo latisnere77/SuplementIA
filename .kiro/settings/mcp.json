@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "uvx",
+      "args": [
+        "mcp-memory"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "create_entities",
+        "create_relations",
+        "add_observations",
+        "delete_observations",
+        "delete_entities",
+        "delete_relations",
+        "read_graph",
+        "search_nodes",
+        "open_nodes",
+        "add-note"
+      ]
+    },
+    "sentry": {
+      "url": "https://mcp.sentry.dev/mcp",
+      "disabled": false,
+      "autoApprove": []
+    },
+    "sequential-thinking": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-sequential-thinking"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

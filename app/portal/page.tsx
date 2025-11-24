@@ -17,6 +17,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { cn } from '@/lib/utils';
 import { useAutocomplete } from '@/lib/portal/useAutocomplete';
 import { validateSupplementQuery } from '@/lib/portal/query-validator';
+import { normalizeQuery } from '@/lib/portal/query-normalization';
 import FAQSection from '@/components/portal/FAQSection';
 
 export default function PortalPage() {
@@ -154,10 +155,14 @@ export default function PortalPage() {
       return;
     }
 
+    // Normalizar query (español → inglés, typos, etc.)
+    const normalized = normalizeQuery(query.trim());
+    const searchTerm = normalized.confidence >= 0.7 ? normalized.normalized : query.trim();
+
     // Limpiar error previo y proceder
     setValidationError(null);
     setIsLoading(true);
-    router.push(`/portal/results?q=${encodeURIComponent(query.trim())}`);
+    router.push(`/portal/results?q=${encodeURIComponent(searchTerm)}`);
   };
 
   const handleCategoryClick = (categoryId: string) => {
