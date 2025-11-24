@@ -92,6 +92,33 @@ const TYPO_CORRECTIONS: Record<string, string> = {
   'tribulus': 'Tribulus Terrestris',
   'tribulus terrestris': 'Tribulus Terrestris',
   
+  // Hongos Medicinales
+  'reishi': 'Ganoderma lucidum',
+  'reishi mushroom': 'Ganoderma lucidum',
+  'hongo reishi': 'Ganoderma lucidum',
+  'ganoderma': 'Ganoderma lucidum',
+  'lingzhi': 'Ganoderma lucidum',
+  'lion\'s mane': 'Hericium erinaceus',
+  'lions mane': 'Hericium erinaceus',
+  'melena de leon': 'Hericium erinaceus',
+  'melena león': 'Hericium erinaceus',
+  'hericium': 'Hericium erinaceus',
+  'chaga': 'Chaga',
+  'chaga mushroom': 'Chaga',
+  'hongo chaga': 'Chaga',
+  'inonotus obliquus': 'Chaga',
+  'cordyceps': 'Cordyceps',
+  'cordyceps sinensis': 'Cordyceps',
+  'hongo cordyceps': 'Cordyceps',
+  'turkey tail': 'Turkey Tail',
+  'cola de pavo': 'Turkey Tail',
+  'trametes versicolor': 'Turkey Tail',
+  'coriolus': 'Turkey Tail',
+  'shiitake': 'Shiitake',
+  'lentinula edodes': 'Shiitake',
+  'maitake': 'Maitake',
+  'grifola frondosa': 'Maitake',
+  
   // Antioxidantes y Coenzimas
   'coenzima q10': 'CoQ10',
   'coenzima q': 'CoQ10',
@@ -401,7 +428,23 @@ function levenshteinDistance(a: string, b: string): number {
  * Requires at least 60% similarity to consider a match
  */
 function findFuzzyMatch(query: string): { match: string; distance: number } | null {
-  const minSimilarityThreshold = 0.6; // Minimum 60% similarity required
+  // CRITICAL: Fuzzy matching is DISABLED for terms longer than 6 characters
+  // Reason: Long terms like "melatonina" (10 chars) were matching "l-teanina" (9 chars)
+  // with 63.6% similarity, causing wrong supplement results
+  // 
+  // For long terms, users should either:
+  // 1. Use autocomplete suggestions
+  // 2. Rely on LLM expansion (which is more accurate)
+  // 3. Get "not found" message (better than wrong supplement!)
+  //
+  // Fuzzy matching is ONLY for short typos like:
+  // - "magenesio" → "magnesio" (1 char typo)
+  // - "cinc" → "zinc" (similar short words)
+  if (query.length > 6) {
+    return null; // Disable fuzzy matching for long terms
+  }
+
+  const minSimilarityThreshold = 0.75; // Increased from 60% to 75% for stricter matching
   let bestMatch: { match: string; distance: number } | null = null;
   
   for (const [key, value] of Object.entries(TYPO_CORRECTIONS)) {
@@ -414,9 +457,12 @@ function findFuzzyMatch(query: string): { match: string; distance: number } | nu
     const maxLength = Math.max(query.length, cleanedKey.length);
     const similarity = 1 - (distance / maxLength);
     
-    // Only accept if similarity >= 60%
-    // This prevents false positives like PQQ → EPA (0% similar)
-    // But allows typos like "magenesio" → "magnesio" (89% similar)
+    // Only accept if similarity >= 75%
+    // This prevents false positives like:
+    // - PQQ → EPA (0% similar) ❌
+    // - melatonina → l-teanina (63% similar) ❌
+    // But still allows real typos like:
+    // - magenesio → magnesio (89% similar) ✅
     if (similarity >= minSimilarityThreshold) {
       if (!bestMatch || distance < bestMatch.distance) {
         bestMatch = { match: value, distance };
