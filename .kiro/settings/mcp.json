@@ -1,9 +1,10 @@
 {
   "mcpServers": {
     "memory": {
-      "command": "uvx",
+      "command": "npx",
       "args": [
-        "mcp-memory"
+        "-y",
+        "@modelcontextprotocol/server-memory"
       ],
       "env": {
         "FASTMCP_LOG_LEVEL": "ERROR"

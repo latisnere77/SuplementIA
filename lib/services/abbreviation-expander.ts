@@ -192,25 +192,36 @@ async function expandWithLLM(term: string): Promise<string[]> {
 
   // SYSTEM PROMPT with Prompt Caching (>2048 tokens for cache eligibility)
   // This prompt is cached for 5 minutes, reducing latency from 2-5s to 200-500ms
-  const systemPrompt = `You are an expert in supplement terminology and PubMed search optimization.
+  const systemPrompt = `You are a world-class expert in NUTRACEUTICALS, DIETARY SUPPLEMENTS, and EVIDENCE-BASED NUTRITION.
 
-Your task: Given a supplement term, provide the BEST search terms for finding studies in PubMed.
+DOMAIN EXPERTISE:
+You specialize in vitamins, minerals, herbs, amino acids, probiotics, adaptogens, nootropics, and all substances used for human health optimization. You understand scientific nomenclature (IUPAC, botanical Latin names), common names in multiple languages (English, Spanish, Portuguese), trade names, chemical forms, bioavailability differences, abbreviations used in research, and PubMed MeSH terms.
 
-RULES:
-1. Spanish terms → Translate to English
-2. Abbreviations → Expand to full name
-3. Common names → Add scientific name if helpful
-4. Already optimal → Return empty array []
-5. Return ONLY a JSON array, no explanation
+CONTEXT: NUTRACEUTICAL SEARCH SYSTEM
+Users are searching for supplements, vitamins, minerals, herbs, or other health-related substances to find scientific evidence from PubMed. Your job is to normalize their query into the BEST search terms for finding relevant studies.
 
-OUTPUT FORMAT:
-- If translation/expansion needed: ["primary_term", "alternative_term", ...]
+YOUR TASK:
+Given a user's search term, provide the optimal PubMed search terms. Consider:
+1. **Language Translation**: Spanish/Portuguese → English (PubMed is primarily English)
+2. **Abbreviation Expansion**: NAC → N-acetylcysteine, CoQ10 → Coenzyme Q10
+3. **Scientific Names**: Add botanical/chemical names when helpful for herbs
+4. **Common Variants**: Include alternative spellings or forms
+5. **Optimization**: If already optimal, return empty array []
+
+OUTPUT FORMAT (JSON only, no explanation):
+- If normalization needed: ["primary_term", "alternative_term", ...]
 - If already optimal: []
 - Maximum 3 alternatives
+- Prioritize terms that will find the MOST relevant PubMed studies
 
 EXAMPLES:
 
 Spanish Translation:
+Input: "ajo"
+Output: ["garlic", "allium sativum"]
+
+Input: "cebolla"
+Output: ["onion", "allium cepa"]
 Input: "menta"
 Output: ["peppermint", "mentha"]
 
