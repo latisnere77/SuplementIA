@@ -24,11 +24,79 @@ import { ViewToggle, type ViewMode } from '@/components/portal/ViewToggle';
 import { ErrorState } from '@/components/portal/ErrorState';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
-import { suggestSupplementCorrection } from '@/lib/portal/supplement-suggestions';
+import { getBestSuggestion, getSuggestions } from '@/lib/portal/supplement-suggestions';
 import { searchAnalytics } from '@/lib/portal/search-analytics';
 import { traceSearch } from '@/lib/portal/xray-client';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
+
+// ====================================
+// CACHE VALIDATION HELPER
+// ====================================
+
+/**
+ * Validates cached recommendation data
+ * Checks for null/undefined, metadata structure, and real study data
+ * 
+ * @param cachedRecommendation - The cached recommendation object to validate
+ * @returns true if cache is valid, false otherwise
+ */
+function isValidCache(cachedRecommendation: any): boolean {
+  console.log('[Cache Validation] Starting validation...');
+  
+  // Check 1: Null/undefined recommendation
+  if (!cachedRecommendation) {
+    console.log('[Cache Validation] ❌ Recommendation is null or undefined');
+    return false;
+  }
+
+  // Check 2: Validate basic structure
+  if (!cachedRecommendation.recommendation_id || !cachedRecommendation.category) {
+    console.log('[Cache Validation] ❌ Missing required fields (recommendation_id or category)');
+    return false;
+  }
+
+  // Check 3: Validate metadata structure
+  const metadata = cachedRecommendation._enrichment_metadata || {};
+  const hasMetadata = Object.keys(metadata).length > 0;
+  
+  console.log('[Cache Validation] Metadata check:', {
+    hasMetadata,
+    metadataKeys: Object.keys(metadata),
+  });
+
+  // Check 4: Validate study data - check totalStudies OR studiesUsed > 0
+  const totalStudies = cachedRecommendation.evidence_summary?.totalStudies || 0;
+  const studiesUsed = metadata.studiesUsed || 0;
+  
+  // Valid if either totalStudies > 0 OR studiesUsed > 0
+  const hasRealData = totalStudies > 0 || studiesUsed > 0;
+  
+  console.log('[Cache Validation] Study data check:', {
+    totalStudies,
+    studiesUsed,
+    hasRealData,
+    category: cachedRecommendation.category,
+  });
+
+  // Check 5: Additional validation - ensure not fake/generated data
+  // Fake data has totalStudies > 0 but studiesUsed = 0
+  const hasFakeData = totalStudies > 0 && studiesUsed === 0 && !hasMetadata;
+  
+  if (hasFakeData) {
+    console.log('[Cache Validation] ❌ Detected fake/generated data (totalStudies > 0 but studiesUsed = 0)');
+    return false;
+  }
+
+  // Final result
+  const isValid = hasRealData;
+  console.log('[Cache Validation] Final result:', {
+    isValid,
+    reason: isValid ? 'Has real study data' : 'No real study data found',
+  });
+
+  return isValid;
+}
 
 // ====================================
 // ADAPTER FUNCTION - Client-Side Transformation
@@ -290,7 +358,22 @@ function ResultsPageContent() {
   const router = useRouter();
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | {
+    type: 'insufficient_scientific_data' | 'system_error' | 'network_error' | 'generic';
+    message: string;
+    searchedFor?: string;
+    suggestions?: Array<{
+      name: string;
+      confidence?: number;
+      hasStudies?: boolean;
+    }>;
+    metadata?: {
+      normalizedQuery?: string;
+      requestId?: string;
+      timestamp?: string;
+      [key: string]: unknown;
+    };
+  } | null>(null);
   const { t } = useTranslation();
   const { user } = useAuth();
   const isOnline = useOnlineStatus();
@@ -302,6 +385,21 @@ function ResultsPageContent() {
   const [examineContent, setExamineContent] = useState<any>(null);
   const [useAsyncEnrichment, setUseAsyncEnrichment] = useState(false);
   const [asyncSupplementName, setAsyncSupplementName] = useState<string | null>(null);
+
+  // ====================================
+  // LOGGING: State Change Tracking
+  // ====================================
+  useEffect(() => {
+    console.log('[ResultsPage] State changed:', {
+      hasRecommendation: !!recommendation,
+      recommendationId: recommendation?.recommendation_id,
+      recommendationCategory: recommendation?.category,
+      isLoading,
+      hasError: !!error,
+      errorMessage: error,
+      timestamp: new Date().toISOString(),
+    });
+  }, [recommendation, isLoading, error]);
 
   // Check subscription status
   useEffect(() => {
@@ -368,6 +466,37 @@ function ResultsPageContent() {
 
     // Simple client-side transformation (no API calls needed)
     const transformed = transformRecommendationToEvidence(recommendation);
+    
+    // Log section availability
+    const supplement = (recommendation as any).supplement || {};
+    console.log('[Recommendation Sections]', {
+      category: recommendation.category,
+      hasWorksFor: Array.isArray(transformed.worksFor) && transformed.worksFor.length > 0,
+      worksForCount: transformed.worksFor?.length || 0,
+      hasDoesntWorkFor: Array.isArray(transformed.doesntWorkFor) && transformed.doesntWorkFor.length > 0,
+      doesntWorkForCount: transformed.doesntWorkFor?.length || 0,
+      hasDosage: !!transformed.dosage,
+      dosageKeys: transformed.dosage ? Object.keys(transformed.dosage) : [],
+      hasSideEffects: Array.isArray(transformed.sideEffects) && transformed.sideEffects.length > 0,
+      sideEffectsCount: transformed.sideEffects?.length || 0,
+      hasInteractions: transformed.interactions && (
+        (Array.isArray(transformed.interactions.medications) && transformed.interactions.medications.length > 0) ||
+        (Array.isArray(transformed.interactions.supplements) && transformed.interactions.supplements.length > 0)
+      ),
+      hasContraindications: Array.isArray(transformed.contraindications) && transformed.contraindications.length > 0,
+    });
+    
+    // Log missing sections
+    if (!transformed.worksFor || transformed.worksFor.length === 0) {
+      console.warn('[Recommendation Sections] ⚠️ Missing worksFor section for:', recommendation.category);
+    }
+    if (!transformed.dosage) {
+      console.warn('[Recommendation Sections] ⚠️ Missing dosage section for:', recommendation.category);
+    }
+    if (!transformed.sideEffects || transformed.sideEffects.length === 0) {
+      console.warn('[Recommendation Sections] ⚠️ Missing sideEffects section for:', recommendation.category);
+    }
+    
     setTransformedEvidence(transformed);
     
     // Also transform to Examine format
@@ -386,38 +515,60 @@ function ResultsPageContent() {
       if (typeof window !== 'undefined' && retryCount === 0) {
         try {
           const cacheKey = `recommendation_${recommendationId}`;
+          console.log('[Cache Retrieval] Checking cache for key:', cacheKey);
           const cachedData = localStorage.getItem(cacheKey);
 
           if (cachedData) {
+            console.log('[Cache Retrieval] Found cached data, parsing...');
             const { recommendation, timestamp, ttl } = JSON.parse(cachedData);
             const age = Date.now() - timestamp;
 
-            // Check if cache has inconsistent data (fake studies)
-            const metadata = (recommendation as any)?._enrichment_metadata || {};
-            const totalStudies = recommendation?.evidence_summary?.totalStudies || 0;
-            const studiesUsed = metadata.studiesUsed || 0;
+            console.log('[Cache Retrieval] Cache metadata:', {
+              cacheKey,
+              age: Math.floor(age / 1000 / 60) + ' minutes',
+              ttl: Math.floor(ttl / 1000 / 60 / 60) + ' hours',
+              expired: age >= ttl,
+            });
 
-            // If totalStudies > 0 but studiesUsed = 0, this is fake/generated data from old cache
-            const hasFakeData = totalStudies > 0 && studiesUsed === 0;
-
-            if (hasFakeData) {
-              console.log('⚠️  Cache has fake/generated data (totalStudies:', totalStudies, 'studiesUsed:', studiesUsed, '), invalidating cache');
+            // Check if cache is expired
+            if (age >= ttl) {
+              console.log('[Cache Retrieval] ⚠️ Cache expired, removing:', cacheKey);
               localStorage.removeItem(cacheKey);
-            } else if (age < ttl) {
-              // Cache is still valid and has consistent data
-              console.log('✅ Found recommendation in localStorage cache (age:', Math.floor(age / 1000 / 60), 'minutes)');
-              if (isMounted) {
-                setRecommendation(recommendation);
-                setIsLoading(false);
-              }
-              return true; // Success - used cache
+              console.log('[Cache Retrieval] Cache miss - expired');
+              // Continue to fetch fresh data
             } else {
-              console.log('⚠️  Cache expired, removing:', cacheKey);
-              localStorage.removeItem(cacheKey);
+              // Validate cache data using helper function
+              const isValid = isValidCache(recommendation);
+              
+              if (!isValid) {
+                console.log('[Cache Retrieval] ❌ Cache validation failed, removing invalid cache:', cacheKey);
+                localStorage.removeItem(cacheKey);
+                console.log('[Cache Retrieval] Cache miss - invalid data');
+                // Continue to fetch fresh data
+              } else {
+                // Cache is valid - use it
+                console.log('[Cache Retrieval] ✅ Cache hit - valid data found');
+                console.log('[Cache Retrieval] Using cached recommendation:', {
+                  id: recommendation.recommendation_id,
+                  category: recommendation.category,
+                });
+                if (isMounted) {
+                  console.log('[State Update] Before setting recommendation from cache - clearing error first');
+                  setError(null); // Clear error before setting recommendation
+                  console.log('[State Update] Setting recommendation from cache');
+                  setRecommendation(recommendation);
+                  console.log('[State Update] Setting isLoading to false');
+                  setIsLoading(false);
+                }
+                return true; // Success - used cache
+              }
             }
+          } else {
+            console.log('[Cache Retrieval] Cache miss - no data found for key:', cacheKey);
           }
         } catch (cacheError) {
-          console.warn('Failed to read from cache:', cacheError);
+          console.error('[Cache Retrieval] ❌ Error reading from cache:', cacheError);
+          console.log('[Cache Retrieval] Cache miss - error occurred');
         }
       }
 
@@ -432,6 +583,8 @@ function ResultsPageContent() {
         if (!supplement) {
           console.error('❌ Missing supplement parameter');
           if (isMounted) {
+            console.log('[State Update] Setting error - clearing recommendation first');
+            setRecommendation(null); // Clear recommendation before setting error
             setError('Información de suplemento no disponible. Por favor, genera una nueva búsqueda.');
             setIsLoading(false);
           }
@@ -494,6 +647,8 @@ function ResultsPageContent() {
             console.log('⚠️  410 Gone - recommendation was already delivered in quiz response');
             console.log('⚠️  Redirecting to homepage to generate new recommendation');
             if (isMounted) {
+              console.log('[State Update] Setting error - clearing recommendation first');
+              setRecommendation(null); // Clear recommendation before setting error
               setError('Esta recomendación ya no está disponible. Por favor, genera una nueva búsqueda.');
               setIsLoading(false);
               // Redirect to homepage after 2 seconds
@@ -515,6 +670,8 @@ function ResultsPageContent() {
           }
           
           if (isMounted) {
+            console.log('[State Update] Setting error - clearing recommendation first');
+            setRecommendation(null); // Clear recommendation before setting error
             setError(errorMessage);
             setIsLoading(false);
           }
@@ -523,17 +680,29 @@ function ResultsPageContent() {
         
         const data = await response.json();
         
-        console.log('📊 API Response:', {
+        console.log('[API Response] Received data:', {
           success: data.success,
           hasRecommendation: !!data.recommendation,
           status: data.status,
           keys: Object.keys(data),
+          recommendationId: data.recommendation?.recommendation_id,
+          category: data.recommendation?.category,
         });
         
         // Handle recommendation data - check multiple possible formats
         if (data.recommendation) {
+          console.log('[API Response] ✅ Setting recommendation state:', {
+            id: data.recommendation.recommendation_id,
+            category: data.recommendation.category,
+            hasEvidenceSummary: !!data.recommendation.evidence_summary,
+            totalStudies: data.recommendation.evidence_summary?.totalStudies || 0,
+          });
           if (isMounted) {
+            console.log('[State Update] Before setting recommendation - clearing error first');
+            setError(null); // Clear error before setting recommendation
+            console.log('[State Update] Setting recommendation');
             setRecommendation(data.recommendation);
+            console.log('[State Update] Setting isLoading to false');
             setIsLoading(false);
           }
           return true; // Success
@@ -566,6 +735,8 @@ function ResultsPageContent() {
         if (!data.success) {
           console.error('❌ API returned error:', data);
           if (isMounted) {
+            console.log('[State Update] Setting error - clearing recommendation first');
+            setRecommendation(null); // Clear recommendation before setting error
             setError(data.error || data.message || 'Failed to load recommendation');
             setIsLoading(false);
           }
@@ -575,6 +746,8 @@ function ResultsPageContent() {
         // Fallback: if we got here, something unexpected happened
         console.error('❌ Invalid response format:', data);
         if (isMounted) {
+          console.log('[State Update] Setting error - clearing recommendation first');
+          setRecommendation(null); // Clear recommendation before setting error
           setError(data.error || data.message || 'Invalid response format from server');
           setIsLoading(false);
         }
@@ -598,6 +771,8 @@ function ResultsPageContent() {
         }
 
         if (isMounted) {
+          console.log('[State Update] Setting error - clearing recommendation first');
+          setRecommendation(null); // Clear recommendation before setting error
           setError(errorMessage);
           setIsLoading(false);
         }
@@ -725,36 +900,43 @@ function ResultsPageContent() {
             if (response.status === 404 && errorData.error === 'insufficient_data') {
               console.log(`ℹ️  No scientific data found for: ${searchTerm} (original: ${normalizedQuery})`);
 
-              // Try to suggest alternative supplement names
-              const suggestion = suggestSupplementCorrection(searchTerm);
-
+              // Get intelligent suggestions using fuzzy search
+              const suggestions = getSuggestions(searchTerm);
+              
               // Log analytics - search failed (with both original and normalized terms)
-              searchAnalytics.logFailure(normalizedQuery, {
-                errorType: 'insufficient_data',
-                suggestionsOffered: suggestion ? [suggestion.suggestion] : [],
-                requestId: errorData.requestId,
-                normalizedQuery: searchTerm !== normalizedQuery ? searchTerm : undefined,
-              });
+              searchAnalytics.logFailure(
+                normalizedQuery,
+                searchTerm,
+                suggestions.map(s => s.name)
+              );
 
               // Trace search failure
               traceSearch(normalizedQuery, 'api-request-complete', {
                 success: false,
                 errorType: 'insufficient_data',
-                suggestionOffered: suggestion?.suggestion,
+                suggestionsOffered: suggestions.length,
                 normalizedQuery: searchTerm,
               });
 
-              if (suggestion) {
-                // Show error with intelligent suggestion
-                setError(
-                  `No encontramos información científica sobre "${normalizedQuery}".\n\n¿Quizás buscabas "${suggestion.suggestion}"?`
-                );
-              } else {
-                // Show generic error
-                setError(
-                  `❌ ${errorData.message || `No encontramos información científica suficiente sobre "${normalizedQuery}".`}\n\n💡 ${errorData.suggestion || 'Intenta con un término más específico o verifica la ortografía.'}`
-                );
-              }
+              console.log('[State Update] Setting error - clearing recommendation first');
+              setRecommendation(null); // Clear recommendation before setting error
+              
+              // Show rich error with intelligent suggestions
+              setError({
+                type: 'insufficient_scientific_data',
+                message: errorData.message || `No encontramos estudios científicos publicados sobre "${normalizedQuery}".`,
+                searchedFor: normalizedQuery,
+                suggestions: suggestions.map(s => ({
+                  name: s.name,
+                  confidence: s.confidence,
+                  hasStudies: true, // Only suggest supplements with known mappings
+                })),
+                metadata: {
+                  normalizedQuery: searchTerm,
+                  requestId: errorData.requestId,
+                  timestamp: new Date().toISOString(),
+                },
+              });
               setIsLoading(false);
               return;
             }
@@ -764,23 +946,26 @@ function ResultsPageContent() {
             let errorMessage = `Backend error: ${response.status}`;
             errorMessage = errorData.message || errorData.error || errorMessage;
 
+            console.log('[State Update] Setting error - clearing recommendation first');
+            setRecommendation(null); // Clear recommendation before setting error
             setError(errorMessage);
             setIsLoading(false);
             return;
           }
 
           const data = await response.json();
-          console.log('✅ API Response received:', {
+          console.log('[Quiz API Response] Received data:', {
             success: data.success,
             status: response.status,
             hasRecommendation: !!data.recommendation,
             hasRecommendationId: !!data.recommendation_id,
             demo: data.demo,
+            keys: Object.keys(data),
           });
           
           // ASYNC PATTERN: Backend returned 202 with recommendation_id - start polling
           if (response.status === 202 && data.recommendation_id) {
-            console.log('🔄 Starting async polling for recommendation:', data.recommendation_id);
+            console.log('[Async Polling] Starting polling for recommendation:', data.recommendation_id);
 
             // Update URL immediately with recommendation ID (without navigation)
             if (typeof window !== 'undefined') {
@@ -803,44 +988,60 @@ function ResultsPageContent() {
             
             const pollStatus = async () => {
               try {
+                console.log('[Async Polling] Fetching status from:', statusUrl);
                 const statusResponse = await fetch(statusUrl);
                 const statusData = await statusResponse.json();
                 
-                console.log('📊 Polling status:', {
+                console.log('[Async Polling] Status update:', {
                   status: statusData.status,
                   progress: statusData.progress,
                   message: statusData.progressMessage,
+                  hasRecommendation: !!statusData.recommendation,
                 });
                 
                 if (statusData.status === 'completed' && statusData.recommendation) {
-                  console.log('✅ Recommendation completed:', {
+                  console.log('[Async Polling] ✅ Recommendation completed:', {
                     id: statusData.recommendation.recommendation_id,
                     category: statusData.recommendation.category,
                   });
+                  console.log('[State Update] Before setting recommendation from polling - clearing error first');
+                  setError(null); // Clear error before setting recommendation
+                  console.log('[State Update] Setting recommendation from polling');
                   setRecommendation(statusData.recommendation);
+                  console.log('[State Update] Setting isLoading to false');
                   setIsLoading(false);
                   return; // Stop polling
                 } else if (statusData.status === 'failed') {
-                  console.error('❌ Recommendation failed:', statusData.error);
+                  console.error('[Async Polling] ❌ Recommendation failed:', statusData.error);
+                  console.log('[State Update] Setting error from polling - clearing recommendation first');
+                  setRecommendation(null); // Clear recommendation before setting error
                   setError(statusData.error || 'Failed to generate recommendation');
+                  console.log('[State Update] Setting isLoading to false');
                   setIsLoading(false);
                   return; // Stop polling
                 } else if (statusData.status === 'processing') {
                   // Continue polling if we haven't exceeded max time
                   if (Date.now() - startTime < maxPollTime) {
+                    console.log('[Async Polling] Still processing, will poll again in', pollInterval, 'ms');
                     setTimeout(pollStatus, pollInterval);
                   } else {
-                    console.error('❌ Polling timeout');
+                    console.error('[Async Polling] ❌ Polling timeout exceeded');
+                    console.log('[State Update] Setting error - clearing recommendation first');
+                    setRecommendation(null); // Clear recommendation before setting error
                     setError('La recomendación está tardando más de lo esperado. Por favor, intenta de nuevo.');
                     setIsLoading(false);
                   }
                 }
               } catch (pollError: any) {
-                console.error('❌ Polling error:', pollError);
+                console.error('[Async Polling] ❌ Polling error:', pollError);
                 // Continue polling on error (might be transient)
                 if (Date.now() - startTime < maxPollTime) {
+                  console.log('[Async Polling] Error occurred, will retry in', pollInterval, 'ms');
                   setTimeout(pollStatus, pollInterval);
                 } else {
+                  console.error('[Async Polling] ❌ Max poll time exceeded after error');
+                  console.log('[State Update] Setting error - clearing recommendation first');
+                  setRecommendation(null); // Clear recommendation before setting error
                   setError('Error al verificar el estado de la recomendación');
                   setIsLoading(false);
                 }
@@ -862,18 +1063,21 @@ function ResultsPageContent() {
               data.recommendation.quiz_id = data.quiz_id || `quiz_${Date.now()}`;
             }
             
-            console.log('✅ Recommendation received:', {
+            console.log('[Quiz API] ✅ Recommendation received (sync pattern):', {
               id: data.recommendation.recommendation_id,
               category: data.recommendation.category,
               ingredientsCount: data.recommendation.ingredients?.length || 0,
+              hasEvidenceSummary: !!data.recommendation.evidence_summary,
+              totalStudies: data.recommendation.evidence_summary?.totalStudies || 0,
             });
 
             // Log analytics - search successful (with both original and normalized terms)
-            searchAnalytics.logSuccess(normalizedQuery, {
-              studiesFound: data.recommendation?.evidence_summary?.totalStudies || 0,
-              requestId: data.requestId,
-              normalizedQuery: searchTerm !== normalizedQuery ? searchTerm : undefined,
-            });
+            searchAnalytics.logSuccess(
+              normalizedQuery,
+              searchTerm,
+              true, // hadMapping
+              false // usedFallback
+            );
 
             // Trace search success
             traceSearch(normalizedQuery, 'api-request-complete', {
@@ -883,34 +1087,53 @@ function ResultsPageContent() {
             });
 
             if (isMounted) {
+              console.log('[State Update] Before setting recommendation - clearing error first');
+              setError(null); // Clear error before setting recommendation
+              console.log('[State Update] Setting recommendation from quiz API');
               setRecommendation(data.recommendation);
+              console.log('[State Update] Setting isLoading to false');
               setIsLoading(false); // Stop loading spinner
             }
 
             // CACHE: Save to localStorage for later retrieval
-            // BUT: Don't cache recommendations with no real data (fake/generated)
+            // Only cache recommendations with real data (validated)
             if (data.recommendation.recommendation_id && typeof window !== 'undefined') {
-              const metadata = (data.recommendation as any)?._enrichment_metadata || {};
-              const totalStudies = data.recommendation?.evidence_summary?.totalStudies || 0;
-              const studiesUsed = metadata.studiesUsed || 0;
-              // SIMPLE FIX: Trust totalStudies if metadata is incomplete
-              const hasRealData = totalStudies > 0 || studiesUsed > 0; // Only cache if we have real study data
+              console.log('[Cache Storage] Evaluating cache eligibility for:', {
+                recommendationId: data.recommendation.recommendation_id,
+                category: data.recommendation.category,
+              });
 
-              if (hasRealData) {
+              // Use validation function to check if data is cacheable
+              const isValidForCache = isValidCache(data.recommendation);
+
+              if (isValidForCache) {
                 try {
                   const cacheKey = `recommendation_${data.recommendation.recommendation_id}`;
+                  const timestamp = Date.now();
+                  const ttl = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+                  
                   const cacheData = {
                     recommendation: data.recommendation,
-                    timestamp: Date.now(),
-                    ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
+                    timestamp,
+                    ttl,
                   };
+                  
                   localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-                  console.log('💾 Saved recommendation to localStorage:', data.recommendation.recommendation_id);
+                  
+                  console.log('[Cache Storage] ✅ Successfully cached recommendation:', {
+                    cacheKey,
+                    recommendationId: data.recommendation.recommendation_id,
+                    category: data.recommendation.category,
+                    timestamp: new Date(timestamp).toISOString(),
+                    expiresAt: new Date(timestamp + ttl).toISOString(),
+                    ttlDays: Math.floor(ttl / (24 * 60 * 60 * 1000)),
+                  });
                 } catch (cacheError) {
-                  console.warn('Failed to cache recommendation:', cacheError);
+                  console.error('[Cache Storage] ❌ Failed to cache recommendation:', cacheError);
+                  // Don't fail the entire operation if caching fails
                 }
               } else {
-                console.log('⚠️  Skipping cache for recommendation with no real data (totalStudies:', totalStudies, 'studiesUsed:', studiesUsed, ')');
+                console.log('[Cache Storage] ⚠️ Skipping cache - validation failed (no real study data)');
               }
 
               // DISABLED: URL update with ID
@@ -930,6 +1153,8 @@ function ResultsPageContent() {
             const errorMessage = data.error || data.message || 'Failed to generate recommendation';
             console.error('❌ Invalid API response:', errorMessage);
             if (isMounted) {
+              console.log('[State Update] Setting error - clearing recommendation first');
+              setRecommendation(null); // Clear recommendation before setting error
               setError(errorMessage);
               setIsLoading(false);
             }
@@ -937,6 +1162,8 @@ function ResultsPageContent() {
         } catch (err: any) {
           console.error('Fetch error:', err);
           if (isMounted) {
+            console.log('[State Update] Setting error - clearing recommendation first');
+            setRecommendation(null); // Clear recommendation before setting error
             setError(err.message || 'An unexpected error occurred');
             setIsLoading(false);
           }
@@ -946,6 +1173,8 @@ function ResultsPageContent() {
       generateRecommendation();
     } else {
       if (isMounted) {
+        console.log('[State Update] Setting error - clearing recommendation first');
+        setRecommendation(null); // Clear recommendation before setting error
         setError('No search query or recommendation ID provided');
         setIsLoading(false);
       }
@@ -972,40 +1201,90 @@ function ResultsPageContent() {
     }
   };
 
-  // Show loading state (only while fetching, not while transforming)
+  // ====================================
+  // LOGGING: Conditional Rendering Decision
+  // ====================================
+  console.log('[Render Decision]', {
+    isLoading,
+    hasError: !!error,
+    hasRecommendation: !!recommendation,
+    willRender: isLoading ? 'LoadingSpinner' : error ? 'ErrorState' : !recommendation ? 'NoDataState' : 'Recommendation',
+  });
+
+  // STATE 1: Show loading state (only while fetching, not while transforming)
   if (isLoading) {
+    console.log('[Render] Branch: LOADING - Showing IntelligentLoadingSpinner', {
+      reason: 'isLoading === true',
+      supplementName: query || undefined,
+    });
     // Default loading spinner for searches
     // TODO: Integrate StreamingResults properly with the quiz/recommend flow
     return <IntelligentLoadingSpinner supplementName={query || undefined} />;
   }
 
-  if (error || !recommendation) {
-    // Try to extract suggestion from error message
-    const suggestionMatch = error?.match(/¿Quizás buscabas "([^"]+)"\?/);
-    const suggestedSupplement = suggestionMatch ? suggestionMatch[1] : null;
+  // STATE 2: Show error state ONLY when error !== null
+  if (error !== null) {
+    console.log('[Render] Branch: ERROR - Showing ErrorState', {
+      reason: 'error !== null',
+      hasError: !!error,
+      errorType: typeof error === 'object' ? error.type : 'string',
+      hasRecommendation: !!recommendation,
+    });
     
-    // Build suggestions array
-    const suggestions: string[] = [];
-    if (suggestedSupplement) {
-      suggestions.push(suggestedSupplement);
-    }
-    // Add popular supplements as fallback
-    if (suggestions.length === 0) {
-      suggestions.push('Ashwagandha', 'Omega-3', 'Vitamin D', 'Magnesium');
-    }
+    // If error is already an object with type, pass it directly
+    // Otherwise, create a generic error object with fallback suggestions
+    const errorObject = typeof error === 'object' && error.type
+      ? error
+      : {
+          type: 'generic' as const,
+          message: typeof error === 'string' ? error : 'Error desconocido',
+          searchedFor: query || 'supplement',
+          suggestions: [
+            { name: 'Ashwagandha', hasStudies: true },
+            { name: 'Omega-3', hasStudies: true },
+            { name: 'Vitamin D', hasStudies: true },
+            { name: 'Magnesium', hasStudies: true },
+          ],
+        };
 
     return (
       <ErrorState
-        error={error || 'Recommendation not found'}
+        error={errorObject}
         supplementName={query || 'supplement'}
         onRetry={() => window.location.reload()}
-        suggestions={suggestions}
       />
     );
   }
 
+  // STATE 3: Show no-data state when !recommendation AND !isLoading AND !error
+  if (!recommendation) {
+    console.log('[Render] Branch: NO_DATA - Showing ErrorState (no recommendation)', {
+      reason: '!recommendation AND !isLoading AND !error',
+      hasRecommendation: !!recommendation,
+      isLoading,
+      hasError: !!error,
+    });
+    
+    return (
+      <ErrorState
+        error="Recommendation not found"
+        supplementName={query || 'supplement'}
+        onRetry={() => window.location.reload()}
+        suggestions={['Ashwagandha', 'Omega-3', 'Vitamin D', 'Magnesium']}
+      />
+    );
+  }
+
+  // STATE 4: Show recommendation display when we have valid data
+  console.log('[Render] Branch: RECOMMENDATION - Showing recommendation display', {
+    reason: 'recommendation !== null AND !isLoading AND !error',
+    category: recommendation.category,
+    id: recommendation.recommendation_id,
+    hasTransformedEvidence: !!transformedEvidence,
+  });
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" data-testid="recommendation-display">
       {/* Offline Banner */}
       {!isOnline && (
         <div className="fixed top-0 left-0 right-0 bg-red-600 text-white p-3 text-center z-50 shadow-lg">
@@ -1033,16 +1312,47 @@ function ResultsPageContent() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             {t('results.title')} {recommendation.category}
           </h1>
-          {recommendation.evidence_summary.totalStudies > 0 ? (
-            <p className="text-gray-600">
-              {t('results.based.on')} {recommendation.evidence_summary.totalStudies.toLocaleString()} {t('results.studies')}{' '}
-              {recommendation.evidence_summary.totalParticipants.toLocaleString()} {t('results.participants')}
-            </p>
-          ) : (
-            <p className="text-yellow-700 font-medium">
-              ⚠️ Esta información no está respaldada por estudios científicos verificados
-            </p>
-          )}
+          {(() => {
+            // Extract study data with fallbacks
+            const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
+            const totalParticipants = recommendation.evidence_summary?.totalParticipants || 0;
+            const metadata = (recommendation as any)._enrichment_metadata || {};
+            const studiesUsed = metadata.studiesUsed || 0;
+            
+            // Log study data availability
+            console.log('[Study Data Display]', {
+              totalStudies,
+              totalParticipants,
+              studiesUsed,
+              hasEvidenceSummary: !!recommendation.evidence_summary,
+              category: recommendation.category,
+            });
+            
+            // Check if we have real study data
+            const hasRealStudyData = totalStudies > 0 || studiesUsed > 0;
+            
+            if (!hasRealStudyData) {
+              console.log('[Study Data Display] ⚠️ No real study data found for:', recommendation.category);
+            }
+            
+            // Display study data if available
+            if (hasRealStudyData) {
+              return (
+                <p className="text-gray-600" data-testid="study-data-summary">
+                  {t('results.based.on')} {totalStudies.toLocaleString()} {t('results.studies')}
+                  {totalParticipants > 0 && (
+                    <> {totalParticipants.toLocaleString()} {t('results.participants')}</>
+                  )}
+                </p>
+              );
+            } else {
+              return (
+                <p className="text-yellow-700 font-medium" data-testid="no-study-data-warning">
+                  ⚠️ Esta información no está respaldada por estudios científicos verificados
+                </p>
+              );
+            }
+          })()}
         </div>
 
         {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
@@ -1062,7 +1372,7 @@ function ResultsPageContent() {
           
           if (!hasNoData) return null;
           
-          const suggestion = suggestSupplementCorrection(recommendation.category);
+          const suggestion = getBestSuggestion(recommendation.category);
           return (
             <div className="mb-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
               <div className="flex items-start gap-3">
@@ -1080,10 +1390,10 @@ function ResultsPageContent() {
                         <strong>¿Buscabas esto?</strong>
                       </p>
                       <button
-                        onClick={() => router.push(`/portal/results?q=${encodeURIComponent(suggestion.suggestion)}`)}
+                        onClick={() => router.push(`/portal/results?q=${encodeURIComponent(suggestion.name)}`)}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                       >
-                        <span>{suggestion.suggestion}</span>
+                        <span>{suggestion.name}</span>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>

@@ -1,317 +1,205 @@
 /**
- * Supplement Name Suggestions
- * Provides "Did you mean...?" functionality for common misspellings and variations
+ * Intelligent Supplement Suggestions System
+ * 
+ * Provides fuzzy search and smart suggestions when exact matches aren't found
+ * Helps users find what they're looking for even with typos or variations
  */
 
-interface SupplementSuggestion {
+import Fuse from 'fuse.js';
+import { SUPPLEMENT_MAPPINGS, SupplementMapping } from './supplement-mappings';
+
+export interface SupplementSuggestion {
+  name: string;
+  displayName: string;
+  confidence: number;
+  mapping: SupplementMapping;
+  reason: 'exact' | 'fuzzy' | 'alias' | 'scientific';
+}
+
+export interface SuggestionResult {
+  found: boolean;
+  exactMatch: boolean;
+  suggestions: SupplementSuggestion[];
   query: string;
-  suggestion: string;
-  reason: string;
 }
 
 /**
- * Common supplement name variations and corrections
+ * Configure fuzzy search with optimal settings
  */
-const SUPPLEMENT_CORRECTIONS: Record<string, string> = {
-  // CoQ10 variations
-  'co q12': 'CoQ10',
-  'co q 12': 'CoQ10',
-  'coq12': 'CoQ10',
-  'co q': 'CoQ10',
-  'coenzima q': 'CoQ10',
-  'coenzima q10': 'CoQ10',
-  'q10': 'CoQ10',
-  'enzima q': 'CoQ10',
-  'enzima q10': 'CoQ10',
-  'enzima q15': 'CoQ10',
-  'enzima q12': 'CoQ10',
-  'coq': 'CoQ10',
-
-  // Vitamin D variations
-  'vitamina d': 'Vitamin D',
-  'vitamina d3': 'Vitamin D3',
-  'd3': 'Vitamin D3',
-
-  // Omega-3
-  'omega 3': 'Omega-3',
-  'omega3': 'Omega-3',
-  'omega-3 fatty acids': 'Omega-3',
-  'fish oil': 'Omega-3',
-  'aceite de pescado': 'Omega-3',
-
-  // Magnesium and forms
-  'magnesio': 'Magnesium',
-  'magenesio': 'Magnesium', // common typo
-  'mg': 'Magnesium',
-  'glicinato de magnesio': 'Magnesium Glycinate',
-  'glicinato de magenesio': 'Magnesium Glycinate', // typo
-  'magnesium glycinate': 'Magnesium Glycinate',
-  'citrato de magnesio': 'Magnesium Citrate',
-  'citrato de magenesio': 'Magnesium Citrate', // typo
-  'magnesium citrate': 'Magnesium Citrate',
-  'oxido de magnesio': 'Magnesium Oxide',
-  'óxido de magnesio': 'Magnesium Oxide',
-  'magnesium oxide': 'Magnesium Oxide',
-  'malato de magnesio': 'Magnesium Malate',
-  'magnesium malate': 'Magnesium Malate',
-  'treonato de magnesio': 'Magnesium Threonate',
-  'magnesium threonate': 'Magnesium Threonate',
-  'magnesium l-threonate': 'Magnesium Threonate',
-
-  // Zinc
-  'zinc': 'Zinc',
-  'zinco': 'Zinc',
-
-  // Melatonin
-  'melatonina': 'Melatonin',
-  'melantonin': 'Melatonin',
-  'melatonine': 'Melatonin',
-
-  // St. John's Wort
-  'st john wort': "St. John's Wort",
-  'st johns wort': "St. John's Wort",
-  'hypericum': "St. John's Wort",
-
-  // Ashwagandha
-  'ashwaganda': 'Ashwagandha',
-  'ashwagandha': 'Ashwagandha',
-  'aswagandha': 'Ashwagandha',
-  'ashawagandha': 'Ashwagandha',
-  'withania': 'Ashwagandha',
-
-  // Turmeric
-  'curcuma': 'Turmeric',
-  'curcumin': 'Turmeric',
-  'cúrcuma': 'Turmeric',
-  'turmeric': 'Turmeric',
-  'curcumina': 'Turmeric',
-  'curry': 'Turmeric',
-
-  // Probiotics
-  'probiotics': 'Probiotics',
-  'probioticos': 'Probiotics',
-  'probiotic': 'Probiotics',
-
-  // Vitamin C
-  'vitamina c': 'Vitamin C',
-  'vitamin c': 'Vitamin C',
-  'ascorbic acid': 'Vitamin C',
-  'ácido ascórbico': 'Vitamin C',
-  'acido ascorbico': 'Vitamin C',
-  'vit c': 'Vitamin C',
-
-  // B Complex
-  'vitamina b': 'Vitamin B Complex',
-  'b complex': 'Vitamin B Complex',
-  'complejo b': 'Vitamin B Complex',
-  'b12': 'Vitamin B12',
-  'vitamina b12': 'Vitamin B12',
-  'cianocobalamina': 'Vitamin B12',
-  'b6': 'Vitamin B6',
-  'b1': 'Vitamin B1',
-
-  // Retinol/Vitamin A
-  'retinol': 'Vitamin A',
-  'vitamina a': 'Vitamin A',
-  'retinoid': 'Vitamin A',
-
-  // Creatine variations
-  'creatina': 'Creatine',
-  'creatine monohydrate': 'Creatine',
-  'creatina monohidratada': 'Creatine',
-
-  // Protein variations
-  'proteina': 'Protein',
-  'whey protein': 'Whey Protein',
-  'proteina de suero': 'Whey Protein',
-  'suero de leche': 'Whey Protein',
-
-  // Collagen variations
-  'colageno': 'Collagen',
-  'colágeno': 'Collagen',
-  'colageno hidrolizado': 'Collagen',
-  'collagen peptides': 'Collagen',
-
-  // (Melatonin, Omega-3, Magnesium, Zinc already defined above - skipping duplicates)
-
-  // Common typos and abbreviations
-  'vit d': 'Vitamin D',
-  'vit d3': 'Vitamin D3',
-  'k2': 'Vitamin K2',
-  'vit k': 'Vitamin K',
-  'calcio': 'Calcium',
-  'hierro': 'Iron',
-  'potasio': 'Potassium',
-
-  // Superfoods and Algae
-  'espirulina': 'Spirulina',
-  'spirulina': 'Spirulina',
-  'alga espirulina': 'Spirulina',
-  'chlorella': 'Chlorella',
-  'clorella': 'Chlorella',
-  'alga chlorella': 'Chlorella',
+function createFuseInstance() {
+  const allSupplements = Object.values(SUPPLEMENT_MAPPINGS);
   
-  // Herbal variations
-  'ginseng': 'Ginseng',
-  'ginsen': 'Ginseng',
-  'te verde': 'Green Tea Extract',
-  'té verde': 'Green Tea Extract',
-  'green tea': 'Green Tea Extract',
-  'maca': 'Maca Root',
-  'raiz de maca': 'Maca Root',
-  'jengibre': 'Ginger',
-  'ginger': 'Ginger',
-  'ginkgo': 'Ginkgo Biloba',
-  'ginkgo biloba': 'Ginkgo Biloba',
-  'saw palmetto': 'Saw Palmetto',
-  'palma enana': 'Saw Palmetto',
-  'tribulus': 'Tribulus Terrestris',
-  'tribulus terrestris': 'Tribulus Terrestris',
-
-  // ========== CARNITINA / L-CARNITINE VARIATIONS (ADDED 2025-11-21) ==========
-  // Spanish variations
-  'carnitina': 'L-Carnitine',
-  'l-carnitina': 'L-Carnitine',
-  'l carnitina': 'L-Carnitine',
-  'levo carnitina': 'L-Carnitine',
-  'levocarnitina': 'L-Carnitine',
-  'carnita': 'L-Carnitine', // common typo
-  'karnitina': 'L-Carnitine', // k/c confusion
-  'carnitin': 'L-Carnitine',
-  'carniti': 'L-Carnitine',
-  'cartinine': 'L-Carnitine', // common confusion
-  'carantine': 'L-Carnitine',
-
-  // English variations
-  'carnitine': 'L-Carnitine',
-  'l-carnitine': 'L-Carnitine',
-  'l carnitine': 'L-Carnitine',
-  'levocarnitine': 'L-Carnitine',
-  'levo carnitine': 'L-Carnitine',
-
-  // Acetyl-L-Carnitine variations
-  'acetil carnitina': 'Acetyl-L-Carnitine',
-  'acetil-l-carnitina': 'Acetyl-L-Carnitine',
-  'acetil l carnitina': 'Acetyl-L-Carnitine',
-  'acetyl carnitine': 'Acetyl-L-Carnitine',
-  'acetyl-l-carnitine': 'Acetyl-L-Carnitine',
-  'acetyl l carnitine': 'Acetyl-L-Carnitine',
-  'alcar': 'Acetyl-L-Carnitine', // common abbreviation
-  'acetylcarnitine': 'Acetyl-L-Carnitine',
-  'n-acetyl-l-carnitine': 'Acetyl-L-Carnitine',
-
-  // Propionyl-L-Carnitine variations
-  'propionil carnitina': 'Propionyl-L-Carnitine',
-  'propionyl carnitine': 'Propionyl-L-Carnitine',
-  'propionyl-l-carnitine': 'Propionyl-L-Carnitine',
-  'propionyl l carnitine': 'Propionyl-L-Carnitine',
-  'plc': 'Propionyl-L-Carnitine', // abbreviation
-
-  // L-Carnitine Tartrate variations
-  'carnitina tartrato': 'L-Carnitine Tartrate',
-  'carnitine tartrate': 'L-Carnitine Tartrate',
-  'l-carnitine tartrate': 'L-Carnitine Tartrate',
-  'carnitina tartrate': 'L-Carnitine Tartrate',
-
-  // Common misspellings and variations
-  'carnit': 'L-Carnitine',
-  'karnitin': 'L-Carnitine',
-  'carnithine': 'L-Carnitine',
-};
+  return new Fuse(allSupplements, {
+    keys: [
+      { name: 'normalizedName', weight: 2.0 },      // Highest priority
+      { name: 'commonNames', weight: 1.5 },         // High priority
+      { name: 'scientificName', weight: 1.0 },      // Medium priority
+    ],
+    threshold: 0.4,           // 60% similarity minimum
+    distance: 100,            // Maximum distance for fuzzy matching
+    includeScore: true,
+    minMatchCharLength: 3,    // Minimum 3 characters to match
+    ignoreLocation: true,     // Search anywhere in the string
+  });
+}
 
 /**
- * Suggests a correction for a supplement name query
- * @param query - The user's search query
- * @returns Suggestion object if found, null otherwise
+ * Find supplement suggestions for a query
+ * Returns exact matches first, then fuzzy matches
  */
-export function suggestSupplementCorrection(query: string): SupplementSuggestion | null {
-  const normalized = query.toLowerCase().trim();
-
-  // Exact match
-  if (SUPPLEMENT_CORRECTIONS[normalized]) {
+export function suggestSupplementCorrection(query: string): SuggestionResult {
+  if (!query || query.trim().length < 2) {
     return {
+      found: false,
+      exactMatch: false,
+      suggestions: [],
       query,
-      suggestion: SUPPLEMENT_CORRECTIONS[normalized],
-      reason: 'common_variation',
     };
   }
 
-  // Fuzzy match (simple Levenshtein-like approach)
-  const threshold = 2; // Max edit distance
-  for (const [key, value] of Object.entries(SUPPLEMENT_CORRECTIONS)) {
-    const distance = levenshteinDistance(normalized, key);
-    if (distance <= threshold && distance > 0) {
-      return {
-        query,
-        suggestion: value,
-        reason: 'fuzzy_match',
-      };
-    }
+  const normalizedQuery = query.trim().toLowerCase();
+  const allSupplements = Object.values(SUPPLEMENT_MAPPINGS);
+  
+  // 1. Check for exact match (case-insensitive)
+  const exactMatch = allSupplements.find(
+    s => s.normalizedName.toLowerCase() === normalizedQuery
+  );
+  
+  if (exactMatch) {
+    return {
+      found: true,
+      exactMatch: true,
+      suggestions: [{
+        name: exactMatch.normalizedName,
+        displayName: exactMatch.normalizedName,
+        confidence: 1.0,
+        mapping: exactMatch,
+        reason: 'exact',
+      }],
+      query,
+    };
   }
-
-  return null;
+  
+  // 2. Check for alias match
+  const aliasMatch = allSupplements.find(s =>
+    s.commonNames.some(alias => alias.toLowerCase() === normalizedQuery)
+  );
+  
+  if (aliasMatch) {
+    return {
+      found: true,
+      exactMatch: true,
+      suggestions: [{
+        name: aliasMatch.normalizedName,
+        displayName: aliasMatch.normalizedName,
+        confidence: 0.95,
+        mapping: aliasMatch,
+        reason: 'alias',
+      }],
+      query,
+    };
+  }
+  
+  // 3. Fuzzy search for similar matches
+  const fuse = createFuseInstance();
+  const results = fuse.search(query);
+  
+  if (results.length === 0) {
+    return {
+      found: false,
+      exactMatch: false,
+      suggestions: [],
+      query,
+    };
+  }
+  
+  // Convert results to suggestions
+  const suggestions: SupplementSuggestion[] = results
+    .slice(0, 5) // Top 5 suggestions
+    .map(result => ({
+      name: result.item.normalizedName,
+      displayName: result.item.normalizedName,
+      confidence: 1 - (result.score || 0),
+      mapping: result.item,
+      reason: 'fuzzy' as const,
+    }))
+    .filter(s => s.confidence >= 0.5); // Only show if >50% confidence
+  
+  return {
+    found: suggestions.length > 0,
+    exactMatch: false,
+    suggestions,
+    query,
+  };
 }
 
 /**
- * Simple Levenshtein distance calculation
+ * Get popular supplements by category
+ * Useful for showing alternatives or recommendations
  */
-function levenshteinDistance(a: string, b: string): number {
-  const matrix: number[][] = [];
-
-  for (let i = 0; i <= b.length; i++) {
-    matrix[i] = [i];
-  }
-
-  for (let j = 0; j <= a.length; j++) {
-    matrix[0][j] = j;
-  }
-
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1, // substitution
-          matrix[i][j - 1] + 1,     // insertion
-          matrix[i - 1][j] + 1      // deletion
-        );
-      }
-    }
-  }
-
-  return matrix[b.length][a.length];
+export function getPopularSupplementsByCategory(
+  category: SupplementMapping['category'],
+  limit = 5
+): SupplementMapping[] {
+  return Object.values(SUPPLEMENT_MAPPINGS)
+    .filter(s => s.category === category && s.popularity === 'high')
+    .slice(0, limit);
 }
 
 /**
- * Get multiple suggestions (for future expansion)
+ * Get related supplements based on category and use case
  */
-export function getSupplementSuggestions(query: string, maxSuggestions = 3): string[] {
-  const normalized = query.toLowerCase().trim();
-  const suggestions: string[] = [];
+export function getRelatedSupplements(
+  supplement: SupplementMapping,
+  limit = 3
+): SupplementMapping[] {
+  return Object.values(SUPPLEMENT_MAPPINGS)
+    .filter(s => 
+      s.normalizedName !== supplement.normalizedName &&
+      s.category === supplement.category &&
+      s.popularity !== 'low'
+    )
+    .slice(0, limit);
+}
 
-  // Add exact match
-  if (SUPPLEMENT_CORRECTIONS[normalized]) {
-    suggestions.push(SUPPLEMENT_CORRECTIONS[normalized]);
+/**
+ * Check if a query is likely a typo or misspelling
+ */
+export function isLikelyTypo(query: string): boolean {
+  const suggestions = suggestSupplementCorrection(query);
+  
+  // If we have high-confidence suggestions, it's likely a typo
+  return !suggestions.exactMatch && 
+         suggestions.suggestions.length > 0 &&
+         suggestions.suggestions[0].confidence > 0.8;
+}
+
+/**
+ * Get the best suggestion for a query
+ * Returns null if no good suggestion exists
+ */
+export function getBestSuggestion(query: string): SupplementSuggestion | null {
+  const result = suggestSupplementCorrection(query);
+  
+  if (!result.found || result.suggestions.length === 0) {
+    return null;
   }
+  
+  const best = result.suggestions[0];
+  
+  // Only return if confidence is high enough
+  return best.confidence >= 0.6 ? best : null;
+}
 
-  // Add fuzzy matches
-  const fuzzyMatches: Array<{ supplement: string; distance: number }> = [];
-  for (const [key, value] of Object.entries(SUPPLEMENT_CORRECTIONS)) {
-    const distance = levenshteinDistance(normalized, key);
-    if (distance > 0 && distance <= 3) {
-      fuzzyMatches.push({ supplement: value, distance });
-    }
-  }
-
-  // Sort by distance and add unique suggestions
-  fuzzyMatches
-    .sort((a, b) => a.distance - b.distance)
-    .forEach(({ supplement }) => {
-      if (!suggestions.includes(supplement) && suggestions.length < maxSuggestions) {
-        suggestions.push(supplement);
-      }
-    });
-
-  return suggestions;
+/**
+ * Get multiple intelligent suggestions for a query
+ * Returns array of suggestions with scores
+ * 
+ * @param query - The search query
+ * @param limit - Maximum number of suggestions to return (default: 6)
+ * @returns Array of supplement suggestions
+ */
+export function getSuggestions(query: string, limit = 6): SupplementSuggestion[] {
+  const result = suggestSupplementCorrection(query);
+  return result.suggestions.slice(0, limit);
 }
