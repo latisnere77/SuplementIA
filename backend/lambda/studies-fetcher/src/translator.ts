@@ -43,6 +43,20 @@ const STATIC_TRANSLATIONS: Record<string, string> = {
   'ginseng': 'ginseng',
   'ashwagandha': 'ashwagandha',
   'rhodiola': 'rhodiola',
+  
+  // Medicinal Mushrooms
+  'reishi': 'reishi',
+  'hongo reishi': 'reishi mushroom',
+  'melena de leon': 'lions mane',
+  'melena de león': 'lions mane',
+  'lions mane': 'lions mane',
+  'chaga': 'chaga',
+  'hongo chaga': 'chaga mushroom',
+  'cordyceps': 'cordyceps',
+  'hongo cordyceps': 'cordyceps mushroom',
+  'cola de pavo': 'turkey tail',
+  'shiitake': 'shiitake',
+  'maitake': 'maitake',
 };
 
 /**

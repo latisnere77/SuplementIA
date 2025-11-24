@@ -96,7 +96,13 @@ export async function POST(request: NextRequest) {
           suggestion: validation.suggestion,
           severity: validation.severity,
         },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: {
+            'Cache-Control': 'no-store, must-revalidate, max-age=0',
+            'Pragma': 'no-cache',
+          },
+        }
       );
     }
 
@@ -365,7 +371,14 @@ export async function POST(request: NextRequest) {
         requestId,
         recommendation,
       },
-      { status: 200 }
+      { 
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
     );
 
   } catch (error: any) {
