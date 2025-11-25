@@ -88,7 +88,7 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
   const stage = LOADING_STAGES[currentStage];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4" data-testid="loading-spinner">
       <div className="w-full max-w-md">
         {/* Card con animación */}
         <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6 border border-gray-100">

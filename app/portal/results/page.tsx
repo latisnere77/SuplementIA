@@ -27,7 +27,7 @@ import { useAuth } from '@/lib/auth/useAuth';
 import { getBestSuggestion, getSuggestions } from '@/lib/portal/supplement-suggestions';
 import { searchAnalytics } from '@/lib/portal/search-analytics';
 import { traceSearch } from '@/lib/portal/xray-client';
-import { normalizeQuery } from '@/lib/portal/query-normalization';
+import { normalizeQuery, translateToSpanish } from '@/lib/portal/query-normalization';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 
 // ====================================
@@ -374,7 +374,7 @@ function ResultsPageContent() {
       [key: string]: unknown;
     };
   } | null>(null);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { user } = useAuth();
   const isOnline = useOnlineStatus();
   const [showPaywall, setShowPaywall] = useState(false);
@@ -439,6 +439,14 @@ function ResultsPageContent() {
 
   const query = searchParams.get('q');
   const recommendationId = searchParams.get('id');
+
+  // ====================================
+  // LOCALIZED SUPPLEMENT NAME
+  // ====================================
+  // Translate supplement name based on current language
+  const localizedSupplementName = recommendation?.category 
+    ? (language === 'es' ? translateToSpanish(recommendation.category) : recommendation.category)
+    : query || 'supplement';
 
   // Transform evidence data when recommendation changes (CLIENT-SIDE, instant)
   useEffect(() => {
@@ -1417,13 +1425,13 @@ function ResultsPageContent() {
               {viewMode === 'standard' ? (
                 <EvidenceAnalysisPanelNew
                   evidenceSummary={transformedEvidence}
-                  supplementName={recommendation.category}
+                  supplementName={localizedSupplementName}
                 />
               ) : (
                 examineContent && (
                   <ExamineStyleView
                     content={examineContent}
-                    supplementName={recommendation.category}
+                    supplementName={localizedSupplementName}
                   />
                 )
               )}
@@ -1442,7 +1450,7 @@ function ResultsPageContent() {
         {/* Scientific Studies from PubMed */}
         <div className="mb-8">
           <ScientificStudiesPanel
-            supplementName={recommendation.category}
+            supplementName={localizedSupplementName}
             maxStudies={5}
             filters={{
               rctOnly: false,

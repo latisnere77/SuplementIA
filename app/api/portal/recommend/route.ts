@@ -306,21 +306,7 @@ export async function POST(request: NextRequest) {
 
     const enrichData = await enrichResponse.json();
 
-    console.log(
-      JSON.stringify({
-        event: 'RECOMMEND_ENRICH_CALL_SUCCESS',
-        requestId,
-        category: sanitizedCategory,
-        originalCategory: category,
-        duration: enrichDuration,
-        success: enrichData.success,
-        hasData: !!enrichData.data,
-        hasMetadata: !!enrichData.metadata,
-        studiesUsed: enrichData.metadata?.studiesUsed || 0,
-        hasRealData: enrichData.metadata?.hasRealData || false,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     if (!enrichData.success || !enrichData.data) {
       console.error(

@@ -905,3 +905,132 @@ export function getSearchFallbacks(query: string): string[] {
   
   return [...new Set(fallbacks)]; // Remove duplicates
 }
+
+/**
+ * Translate English supplement name to Spanish
+ * Used for displaying supplement names in the correct language
+ */
+export function translateToSpanish(englishName: string): string {
+  // Create reverse mapping: English → Spanish
+  const englishToSpanish: Record<string, string> = {
+    // Common supplements
+    'Papain': 'Papaína',
+    'Bromelain': 'Bromelina',
+    'Nattokinase': 'Nattokinasa',
+    'Magnesium': 'Magnesio',
+    'Zinc': 'Zinc',
+    'Iron': 'Hierro',
+    'Calcium': 'Calcio',
+    'Potassium': 'Potasio',
+    'Selenium': 'Selenio',
+    'Copper': 'Cobre',
+    'Manganese': 'Manganeso',
+    'Iodine': 'Yodo',
+    'Chromium': 'Cromo',
+    
+    // Vitamins
+    'Vitamin D': 'Vitamina D',
+    'Vitamin D3': 'Vitamina D3',
+    'Vitamin C': 'Vitamina C',
+    'Vitamin B12': 'Vitamina B12',
+    'Vitamin B1': 'Vitamina B1',
+    'Vitamin B2': 'Vitamina B2',
+    'Vitamin B3': 'Vitamina B3',
+    'Vitamin B5': 'Vitamina B5',
+    'Vitamin B6': 'Vitamina B6',
+    'Vitamin B7': 'Vitamina B7',
+    'Vitamin B9': 'Vitamina B9',
+    'Riboflavin': 'Riboflavina',
+    'Thiamine': 'Tiamina',
+    'Niacin': 'Niacina',
+    'Pyridoxine': 'Piridoxina',
+    'Biotin': 'Biotina',
+    'Folate': 'Folato',
+    'Ascorbic Acid': 'Ácido Ascórbico',
+    'Pantothenic Acid': 'Ácido Pantoténico',
+    
+    // Omega fatty acids
+    'Omega-3': 'Omega-3',
+    'Omega-6': 'Omega-6',
+    'Fish Oil': 'Aceite de Pescado',
+    
+    // Amino acids
+    'L-Carnitine': 'L-Carnitina',
+    'L-Theanine': 'L-Teanina',
+    'L-Glutamine': 'L-Glutamina',
+    'L-Arginine': 'L-Arginina',
+    'Leucine': 'Leucina',
+    'Isoleucine': 'Isoleucina',
+    'Valine': 'Valina',
+    'Taurine': 'Taurina',
+    'Glycine': 'Glicina',
+    'Lysine': 'Lisina',
+    'Proline': 'Prolina',
+    'Ornithine': 'Ornitina',
+    'Tryptophan': 'Triptófano',
+    'Tyrosine': 'Tirosina',
+    'L-Tyrosine': 'L-Tirosina',
+    
+    // Adaptogens
+    'Ashwagandha': 'Ashwagandha',
+    'Rhodiola': 'Rhodiola',
+    'Ginseng': 'Ginseng',
+    
+    // Mushrooms
+    'Ganoderma lucidum': 'Reishi',
+    'Hericium erinaceus': 'Melena de León',
+    'Chaga': 'Chaga',
+    'Cordyceps': 'Cordyceps',
+    'Turkey Tail': 'Cola de Pavo',
+    'Shiitake': 'Shiitake',
+    'Maitake': 'Maitake',
+    
+    // Herbs
+    'Turmeric': 'Cúrcuma',
+    'Curcumin': 'Curcumina',
+    'Ginger': 'Jengibre',
+    'Green Tea': 'Té Verde',
+    'Maca': 'Maca',
+    'Ginkgo Biloba': 'Ginkgo Biloba',
+    
+    // Antioxidants
+    'CoQ10': 'Coenzima Q10',
+    'PQQ': 'PQQ',
+    'NAC': 'NAC',
+    'Resveratrol': 'Resveratrol',
+    'Astaxanthin': 'Astaxantina',
+    
+    // Proteins
+    'Protein': 'Proteína',
+    'Whey Protein': 'Proteína de Suero',
+    'Collagen': 'Colágeno',
+    'Creatine': 'Creatina',
+    
+    // Probiotics
+    'Probiotics': 'Probióticos',
+    'Prebiotics': 'Prebióticos',
+    
+    // Fibers
+    'Psyllium': 'Psilio',
+    'Glucomannan': 'Glucomanano',
+    'Inulin': 'Inulina',
+    
+    // Others
+    'Spirulina': 'Espirulina',
+    'Chlorella': 'Chlorella',
+    'Citrulline': 'Citrulina',
+    'Alpha Lipoic Acid': 'Ácido Alfa Lipoico',
+    'Hyaluronic Acid': 'Ácido Hialurónico',
+    'Glutathione': 'Glutationa',
+  };
+  
+  // Check for exact match (case-insensitive)
+  for (const [english, spanish] of Object.entries(englishToSpanish)) {
+    if (english.toLowerCase() === englishName.toLowerCase()) {
+      return spanish;
+    }
+  }
+  
+  // Return original if no translation found
+  return englishName;
+}
