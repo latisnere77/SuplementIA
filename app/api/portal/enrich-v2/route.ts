@@ -100,9 +100,9 @@ export async function POST(request: NextRequest) {
         supplementId: supplementName,
         category: category || 'general',
         forceRefresh: forceRefresh || false,
-        studies: studies.slice(0, 5), // Limit to 5 studies to prevent timeout
+        studies: studies.slice(0, 3), // Limit to 3 studies to prevent timeout (reduced from 5)
       }),
-      signal: AbortSignal.timeout(90000), // 90s timeout for Claude (increased from 60s)
+      signal: AbortSignal.timeout(90000), // 90s timeout for Claude
     });
     
     if (!enrichResponse.ok) {
