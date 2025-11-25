@@ -269,16 +269,7 @@ export default function PortalPage() {
                     <Combobox.Input
                       className="h-14 w-full pl-12 pr-24 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
                       onChange={(e) => {
-                        // Solo actualiza el estado del query
-                        
                         setSearchQuery(e.target.value);
-                      }}
-                      onKeyDown={(e) => {
-                        // Detectar Enter para realizar búsqueda
-                        if (e.key === 'Enter' && searchQuery.trim()) {
-                          e.preventDefault();
-                          handleSearch(searchQuery);
-                        }
                       }}
                       displayValue={() => searchQuery}
                       placeholder=""
@@ -311,13 +302,6 @@ export default function PortalPage() {
                   ) : (
                     <button
                       type="submit"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (searchQuery.trim()) {
-                          handleSearch(searchQuery);
-                        }
-                      }}
                       disabled={!searchQuery.trim()}
                       className={cn(
                         "absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 z-20",
