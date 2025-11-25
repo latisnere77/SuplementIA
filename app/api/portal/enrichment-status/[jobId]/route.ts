@@ -17,15 +17,15 @@ const jobStore = new Map<string, {
   completedAt?: number;
 }>();
 
-// Clean up old jobs (older than 1 hour)
-setInterval(() => {
+// Clean up old jobs on-demand (called during GET requests)
+function cleanupOldJobs() {
   const oneHourAgo = Date.now() - 60 * 60 * 1000;
   for (const [jobId, job] of jobStore.entries()) {
     if (job.createdAt < oneHourAgo) {
       jobStore.delete(jobId);
     }
   }
-}, 5 * 60 * 1000); // Run every 5 minutes
+}
 
 export async function GET(
   request: NextRequest,
@@ -34,6 +34,9 @@ export async function GET(
   const { jobId } = params;
   const searchParams = request.nextUrl.searchParams;
   const supplement = searchParams.get('supplement');
+  
+  // Clean up old jobs on each request
+  cleanupOldJobs();
   
   console.log(`[enrichment-status] Checking status for job: ${jobId}, supplement: ${supplement}`);
   

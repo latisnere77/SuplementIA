@@ -1367,6 +1367,7 @@ function ResultsPageContent() {
         {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
         {(() => {
           const metadata = (recommendation as any)._enrichment_metadata || {};
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const supplement = (recommendation as any).supplement || {};
           const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
           const metadataStudiesUsed = metadata.studiesUsed || 0;
