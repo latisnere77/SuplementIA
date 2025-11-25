@@ -245,21 +245,21 @@ export default function PortalPage() {
               transition={{ duration: 1, delay: 0.9 }}
               className="relative max-w-2xl mx-auto"
             >
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (searchQuery.trim()) {
-                    handleSearch(searchQuery);
+              <Combobox
+                value={searchQuery}
+                onChange={(value) => {
+                  // Solo se llama cuando se selecciona una sugerencia
+                  console.log('[PortalPage] Combobox onChange (suggestion selected):', value);
+                  if (value) {
+                    handleSearch(value);
                   }
                 }}
               >
-                <Combobox
-                  value={searchQuery}
-                  onChange={(value) => {
-                    // Solo se llama cuando se selecciona una sugerencia
-                    console.log('[PortalPage] Combobox onChange (suggestion selected):', value);
-                    if (value) {
-                      handleSearch(value);
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (searchQuery.trim()) {
+                      handleSearch(searchQuery);
                     }
                   }}
                 >
@@ -313,6 +313,8 @@ export default function PortalPage() {
                       {language === 'es' ? 'Ir' : 'Go'}
                     </button>
                   )}
+                  </div>
+                </form>
 
                   {/* Autocomplete Dropdown con Combobox.Options */}
                   {searchQuery.length >= 2 && (
@@ -376,9 +378,7 @@ export default function PortalPage() {
                       </Combobox.Options>
                     </Transition>
                   )}
-                </div>
               </Combobox>
-              </form>
 
               {/* Validation Error Message */}
               <AnimatePresence>
