@@ -58,10 +58,28 @@ export async function eFetch(options: EFetchOptions): Promise<Study[]> {
 }
 
 /**
+ * PubMed XML Article Structure (from xml2js parser)
+ */
+interface PubMedArticleXML {
+  MedlineCitation: Array<{
+    PMID: Array<string | { _: string }>;
+    Article: Array<{
+      ArticleTitle: string[];
+      Abstract?: Array<{ AbstractText?: string[] }>;
+      AuthorList?: Array<{ Author?: unknown[] }>;
+      Journal?: Array<{
+        Title?: string[];
+        JournalIssue?: Array<{ PubDate?: Array<{ Year?: string[] }> }>;
+      }>;
+    }>;
+    MeshHeadingList?: Array<{ MeshHeading?: unknown[] }>;
+  }>;
+}
+
+/**
  * Parse PubMed article XML to Study object
  */
-function parseArticle(article: any): Study | null {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseArticle(article: PubMedArticleXML): Study | null {
   try {
     const citation = article.MedlineCitation[0];
     const articleData = citation.Article[0];

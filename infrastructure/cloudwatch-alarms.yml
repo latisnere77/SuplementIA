@@ -1,0 +1,200 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudWatch Alarms for Intelligent Supplement Search
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Environment name
+
+  AlertEmail:
+    Type: String
+    Description: Email address for alarm notifications
+    Default: alerts@example.com
+
+Resources:
+  # SNS Topic for Alerts
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${Environment}-supplement-search-alerts'
+      DisplayName: Supplement Search Alerts
+      Subscription:
+        - Endpoint: !Ref AlertEmail
+          Protocol: email
+
+  # High Error Rate Alarm (> 1%)
+  HighErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-high-error-rate'
+      AlarmDescription: Error rate exceeds 1%
+      MetricName: ErrorRate
+      Namespace: IntelligentSupplementSearch
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 1.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # Low Cache Hit Rate Alarm (< 80%)
+  LowCacheHitRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-low-cache-hit-rate'
+      AlarmDescription: Cache hit rate below 80%
+      MetricName: CacheHitRate
+      Namespace: IntelligentSupplementSearch
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 3
+      Threshold: 80.0
+      ComparisonOperator: LessThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # High Latency P95 Alarm (> 300ms)
+  HighLatencyP95Alarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-high-latency-p95'
+      AlarmDescription: P95 latency exceeds 300ms
+      MetricName: Latency_P95
+      Namespace: IntelligentSupplementSearch
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 300.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # High Latency P99 Alarm (> 500ms)
+  HighLatencyP99Alarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-high-latency-p99'
+      AlarmDescription: P99 latency exceeds 500ms
+      MetricName: Latency_P99
+      Namespace: IntelligentSupplementSearch
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 500.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # Discovery Queue Backlog Alarm (> 100)
+  DiscoveryQueueBacklogAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-discovery-queue-backlog'
+      AlarmDescription: Discovery queue has more than 100 pending items
+      MetricName: QueueSize
+      Namespace: IntelligentSupplementSearch
+      Statistic: Average
+      Period: 600
+      EvaluationPeriods: 1
+      Threshold: 100.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # Lambda Error Rate Alarm
+  LambdaErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-lambda-error-rate'
+      AlarmDescription: Lambda function error rate is high
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 10.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # RDS CPU Utilization Alarm
+  RDSCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-rds-high-cpu'
+      AlarmDescription: RDS CPU utilization is high
+      MetricName: CPUUtilization
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # ElastiCache CPU Utilization Alarm
+  ElastiCacheCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-elasticache-high-cpu'
+      AlarmDescription: ElastiCache CPU utilization is high
+      MetricName: CPUUtilization
+      Namespace: AWS/ElastiCache
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 75.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # DynamoDB Throttled Requests Alarm
+  DynamoDBThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-dynamodb-throttled'
+      AlarmDescription: DynamoDB requests are being throttled
+      MetricName: UserErrors
+      Namespace: AWS/DynamoDB
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+Outputs:
+  AlertTopicArn:
+    Description: ARN of the SNS topic for alerts
+    Value: !Ref AlertTopic
+    Export:
+      Name: !Sub '${Environment}-alert-topic-arn'
+
+  HighErrorRateAlarmArn:
+    Description: ARN of the high error rate alarm
+    Value: !GetAtt HighErrorRateAlarm.Arn
+
+  LowCacheHitRateAlarmArn:
+    Description: ARN of the low cache hit rate alarm
+    Value: !GetAtt LowCacheHitRateAlarm.Arn
+
+  HighLatencyP95AlarmArn:
+    Description: ARN of the high latency P95 alarm
+    Value: !GetAtt HighLatencyP95Alarm.Arn

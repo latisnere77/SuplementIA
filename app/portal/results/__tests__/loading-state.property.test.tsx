@@ -103,6 +103,8 @@ jest.mock('@/lib/hooks/useOnlineStatus', () => ({
 
 jest.mock('@/lib/portal/supplement-suggestions', () => ({
   suggestSupplementCorrection: () => null,
+  getBestSuggestion: () => null,
+  getSuggestions: () => [],
 }));
 
 jest.mock('@/lib/portal/search-analytics', () => ({

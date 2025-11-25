@@ -11,7 +11,6 @@ import { randomUUID } from 'crypto';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
-import { fastLookup, getOptimizedEnrichmentParams } from '@/lib/portal/fast-lookup-service';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -122,24 +121,6 @@ export async function POST(request: NextRequest) {
         sanitized: sanitizedCategory,
         normalized: searchTerm,
         confidence: normalized.confidence,
-        corrections: normalized.corrections,
-        timestamp: new Date().toISOString(),
-      })
-    );
-
-    // 🚀 FAST LOOKUP: Check if we have pre-calculated mappings
-    const lookupResult = await fastLookup(sanitizedCategory);
-    
-    console.log(
-      JSON.stringify({
-        event: 'FAST_LOOKUP_RESULT',
-        requestId,
-        cached: lookupResult.cached,
-        normalizedName: lookupResult.normalizedName,
-        scientificName: lookupResult.scientificName,
-        lookupTime: lookupResult.lookupTime,
-        category: lookupResult.category,
-        popularity: lookupResult.popularity,
         timestamp: new Date().toISOString(),
       })
     );
@@ -149,11 +130,6 @@ export async function POST(request: NextRequest) {
     const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich-v2`;
     const enrichStartTime = Date.now();
     
-    // 🚀 OPTIMIZATION: Use optimized parameters from mapping if available
-    const enrichParams = getOptimizedEnrichmentParams(sanitizedCategory);
-    
-    
-
     // Try sync first with shorter timeout (30s)
     // If timeout, fall back to async processing
     let enrichResponse;
@@ -168,14 +144,12 @@ export async function POST(request: NextRequest) {
           'X-Job-ID': jobId,
         },
         body: JSON.stringify({
-          supplementName: enrichParams.supplementName,
-          category: enrichParams.supplementName,
+          supplementName: searchTerm,
+          category: searchTerm,
           forceRefresh: false, // Use cache when available (96% faster: 1s vs 30s)
-          maxStudies: enrichParams.maxStudies || 10,
-          rctOnly: enrichParams.rctOnly || false,
-          yearFrom: enrichParams.yearFrom || 2010,
-          // 🚀 NEW: Pass optimized PubMed query if available
-          customPubMedQuery: enrichParams.pubmedQuery,
+          maxStudies: 10,
+          rctOnly: false,
+          yearFrom: 2010,
           jobId,
         }),
         signal: AbortSignal.timeout(30000), // 30s timeout - if longer, use async

@@ -5,17 +5,19 @@
 
 // Dynamic import to avoid SSR issues
 // Use type imports to avoid module resolution issues during build
-type CognitoUserPoolType = any;
-type CognitoUserType = any;
-type AuthenticationDetailsType = any;
-type CognitoUserAttributeType = any;
-type CognitoUserSessionType = any;
+import type {
+  CognitoUserPool as CognitoUserPoolType,
+  CognitoUser as CognitoUserType,
+  AuthenticationDetails as AuthenticationDetailsType,
+  CognitoUserAttribute as CognitoUserAttributeType,
+  CognitoUserSession as CognitoUserSessionType,
+} from 'amazon-cognito-identity-js';
 
-let CognitoUserPool: any;
-let CognitoUser: any;
-let AuthenticationDetails: any;
-let CognitoUserAttribute: any;
-let CognitoUserSession: any;
+let CognitoUserPool: typeof CognitoUserPoolType | undefined;
+let CognitoUser: typeof CognitoUserType | undefined;
+let AuthenticationDetails: typeof AuthenticationDetailsType | undefined;
+let CognitoUserAttribute: typeof CognitoUserAttributeType | undefined;
+let CognitoUserSession: typeof CognitoUserSessionType | undefined;
 
 // Lazy load Cognito only in browser - use function to avoid module resolution during build
 function loadCognito() {
@@ -24,20 +26,25 @@ function loadCognito() {
   }
   
   try {
-    // Use dynamic import to avoid SSR issues and ESLint errors
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const cognitoModule = require('amazon-cognito-identity-js');
-    if (cognitoModule) {
+    // Use dynamic import to avoid SSR issues - this is intentional for client-side only module
+    import('amazon-cognito-identity-js').then((cognitoModule) => {
       CognitoUserPool = cognitoModule.CognitoUserPool;
       CognitoUser = cognitoModule.CognitoUser;
       AuthenticationDetails = cognitoModule.AuthenticationDetails;
       CognitoUserAttribute = cognitoModule.CognitoUserAttribute;
       CognitoUserSession = cognitoModule.CognitoUserSession;
-    }
-  } catch (error: any) {
+    }).catch((error: unknown) => {
+      // Silently fail in demo mode - Cognito is optional
+      if (process.env.NODE_ENV === 'development') {
+        const err = error as Error;
+        console.warn('Cognito not available (demo mode):', err?.message || error);
+      }
+    });
+  } catch (error: unknown) {
     // Silently fail in demo mode - Cognito is optional
     if (process.env.NODE_ENV === 'development') {
-      console.warn('Cognito not available (demo mode):', error?.message || error);
+      const err = error as Error;
+      console.warn('Cognito not available (demo mode):', err?.message || error);
     }
   }
 }
@@ -97,6 +104,11 @@ export async function signUp({ email, password, name, locale }: SignUpParams): P
       return;
     }
     
+    if (!CognitoUserAttribute) {
+      reject({ success: false, message: 'Cognito not initialized' });
+      return;
+    }
+
     const attributeList = [
       new CognitoUserAttribute({ Name: 'email', Value: email }),
     ];
@@ -137,6 +149,11 @@ export async function signIn({ email, password }: SignInParams): Promise<any> {
       return;
     }
     
+    if (!AuthenticationDetails || !CognitoUser) {
+      reject(new Error('Cognito not initialized'));
+      return;
+    }
+
     const authenticationDetails = new AuthenticationDetails({
       Username: email,
       Password: password,
@@ -225,6 +242,11 @@ export async function getCurrentUserEmail(): Promise<string | null> {
 export async function verifyEmail(email: string, code: string): Promise<{ success: boolean; message: string }> {
   return new Promise((resolve, reject) => {
     const userPool = getUserPool();
+    if (!userPool || !CognitoUser) {
+      reject({ success: false, message: 'Cognito not initialized' });
+      return;
+    }
+    
     const cognitoUser = new CognitoUser({
       Username: email,
       Pool: userPool,
@@ -246,6 +268,10 @@ export async function verifyEmail(email: string, code: string): Promise<{ succes
 export async function resendVerificationCode(email: string): Promise<{ success: boolean; message: string }> {
   return new Promise((resolve, reject) => {
     const userPool = getUserPool();
+    if (!userPool || !CognitoUser) {
+      reject({ success: false, message: 'Cognito not initialized' });
+      return;
+    }
     const cognitoUser = new CognitoUser({
       Username: email,
       Pool: userPool,

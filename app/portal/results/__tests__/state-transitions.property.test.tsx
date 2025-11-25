@@ -34,7 +34,7 @@ jest.mock('@/components/portal/ErrorState', () => {
 
 jest.mock('@/components/portal/EvidenceAnalysisPanelNew', () => {
   return function MockEvidencePanel() {
-    return <div data-testid="recommendation-display">Evidence</div>;
+    return <div data-testid="evidence-panel">Evidence</div>;
   };
 });
 
@@ -100,6 +100,8 @@ jest.mock('@/lib/hooks/useOnlineStatus', () => ({
 
 jest.mock('@/lib/portal/supplement-suggestions', () => ({
   suggestSupplementCorrection: () => null,
+  getBestSuggestion: () => null,
+  getSuggestions: () => [],
 }));
 
 jest.mock('@/lib/portal/search-analytics', () => ({
@@ -175,7 +177,7 @@ describe('Property Test: State Transitions', () => {
 
     // Initial state: should show loading
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
-    expect(screen.queryByTestId('recommendation-display')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('evidence-panel')).not.toBeInTheDocument();
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
 
     // After API response: should show recommendation
@@ -184,7 +186,7 @@ describe('Property Test: State Transitions', () => {
     }, { timeout: 3000 });
 
     await waitFor(() => {
-      expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
 
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
@@ -219,6 +221,6 @@ describe('Property Test: State Transitions', () => {
       expect(screen.getByTestId('error-state')).toBeInTheDocument();
     }, { timeout: 3000 });
 
-    expect(screen.queryByTestId('recommendation-display')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('evidence-panel')).not.toBeInTheDocument();
   });
 });

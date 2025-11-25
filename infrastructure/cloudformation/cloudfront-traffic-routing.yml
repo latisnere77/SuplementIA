@@ -1,0 +1,423 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFront Distribution with Weighted Traffic Routing for Gradual Rollout'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    Description: Environment name
+  
+  NewSystemOriginDomain:
+    Type: String
+    Description: Domain name of new intelligent search system (API Gateway)
+  
+  LegacySystemOriginDomain:
+    Type: String
+    Description: Domain name of legacy system (Vercel deployment)
+  
+  TrafficPercentage:
+    Type: Number
+    Default: 10
+    MinValue: 0
+    MaxValue: 100
+    Description: Percentage of traffic to route to new system (0-100)
+
+Resources:
+  # Lambda@Edge function for traffic routing
+  TrafficRoutingFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${Environment}-traffic-routing'
+      Runtime: python3.11
+      Handler: index.lambda_handler
+      Role: !GetAtt TrafficRoutingFunctionRole.Arn
+      Timeout: 5
+      Code:
+        ZipFile: !Sub |
+          import json
+          import random
+          
+          TRAFFIC_PERCENTAGE = ${TrafficPercentage}
+          NEW_SYSTEM_ORIGIN = '${NewSystemOriginDomain}'
+          LEGACY_SYSTEM_ORIGIN = '${LegacySystemOriginDomain}'
+          
+          def lambda_handler(event, context):
+              """
+              Lambda@Edge function to route traffic between new and legacy systems
+              based on weighted percentage.
+              """
+              request = event['Records'][0]['cf']['request']
+              
+              # Generate random number to determine routing
+              random_value = random.randint(1, 100)
+              
+              # Route to new system if random value <= traffic percentage
+              if random_value <= TRAFFIC_PERCENTAGE:
+                  # Route to new system
+                  request['origin'] = {
+                      'custom': {
+                          'domainName': NEW_SYSTEM_ORIGIN,
+                          'port': 443,
+                          'protocol': 'https',
+                          'path': '',
+                          'sslProtocols': ['TLSv1.2'],
+                          'readTimeout': 30,
+                          'keepaliveTimeout': 5,
+                          'customHeaders': {}
+                      }
+                  }
+                  request['headers']['x-routing-target'] = [{'key': 'X-Routing-Target', 'value': 'new-system'}]
+              else:
+                  # Route to legacy system
+                  request['origin'] = {
+                      'custom': {
+                          'domainName': LEGACY_SYSTEM_ORIGIN,
+                          'port': 443,
+                          'protocol': 'https',
+                          'path': '',
+                          'sslProtocols': ['TLSv1.2'],
+                          'readTimeout': 30,
+                          'keepaliveTimeout': 5,
+                          'customHeaders': {}
+                      }
+                  }
+                  request['headers']['x-routing-target'] = [{'key': 'X-Routing-Target', 'value': 'legacy-system'}]
+              
+              return request
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # IAM Role for Lambda@Edge
+  TrafficRoutingFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - edgelambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: CloudWatchLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+  # Lambda@Edge Version (required for CloudFront association)
+  TrafficRoutingFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref TrafficRoutingFunction
+      Description: !Sub 'Traffic routing with ${TrafficPercentage}% to new system'
+
+  # CloudFront Origin Access Identity
+  CloudFrontOAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'OAI for ${Environment} supplement search'
+
+  # CloudFront Distribution with Traffic Routing
+  SupplementSearchDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub '${Environment} Intelligent Supplement Search with ${TrafficPercentage}% traffic to new system'
+        Enabled: true
+        HttpVersion: http2and3
+        PriceClass: PriceClass_100
+        
+        # Origins
+        Origins:
+          # New System Origin (API Gateway)
+          - Id: NewSystemOrigin
+            DomainName: !Ref NewSystemOriginDomain
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
+              OriginReadTimeout: 30
+              OriginKeepaliveTimeout: 5
+          
+          # Legacy System Origin (Vercel)
+          - Id: LegacySystemOrigin
+            DomainName: !Ref LegacySystemOriginDomain
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
+              OriginReadTimeout: 30
+              OriginKeepaliveTimeout: 5
+
+        # Origin Groups for failover
+        OriginGroups:
+          Quantity: 1
+          Items:
+            - Id: OriginGroupWithFailover
+              FailoverCriteria:
+                StatusCodes:
+                  Quantity: 3
+                  Items:
+                    - 500
+                    - 502
+                    - 504
+              Members:
+                Quantity: 2
+                Items:
+                  - OriginId: NewSystemOrigin
+                  - OriginId: LegacySystemOrigin
+
+        # Default Cache Behavior with Lambda@Edge
+        DefaultCacheBehavior:
+          TargetOriginId: OriginGroupWithFailover
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - PATCH
+            - DELETE
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          
+          # Lambda@Edge Association for traffic routing
+          LambdaFunctionAssociations:
+            - EventType: origin-request
+              LambdaFunctionARN: !Ref TrafficRoutingFunctionVersion
+          
+          # Cache Policy
+          CachePolicyId: !Ref SupplementSearchCachePolicy
+          
+          # Origin Request Policy
+          OriginRequestPolicyId: !Ref SupplementSearchOriginRequestPolicy
+          
+          # Response Headers Policy
+          ResponseHeadersPolicyId: !Ref SupplementSearchResponseHeadersPolicy
+
+        # Custom Error Responses
+        CustomErrorResponses:
+          - ErrorCode: 500
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 502
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 503
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 504
+            ErrorCachingMinTTL: 0
+
+        # Logging
+        Logging:
+          Bucket: !GetAtt CloudFrontLogsBucket.DomainName
+          Prefix: !Sub '${Environment}/cloudfront/'
+          IncludeCookies: false
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TrafficPercentage
+          Value: !Ref TrafficPercentage
+
+  # Cache Policy
+  SupplementSearchCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub '${Environment}-supplement-search-cache-policy'
+        Comment: Cache policy for supplement search
+        DefaultTTL: 3600
+        MaxTTL: 86400
+        MinTTL: 0
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+          QueryStringsConfig:
+            QueryStringBehavior: whitelist
+            QueryStrings:
+              - q
+              - query
+              - language
+              - lang
+          HeadersConfig:
+            HeaderBehavior: whitelist
+            Headers:
+              - Accept-Language
+              - CloudFront-Viewer-Country
+          CookiesConfig:
+            CookieBehavior: none
+
+  # Origin Request Policy
+  SupplementSearchOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub '${Environment}-supplement-search-origin-policy'
+        Comment: Origin request policy for supplement search
+        QueryStringsConfig:
+          QueryStringBehavior: all
+        HeadersConfig:
+          HeaderBehavior: whitelist
+          Headers:
+            - Accept
+            - Accept-Language
+            - CloudFront-Viewer-Country
+            - User-Agent
+            - X-Routing-Target
+        CookiesConfig:
+          CookieBehavior: none
+
+  # Response Headers Policy
+  SupplementSearchResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub '${Environment}-supplement-search-response-headers'
+        Comment: Security and performance headers
+        SecurityHeadersConfig:
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 31536000
+            IncludeSubdomains: true
+            Override: true
+          ContentTypeOptions:
+            Override: true
+          FrameOptions:
+            FrameOption: DENY
+            Override: true
+          ReferrerPolicy:
+            ReferrerPolicy: strict-origin-when-cross-origin
+            Override: true
+          XSSProtection:
+            ModeBlock: true
+            Protection: true
+            Override: true
+        CorsConfig:
+          AccessControlAllowOrigins:
+            Items:
+              - '*'
+          AccessControlAllowHeaders:
+            Items:
+              - '*'
+          AccessControlAllowMethods:
+            Items:
+              - GET
+              - POST
+              - OPTIONS
+          AccessControlAllowCredentials: false
+          OriginOverride: true
+        CustomHeadersConfig:
+          Items:
+            - Header: X-Cache-Status
+              Value: CloudFront
+              Override: false
+            - Header: X-Traffic-Percentage
+              Value: !Sub '${TrafficPercentage}'
+              Override: false
+
+  # S3 Bucket for CloudFront Logs
+  CloudFrontLogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${Environment}-supplement-search-cloudfront-logs-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldLogs
+            Status: Enabled
+            ExpirationInDays: 30
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Bucket Policy for CloudFront Logs
+  CloudFrontLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CloudFrontLogsBucket
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub '${CloudFrontLogsBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                'aws:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${SupplementSearchDistribution}'
+
+  # CloudWatch Log Group for Lambda@Edge
+  TrafficRoutingLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/us-east-1.${TrafficRoutingFunction}'
+      RetentionInDays: 7
+
+Outputs:
+  DistributionId:
+    Description: CloudFront Distribution ID
+    Value: !Ref SupplementSearchDistribution
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchDistributionId'
+
+  DistributionDomainName:
+    Description: CloudFront Distribution Domain Name
+    Value: !GetAtt SupplementSearchDistribution.DomainName
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchDistributionDomain'
+
+  DistributionUrl:
+    Description: CloudFront Distribution URL
+    Value: !Sub 'https://${SupplementSearchDistribution.DomainName}'
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchDistributionUrl'
+
+  TrafficRoutingFunctionArn:
+    Description: Lambda@Edge Traffic Routing Function ARN
+    Value: !GetAtt TrafficRoutingFunction.Arn
+    Export:
+      Name: !Sub '${Environment}-TrafficRoutingFunctionArn'
+
+  TrafficRoutingFunctionVersionArn:
+    Description: Lambda@Edge Traffic Routing Function Version ARN
+    Value: !Ref TrafficRoutingFunctionVersion
+    Export:
+      Name: !Sub '${Environment}-TrafficRoutingFunctionVersionArn'
+
+  LogsBucketName:
+    Description: S3 Bucket for CloudFront Logs
+    Value: !Ref CloudFrontLogsBucket
+    Export:
+      Name: !Sub '${Environment}-CloudFrontLogsBucket'
+
+  TrafficPercentage:
+    Description: Current traffic percentage to new system
+    Value: !Ref TrafficPercentage

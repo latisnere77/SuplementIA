@@ -245,21 +245,22 @@ export default function PortalPage() {
               transition={{ duration: 1, delay: 0.9 }}
               className="relative max-w-2xl mx-auto"
             >
-              <Combobox
-                value={searchQuery}
-                onChange={(value) => {
-                  // Solo se llama cuando se selecciona una sugerencia
-                  console.log('[PortalPage] Combobox onChange (suggestion selected):', value);
-                  if (value) {
-                    handleSearch(value);
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  console.log('[PortalPage] Form submit triggered, searchQuery:', searchQuery);
+                  if (searchQuery.trim()) {
+                    handleSearch(searchQuery);
                   }
                 }}
               >
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (searchQuery.trim()) {
-                      handleSearch(searchQuery);
+                <Combobox
+                  value={searchQuery}
+                  onChange={(value) => {
+                    // Solo se llama cuando se selecciona una sugerencia
+                    console.log('[PortalPage] Combobox onChange (suggestion selected):', value);
+                    if (value) {
+                      handleSearch(value);
                     }
                   }}
                 >
@@ -294,27 +295,30 @@ export default function PortalPage() {
                     </AnimatePresence>
                   </div>
 
-                  {/* Search Button or Loading Spinner */}
-                  {isLoading || isLoadingSuggestions ? (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
-                    </div>
-                  ) : (
-                    <button
-                      type="submit"
-                      disabled={!searchQuery.trim()}
-                      className={cn(
-                        "absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 z-20",
-                        searchQuery.trim()
-                          ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transform hover:scale-105"
-                          : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                      )}
-                    >
-                      {language === 'es' ? 'Ir' : 'Go'}
-                    </button>
-                  )}
+                    {/* Search Button or Loading Spinner */}
+                    {isLoading || isLoadingSuggestions ? (
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                      </div>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={!searchQuery.trim()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('[PortalPage] Button clicked, searchQuery:', searchQuery);
+                        }}
+                        className={cn(
+                          "absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 z-20",
+                          searchQuery.trim()
+                            ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transform hover:scale-105"
+                            : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        )}
+                      >
+                        {language === 'es' ? 'Ir' : 'Go'}
+                      </button>
+                    )}
                   </div>
-                </form>
 
                   {/* Autocomplete Dropdown con Combobox.Options */}
                   {searchQuery.length >= 2 && (
@@ -378,7 +382,8 @@ export default function PortalPage() {
                       </Combobox.Options>
                     </Transition>
                   )}
-              </Combobox>
+                </Combobox>
+              </form>
 
               {/* Validation Error Message */}
               <AnimatePresence>

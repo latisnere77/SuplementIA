@@ -1,0 +1,959 @@
+[
+  {
+    "name": "Ganoderma lucidum",
+    "scientific_name": "Ganoderma lucidum",
+    "common_names": [
+      "Reishi",
+      "Lingzhi",
+      "Hongo Reishi"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mushroom",
+      "popularity": "high",
+      "pubmedQuery": "(Ganoderma lucidum OR reishi) AND (immune OR inflammation OR sleep OR stress)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.419Z",
+    "updated_at": "2025-11-25T14:37:20.419Z"
+  },
+  {
+    "name": "Hericium erinaceus",
+    "scientific_name": "Hericium erinaceus",
+    "common_names": [
+      "Lion's Mane",
+      "Melena de León",
+      "Yamabushitake"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mushroom",
+      "popularity": "high",
+      "pubmedQuery": "(Hericium erinaceus OR lions mane) AND (cognitive OR memory OR nerve OR neuroprotection)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.443Z",
+    "updated_at": "2025-11-25T14:37:20.443Z"
+  },
+  {
+    "name": "Cordyceps",
+    "scientific_name": "Cordyceps sinensis",
+    "common_names": [
+      "Cordyceps",
+      "Hongo Cordyceps",
+      "Caterpillar Fungus"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mushroom",
+      "popularity": "high",
+      "pubmedQuery": "(Cordyceps sinensis OR cordyceps) AND (energy OR endurance OR performance OR fatigue)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.444Z",
+    "updated_at": "2025-11-25T14:37:20.444Z"
+  },
+  {
+    "name": "Chaga",
+    "scientific_name": "Inonotus obliquus",
+    "common_names": [
+      "Chaga",
+      "Hongo Chaga",
+      "Clinker Polypore"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mushroom",
+      "popularity": "medium",
+      "pubmedQuery": "(Inonotus obliquus OR chaga) AND (antioxidant OR immune OR inflammation)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.446Z",
+    "updated_at": "2025-11-25T14:37:20.446Z"
+  },
+  {
+    "name": "Turkey Tail",
+    "scientific_name": "Trametes versicolor",
+    "common_names": [
+      "Turkey Tail",
+      "Cola de Pavo",
+      "Coriolus",
+      "Yun Zhi"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mushroom",
+      "popularity": "medium",
+      "pubmedQuery": "(Trametes versicolor OR coriolus OR turkey tail) AND (immune OR cancer OR gut)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.447Z",
+    "updated_at": "2025-11-25T14:37:20.447Z"
+  },
+  {
+    "name": "Shiitake",
+    "scientific_name": "Lentinula edodes",
+    "common_names": [
+      "Shiitake",
+      "Hongo Shiitake"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mushroom",
+      "popularity": "medium",
+      "pubmedQuery": "(Lentinula edodes OR shiitake) AND (immune OR cholesterol OR cardiovascular)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.448Z",
+    "updated_at": "2025-11-25T14:37:20.448Z"
+  },
+  {
+    "name": "Maitake",
+    "scientific_name": "Grifola frondosa",
+    "common_names": [
+      "Maitake",
+      "Hongo Maitake",
+      "Hen of the Woods"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mushroom",
+      "popularity": "medium",
+      "pubmedQuery": "(Grifola frondosa OR maitake) AND (immune OR blood sugar OR diabetes)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.448Z",
+    "updated_at": "2025-11-25T14:37:20.448Z"
+  },
+  {
+    "name": "Riboflavin",
+    "scientific_name": "Riboflavin",
+    "common_names": [
+      "Vitamin B2",
+      "Vitamina B2",
+      "Riboflavina"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "high",
+      "pubmedQuery": "(riboflavin OR vitamin B2) AND (migraine OR energy OR metabolism)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.450Z",
+    "updated_at": "2025-11-25T14:37:20.450Z"
+  },
+  {
+    "name": "Thiamine",
+    "scientific_name": "Thiamine",
+    "common_names": [
+      "Vitamin B1",
+      "Vitamina B1",
+      "Tiamina"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "high",
+      "pubmedQuery": "(thiamine OR vitamin B1) AND (energy OR nerve OR beriberi)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.451Z",
+    "updated_at": "2025-11-25T14:37:20.451Z"
+  },
+  {
+    "name": "Niacin",
+    "scientific_name": "Niacin",
+    "common_names": [
+      "Vitamin B3",
+      "Vitamina B3",
+      "Niacina",
+      "Nicotinic Acid"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "high",
+      "pubmedQuery": "(niacin OR vitamin B3 OR nicotinic acid) AND (cholesterol OR cardiovascular OR pellagra)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.452Z",
+    "updated_at": "2025-11-25T14:37:20.452Z"
+  },
+  {
+    "name": "Pantothenic Acid",
+    "scientific_name": "Pantothenic Acid",
+    "common_names": [
+      "Vitamin B5",
+      "Vitamina B5",
+      "Ácido Pantoténico"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "medium",
+      "pubmedQuery": "(pantothenic acid OR vitamin B5) AND (energy OR stress OR adrenal)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.453Z",
+    "updated_at": "2025-11-25T14:37:20.453Z"
+  },
+  {
+    "name": "Pyridoxine",
+    "scientific_name": "Pyridoxine",
+    "common_names": [
+      "Vitamin B6",
+      "Vitamina B6",
+      "Piridoxina"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "high",
+      "pubmedQuery": "(pyridoxine OR vitamin B6) AND (mood OR sleep OR nausea OR PMS)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.454Z",
+    "updated_at": "2025-11-25T14:37:20.454Z"
+  },
+  {
+    "name": "Biotin",
+    "scientific_name": "Biotin",
+    "common_names": [
+      "Vitamin B7",
+      "Vitamina B7",
+      "Biotina",
+      "Vitamin H"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "high",
+      "pubmedQuery": "(biotin OR vitamin B7) AND (hair OR nails OR skin)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.455Z",
+    "updated_at": "2025-11-25T14:37:20.455Z"
+  },
+  {
+    "name": "Folate",
+    "scientific_name": "Folate",
+    "common_names": [
+      "Vitamin B9",
+      "Vitamina B9",
+      "Folic Acid",
+      "Ácido Fólico",
+      "Folato"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "high",
+      "pubmedQuery": "(folate OR folic acid OR vitamin B9) AND (pregnancy OR anemia OR cardiovascular)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.456Z",
+    "updated_at": "2025-11-25T14:37:20.456Z"
+  },
+  {
+    "name": "Cobalamin",
+    "scientific_name": "Cobalamin",
+    "common_names": [
+      "Vitamin B12",
+      "Vitamina B12",
+      "Cobalamina",
+      "Cyanocobalamin"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "high",
+      "pubmedQuery": "(cobalamin OR vitamin B12 OR cyanocobalamin) AND (energy OR anemia OR nerve OR vegan)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.457Z",
+    "updated_at": "2025-11-25T14:37:20.457Z"
+  },
+  {
+    "name": "Vitamin B12",
+    "scientific_name": "Cobalamin",
+    "common_names": [
+      "Vitamin B12",
+      "Vitamina B12",
+      "Cobalamina",
+      "Cyanocobalamin",
+      "B12"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "vitamin",
+      "popularity": "high",
+      "pubmedQuery": "(cobalamin OR vitamin B12 OR cyanocobalamin) AND (energy OR anemia OR nerve OR vegan)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.458Z",
+    "updated_at": "2025-11-25T14:37:20.458Z"
+  },
+  {
+    "name": "Magnesium",
+    "scientific_name": "Magnesium",
+    "common_names": [
+      "Magnesio",
+      "Magnesium Glycinate",
+      "Magnesium Citrate"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "high",
+      "pubmedQuery": "(magnesium) AND (sleep OR muscle OR cramps OR anxiety OR migraine)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.459Z",
+    "updated_at": "2025-11-25T14:37:20.459Z"
+  },
+  {
+    "name": "Zinc",
+    "scientific_name": "Zinc",
+    "common_names": [
+      "Zinc",
+      "Cinc",
+      "Zinc Picolinate"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "high",
+      "pubmedQuery": "(zinc) AND (immune OR testosterone OR skin OR wound healing)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.460Z",
+    "updated_at": "2025-11-25T14:37:20.460Z"
+  },
+  {
+    "name": "Iron",
+    "scientific_name": "Iron",
+    "common_names": [
+      "Hierro",
+      "Iron",
+      "Ferrous Sulfate"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "high",
+      "pubmedQuery": "(iron OR ferrous) AND (anemia OR fatigue OR hemoglobin)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.460Z",
+    "updated_at": "2025-11-25T14:37:20.460Z"
+  },
+  {
+    "name": "Calcium",
+    "scientific_name": "Calcium",
+    "common_names": [
+      "Calcio",
+      "Calcium",
+      "Calcium Carbonate"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "high",
+      "pubmedQuery": "(calcium) AND (bone OR osteoporosis OR teeth)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.461Z",
+    "updated_at": "2025-11-25T14:37:20.461Z"
+  },
+  {
+    "name": "Selenium",
+    "scientific_name": "Selenium",
+    "common_names": [
+      "Selenio",
+      "Selenium"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "medium",
+      "pubmedQuery": "(selenium) AND (antioxidant OR thyroid OR immune)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.462Z",
+    "updated_at": "2025-11-25T14:37:20.462Z"
+  },
+  {
+    "name": "Chromium",
+    "scientific_name": "Chromium",
+    "common_names": [
+      "Cromo",
+      "Chromium",
+      "Chromium Picolinate"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "medium",
+      "pubmedQuery": "(chromium) AND (blood sugar OR diabetes OR insulin)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.463Z",
+    "updated_at": "2025-11-25T14:37:20.463Z"
+  },
+  {
+    "name": "CoQ10",
+    "scientific_name": "Coenzyme Q10",
+    "common_names": [
+      "CoQ10",
+      "Coenzima Q10",
+      "Ubiquinone"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "other",
+      "popularity": "high",
+      "pubmedQuery": "(coenzyme q10 OR coq10 OR ubiquinone) AND (heart OR energy OR mitochondria)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.465Z",
+    "updated_at": "2025-11-25T14:37:20.465Z"
+  },
+  {
+    "name": "PQQ",
+    "scientific_name": "Pyrroloquinoline quinone",
+    "common_names": [
+      "PQQ",
+      "Pirroloquinolina Quinona"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "other",
+      "popularity": "medium",
+      "pubmedQuery": "(pyrroloquinoline quinone OR pqq) AND (mitochondria OR cognitive OR neuroprotection)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.466Z",
+    "updated_at": "2025-11-25T14:37:20.466Z"
+  },
+  {
+    "name": "NAC",
+    "scientific_name": "N-Acetyl Cysteine",
+    "common_names": [
+      "NAC",
+      "N-Acetil Cisteína",
+      "N-Acetylcysteine"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "other",
+      "popularity": "high",
+      "pubmedQuery": "(n-acetylcysteine OR nac) AND (antioxidant OR liver OR respiratory OR mental health)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.467Z",
+    "updated_at": "2025-11-25T14:37:20.467Z"
+  },
+  {
+    "name": "Alpha Lipoic Acid",
+    "scientific_name": "Alpha Lipoic Acid",
+    "common_names": [
+      "ALA",
+      "Ácido Alfa Lipoico",
+      "Alpha-Lipoic Acid"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "other",
+      "popularity": "high",
+      "pubmedQuery": "(alpha lipoic acid OR ala) AND (antioxidant OR neuropathy OR diabetes)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.468Z",
+    "updated_at": "2025-11-25T14:37:20.468Z"
+  },
+  {
+    "name": "Resveratrol",
+    "scientific_name": "Resveratrol",
+    "common_names": [
+      "Resveratrol"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "other",
+      "popularity": "high",
+      "pubmedQuery": "(resveratrol) AND (antioxidant OR cardiovascular OR longevity OR anti-aging)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.469Z",
+    "updated_at": "2025-11-25T14:37:20.469Z"
+  },
+  {
+    "name": "L-Carnitine",
+    "scientific_name": "L-Carnitine",
+    "common_names": [
+      "L-Carnitina",
+      "Carnitine",
+      "Levocarnitine"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "amino-acid",
+      "popularity": "high",
+      "pubmedQuery": "(l-carnitine OR carnitine) AND (energy OR fat metabolism OR exercise OR weight loss)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.470Z",
+    "updated_at": "2025-11-25T14:37:20.470Z"
+  },
+  {
+    "name": "L-Theanine",
+    "scientific_name": "L-Theanine",
+    "common_names": [
+      "L-Teanina",
+      "Theanine",
+      "Teanina"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "amino-acid",
+      "popularity": "high",
+      "pubmedQuery": "(l-theanine OR theanine) AND (anxiety OR relaxation OR focus OR sleep)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.471Z",
+    "updated_at": "2025-11-25T14:37:20.471Z"
+  },
+  {
+    "name": "L-Glutamine",
+    "scientific_name": "L-Glutamine",
+    "common_names": [
+      "L-Glutamina",
+      "Glutamine",
+      "Glutamina"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "amino-acid",
+      "popularity": "high",
+      "pubmedQuery": "(l-glutamine OR glutamine) AND (gut OR muscle OR immune OR recovery)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.473Z",
+    "updated_at": "2025-11-25T14:37:20.473Z"
+  },
+  {
+    "name": "BCAA",
+    "scientific_name": "Branched-Chain Amino Acids",
+    "common_names": [
+      "BCAA",
+      "Aminoácidos Ramificados",
+      "Leucine Isoleucine Valine"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "amino-acid",
+      "popularity": "high",
+      "pubmedQuery": "(bcaa OR branched chain amino acids) AND (muscle OR recovery OR exercise OR protein synthesis)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.475Z",
+    "updated_at": "2025-11-25T14:37:20.475Z"
+  },
+  {
+    "name": "Citrulline Malate",
+    "scientific_name": "L-Citrulline Malate",
+    "common_names": [
+      "Citrulline",
+      "L-Citrulline",
+      "Citrulina",
+      "Citrulina Malato",
+      "Citrulline Malate"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "amino-acid",
+      "popularity": "high",
+      "pubmedQuery": "(citrulline OR l-citrulline OR citrulline malate) AND (exercise OR performance OR blood flow OR nitric oxide OR fatigue)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.476Z",
+    "updated_at": "2025-11-25T14:37:20.476Z"
+  },
+  {
+    "name": "Agmatine Sulfate",
+    "scientific_name": "Agmatine Sulfate",
+    "common_names": [
+      "Agmatine",
+      "Agmatina",
+      "Agmatine Sulfate",
+      "Agmatina Sulfato"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "amino-acid",
+      "popularity": "high",
+      "evidenceGrade": "C",
+      "studyCount": 9,
+      "pubmedQuery": "(agmatine OR agmatine sulfate) AND (neuroprotection OR pain OR depression OR cognitive)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 5
+      },
+      "cachedData": {
+        "lastUpdated": "2025-11-24",
+        "studyCount": 9,
+        "evidenceGrade": "C",
+        "primaryUses": [
+          "Neuroprotection",
+          "Pain Management",
+          "Mood Support"
+        ],
+        "safetyProfile": "safe"
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.477Z",
+    "updated_at": "2025-11-25T14:37:20.477Z"
+  },
+  {
+    "name": "Citrulline",
+    "scientific_name": "L-Citrulline",
+    "common_names": [
+      "Citrulline",
+      "L-Citrulline",
+      "Citrulina",
+      "L-Citrulina"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "amino-acid",
+      "popularity": "high",
+      "pubmedQuery": "(citrulline OR l-citrulline) AND (exercise OR performance OR blood flow OR nitric oxide OR erectile)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.479Z",
+    "updated_at": "2025-11-25T14:37:20.479Z"
+  },
+  {
+    "name": "Omega-3",
+    "scientific_name": "Omega-3 Fatty Acids",
+    "common_names": [
+      "Omega-3",
+      "Fish Oil",
+      "EPA",
+      "DHA",
+      "Aceite de Pescado"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "fatty-acid",
+      "popularity": "high",
+      "pubmedQuery": "(omega-3 OR fish oil OR epa OR dha) AND (cardiovascular OR brain OR inflammation)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.481Z",
+    "updated_at": "2025-11-25T14:37:20.481Z"
+  },
+  {
+    "name": "Ashwagandha",
+    "scientific_name": "Withania somnifera",
+    "common_names": [
+      "Ashwagandha",
+      "Withania",
+      "Indian Ginseng"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "herb",
+      "popularity": "high",
+      "pubmedQuery": "(ashwagandha OR withania somnifera) AND (stress OR anxiety OR cortisol OR adaptogen)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.483Z",
+    "updated_at": "2025-11-25T14:37:20.483Z"
+  },
+  {
+    "name": "Rhodiola",
+    "scientific_name": "Rhodiola rosea",
+    "common_names": [
+      "Rhodiola",
+      "Rodiola",
+      "Golden Root"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "herb",
+      "popularity": "high",
+      "pubmedQuery": "(rhodiola rosea OR rhodiola) AND (fatigue OR stress OR endurance OR adaptogen)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.483Z",
+    "updated_at": "2025-11-25T14:37:20.483Z"
+  },
+  {
+    "name": "Turmeric",
+    "scientific_name": "Curcuma longa",
+    "common_names": [
+      "Cúrcuma",
+      "Curcumin",
+      "Turmeric"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "herb",
+      "popularity": "high",
+      "pubmedQuery": "(curcumin OR turmeric OR curcuma longa) AND (inflammation OR arthritis OR antioxidant)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.486Z",
+    "updated_at": "2025-11-25T14:37:20.486Z"
+  },
+  {
+    "name": "Ginkgo Biloba",
+    "scientific_name": "Ginkgo biloba",
+    "common_names": [
+      "Ginkgo",
+      "Gingko"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "herb",
+      "popularity": "high",
+      "pubmedQuery": "(ginkgo biloba OR ginkgo) AND (memory OR cognitive OR circulation)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-25T14:37:20.489Z",
+    "updated_at": "2025-11-25T14:37:20.489Z"
+  }
+]

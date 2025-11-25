@@ -1,0 +1,426 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'API Gateway with Rate Limiting and WAF for Intelligent Supplement Search'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Environment name
+
+  LambdaFunctionArn:
+    Type: String
+    Description: ARN of the Lambda function to invoke
+    Default: ''
+
+Resources:
+  # API Gateway REST API
+  SupplementSearchAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub '${Environment}-supplement-search-api'
+      Description: Intelligent Supplement Search API with rate limiting
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Policy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: execute-api:Invoke
+            Resource: '*'
+
+  # API Gateway Resource
+  SearchResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref SupplementSearchAPI
+      ParentId: !GetAtt SupplementSearchAPI.RootResourceId
+      PathPart: search
+
+  # API Gateway Method (POST)
+  SearchMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref SupplementSearchAPI
+      ResourceId: !Ref SearchResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      RequestValidatorId: !Ref RequestValidator
+      RequestModels:
+        application/json: !Ref SearchRequestModel
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations'
+        IntegrationResponses:
+          - StatusCode: 200
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: !Ref SearchResponseModel
+        - StatusCode: 400
+        - StatusCode: 429
+        - StatusCode: 500
+
+  # API Gateway Method (GET)
+  SearchMethodGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref SupplementSearchAPI
+      ResourceId: !Ref SearchResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      RequestValidatorId: !Ref RequestValidator
+      RequestParameters:
+        method.request.querystring.q: true
+        method.request.querystring.language: false
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionArn}/invocations'
+        IntegrationResponses:
+          - StatusCode: 200
+      MethodResponses:
+        - StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 429
+        - StatusCode: 500
+
+  # Request Validator
+  RequestValidator:
+    Type: AWS::ApiGateway::RequestValidator
+    Properties:
+      RestApiId: !Ref SupplementSearchAPI
+      Name: !Sub '${Environment}-request-validator'
+      ValidateRequestBody: true
+      ValidateRequestParameters: true
+
+  # Request Model
+  SearchRequestModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref SupplementSearchAPI
+      Name: SearchRequest
+      ContentType: application/json
+      Schema:
+        $schema: 'http://json-schema.org/draft-04/schema#'
+        type: object
+        required:
+          - query
+        properties:
+          query:
+            type: string
+            minLength: 1
+            maxLength: 200
+          language:
+            type: string
+            enum:
+              - en
+              - es
+              - pt
+
+  # Response Model
+  SearchResponseModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref SupplementSearchAPI
+      Name: SearchResponse
+      ContentType: application/json
+      Schema:
+        $schema: 'http://json-schema.org/draft-04/schema#'
+        type: object
+        properties:
+          success:
+            type: boolean
+          supplement:
+            type: object
+          latency:
+            type: number
+          cacheHit:
+            type: boolean
+          source:
+            type: string
+
+  # Usage Plan for Rate Limiting
+  SupplementSearchUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - SupplementSearchAPIDeployment
+    Properties:
+      UsagePlanName: !Sub '${Environment}-supplement-search-usage-plan'
+      Description: Rate limiting for supplement search API
+      ApiStages:
+        - ApiId: !Ref SupplementSearchAPI
+          Stage: !Ref SupplementSearchAPIStage
+      Throttle:
+        BurstLimit: 200  # Allow bursts up to 200 requests
+        RateLimit: 100   # 100 requests per second sustained
+      Quota:
+        Limit: 86400     # 86400 requests per day (1000 per user * ~86 users)
+        Period: DAY
+
+  # API Key for authenticated users
+  SupplementSearchAPIKey:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - SupplementSearchAPIDeployment
+    Properties:
+      Name: !Sub '${Environment}-supplement-search-api-key'
+      Description: API Key for supplement search
+      Enabled: true
+
+  # Link API Key to Usage Plan
+  UsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref SupplementSearchAPIKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref SupplementSearchUsagePlan
+
+  # API Gateway Deployment
+  SupplementSearchAPIDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - SearchMethod
+      - SearchMethodGet
+    Properties:
+      RestApiId: !Ref SupplementSearchAPI
+      Description: !Sub 'Deployment for ${Environment}'
+
+  # API Gateway Stage
+  SupplementSearchAPIStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref SupplementSearchAPI
+      DeploymentId: !Ref SupplementSearchAPIDeployment
+      StageName: !Ref Environment
+      Description: !Sub '${Environment} stage'
+      TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: /*
+          HttpMethod: '*'
+          LoggingLevel: INFO
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ThrottlingBurstLimit: 200
+          ThrottlingRateLimit: 100
+
+  # CloudWatch Log Group for API Gateway
+  APIGatewayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/apigateway/${Environment}-supplement-search'
+      RetentionInDays: 7
+
+  # Lambda Permission for API Gateway
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LambdaFunctionArn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SupplementSearchAPI}/*'
+
+  # WAF Web ACL
+  SupplementSearchWebACL:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: !Sub '${Environment}-supplement-search-waf'
+      Scope: REGIONAL
+      Description: WAF rules for supplement search API
+      DefaultAction:
+        Allow: {}
+      Rules:
+        # Rate limiting per IP (100 requests per minute)
+        - Name: RateLimitPerIP
+          Priority: 1
+          Statement:
+            RateBasedStatement:
+              Limit: 100
+              AggregateKeyType: IP
+          Action:
+            Block:
+              CustomResponse:
+                ResponseCode: 429
+                CustomResponseBodyKey: RateLimitExceeded
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: RateLimitPerIP
+
+        # SQL Injection Protection
+        - Name: SQLInjectionProtection
+          Priority: 2
+          Statement:
+            SqliMatchStatement:
+              FieldToMatch:
+                QueryString: {}
+              TextTransformations:
+                - Priority: 0
+                  Type: URL_DECODE
+                - Priority: 1
+                  Type: HTML_ENTITY_DECODE
+          Action:
+            Block:
+              CustomResponse:
+                ResponseCode: 403
+                CustomResponseBodyKey: SQLInjectionBlocked
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: SQLInjectionProtection
+
+        # XSS Protection
+        - Name: XSSProtection
+          Priority: 3
+          Statement:
+            XssMatchStatement:
+              FieldToMatch:
+                QueryString: {}
+              TextTransformations:
+                - Priority: 0
+                  Type: URL_DECODE
+                - Priority: 1
+                  Type: HTML_ENTITY_DECODE
+          Action:
+            Block:
+              CustomResponse:
+                ResponseCode: 403
+                CustomResponseBodyKey: XSSBlocked
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: XSSProtection
+
+        # Size Constraint (max 10KB request)
+        - Name: SizeConstraint
+          Priority: 4
+          Statement:
+            SizeConstraintStatement:
+              FieldToMatch:
+                Body: {}
+              ComparisonOperator: GT
+              Size: 10240
+              TextTransformations:
+                - Priority: 0
+                  Type: NONE
+          Action:
+            Block:
+              CustomResponse:
+                ResponseCode: 413
+                CustomResponseBodyKey: RequestTooLarge
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: SizeConstraint
+
+        # Geographic restriction (optional - can be customized)
+        - Name: GeoBlocking
+          Priority: 5
+          Statement:
+            NotStatement:
+              Statement:
+                GeoMatchStatement:
+                  CountryCodes:
+                    - US
+                    - CA
+                    - MX
+                    - BR
+                    - AR
+                    - CL
+                    - CO
+                    - PE
+                    - ES
+                    - GB
+                    - FR
+                    - DE
+                    - IT
+          Action:
+            Count: {}  # Just count, don't block
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: GeoBlocking
+
+      CustomResponseBodies:
+        RateLimitExceeded:
+          ContentType: APPLICATION_JSON
+          Content: '{"error": "Rate limit exceeded. Please try again later.", "code": "RATE_LIMIT_EXCEEDED"}'
+        SQLInjectionBlocked:
+          ContentType: APPLICATION_JSON
+          Content: '{"error": "Invalid request detected.", "code": "INVALID_REQUEST"}'
+        XSSBlocked:
+          ContentType: APPLICATION_JSON
+          Content: '{"error": "Invalid request detected.", "code": "INVALID_REQUEST"}'
+        RequestTooLarge:
+          ContentType: APPLICATION_JSON
+          Content: '{"error": "Request too large.", "code": "REQUEST_TOO_LARGE"}'
+
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: SupplementSearchWebACL
+
+  # Associate WAF with API Gateway
+  WebACLAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${SupplementSearchAPI}/stages/${SupplementSearchAPIStage}'
+      WebACLArn: !GetAtt SupplementSearchWebACL.Arn
+
+  # CloudWatch Alarm for Rate Limit Violations
+  RateLimitAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-supplement-search-rate-limit-violations'
+      AlarmDescription: Alert when rate limit violations exceed threshold
+      MetricName: RateLimitPerIP
+      Namespace: AWS/WAFV2
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Rule
+          Value: RateLimitPerIP
+        - Name: WebACL
+          Value: !Sub '${Environment}-supplement-search-waf'
+        - Name: Region
+          Value: !Ref AWS::Region
+
+Outputs:
+  APIGatewayURL:
+    Description: API Gateway URL
+    Value: !Sub 'https://${SupplementSearchAPI}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchAPIURL'
+
+  APIGatewayId:
+    Description: API Gateway ID
+    Value: !Ref SupplementSearchAPI
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchAPIId'
+
+  APIKey:
+    Description: API Key for authenticated requests
+    Value: !Ref SupplementSearchAPIKey
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchAPIKey'
+
+  WebACLArn:
+    Description: WAF Web ACL ARN
+    Value: !GetAtt SupplementSearchWebACL.Arn
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchWebACLArn'
+
+  UsagePlanId:
+    Description: Usage Plan ID
+    Value: !Ref SupplementSearchUsagePlan
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchUsagePlanId'

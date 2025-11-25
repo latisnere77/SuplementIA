@@ -24,10 +24,9 @@ import { ViewToggle, type ViewMode } from '@/components/portal/ViewToggle';
 import { ErrorState } from '@/components/portal/ErrorState';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
-import { getBestSuggestion, getSuggestions } from '@/lib/portal/supplement-suggestions';
 import { searchAnalytics } from '@/lib/portal/search-analytics';
 import { traceSearch } from '@/lib/portal/xray-client';
-import { normalizeQuery, translateToSpanish } from '@/lib/portal/query-normalization';
+import { normalizeQuery } from '@/lib/portal/query-normalization';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 
 // ====================================
@@ -444,10 +443,8 @@ function ResultsPageContent() {
   // ====================================
   // LOCALIZED SUPPLEMENT NAME
   // ====================================
-  // Translate supplement name based on current language
-  const localizedSupplementName = recommendation?.category 
-    ? (language === 'es' ? translateToSpanish(recommendation.category) : recommendation.category)
-    : query || 'supplement';
+  // Use the category directly - normalization already handles language
+  const localizedSupplementName = recommendation?.category || query || 'supplement';
 
   // Transform evidence data when recommendation changes (CLIENT-SIDE, instant)
   useEffect(() => {
@@ -910,37 +907,29 @@ function ResultsPageContent() {
             if (response.status === 404 && errorData.error === 'insufficient_data') {
               console.log(`ℹ️  No scientific data found for: ${searchTerm} (original: ${normalizedQuery})`);
 
-              // Get intelligent suggestions using fuzzy search
-              const suggestions = getSuggestions(searchTerm);
-              
-              // Log analytics - search failed (with both original and normalized terms)
+              // Log analytics - search failed
               searchAnalytics.logFailure(
                 normalizedQuery,
                 searchTerm,
-                suggestions.map(s => s.name)
+                []
               );
 
               // Trace search failure
               traceSearch(normalizedQuery, 'api-request-complete', {
                 success: false,
                 errorType: 'insufficient_data',
-                suggestionsOffered: suggestions.length,
                 normalizedQuery: searchTerm,
               });
 
               console.log('[State Update] Setting error - clearing recommendation first');
               setRecommendation(null); // Clear recommendation before setting error
               
-              // Show rich error with intelligent suggestions
+              // Show error message
               setError({
                 type: 'insufficient_scientific_data',
                 message: errorData.message || `No encontramos estudios científicos publicados sobre "${normalizedQuery}".`,
                 searchedFor: normalizedQuery,
-                suggestions: suggestions.map(s => ({
-                  name: s.name,
-                  confidence: s.confidence,
-                  hasStudies: true, // Only suggest supplements with known mappings
-                })),
+                suggestions: [],
                 metadata: {
                   normalizedQuery: searchTerm,
                   requestId: errorData.requestId,
@@ -1200,7 +1189,7 @@ function ResultsPageContent() {
     };
   }, [query, recommendationId, router]);
 
-  const handleBuyClick = (product: any) => {
+  const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; directLink?: string; affiliateLink?: string }) => {
     if (isFreeUser && product.tier !== 'budget') {
       setShowPaywall(true);
     } else {
@@ -1385,7 +1374,7 @@ function ResultsPageContent() {
           
           if (!hasNoData) return null;
           
-          const suggestion = getBestSuggestion(recommendation.category);
+          // Suggestion functionality removed - using vector search now
           return (
             <div className="mb-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
               <div className="flex items-start gap-3">
@@ -1397,22 +1386,6 @@ function ResultsPageContent() {
                   <p className="text-yellow-800 text-sm mb-2">
                     No encontramos estudios científicos publicados sobre este suplemento. La información mostrada es de carácter general y no está respaldada por evidencia científica específica.
                   </p>
-                  {suggestion && (
-                    <div className="mt-3 p-3 bg-white border border-yellow-300 rounded-lg">
-                      <p className="text-yellow-900 text-sm mb-2">
-                        <strong>¿Buscabas esto?</strong>
-                      </p>
-                      <button
-                        onClick={() => router.push(`/portal/results?q=${encodeURIComponent(suggestion.name)}`)}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-                      >
-                        <span>{suggestion.name}</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>

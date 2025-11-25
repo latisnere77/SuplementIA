@@ -14,8 +14,7 @@ export interface LogContext {
   method?: string;
   statusCode?: number;
   duration?: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined | Record<string, unknown>;
 }
 
 class PortalAPILogger {
@@ -32,7 +31,7 @@ class PortalAPILogger {
       ...context,
     };
     
-    // eslint-disable-next-line no-console
+    // Console logging is intentional for debugging and monitoring
     console.log('📥 [PORTAL API] Request:', JSON.stringify(logData, null, 2));
     
     // Add Sentry breadcrumb
@@ -61,7 +60,7 @@ class PortalAPILogger {
       ...context,
     };
     
-    // eslint-disable-next-line no-console
+    // Console logging is intentional for debugging and monitoring
     console.log('✅ [PORTAL API] Success:', JSON.stringify(logData, null, 2));
     
     try {
@@ -79,29 +78,28 @@ class PortalAPILogger {
   /**
    * Log error with full context
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  logError(error: Error | any, context: LogContext) {
+  logError(error: Error | unknown, context: LogContext) {
     const duration = Date.now() - this.startTime;
+    const err = error as Error & { cause?: unknown };
     const errorData = {
       type: 'error',
       timestamp: new Date().toISOString(),
       duration: `${duration}ms`,
       error: {
-        name: error?.name || 'UnknownError',
-        message: error?.message || String(error),
-        stack: error?.stack,
-        cause: error?.cause,
+        name: err?.name || 'UnknownError',
+        message: err?.message || String(error),
+        stack: err?.stack,
+        cause: err?.cause,
       },
       ...context,
     };
     
-    // eslint-disable-next-line no-console
+    // Console logging is intentional for error tracking
     console.error('❌ [PORTAL API] Error:', JSON.stringify(errorData, null, 2));
     
     // Capture in Sentry with full context
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      Sentry.withScope((scope: any) => {
+      Sentry.withScope((scope) => {
         scope.setTag('portal.api', 'true');
         scope.setTag('endpoint', context.endpoint || 'unknown');
         scope.setTag('method', context.method || 'unknown');
@@ -114,16 +112,16 @@ class PortalAPILogger {
           duration,
         });
         scope.setContext('error', {
-          name: error?.name,
-          message: error?.message,
-          stack: error?.stack,
+          name: err?.name,
+          message: err?.message,
+          stack: err?.stack,
           statusCode: context.statusCode,
         });
         
         if (error instanceof Error) {
           Sentry.captureException(error);
         } else {
-          Sentry.captureMessage(`Portal API Error: ${error?.message || String(error)}`, 'error');
+          Sentry.captureMessage(`Portal API Error: ${err?.message || String(error)}`, 'error');
         }
       });
     } catch (sentryError) {
@@ -143,7 +141,7 @@ class PortalAPILogger {
       ...context,
     };
     
-    // eslint-disable-next-line no-console
+    // Console logging is intentional for debugging and monitoring
     console.log('🔗 [PORTAL API] Backend Call:', JSON.stringify(logData, null, 2));
     
     try {
@@ -174,7 +172,7 @@ class PortalAPILogger {
     const level = status >= 400 ? 'error' : 'info';
     const emoji = status >= 400 ? '❌' : '✅';
     
-    // eslint-disable-next-line no-console
+    // Console logging is intentional for debugging and monitoring
     console.log(`${emoji} [PORTAL API] Backend Response:`, JSON.stringify(logData, null, 2));
     
     try {

@@ -32,7 +32,7 @@ jest.mock('@/components/portal/ErrorState', () => {
 
 jest.mock('@/components/portal/EvidenceAnalysisPanelNew', () => {
   return function MockEvidencePanel() {
-    return <div data-testid="recommendation-display">Evidence</div>;
+    return <div data-testid="evidence-panel">Evidence</div>;
   };
 });
 
@@ -78,6 +78,8 @@ jest.mock('@/lib/hooks/useOnlineStatus', () => ({
 
 jest.mock('@/lib/portal/supplement-suggestions', () => ({
   suggestSupplementCorrection: () => null,
+  getBestSuggestion: () => null,
+  getSuggestions: () => [],
 }));
 
 jest.mock('@/lib/portal/search-analytics', () => ({
@@ -145,7 +147,7 @@ describe('Property Test: Cache Validation', () => {
       }, { timeout: 3000 });
 
       await waitFor(() => {
-        expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+        expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
       }, { timeout: 3000 });
     });
   });
@@ -250,7 +252,7 @@ describe('Property Test: Cache Validation', () => {
       }, { timeout: 3000 });
 
       await waitFor(() => {
-        expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+        expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
       }, { timeout: 3000 });
     });
   });

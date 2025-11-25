@@ -37,7 +37,7 @@ jest.mock('@/components/portal/ErrorState', () => {
 
 jest.mock('@/components/portal/EvidenceAnalysisPanelNew', () => {
   return function MockEvidencePanel() {
-    return <div data-testid="recommendation-display">Evidence</div>;
+    return <div data-testid="evidence-panel">Evidence</div>;
   };
 });
 
@@ -103,6 +103,8 @@ jest.mock('@/lib/hooks/useOnlineStatus', () => ({
 
 jest.mock('@/lib/portal/supplement-suggestions', () => ({
   suggestSupplementCorrection: () => null,
+  getBestSuggestion: () => null,
+  getSuggestions: () => [],
 }));
 
 jest.mock('@/lib/portal/search-analytics', () => ({
@@ -171,7 +173,7 @@ describe('Property Test: Cache Retrieval', () => {
 
     // Should display recommendation
     await waitFor(() => {
-      expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
 
     // Should NOT show error state
@@ -213,7 +215,7 @@ describe('Property Test: Cache Retrieval', () => {
     const { unmount } = render(<ResultsPage />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
 
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
@@ -254,7 +256,7 @@ describe('Property Test: Cache Retrieval', () => {
     render(<ResultsPage />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
 
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
@@ -324,7 +326,7 @@ describe('Property Test: Cache Retrieval', () => {
 
     // Should display fresh data
     await waitFor(() => {
-      expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
 
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
@@ -371,7 +373,7 @@ describe('Property Test: Cache Retrieval', () => {
 
     // Should display fresh data
     await waitFor(() => {
-      expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
 
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
@@ -411,7 +413,7 @@ describe('Property Test: Cache Retrieval', () => {
 
     // Should display recommendation
     await waitFor(() => {
-      expect(screen.getByTestId('recommendation-display')).toBeInTheDocument();
+      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
 
     // Critical: Should NOT show error state with valid data
