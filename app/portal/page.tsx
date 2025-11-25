@@ -162,16 +162,16 @@ export default function PortalPage() {
     // Limpiar error previo y proceder
     setValidationError(null);
     setIsLoading(true);
-    router.push(`/portal/results?q=${encodeURIComponent(searchTerm)}`);
+    router.push(`/portal/results?q=${encodeURIComponent(searchTerm)}&supplement=${encodeURIComponent(searchTerm)}`);
   };
 
   const handleCategoryClick = (categoryId: string) => {
-    router.push(`/portal/results?category=${encodeURIComponent(categoryId)}`);
+    router.push(`/portal/results?category=${encodeURIComponent(categoryId)}&supplement=${encodeURIComponent(categoryId)}`);
   };
 
   const handlePopularSearch = (term: string) => {
     setSearchQuery(term);
-    router.push(`/portal/results?q=${encodeURIComponent(term)}`);
+    router.push(`/portal/results?q=${encodeURIComponent(term)}&supplement=${encodeURIComponent(term)}`);
   };
 
   return (
