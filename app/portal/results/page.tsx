@@ -1366,6 +1366,7 @@ function ResultsPageContent() {
 
         {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
         {(() => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const metadata = (recommendation as any)._enrichment_metadata || {};
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const supplement = (recommendation as any).supplement || {};
