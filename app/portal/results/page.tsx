@@ -438,7 +438,8 @@ function ResultsPageContent() {
   const isFreeUser = !subscription || subscription.plan_id === 'free';
 
   const query = searchParams.get('q');
-  const recommendationId = searchParams.get('id');
+  // Generate recommendationId if not provided (for direct searches)
+  const recommendationId = searchParams.get('id') || `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
   // ====================================
   // LOCALIZED SUPPLEMENT NAME
@@ -1325,6 +1326,7 @@ function ResultsPageContent() {
             // Extract study data with fallbacks
             const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
             const totalParticipants = recommendation.evidence_summary?.totalParticipants || 0;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const metadata = (recommendation as any)._enrichment_metadata || {};
             const studiesUsed = metadata.studiesUsed || 0;
             
