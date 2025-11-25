@@ -310,7 +310,7 @@ export default function PortalPage() {
                     </div>
                   ) : (
                     <button
-                      type="button"
+                      type="submit"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
