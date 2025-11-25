@@ -152,18 +152,7 @@ export async function POST(request: NextRequest) {
     // 🚀 OPTIMIZATION: Use optimized parameters from mapping if available
     const enrichParams = getOptimizedEnrichmentParams(sanitizedCategory);
     
-    console.log(
-      JSON.stringify({
-        event: 'RECOMMEND_ENRICH_CALL_START',
-        requestId,
-        category: searchTerm,
-        originalCategory: category,
-        enrichApiUrl: ENRICH_API_URL,
-        optimizedParams: enrichParams,
-        usedMapping: lookupResult.cached,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    
 
     // Try sync first with shorter timeout (30s)
     // If timeout, fall back to async processing

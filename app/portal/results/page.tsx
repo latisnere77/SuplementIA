@@ -587,9 +587,10 @@ function ResultsPageContent() {
 
       try {
         // QUICK WIN #1: Validate supplement parameter before making request
-        const supplement = searchParams.get('supplement');
+        // Fallback to 'q' parameter if 'supplement' is missing (for backward compatibility)
+        const supplement = searchParams.get('supplement') || searchParams.get('q');
         if (!supplement) {
-          console.error('❌ Missing supplement parameter');
+          console.error('❌ Missing supplement parameter (checked both "supplement" and "q")');
           if (isMounted) {
             console.log('[State Update] Setting error - clearing recommendation first');
             setRecommendation(null); // Clear recommendation before setting error
