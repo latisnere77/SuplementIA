@@ -35,6 +35,30 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Step 0: Try LLM expansion for unknown terms (optional, non-blocking)
+    let searchTerm = supplementName;
+    try {
+      // Call abbreviation expander with short timeout
+      const expanderUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://suplementia.vercel.app'}/api/portal/expand-query`;
+      const expandResponse = await fetch(expanderUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: supplementName }),
+        signal: AbortSignal.timeout(5000), // 5s timeout - don't block on this
+      });
+      
+      if (expandResponse.ok) {
+        const expandData = await expandResponse.json();
+        if (expandData.success && expandData.alternatives?.length > 0) {
+          searchTerm = expandData.alternatives[0];
+          console.log(`[enrich-v2] Expanded "${supplementName}" → "${searchTerm}"`);
+        }
+      }
+    } catch (error) {
+      // Expansion failed - continue with original term
+      console.log(`[enrich-v2] Expansion failed, using original term: ${supplementName}`);
+    }
+    
     // Step 1: Fetch studies from Lambda
     const studiesUrl = process.env.STUDIES_API_URL || 
       'https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search';
@@ -48,7 +72,7 @@ export async function POST(request: NextRequest) {
         'X-Request-ID': requestId,
       },
       body: JSON.stringify({
-        supplementName,
+        supplementName: searchTerm, // Use expanded term if available
         maxResults: Math.min(maxStudies, 10),
         rctOnly: false,
         yearFrom: 2010,

@@ -145,8 +145,8 @@ export async function POST(request: NextRequest) {
     );
 
     // Call our intelligent enrichment system with extended timeout
-    // Using enrich (full version with LLM expansion) for better query handling
-    const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich`;
+    // Using enrich-v2 (simplified version) to avoid TDZ issues
+    const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich-v2`;
     const enrichStartTime = Date.now();
     
     // 🚀 OPTIMIZATION: Use optimized parameters from mapping if available
@@ -194,16 +194,7 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
       // If timeout, switch to async processing
       if (error.name === 'AbortError' || error.name === 'TimeoutError') {
-        console.log(
-          JSON.stringify({
-            event: 'RECOMMEND_SWITCHING_TO_ASYNC',
-            requestId,
-            jobId,
-            category: searchTerm,
-            reason: 'sync_timeout_30s',
-            timestamp: new Date().toISOString(),
-          })
-        );
+        
         
         isAsync = true;
         
