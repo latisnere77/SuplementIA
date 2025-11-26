@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Setup RDS Postgres with pgvector
+- [x] 1. Setup RDS Postgres with pgvector
   - Deploy RDS instance via CloudFormation
   - Install pgvector extension
   - Create supplements table with vector column
@@ -8,19 +8,19 @@
   - Configure Multi-AZ for high availability
   - _Requirements: 1.1, 1.2, 1.3, 1.5_
 
-- [ ] 1.1 Write property test for vector search accuracy
+- [x] 1.1 Write property test for vector search accuracy
   - **Property 1: Vector search finds semantically similar supplements**
   - **Validates: Requirements 1.3, 5.2**
 
-- [ ] 1.2 Write property test for search latency
+- [x] 1.2 Write property test for search latency
   - **Property 6: Search latency bounds (DAX < 1ms, Redis < 5ms, Postgres < 50ms)**
   - **Validates: Requirements 1.4, 6.1, 6.2, 6.3**
 
-- [ ] 1.3 Write property test for HNSW performance
+- [x] 1.3 Write property test for HNSW performance
   - **Property 9: HNSW index performance with 1000+ supplements**
   - **Validates: Requirements 1.4, 10.1**
 
-- [ ] 1.4 Write property test for Multi-AZ failover
+- [x] 1.4 Write property test for Multi-AZ failover
   - **Property 10: Multi-AZ availability and failover**
   - **Validates: Requirements 1.5**
 
