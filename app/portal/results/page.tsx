@@ -16,7 +16,7 @@ import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
 import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
 import IntelligentLoadingSpinner from '@/components/portal/IntelligentLoadingSpinner';
-import AsyncEnrichmentLoader from '@/components/portal/AsyncEnrichmentLoader';
+
 import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
 import { StreamingResults } from '@/components/portal/StreamingResults';
 import ExamineStyleView from '@/components/portal/ExamineStyleView';
@@ -383,51 +383,6 @@ function ResultsPageContent() {
   const [transformedEvidence, setTransformedEvidence] = useState<any>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('standard');
   const [examineContent, setExamineContent] = useState<any>(null);
-  const [useAsyncEnrichment, setUseAsyncEnrichment] = useState(false);
-  const [asyncSupplementName, setAsyncSupplementName] = useState<string | null>(null);
-
-  // ====================================
-  // ASYNC ENRICHMENT CALLBACKS
-  // ====================================
-  const handleEnrichmentComplete = (enrichmentData: any) => {
-    console.log('[Async Enrichment] Completed:', enrichmentData);
-    
-    if (enrichmentData.success && enrichmentData.data) {
-      // Save recommendation
-      setRecommendation(enrichmentData.data);
-      setError(null);
-      setUseAsyncEnrichment(false);
-      
-      // Update URL with jobId for sharing
-      if (enrichmentData.data.recommendation_id && typeof window !== 'undefined') {
-        const newUrl = `/portal/results?id=${enrichmentData.data.recommendation_id}&supplement=${encodeURIComponent(asyncSupplementName || '')}`;
-        window.history.replaceState({}, '', newUrl);
-      }
-      
-      // Cache the recommendation
-      if (typeof window !== 'undefined' && enrichmentData.data.recommendation_id) {
-        try {
-          const cacheKey = `recommendation_${enrichmentData.data.recommendation_id}`;
-          const cacheData = {
-            recommendation: enrichmentData.data,
-            timestamp: Date.now(),
-            ttl: 24 * 60 * 60 * 1000, // 24 hours
-          };
-          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-          console.log('[Cache] Saved recommendation to cache:', cacheKey);
-        } catch (cacheError) {
-          console.error('[Cache] Failed to save to cache:', cacheError);
-        }
-      }
-    }
-  };
-
-  const handleEnrichmentError = (error: string) => {
-    console.error('[Async Enrichment] Error:', error);
-    setError(error);
-    setUseAsyncEnrichment(false);
-    setIsLoading(false);
-  };
 
   // ====================================
   // LOGGING: State Change Tracking
@@ -556,286 +511,41 @@ function ResultsPageContent() {
   }, [recommendation]);
 
   useEffect(() => {
-    let pollingInterval: NodeJS.Timeout | null = null;
     let isMounted = true;
 
-    const fetchRecommendation = async (retryCount = 0): Promise<boolean> => {
-      if (!jobId) return false;
-
-      // FIRST: Check localStorage cache
-      if (typeof window !== 'undefined' && retryCount === 0) {
+    // Handle different scenarios
+    if (jobId && !query) {
+      // CASE 1: User has jobId in URL (from cache/sharing) - check cache only
+      if (typeof window !== 'undefined') {
         try {
           const cacheKey = `recommendation_${jobId}`;
-          console.log('[Cache Retrieval] Checking cache for key:', cacheKey);
+          console.log('[Cache Retrieval] Checking cache for shared link:', cacheKey);
           const cachedData = localStorage.getItem(cacheKey);
 
           if (cachedData) {
-            console.log('[Cache Retrieval] Found cached data, parsing...');
             const { recommendation, timestamp, ttl } = JSON.parse(cachedData);
             const age = Date.now() - timestamp;
 
-            console.log('[Cache Retrieval] Cache metadata:', {
-              cacheKey,
-              age: Math.floor(age / 1000 / 60) + ' minutes',
-              ttl: Math.floor(ttl / 1000 / 60 / 60) + ' hours',
-              expired: age >= ttl,
-            });
-
-            // Check if cache is expired
-            if (age >= ttl) {
-              console.log('[Cache Retrieval] ⚠️ Cache expired, removing:', cacheKey);
-              localStorage.removeItem(cacheKey);
-              console.log('[Cache Retrieval] Cache miss - expired');
-              // Continue to fetch fresh data
-            } else {
-              // Validate cache data using helper function
-              const isValid = isValidCache(recommendation);
-              
-              if (!isValid) {
-                console.log('[Cache Retrieval] ❌ Cache validation failed, removing invalid cache:', cacheKey);
-                localStorage.removeItem(cacheKey);
-                console.log('[Cache Retrieval] Cache miss - invalid data');
-                // Continue to fetch fresh data
-              } else {
-                // Cache is valid - use it
-                console.log('[Cache Retrieval] ✅ Cache hit - valid data found');
-                console.log('[Cache Retrieval] Using cached recommendation:', {
-                  id: recommendation.recommendation_id,
-                  category: recommendation.category,
-                });
-                if (isMounted) {
-                  console.log('[State Update] Before setting recommendation from cache - clearing error first');
-                  setError(null); // Clear error before setting recommendation
-                  console.log('[State Update] Setting recommendation from cache');
-                  setRecommendation(recommendation);
-                  console.log('[State Update] Setting isLoading to false');
-                  setIsLoading(false);
-                }
-                return true; // Success - used cache
-              }
-            }
-          } else {
-            console.log('[Cache Retrieval] Cache miss - no data found for key:', cacheKey);
-          }
-        } catch (cacheError) {
-          console.error('[Cache Retrieval] ❌ Error reading from cache:', cacheError);
-          console.log('[Cache Retrieval] Cache miss - error occurred');
-        }
-      }
-
-      // Retry logic with exponential backoff
-      const maxRetries = 3;
-      const baseDelay = 1000; // 1 second
-      const retryDelay = Math.min(baseDelay * Math.pow(2, retryCount), 10000); // Max 10s
-
-      try {
-        // QUICK WIN #1: Validate supplement parameter before making request
-        // Fallback to 'q' parameter if 'supplement' is missing (for backward compatibility)
-        const supplement = searchParams.get('supplement') || searchParams.get('q');
-        if (!supplement) {
-          console.error('❌ Missing supplement parameter (checked both "supplement" and "q")');
-          if (isMounted) {
-            console.log('[State Update] Setting error - clearing recommendation first');
-            setRecommendation(null); // Clear recommendation before setting error
-            setError('Información de suplemento no disponible. Por favor, genera una nueva búsqueda.');
-            setIsLoading(false);
-          }
-          return false;
-        }
-
-        // QUICK WIN #3: Exponential backoff (Fibonacci sequence)
-        const pollingIntervals = [2000, 3000, 5000, 8000, 13000, 21000];
-        const backoffDelay = pollingIntervals[Math.min(retryCount, pollingIntervals.length - 1)];
-        
-        // Add timeout to frontend fetch (60s to allow for enrichment processing)
-        // Increased from 35s to handle complex supplements like berberine
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000);
-        
-        // QUICK WIN #2: Structured logging
-        console.log(JSON.stringify({
-          event: 'FETCH_RECOMMENDATION',
-          jobId,
-          supplement,
-          attempt: retryCount + 1,
-          maxRetries: maxRetries + 1,
-          backoffDelay,
-          timestamp: new Date().toISOString(),
-        }));
-        
-        // Use enrichment-status endpoint with job_* ID
-        const response = await fetch(`/api/portal/enrichment-status/${jobId}?supplement=${encodeURIComponent(supplement)}`, {
-          signal: controller.signal,
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Failed to load recommendation' }));
-          console.error('❌ Invalid response:', {
-            status: response.status,
-            error: errorData,
-            attempt: retryCount + 1,
-          });
-          
-          // Retry on 503 errors (service unavailable) with exponential backoff
-          if (response.status === 503 && retryCount < maxRetries) {
-            console.log(JSON.stringify({
-              event: 'RETRY_RECOMMENDATION',
-              jobId,
-              supplement,
-              attempt: retryCount + 1,
-              maxRetries,
-              backoffDelay,
-              reason: 'service_unavailable',
-              timestamp: new Date().toISOString(),
-            }));
-            await new Promise(resolve => setTimeout(resolve, backoffDelay));
-            return fetchRecommendation(retryCount + 1);
-          }
-
-          // Handle 410 Gone - recommendation endpoint no longer available (new system)
-          if (response.status === 410) {
-            console.log('⚠️  410 Gone - recommendation was already delivered in quiz response');
-            console.log('⚠️  Redirecting to homepage to generate new recommendation');
-            if (isMounted) {
-              console.log('[State Update] Setting error - clearing recommendation first');
-              setRecommendation(null); // Clear recommendation before setting error
-              setError('Esta recomendación ya no está disponible. Por favor, genera una nueva búsqueda.');
+            if (age < ttl && isValidCache(recommendation)) {
+              console.log('[Cache Retrieval] ✅ Valid cache found for shared link');
+              setError(null);
+              setRecommendation(recommendation);
               setIsLoading(false);
-              // Redirect to homepage after 2 seconds
-              setTimeout(() => {
-                router.push('/portal');
-              }, 2000);
+              return;
             }
-            return false;
-          }
-
-          // Better error messages for specific cases
-          let errorMessage = errorData.error || errorData.message || `Failed to load recommendation (${response.status})`;
-          if (response.status === 503 && errorData.isTimeout) {
-            errorMessage = 'El servicio está tardando más de lo esperado. Por favor, intenta de nuevo en un momento.';
-          } else if (response.status === 503) {
-            errorMessage = 'El servicio no está disponible temporalmente. Por favor, intenta de nuevo en un momento.';
-          } else if (response.status === 404) {
-            errorMessage = 'Recomendación no encontrada. Por favor, genera una nueva recomendación.';
           }
           
-          if (isMounted) {
-            console.log('[State Update] Setting error - clearing recommendation first');
-            setRecommendation(null); // Clear recommendation before setting error
-            setError(errorMessage);
-            setIsLoading(false);
-          }
-          return false;
-        }
-        
-        const data = await response.json();
-        
-        console.log('[API Response] Received data:', {
-          success: data.success,
-          hasRecommendation: !!data.recommendation,
-          status: data.status,
-          keys: Object.keys(data),
-          recommendationId: data.recommendation?.recommendation_id,
-          category: data.recommendation?.category,
-        });
-        
-        // Handle recommendation data - check multiple possible formats
-        if (data.recommendation) {
-          console.log('[API Response] ✅ Setting recommendation state:', {
-            id: data.recommendation.recommendation_id,
-            category: data.recommendation.category,
-            hasEvidenceSummary: !!data.recommendation.evidence_summary,
-            totalStudies: data.recommendation.evidence_summary?.totalStudies || 0,
-          });
-          if (isMounted) {
-            console.log('[State Update] Before setting recommendation - clearing error first');
-            setError(null); // Clear error before setting recommendation
-            console.log('[State Update] Setting recommendation');
-            setRecommendation(data.recommendation);
-            console.log('[State Update] Setting isLoading to false');
-            setIsLoading(false);
-          }
-          return true; // Success
-        }
-        
-        // Handle processing status - start polling
-        if (data.success && data.status === 'processing') {
-          console.log('🔄 Recommendation is processing, starting polling...');
-          if (isMounted) {
-            setIsLoading(true); // Keep loading state
-            setError(null); // Clear any previous errors
-
-            // Start polling every 3 seconds
-            if (!pollingInterval) {
-              pollingInterval = setInterval(async () => {
-                if (isMounted) {
-                  const polled = await fetchRecommendation(0);
-                  if (polled && pollingInterval) {
-                    clearInterval(pollingInterval);
-                    pollingInterval = null;
-                  }
-                }
-              }, 3000); // Poll every 3 seconds
-            }
-          }
-          return false; // Still processing
-        }
-        
-        // Handle errors
-        if (!data.success) {
-          console.error('❌ API returned error:', data);
-          if (isMounted) {
-            console.log('[State Update] Setting error - clearing recommendation first');
-            setRecommendation(null); // Clear recommendation before setting error
-            setError(data.error || data.message || 'Failed to load recommendation');
-            setIsLoading(false);
-          }
-          return false;
-        }
-        
-        // Fallback: if we got here, something unexpected happened
-        console.error('❌ Invalid response format:', data);
-        if (isMounted) {
-          console.log('[State Update] Setting error - clearing recommendation first');
-          setRecommendation(null); // Clear recommendation before setting error
-          setError(data.error || data.message || 'Invalid response format from server');
+          // Cache miss or expired - redirect to new search
+          console.log('[Cache Retrieval] Cache miss for shared link - redirecting to homepage');
+          setError('Esta recomendación ya no está disponible. Por favor, genera una nueva búsqueda.');
+          setIsLoading(false);
+          setTimeout(() => router.push('/portal'), 2000);
+        } catch (error) {
+          console.error('[Cache Retrieval] Error:', error);
+          setError('Error al cargar la recomendación. Por favor, genera una nueva búsqueda.');
           setIsLoading(false);
         }
-        return false;
-      } catch (err: any) {
-        console.error('❌ Failed to load recommendation:', err);
-
-        // Retry on network errors (but not on abort/timeout)
-        if (err.name !== 'AbortError' && err.name !== 'TimeoutError' && retryCount < maxRetries) {
-          console.log(`🔄 Retrying after ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-          return fetchRecommendation(retryCount + 1);
-        }
-
-        // Better error messages for specific error types
-        let errorMessage = 'Failed to load recommendation';
-        if (err.name === 'AbortError' || err.name === 'TimeoutError') {
-          errorMessage = 'La solicitud tardó demasiado tiempo. Por favor, intenta de nuevo.';
-        } else if (err.message) {
-          errorMessage = err.message;
-        }
-
-        if (isMounted) {
-          console.log('[State Update] Setting error - clearing recommendation first');
-          setRecommendation(null); // Clear recommendation before setting error
-          setError(errorMessage);
-          setIsLoading(false);
-        }
-        return false;
       }
-    };
-
-    // Handle different scenarios
-    if (jobId) {
-      // Initial fetch for existing job
-      fetchRecommendation(0);
     } else if (query) {
       // Generate new recommendation from search query
       const generateRecommendation = async () => {
@@ -1027,17 +737,18 @@ function ResultsPageContent() {
               }
             }
             
-            // Start polling for status
+            // Start polling for status using quiz endpoint
             const pollInterval = parseInt(data.pollInterval || '3') * 1000; // Convert to ms
             const maxPollTime = 180000; // 3 minutes max
             const startTime = Date.now();
             
-            // Use statusUrl from response, or fallback to enrichment-status endpoint
-            const statusUrl = data.statusUrl || `/api/portal/enrichment-status/${data.recommendation_id}`;
+            // IMPORTANT: Use quiz endpoint for polling, NOT enrichment-status
+            // enrichment-status depends on job-store which doesn't work in serverless
+            const statusUrl = `/api/portal/quiz?jobId=${data.recommendation_id}`;
             
             const pollStatus = async () => {
               try {
-                console.log('[Async Polling] Fetching status from:', statusUrl);
+                console.log('[Async Polling] Fetching status from quiz endpoint:', statusUrl);
                 const statusResponse = await fetch(statusUrl);
                 const statusData = await statusResponse.json();
                 
@@ -1235,10 +946,6 @@ function ResultsPageContent() {
     // Cleanup function
     return () => {
       isMounted = false;
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-        pollingInterval = null;
-      }
     };
   }, [query, jobId, router]);
 
@@ -1262,25 +969,6 @@ function ResultsPageContent() {
     hasRecommendation: !!recommendation,
     willRender: isLoading ? 'LoadingSpinner' : error ? 'ErrorState' : !recommendation ? 'NoDataState' : 'Recommendation',
   });
-
-  // STATE 0: Show AsyncEnrichmentLoader for direct searches
-  if (useAsyncEnrichment && asyncSupplementName) {
-    console.log('[Render] Branch: ASYNC_ENRICHMENT - Showing AsyncEnrichmentLoader', {
-      reason: 'useAsyncEnrichment === true',
-      supplementName: asyncSupplementName,
-    });
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <div className="container mx-auto px-4 py-8">
-          <AsyncEnrichmentLoader
-            supplementName={asyncSupplementName}
-            onComplete={handleEnrichmentComplete}
-            onError={handleEnrichmentError}
-          />
-        </div>
-      </div>
-    );
-  }
 
   // STATE 1: Show loading state (only while fetching, not while transforming)
   if (isLoading) {
