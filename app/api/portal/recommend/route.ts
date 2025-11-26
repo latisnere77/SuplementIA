@@ -11,6 +11,14 @@ import { randomUUID } from 'crypto';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
+import { createJob, markTimeout, createRetryJob, hasExceededRetryLimit, getJob } from '@/lib/portal/job-store';
+import {
+  logStructured,
+  logRetryAttempt,
+  logRetryLimitExceeded,
+  logEnrichmentError,
+  logDirectFetchFailure,
+} from '@/lib/portal/structured-logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -48,9 +56,51 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { category, age, gender, location, sensitivities = [], quiz_id } = body;
     
-    const jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Check if this is a retry attempt
+    const previousJobId = request.headers.get('X-Previous-Job-ID') || body.previousJobId;
+    const isRetry = !!previousJobId;
+    
+    let jobId: string;
+    let retryCount = 0;
+    
+    if (isRetry) {
+      // Check if previous job exceeded retry limit
+      if (hasExceededRetryLimit(previousJobId, 5)) {
+        const previousJob = getJob(previousJobId);
+        const retryCount = previousJob?.retryCount || 0;
+        
+        logRetryLimitExceeded(previousJobId, retryCount, { requestId });
+        
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'too_many_retries',
+            message: 'Demasiados intentos de reintento.',
+            suggestion: 'Por favor, espera unos minutos antes de intentar de nuevo.',
+            requestId,
+          },
+          { status: 429 } // 429 Too Many Requests
+        );
+      }
+      
+      // Create new job for retry
+      const retryResult = createRetryJob(previousJobId);
+      jobId = retryResult.newJobId;
+      retryCount = retryResult.retryCount;
+      
+      logRetryAttempt(previousJobId, jobId, retryCount, { requestId });
+    } else {
+      // New request - generate job ID
+      jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
 
-    console.log(`🔖 [Job ${jobId}] Recommend endpoint - Category: "${category}"`);
+    logStructured('info', 'RECOMMEND_REQUEST', {
+      jobId,
+      requestId,
+      category,
+      isRetry,
+      retryCount,
+    });
 
     portalLogger.logRequest({
       requestId,
@@ -61,6 +111,9 @@ export async function POST(request: NextRequest) {
       age,
       gender,
       location,
+      isRetry,
+      retryCount,
+      previousJobId: previousJobId || undefined,
       userAgent: request.headers.get('user-agent'),
       referer: request.headers.get('referer'),
     });
@@ -113,17 +166,14 @@ export async function POST(request: NextRequest) {
     const normalized = normalizeQuery(sanitizedCategory);
     const searchTerm = normalized.normalized;
 
-    console.log(
-      JSON.stringify({
-        event: 'QUERY_NORMALIZED',
-        requestId,
-        original: category,
-        sanitized: sanitizedCategory,
-        normalized: searchTerm,
-        confidence: normalized.confidence,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    logStructured('info', 'QUERY_NORMALIZED', {
+      requestId,
+      jobId,
+      original: category,
+      sanitized: sanitizedCategory,
+      normalized: searchTerm,
+      confidence: normalized.confidence,
+    });
 
     // Call our intelligent enrichment system with extended timeout
     // Using enrich-v2 (simplified version) to avoid TDZ issues
@@ -161,6 +211,23 @@ export async function POST(request: NextRequest) {
         
         isAsync = true;
         
+        // Create job in store for tracking (with retry count if this is a retry)
+        if (!isRetry) {
+          createJob(jobId);
+        }
+        // If it's a retry, the job was already created by createRetryJob above
+        
+        // Set up timeout handler (2 minutes = 120000ms)
+        const timeoutHandle = setTimeout(() => {
+          markTimeout(jobId);
+          logStructured('warn', 'JOB_TIMEOUT', {
+            jobId,
+            supplementName: searchTerm,
+            category: sanitizedCategory,
+            requestId,
+          });
+        }, 120000); // 2 minutes
+        
         // Start async enrichment (fire and forget)
         fetch(ENRICH_API_URL, {
           method: 'POST',
@@ -178,8 +245,14 @@ export async function POST(request: NextRequest) {
             yearFrom: 2010,
             jobId,
           }),
+        }).then((response) => {
+          // Clear timeout if enrichment completes
+          clearTimeout(timeoutHandle);
+          return response;
         }).catch((err) => {
           console.error('Background enrichment error:', err);
+          // Clear timeout on error too
+          clearTimeout(timeoutHandle);
         });
         
         // Return async response immediately
@@ -212,18 +285,21 @@ export async function POST(request: NextRequest) {
         errorData = { raw: errorText.substring(0, 500) };
       }
 
-      console.error(
-        JSON.stringify({
-          event: 'RECOMMEND_ENRICH_CALL_FAILED',
+      logDirectFetchFailure(
+        jobId,
+        searchTerm,
+        {
+          status: enrichResponse.status,
+          statusText: enrichResponse.statusText,
+          body: errorData,
+          error: errorData.error || errorData.message || 'Unknown error',
+        },
+        {
           requestId,
           category: sanitizedCategory,
           originalCategory: category,
-          statusCode: enrichResponse.status,
           duration: enrichDuration,
-          error: errorData.error || errorData.message || 'Unknown error',
-          errorData,
-          timestamp: new Date().toISOString(),
-        })
+        }
       );
 
       // Differentiate between "no data" (404) vs system errors (500, timeout)
@@ -260,22 +336,17 @@ export async function POST(request: NextRequest) {
 
     const enrichData = await enrichResponse.json();
 
-    
-
     if (!enrichData.success || !enrichData.data) {
-      console.error(
-        JSON.stringify({
-          event: 'RECOMMEND_ENRICH_NO_DATA',
-          requestId,
-          category: sanitizedCategory,
-          originalCategory: category,
-          success: enrichData.success,
-          hasData: !!enrichData.data,
-          enrichDataKeys: Object.keys(enrichData),
-          enrichError: enrichData.error,
-          timestamp: new Date().toISOString(),
-        })
-      );
+      logStructured('error', 'RECOMMEND_ENRICH_NO_DATA', {
+        requestId,
+        jobId,
+        category: sanitizedCategory,
+        originalCategory: category,
+        success: enrichData.success,
+        hasData: !!enrichData.data,
+        enrichDataKeys: Object.keys(enrichData),
+        enrichError: enrichData.error,
+      });
 
       // Check if this is a true "no data" case or a system error
       if (enrichData.error === 'insufficient_data') {
@@ -314,21 +385,16 @@ export async function POST(request: NextRequest) {
     // CRITICAL VALIDATION: Ensure we have real scientific data
     const hasRealData = metadata.hasRealData === true && (metadata.studiesUsed || 0) > 0;
 
-    
-
     if (!hasRealData) {
-      console.error(
-        JSON.stringify({
-          event: 'RECOMMEND_VALIDATION_FAILED',
-          requestId,
-          category: sanitizedCategory,
-          originalCategory: category,
-          hasRealData: false,
-          studiesUsed: metadata.studiesUsed || 0,
-          metadata: JSON.stringify(metadata),
-          timestamp: new Date().toISOString(),
-        })
-      );
+      logStructured('error', 'RECOMMEND_VALIDATION_FAILED', {
+        requestId,
+        jobId,
+        category: sanitizedCategory,
+        originalCategory: category,
+        hasRealData: false,
+        studiesUsed: metadata.studiesUsed || 0,
+        metadata: JSON.stringify(metadata),
+      });
 
       // STRICT VALIDATION: DO NOT generate fake data
       // Return 404 with clear message
@@ -361,7 +427,13 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    
+    logStructured('info', 'RECOMMEND_SUCCESS', {
+      requestId,
+      jobId,
+      category: sanitizedCategory,
+      duration,
+      studiesUsed: metadata.studiesUsed || 0,
+    });
 
     return NextResponse.json(
       {
@@ -397,16 +469,15 @@ export async function POST(request: NextRequest) {
       duration,
     });
 
-    console.error(
-      JSON.stringify({
-        event: 'RECOMMEND_ERROR',
+    logEnrichmentError(
+      requestId, // Use requestId as jobId since we may not have a jobId yet
+      category,
+      error,
+      {
         requestId,
-        category,
-        error: error.message,
-        stack: error.stack,
         duration,
-        timestamp: new Date().toISOString(),
-      })
+        endpoint: '/api/portal/recommend',
+      }
     );
 
     // DO NOT generate fake data - return proper error instead

@@ -4,7 +4,20 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { cleanupOldJobs, getJob } from '@/lib/portal/job-store';
+import { cleanupExpired, enforceSizeLimit, getJob, isExpired, getJobAge } from '@/lib/portal/job-store';
+import { formatErrorResponse } from '@/lib/portal/error-responses';
+import {
+  logStructured,
+  logJobExpired,
+  logMissingJob,
+  logJobCompleted,
+  logJobFailed,
+  logJobTimeout,
+  logJobProcessing,
+  logStoreMaintenance,
+} from '@/lib/portal/structured-logger';
+import { recordFailure } from '@/lib/portal/failure-pattern-detector';
+import { jobMetrics } from '@/lib/portal/job-metrics';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,130 +26,197 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const startTime = Date.now();
+  
   const jobId = params.id;
   const searchParams = request.nextUrl.searchParams;
   const supplement = searchParams.get('supplement');
   
-  // Clean up old jobs on each request
-  cleanupOldJobs();
+  // Extract correlation ID from header
+  const correlationId = request.headers.get('X-Correlation-ID') || undefined;
   
-  console.log(`[enrichment-status] Checking status for job: ${jobId}, supplement: ${supplement}`);
+  logStructured('info', 'ENRICHMENT_STATUS_CHECK', {
+    jobId,
+    supplementName: supplement || undefined,
+    correlationId,
+  });
   
-  // Check if job exists in store
+  // Check if job exists in store BEFORE cleanup
   const job = getJob(jobId);
   
-  if (!job) {
-    // Job not found - it might be a direct search (not async)
-    // Try to fetch directly from recommend endpoint
-    console.log(`[enrichment-status] Job not found in store, trying direct fetch`);
+  // Check if job has expired (whether in store or not)
+  if (job && isExpired(jobId)) {
+    const jobAge = getJobAge(jobId);
     
-    if (!supplement) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Job not found and no supplement provided for direct fetch',
-        },
-        { status: 404 }
-      );
-    }
+    logJobExpired(
+      jobId,
+      supplement || undefined,
+      jobAge,
+      job.status,
+      { correlationId }
+    );
     
-    // Make synchronous request to recommend endpoint
-    try {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
-        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
-      
-      const recommendResponse = await fetch(`${baseUrl}/api/portal/recommend`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Job-ID': jobId,
-        },
-        body: JSON.stringify({
-          category: supplement,
-          age: 35,
-          gender: 'male',
-          location: 'CDMX',
-        }),
-      });
-      
-      if (!recommendResponse.ok) {
-        const errorData = await recommendResponse.json();
-        return NextResponse.json(
-          {
-            success: false,
-            status: 'failed',
-            error: errorData.error || 'Recommendation failed',
-            message: errorData.message,
-          },
-          { status: recommendResponse.status }
-        );
-      }
-      
-      const recommendData = await recommendResponse.json();
-      
-      if (recommendData.success && recommendData.recommendation) {
-        // Store in cache for future polls
-        const { storeJobResult } = await import('@/lib/portal/job-store');
-        storeJobResult(jobId, 'completed', {
-          recommendation: recommendData.recommendation,
-        });
-        
-        return NextResponse.json({
-          success: true,
-          status: 'completed',
-          recommendation: recommendData.recommendation,
-        });
-      } else {
-        return NextResponse.json(
-          {
-            success: false,
-            status: 'failed',
-            error: recommendData.error || 'No recommendation generated',
-          },
-          { status: 500 }
-        );
-      }
-    } catch (error: any) {
-      console.error('[enrichment-status] Direct fetch error:', error);
-      return NextResponse.json(
-        {
-          success: false,
-          status: 'failed',
-          error: error.message || 'Failed to fetch recommendation',
-        },
-        { status: 500 }
-      );
-    }
+    const { response, statusCode } = formatErrorResponse('JOB_EXPIRED', {
+      correlationId,
+      details: {
+        jobId,
+        supplementName: supplement || undefined,
+        elapsedTime: jobAge,
+      },
+    });
+    
+    // Record error and latency
+    jobMetrics.recordError(statusCode);
+    jobMetrics.recordLatency(Date.now() - startTime);
+    
+    return NextResponse.json(response, { status: statusCode });
   }
   
-  // Job found in store
+  if (!job) {
+    // Job not found - it never existed
+    logMissingJob(
+      jobId,
+      supplement || undefined,
+      undefined, // No time delta since job never existed
+      { correlationId }
+    );
+    
+    const { response, statusCode } = formatErrorResponse('JOB_NOT_FOUND', {
+      correlationId,
+      details: {
+        jobId,
+        supplementName: supplement || undefined,
+      },
+    });
+    
+    // Record error and latency
+    jobMetrics.recordError(statusCode);
+    jobMetrics.recordLatency(Date.now() - startTime);
+    
+    return NextResponse.json(response, { status: statusCode });
+  }
+  
+  // Clean up expired jobs and enforce size limit (after handling current request)
+  const cleanedCount = cleanupExpired();
+  const evictedCount = enforceSizeLimit();
+  
+  if (cleanedCount > 0 || evictedCount > 0) {
+    logStoreMaintenance(cleanedCount, evictedCount, { correlationId });
+  }
+  
+  // Job found in store and not expired
   if (job.status === 'completed') {
+    const processingTime = job.completedAt ? job.completedAt - job.createdAt : undefined;
+    
+    logJobCompleted(
+      jobId,
+      supplement || undefined,
+      processingTime,
+      { correlationId }
+    );
+    
+    // Record latency (no error for successful completion)
+    jobMetrics.recordLatency(Date.now() - startTime);
+    
     return NextResponse.json({
       success: true,
       status: 'completed',
+      jobId,
+      supplementName: supplement || undefined,
       recommendation: job.recommendation,
-      processingTime: job.completedAt ? job.completedAt - job.createdAt : undefined,
+      processingTime,
+      requestId: `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      correlationId,
     });
   }
   
   if (job.status === 'failed') {
-    return NextResponse.json(
-      {
-        success: false,
-        status: 'failed',
-        error: job.error || 'Job failed',
-      },
-      { status: 500 }
+    const elapsedTime = Date.now() - job.createdAt;
+    
+    logJobFailed(
+      jobId,
+      supplement || undefined,
+      job.error,
+      elapsedTime,
+      { correlationId }
     );
+    
+    // Record failure for pattern detection
+    if (supplement) {
+      recordFailure(supplement);
+    }
+    
+    const { response, statusCode } = formatErrorResponse('ENRICHMENT_FAILED', {
+      correlationId,
+      details: {
+        jobId,
+        supplementName: supplement || undefined,
+        error: job.error,
+        elapsedTime,
+      },
+    });
+    
+    // Record error and latency
+    jobMetrics.recordError(statusCode);
+    jobMetrics.recordLatency(Date.now() - startTime);
+    
+    return NextResponse.json(response, { status: statusCode });
+  }
+  
+  if (job.status === 'timeout') {
+    const elapsedTime = Date.now() - job.createdAt;
+    
+    logJobTimeout(
+      jobId,
+      supplement || undefined,
+      elapsedTime,
+      { correlationId }
+    );
+    
+    // Record failure for pattern detection
+    if (supplement) {
+      recordFailure(supplement);
+    }
+    
+    const { response, statusCode } = formatErrorResponse('JOB_TIMEOUT', {
+      correlationId,
+      details: {
+        jobId,
+        supplementName: supplement || undefined,
+        elapsedTime,
+      },
+    });
+    
+    // Record error and latency
+    jobMetrics.recordError(statusCode);
+    jobMetrics.recordLatency(Date.now() - startTime);
+    
+    return NextResponse.json(response, { status: statusCode });
   }
   
   // Still processing
+  const elapsedTime = Date.now() - job.createdAt;
+  
+  logJobProcessing(
+    jobId,
+    supplement || undefined,
+    elapsedTime,
+    { correlationId }
+  );
+  
+  // Record latency (no error for processing status)
+  jobMetrics.recordLatency(Date.now() - startTime);
+  
   return NextResponse.json(
     {
       success: true,
       status: 'processing',
+      jobId,
+      supplementName: supplement || undefined,
       message: 'Enrichment in progress',
-      elapsedTime: Date.now() - job.createdAt,
+      elapsedTime,
+      requestId: `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      correlationId,
     },
     { status: 202 } // 202 Accepted
   );

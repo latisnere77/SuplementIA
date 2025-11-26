@@ -1,390 +1,601 @@
-# Design Document
+# Design Document: Frontend Error Display Fix
 
 ## Overview
 
-This design addresses a critical frontend issue where the Results Page displays error messages even when the backend API successfully returns valid supplement recommendation data. The root cause is a combination of stale browser cache, incorrect React state management, and improper error handling logic.
+This design addresses the 500 error that occurs during enrichment status polling when jobs are missing from the in-memory store. The current implementation has several weaknesses:
 
-The solution involves:
-1. Adding comprehensive logging to trace data flow
-2. Fixing the conditional rendering logic in the Results Page
-3. Improving cache validation and invalidation
-4. Ensuring proper state transitions from loading → loaded → rendered
+1. **No job expiration tracking** - Jobs are cleaned up after 1 hour, but there's no distinction between expired vs never-existed jobs
+2. **Uncontrolled direct fetch fallback** - When a job is missing, the system attempts a direct fetch without proper error handling
+3. **Infinite polling** - The frontend continues polling indefinitely even after repeated failures
+4. **Poor error messages** - Users see generic 500 errors without actionable guidance
+5. **Memory leaks** - No size limits on the job store, no proper cleanup of failed jobs
+
+The solution introduces:
+- Explicit job lifecycle management with expiration timestamps
+- Proper HTTP status codes (410 Gone, 408 Timeout, 429 Too Many Requests)
+- Frontend polling limits with exponential backoff
+- Structured error responses with user-friendly messages
+- Comprehensive logging with correlation IDs
+- Store size limits with LRU eviction
 
 ## Architecture
 
-### Current Flow (Broken)
+### System Components
+
 ```
-User Search → API Call → Response (200 OK with data) → ??? → ErrorState Displayed ❌
+┌─────────────┐
+│   Frontend  │
+│   (Polling) │
+└──────┬──────┘
+       │ GET /api/portal/enrichment-status/:id
+       │ Headers: X-Correlation-ID
+       ▼
+┌─────────────────────────────────────┐
+│  Enrichment Status Endpoint         │
+│  - Check job in store               │
+│  - Validate expiration              │
+│  - Handle missing jobs              │
+│  - Return appropriate status codes  │
+└──────┬──────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────┐
+│  Enhanced Job Store                 │
+│  - Expiration timestamps            │
+│  - Size limits (1000 jobs)          │
+│  - LRU eviction                     │
+│  - Cleanup on access                │
+└─────────────────────────────────────┘
 ```
 
-### Fixed Flow
-```
-User Search → API Call → Response (200 OK with data) → State Update → Recommendation Displayed ✅
-```
+### Data Flow
 
-### Component Hierarchy
-```
-ResultsPageContent (app/portal/results/page.tsx)
-├── IntelligentLoadingSpinner (while isLoading === true)
-├── ErrorState (when error !== null OR recommendation === null)
-└── Recommendation Display (when recommendation !== null AND error === null)
-    ├── EvidenceAnalysisPanelNew
-    ├── ProductRecommendationsGrid
-    └── ShareReferralCard
-```
+1. **Job Creation** (from recommend endpoint)
+   - Generate unique job ID
+   - Store with status='processing', createdAt, expiresAt
+   - Return 202 Accepted with polling URL
+
+2. **Polling** (frontend → enrichment-status)
+   - Include X-Correlation-ID header
+   - Check job in store
+   - If missing: check if expired (410) or never existed (404)
+   - If processing: return 202 with elapsed time
+   - If completed: return 200 with recommendation
+   - If failed: return 500 with error details
+
+3. **Cleanup** (automatic)
+   - Run on every GET request
+   - Remove jobs older than expiresAt
+   - If store > 1000 jobs, remove oldest first
 
 ## Components and Interfaces
 
-### 1. Results Page State Management
-
-**Current State Variables:**
-```typescript
-const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
-const [isLoading, setIsLoading] = useState(true);
-const [error, setError] = useState<string | null>(null);
-```
-
-**Problem:** The conditional rendering logic shows ErrorState when `error || !recommendation`, but this condition is true even when data is loading or when the state hasn't updated yet.
-
-**Solution:** Add explicit state tracking and ensure proper state transitions:
+### Enhanced Job Interface
 
 ```typescript
-// Add debug logging for state changes
-useEffect(() => {
-  console.log('[ResultsPage] State changed:', {
-    hasRecommendation: !!recommendation,
-    isLoading,
-    hasError: !!error,
-    recommendationId: recommendation?.recommendation_id,
-  });
-}, [recommendation, isLoading, error]);
-```
-
-### 2. API Response Handling
-
-**Current Issue:** The fetch logic sets `setRecommendation(data.recommendation)` but may not be triggering a re-render, or the error state is not being cleared.
-
-**Solution:** Ensure atomic state updates:
-
-```typescript
-// When API returns success
-if (data.success && data.recommendation) {
-  console.log('✅ Setting recommendation state:', {
-    id: data.recommendation.recommendation_id,
-    category: data.recommendation.category,
-  });
-  
-  // Clear error first, then set recommendation
-  setError(null);
-  setRecommendation(data.recommendation);
-  setIsLoading(false);
+interface Job {
+  jobId: string;
+  status: 'processing' | 'completed' | 'failed' | 'timeout';
+  supplementName: string;
+  recommendation?: any;
+  error?: string;
+  createdAt: number;        // Unix timestamp
+  expiresAt: number;        // Unix timestamp
+  completedAt?: number;     // Unix timestamp
+  lastAccessedAt: number;   // For LRU eviction
+  retryCount?: number;      // Track retry attempts
 }
 ```
 
-### 3. Cache Validation
-
-**Current Issue:** The cache validation logic checks for "fake data" but may be too aggressive, invalidating valid cached data.
-
-**Solution:** Improve cache validation logic:
+### Job Store Interface
 
 ```typescript
-// Validate cache data
-const isValidCache = (cachedRecommendation: any): boolean => {
-  if (!cachedRecommendation) return false;
+interface JobStore {
+  // Core operations
+  createJob(jobId: string, supplementName: string): Job;
+  getJob(jobId: string): Job | undefined;
+  updateJob(jobId: string, updates: Partial<Job>): void;
+  deleteJob(jobId: string): void;
   
-  const metadata = cachedRecommendation._enrichment_metadata || {};
-  const totalStudies = cachedRecommendation.evidence_summary?.totalStudies || 0;
-  const studiesUsed = metadata.studiesUsed || 0;
+  // Lifecycle management
+  markCompleted(jobId: string, recommendation: any): void;
+  markFailed(jobId: string, error: string): void;
+  markTimeout(jobId: string): void;
   
-  // Valid if either totalStudies > 0 OR studiesUsed > 0
-  const hasRealData = totalStudies > 0 || studiesUsed > 0;
+  // Cleanup
+  cleanupExpired(): number;  // Returns count of removed jobs
+  enforceSize Limit(): number;  // Returns count of evicted jobs
   
-  console.log('[Cache Validation]', {
-    hasRealData,
-    totalStudies,
-    studiesUsed,
-    category: cachedRecommendation.category,
-  });
-  
-  return hasRealData;
-};
+  // Queries
+  getJobAge(jobId: string): number | undefined;  // Milliseconds since creation
+  isExpired(jobId: string): boolean;
+  getStoreSize(): number;
+  getOldestJob(): Job | undefined;
+}
 ```
 
-### 4. Conditional Rendering Logic
-
-**Current Issue:** The render logic shows ErrorState when `error || !recommendation`, which is too broad.
-
-**Solution:** Make the conditional rendering more explicit:
+### Error Response Interface
 
 ```typescript
-// Show loading state
-if (isLoading) {
-  return <IntelligentLoadingSpinner supplementName={query || undefined} />;
+interface ErrorResponse {
+  success: false;
+  status: 'failed' | 'timeout' | 'not_found' | 'expired';
+  error: string;              // Machine-readable error code
+  message: string;            // User-friendly message
+  suggestion?: string;        // Actionable suggestion
+  details?: {                 // Debug info (only in dev)
+    jobId?: string;
+    supplementName?: string;
+    elapsedTime?: number;
+    retryCount?: number;
+  };
+  requestId: string;          // For support/debugging
+  correlationId?: string;     // From request header
 }
+```
 
-// Show error state ONLY if there's an actual error
-if (error) {
-  return <ErrorState error={error} ... />;
+### Success Response Interface
+
+```typescript
+interface SuccessResponse {
+  success: true;
+  status: 'processing' | 'completed';
+  jobId: string;
+  supplementName: string;
+  
+  // For processing status
+  elapsedTime?: number;       // Milliseconds since creation
+  estimatedTimeRemaining?: number;
+  
+  // For completed status
+  recommendation?: any;
+  processingTime?: number;    // Total time taken
+  
+  requestId: string;
+  correlationId?: string;
 }
-
-// Show error state if no recommendation after loading completes
-if (!recommendation) {
-  return <ErrorState error="No recommendation data available" ... />;
-}
-
-// Show recommendation
-return <div>...</div>;
 ```
 
 ## Data Models
 
-### Recommendation Interface
-```typescript
-interface Recommendation {
-  recommendation_id: string;
-  quiz_id: string;
-  category: string;
-  evidence_summary: {
-    totalStudies: number;
-    totalParticipants: number;
-    efficacyPercentage: number;
-    researchSpanYears: number;
-    ingredients: Array<{
-      name: string;
-      grade: 'A' | 'B' | 'C';
-      studyCount: number;
-      rctCount: number;
-    }>;
-  };
-  supplement: {
-    name: string;
-    description: string;
-    dosage: any;
-    worksFor: any[];
-    doesntWorkFor: any[];
-    limitedEvidence: any[];
-    sideEffects: any[];
-    contraindications: string[];
-    interactions: any[];
-  };
-  products: any[];
-  _enrichment_metadata: {
-    hasRealData: boolean;
-    studiesUsed: number;
-    intelligentSystem: boolean;
-    fallback: boolean;
-    source: string;
-    version: string;
-    timestamp: string;
-  };
-}
+### Job Lifecycle States
+
+```
+┌──────────┐
+│ Created  │ (status: 'processing', createdAt, expiresAt)
+└────┬─────┘
+     │
+     ├─────► ┌───────────┐
+     │       │ Completed │ (status: 'completed', completedAt, keep 5min)
+     │       └───────────┘
+     │
+     ├─────► ┌─────────┐
+     │       │ Failed  │ (status: 'failed', error, keep 2min)
+     │       └─────────┘
+     │
+     └─────► ┌─────────┐
+             │ Timeout │ (status: 'timeout', keep 2min)
+             └─────────┘
 ```
 
-### Cache Data Structure
-```typescript
-interface CacheData {
-  recommendation: Recommendation;
-  timestamp: number;
-  ttl: number; // Time to live in milliseconds
-}
-```
+### Expiration Rules
+
+- **Processing jobs**: Expire after 2 minutes (120 seconds)
+- **Completed jobs**: Keep for 5 minutes after completion
+- **Failed jobs**: Keep for 2 minutes after failure
+- **Timeout jobs**: Keep for 2 minutes after timeout
+
+### Store Size Management
+
+- **Max size**: 1000 jobs
+- **Eviction strategy**: LRU (Least Recently Used)
+- **Cleanup trigger**: On every GET request
+- **Eviction trigger**: When size > max after cleanup
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
-### Property 1: Valid data displays recommendation
-*For any* valid recommendation object returned by the API, the system should render the recommendation display and NOT render the ErrorState component.
-**Validates: Requirements 1.1, 1.2, 2.1**
+### Property 1: Missing job verification before direct fetch
+*For any* job ID that doesn't exist in the store, the system should check if it expired or never existed before attempting a direct fetch
+**Validates: Requirements 1.1**
 
-### Property 2: Study data is displayed
-*For any* recommendation with study data (totalStudies > 0), the rendered output should contain the study count and participant count.
+### Property 2: Expired jobs return 410 Gone
+*For any* job that has exceeded its expiration time, the system should return HTTP 410 (Gone) with a message indicating the process took too long
+**Validates: Requirements 1.2**
+
+### Property 3: Direct fetch errors are captured
+*For any* direct fetch attempt that fails, the system should capture the specific error and return an appropriate message to the frontend
 **Validates: Requirements 1.3**
 
-### Property 3: Complete recommendation sections render
-*For any* recommendation with benefits, dosage, and side effects data, all three sections should be present in the rendered output.
+### Property 4: Polling stops after 3 failures
+*For any* sequence of polling requests, if 3 consecutive failures occur, the frontend should stop polling
 **Validates: Requirements 1.4**
 
-### Property 4: Cache retrieval works correctly
-*For any* valid cached recommendation that hasn't expired, loading the page should display the cached recommendation without making an API call.
+### Property 5: 500 errors include debug info without sensitive data
+*For any* 500 error response, the message should include sufficient debugging information but no sensitive data (API keys, internal paths, etc.)
 **Validates: Requirements 1.5**
 
-### Property 5: Loading state transitions correctly
-*For any* API call, the system should transition from isLoading=true to isLoading=false when the response is received, and the loading spinner should be hidden.
-**Validates: Requirements 2.4, 2.5**
+### Property 6: Auto-switch to async at 30 seconds
+*For any* enrichment process that exceeds 30 seconds, the system should automatically switch to async mode
+**Validates: Requirements 2.1**
 
-### Property 6: State changes trigger re-renders
-*For any* state update (recommendation, isLoading, error), React should trigger a re-render of the component with the updated state.
+### Property 7: Async jobs timeout at 2 minutes
+*For any* async job that exceeds 2 minutes, the system should return a timeout error with a suggestion to retry
+**Validates: Requirements 2.3**
+
+### Property 8: Timeout triggers cleanup
+*For any* job that times out, the system should remove it from the store to prevent memory leaks
+**Validates: Requirements 2.4**
+
+### Property 9: Retry creates new job ID
+*For any* retry attempt after a timeout, the system should create a new job with a new unique ID
+**Validates: Requirements 2.5**
+
+### Property 10: Error logging includes required fields
+*For any* error in enrichment-status, the system should log jobId, supplement name, error type, and stack trace
+**Validates: Requirements 3.1**
+
+### Property 11: Missing job logs time delta
+*For any* job not found in the store, the system should log how much time has passed since job creation (if known)
+**Validates: Requirements 3.2**
+
+### Property 12: Direct fetch failure logs complete response
+*For any* direct fetch failure, the system should log the complete response from the recommend endpoint
+**Validates: Requirements 3.3**
+
+### Property 13: Polling requests include correlation ID
+*For any* polling request from the frontend, the request should include a correlation ID header for tracking
+**Validates: Requirements 3.4**
+
+### Property 14: Repeated failures trigger alerts
+*For any* pattern of repeated failures (>5 in 1 minute), the system should generate an alert for investigation
 **Validates: Requirements 3.5**
 
-### Property 7: Empty cache triggers API call
-*For any* page load with empty localStorage, the system should make an API call to fetch fresh data.
+### Property 15: Empty supplement names are rejected
+*For any* supplement search with an empty or whitespace-only name, the system should reject it with validation error
 **Validates: Requirements 4.1**
 
-### Property 8: Invalid cache is removed
-*For any* cached data that fails validation (expired, malformed, or inconsistent), the system should remove it from localStorage and fetch fresh data.
-**Validates: Requirements 4.2, 4.3**
+### Property 16: Normalization success is verified
+*For any* query normalization attempt, the system should verify success before proceeding with the search
+**Validates: Requirements 4.2**
 
-### Property 9: Fresh data is cached
-*For any* successful API response with valid data, the system should store the recommendation in localStorage with a timestamp and TTL.
+### Property 17: Special characters are sanitized
+*For any* supplement name containing special characters, the system should sanitize them correctly
+**Validates: Requirements 4.3**
+
+### Property 18: Validation failures return 400
+*For any* validation failure, the system should return HTTP 400 with a descriptive message
 **Validates: Requirements 4.4**
 
-### Property 10: Cache validation runs on load
-*For any* page load with cached data, the system should validate the cache before using it.
+### Property 19: Problematic queries log warnings
+*For any* query detected as potentially problematic, the system should log a warning
 **Validates: Requirements 4.5**
+
+### Property 20: Jobs have creation and expiration timestamps
+*For any* job created, the system should assign both a creation timestamp and an expiration timestamp
+**Validates: Requirements 6.1**
+
+### Property 21: Completed jobs retained for 5 minutes
+*For any* job that completes successfully, the system should keep it in the store for 5 minutes to allow re-fetches
+**Validates: Requirements 6.2**
+
+### Property 22: Failed jobs retained for 2 minutes
+*For any* job that fails, the system should keep the error in the store for 2 minutes
+**Validates: Requirements 6.3**
+
+### Property 23: Cleanup removes expired jobs
+*For any* cleanup execution, the system should remove all jobs older than their expiration time
+**Validates: Requirements 6.4**
+
+### Property 24: Store evicts oldest jobs when full
+*For any* store that reaches its size limit, the system should remove the oldest (least recently accessed) jobs first
+**Validates: Requirements 6.5**
 
 ## Error Handling
 
+### HTTP Status Codes
+
+- **200 OK**: Job completed successfully
+- **202 Accepted**: Job still processing
+- **400 Bad Request**: Invalid input (empty supplement name, invalid characters)
+- **404 Not Found**: Job never existed
+- **408 Request Timeout**: Job timed out during processing
+- **410 Gone**: Job expired from store
+- **429 Too Many Requests**: Too many polling attempts
+- **500 Internal Server Error**: System error (enrichment failed, unexpected error)
+
 ### Error Categories
 
-1. **Network Errors**: Connection failures, timeouts
-   - Display: "Error de conexión. Por favor, verifica tu internet."
-   - Action: Retry button
+1. **Client Errors (4xx)**
+   - User-friendly messages
+   - Actionable suggestions
+   - No retry recommended (except 408, 429)
 
-2. **API Errors**: 404 (insufficient data), 500 (server error)
-   - Display: Specific error message from API
-   - Action: Retry or new search
+2. **Server Errors (5xx)**
+   - Generic user message
+   - Detailed logs for debugging
+   - Retry recommended with backoff
 
-3. **State Errors**: Missing data after successful API call
-   - Display: "Error inesperado. Por favor, intenta de nuevo."
-   - Action: Reload page
-
-4. **Cache Errors**: Invalid or corrupted cache data
-   - Action: Clear cache silently and fetch fresh data
-   - No user-facing error
-
-### Error Recovery
+### Error Message Templates
 
 ```typescript
-// Automatic retry with exponential backoff
-const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetch(url);
-      if (response.ok) return response;
-      
-      // Don't retry on 404 (insufficient data)
-      if (response.status === 404) throw new Error('Insufficient data');
-      
-      // Retry on 5xx errors
-      if (response.status >= 500 && i < retries - 1) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
-        continue;
-      }
-      
-      throw new Error(`HTTP ${response.status}`);
-    } catch (error) {
-      if (i === retries - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
-    }
-  }
-  throw new Error('Max retries exceeded');
+const ERROR_MESSAGES = {
+  JOB_EXPIRED: {
+    status: 410,
+    error: 'job_expired',
+    message: 'El proceso de búsqueda tomó demasiado tiempo y expiró.',
+    suggestion: 'Por favor, intenta buscar de nuevo.',
+  },
+  JOB_NOT_FOUND: {
+    status: 404,
+    error: 'job_not_found',
+    message: 'No encontramos el proceso de búsqueda solicitado.',
+    suggestion: 'Verifica el enlace o inicia una nueva búsqueda.',
+  },
+  JOB_TIMEOUT: {
+    status: 408,
+    error: 'job_timeout',
+    message: 'La búsqueda está tomando más tiempo del esperado.',
+    suggestion: 'Por favor, intenta de nuevo en unos momentos.',
+  },
+  TOO_MANY_REQUESTS: {
+    status: 429,
+    error: 'too_many_requests',
+    message: 'Demasiados intentos de consulta.',
+    suggestion: 'Por favor, espera unos segundos antes de intentar de nuevo.',
+  },
+  ENRICHMENT_FAILED: {
+    status: 500,
+    error: 'enrichment_failed',
+    message: 'Hubo un error al procesar tu búsqueda.',
+    suggestion: 'Por favor, intenta de nuevo. Si el problema persiste, contáctanos.',
+  },
+  VALIDATION_FAILED: {
+    status: 400,
+    error: 'validation_failed',
+    message: 'El nombre del suplemento no es válido.',
+    suggestion: 'Verifica que el nombre no esté vacío y no contenga caracteres especiales.',
+  },
 };
 ```
 
 ## Testing Strategy
 
-### Unit Tests
+### Unit Testing
 
-1. **State Management Tests**
-   - Test that setting recommendation state clears error state
-   - Test that setting error state clears recommendation state
-   - Test that isLoading transitions correctly
+We will write unit tests for:
 
-2. **Cache Validation Tests**
-   - Test validation with valid cache data
-   - Test validation with expired cache data
-   - Test validation with malformed cache data
-   - Test validation with inconsistent cache data (fake studies)
+1. **Job Store Operations**
+   - Creating jobs with correct timestamps
+   - Updating job status
+   - Retrieving jobs
+   - Deleting jobs
 
-3. **Conditional Rendering Tests**
-   - Test that loading state shows spinner
-   - Test that error state shows ErrorState component
-   - Test that valid recommendation shows recommendation display
-   - Test that no recommendation after loading shows error
+2. **Expiration Logic**
+   - Calculating expiration times based on status
+   - Checking if jobs are expired
+   - Cleanup removing only expired jobs
 
-### Property-Based Tests
+3. **Size Management**
+   - LRU eviction when store is full
+   - Tracking last accessed time
+   - Finding oldest jobs
 
-We will use **fast-check** (JavaScript/TypeScript property-based testing library) for property-based testing.
+4. **Error Response Formatting**
+   - Generating user-friendly messages
+   - Including/excluding debug info based on environment
+   - Sanitizing sensitive data
 
-Each property test should:
-- Run at least 100 iterations
-- Generate random valid and invalid inputs
-- Verify the property holds for all inputs
-- Be tagged with the property number from this design doc
+### Property-Based Testing
 
-Example property test structure:
+We will use **fast-check** (JavaScript/TypeScript property-based testing library) to verify correctness properties. Each property test should run a minimum of 100 iterations.
+
+Property tests will cover:
+
+1. **Job Lifecycle Properties**
+   - Property 20: Jobs always have creation and expiration timestamps
+   - Property 21: Completed jobs are retained for exactly 5 minutes
+   - Property 22: Failed jobs are retained for exactly 2 minutes
+   - Property 23: Cleanup removes all and only expired jobs
+   - Property 24: LRU eviction removes oldest jobs first
+
+2. **Error Handling Properties**
+   - Property 2: Expired jobs always return 410
+   - Property 5: 500 errors never contain sensitive data
+   - Property 18: Validation failures always return 400
+
+3. **Input Validation Properties**
+   - Property 15: Empty names are always rejected
+   - Property 17: Special characters are always sanitized
+   - Property 19: Problematic queries always log warnings
+
+4. **Timeout Properties**
+   - Property 7: Jobs exceeding 2 minutes always timeout
+   - Property 8: Timeouts always trigger cleanup
+   - Property 9: Retries always generate new job IDs
+
+5. **Logging Properties**
+   - Property 10: Errors always log required fields
+   - Property 13: Polling requests always include correlation IDs
+
+### Integration Testing
+
+Integration tests will verify:
+
+1. **End-to-End Polling Flow**
+   - Create job → Poll → Complete → Verify response
+   - Create job → Poll → Timeout → Verify 408
+   - Create job → Wait for expiration → Poll → Verify 410
+
+2. **Error Recovery**
+   - Failed enrichment → Retry → Success
+   - Timeout → Retry with new job ID → Success
+
+3. **Concurrent Access**
+   - Multiple jobs processing simultaneously
+   - Store cleanup while jobs are being accessed
+   - Eviction while new jobs are being created
+
+### Test Configuration
+
 ```typescript
-import fc from 'fast-check';
+// fast-check configuration
+const FC_CONFIG = {
+  numRuns: 100,  // Minimum 100 iterations per property
+  verbose: true,
+  seed: Date.now(),  // Reproducible with seed
+};
 
-// **Feature: frontend-error-display-fix, Property 1: Valid data displays recommendation**
-test('Property 1: Valid data displays recommendation', () => {
-  fc.assert(
-    fc.property(
-      recommendationArbitrary, // Generator for valid recommendations
-      (recommendation) => {
-        // Render component with recommendation
-        const { container } = render(<ResultsPage recommendation={recommendation} />);
-        
-        // Should NOT contain ErrorState
-        expect(container.querySelector('[data-testid="error-state"]')).toBeNull();
-        
-        // Should contain recommendation display
-        expect(container.querySelector('[data-testid="recommendation-display"]')).not.toBeNull();
-      }
-    ),
-    { numRuns: 100 }
-  );
-});
+// Test data generators
+const jobIdGenerator = fc.uuid();
+const supplementNameGenerator = fc.string({ minLength: 1, maxLength: 100 });
+const timestampGenerator = fc.integer({ min: Date.now() - 86400000, max: Date.now() });
+const statusGenerator = fc.constantFrom('processing', 'completed', 'failed', 'timeout');
 ```
-
-### Integration Tests
-
-1. **End-to-End Flow**
-   - Test complete flow from search to recommendation display
-   - Test cache hit scenario
-   - Test cache miss scenario
-   - Test error recovery
-
-2. **API Integration**
-   - Test with real API responses (mocked)
-   - Test with various response formats
-   - Test with error responses
-
-## Implementation Notes
-
-### Debugging Steps
-
-1. Add comprehensive console logging at each state transition
-2. Log API responses before setting state
-3. Log render conditions (why ErrorState vs Recommendation)
-4. Use React DevTools to inspect state in real-time
-
-### Browser Cache Clearing
-
-Users experiencing this issue should:
-1. Clear browser cache (Cmd+Shift+Delete on Mac, Ctrl+Shift+Delete on Windows)
-2. Clear localStorage for the site
-3. Hard refresh (Cmd+Shift+R on Mac, Ctrl+Shift+R on Windows)
-
-### Deployment Strategy
-
-1. Deploy fix to staging environment
-2. Test with various supplements (ashwagandha, omega-3, vitamin d, magnesium)
-3. Verify no regressions in error handling
-4. Deploy to production
-5. Monitor error rates and user feedback
 
 ## Performance Considerations
 
-- Cache validation should be fast (<10ms)
-- State updates should be batched when possible
-- Avoid unnecessary re-renders by using React.memo for child components
-- Use useCallback for event handlers to prevent re-renders
+### Memory Management
 
-## Security Considerations
+- **Store size limit**: 1000 jobs maximum
+- **Average job size**: ~2KB (including recommendation data)
+- **Total memory**: ~2MB maximum for job store
+- **Cleanup frequency**: On every GET request (amortized O(1) with lazy cleanup)
 
-- Validate all data from localStorage before using it
-- Sanitize error messages before displaying to users
-- Don't expose internal error details in production
-- Rate limit API calls to prevent abuse
+### Latency Targets
+
+- **Job lookup**: < 1ms (Map.get)
+- **Cleanup**: < 10ms (iterate expired jobs)
+- **Eviction**: < 5ms (find and remove oldest)
+- **Total endpoint latency**: < 100ms (95th percentile)
+
+### Scalability
+
+Current in-memory solution is suitable for:
+- Single-instance deployments
+- < 1000 concurrent users
+- < 100 requests/second
+
+For higher scale, migrate to:
+- Redis for distributed job storage
+- DynamoDB with TTL for automatic expiration
+- SQS for async job processing
+
+## Observability
+
+### Logging
+
+All logs will use structured JSON format:
+
+```typescript
+{
+  timestamp: '2024-11-25T10:30:00.000Z',
+  level: 'error' | 'warn' | 'info' | 'debug',
+  event: 'JOB_EXPIRED' | 'JOB_NOT_FOUND' | 'ENRICHMENT_FAILED' | ...,
+  jobId: 'job_123',
+  supplementName: 'Yodo',
+  correlationId: 'corr_456',
+  requestId: 'req_789',
+  elapsedTime: 125000,  // milliseconds
+  error: 'Error message',
+  stack: 'Stack trace',
+  metadata: { ... }
+}
+```
+
+### Metrics
+
+Track the following metrics:
+
+1. **Job Metrics**
+   - Jobs created per minute
+   - Jobs completed per minute
+   - Jobs failed per minute
+   - Jobs timed out per minute
+   - Average job duration
+
+2. **Store Metrics**
+   - Current store size
+   - Cleanup operations per minute
+   - Evictions per minute
+   - Average job age
+
+3. **Error Metrics**
+   - 4xx errors per minute (by status code)
+   - 5xx errors per minute (by status code)
+   - Error rate (errors / total requests)
+   - Repeated failure patterns
+
+4. **Performance Metrics**
+   - Endpoint latency (p50, p95, p99)
+   - Cleanup duration
+   - Eviction duration
+
+### Alerts
+
+Configure alerts for:
+
+- Error rate > 5% for 5 minutes
+- Store size > 900 jobs
+- Average job duration > 60 seconds
+- Repeated failures > 5 in 1 minute
+- Endpoint latency p95 > 200ms
+
+## Migration Strategy
+
+### Phase 1: Enhanced Job Store (Week 1)
+- Add expiration timestamps to Job interface
+- Implement size limits and LRU eviction
+- Add cleanup on access
+- Unit tests for new functionality
+
+### Phase 2: Improved Error Handling (Week 1)
+- Implement proper HTTP status codes
+- Add error message templates
+- Improve error logging
+- Property tests for error handling
+
+### Phase 3: Frontend Polling Limits (Week 2)
+- Add retry counter to frontend
+- Implement exponential backoff
+- Add correlation ID headers
+- Integration tests for polling
+
+### Phase 4: Monitoring & Alerts (Week 2)
+- Add structured logging
+- Implement metrics collection
+- Configure alerts
+- Dashboard for observability
+
+### Phase 5: Production Rollout (Week 3)
+- Deploy to staging
+- Load testing
+- Monitor for issues
+- Gradual rollout to production
+
+## Future Enhancements
+
+1. **Distributed Job Store**
+   - Migrate to Redis for multi-instance support
+   - Add job persistence for crash recovery
+
+2. **Advanced Retry Logic**
+   - Exponential backoff with jitter
+   - Circuit breaker for failing supplements
+   - Automatic retry for transient errors
+
+3. **Predictive Timeouts**
+   - ML model to predict job duration
+   - Dynamic timeout based on supplement complexity
+   - Proactive async mode switching
+
+4. **User Notifications**
+   - Email/SMS when long-running job completes
+   - Push notifications for mobile app
+   - Webhook callbacks for API users
+
+5. **Analytics**
+   - Track which supplements timeout most
+   - Identify patterns in failures
+   - Optimize enrichment for slow supplements

@@ -275,7 +275,12 @@ function generateVariations(canonical: string): string[] {
 function findFuzzyMatch(
   query: string
 ): { key: string; confidence: number } | null {
-  const threshold = 4; // Increased from 2 to capture more variations
+  // Reject very short queries (< 3 chars) to avoid false positives
+  if (query.length < 3) {
+    return null;
+  }
+
+  const threshold = 2; // Strict threshold for quality matches
   let bestMatch: { key: string; distance: number; matchType: string } | null = null;
 
   // Normalize query: remove hyphens, extra spaces
@@ -286,14 +291,22 @@ function findFuzzyMatch(
     const normalizedKey = key.replace(/[-\s]+/g, ' ').trim();
     const compactKey = key.replace(/[-\s]+/g, '');
 
+    // Skip if key is too short or too different in length
+    if (key.length < 3) continue;
+    const lengthDiff = Math.abs(query.length - key.length);
+    if (lengthDiff > 3) continue; // Reject if length difference > 3
+
     // Strategy 1: Exact Levenshtein on normalized strings
     const distance = levenshteinDistance(normalizedQuery, normalizedKey);
 
     // Strategy 2: Compact matching (ignore hyphens/spaces entirely)
     const compactDistance = levenshteinDistance(compactQuery, compactKey);
 
-    // Strategy 3: Substring matching (contains)
-    const isSubstring = normalizedKey.includes(normalizedQuery) || normalizedQuery.includes(normalizedKey);
+    // Strategy 3: Substring matching (contains) - only for longer queries
+    const isSubstring = query.length >= 5 && (
+      normalizedKey.includes(normalizedQuery) || 
+      normalizedQuery.includes(normalizedKey)
+    );
 
     // Pick best strategy
     const minDistance = Math.min(distance, compactDistance);
@@ -312,8 +325,8 @@ function findFuzzyMatch(
 
   if (bestMatch) {
     // Improved confidence calculation
-    // distance=1 → 0.95, distance=2 → 0.85, distance=3 → 0.70, distance=4 → 0.50
-    const confidence = Math.max(0.5, 1 - (bestMatch.distance / (threshold + 1)));
+    // distance=1 → 0.80, distance=2 → 0.70
+    const confidence = bestMatch.distance === 1 ? 0.80 : 0.70;
 
     console.log(`Fuzzy match found: "${query}" → "${bestMatch.key}" (distance: ${bestMatch.distance}, type: ${bestMatch.matchType}, confidence: ${confidence.toFixed(2)})`);
 

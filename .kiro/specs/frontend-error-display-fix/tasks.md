@@ -1,166 +1,222 @@
-# Implementation Plan
+# Implementation Plan: Frontend Error Display Fix
 
-- [x] 1. Add comprehensive debugging and logging
-  - Add state change logging to track recommendation, isLoading, and error states
-  - Add API response logging before state updates
-  - Add conditional rendering logging to understand why ErrorState vs Recommendation is shown
-  - Add cache validation logging
-  - _Requirements: 3.1, 3.2, 3.3, 3.4_
+- [x] 1. Enhance Job Store with Lifecycle Management
+  - Update Job interface to include expiration timestamps, lastAccessedAt, and retryCount
+  - Implement expiration time calculation based on job status (processing: 2min, completed: 5min, failed: 2min)
+  - Add isExpired() method to check if a job has exceeded its expiration time
+  - Add getJobAge() method to calculate time since job creation
+  - _Requirements: 6.1, 6.2, 6.3_
 
-- [-] 2. Fix state management in Results Page
-- [x] 2.1 Add state change effect with logging
-  - Create useEffect that logs whenever recommendation, isLoading, or error changes
-  - Log the complete state object including recommendation ID and category
-  - _Requirements: 3.2, 3.5_
+- [x] 1.1 Write property test for job timestamp assignment
+  - **Property 20: Jobs have creation and expiration timestamps**
+  - **Validates: Requirements 6.1**
 
-- [x] 2.2 Write property test for state transitions
-  - **Property 6: State changes trigger re-renders**
-  - **Validates: Requirements 3.5**
-  - _Note: Tests created but need Next.js router mocks - will be fixed in checkpoint_
+- [x] 1.2 Write property test for completed job retention
+  - **Property 21: Completed jobs retained for 5 minutes**
+  - **Validates: Requirements 6.2**
 
-- [x] 2.3 Ensure atomic state updates in API response handler
-  - Clear error state before setting recommendation
-  - Set states in correct order: error → recommendation → isLoading
-  - Add logging before and after each state update
-  - _Requirements: 1.1, 1.2, 2.1, 2.5_
+- [x] 1.3 Write property test for failed job retention
+  - **Property 22: Failed jobs retained for 2 minutes**
+  - **Validates: Requirements 6.3**
 
-- [x] 2.4 Write property test for valid data display
-  - **Property 1: Valid data displays recommendation**
-  - **Validates: Requirements 1.1, 1.2, 2.1**
-  - _Note: Tests created but need Next.js router mocks - will be fixed in checkpoint_
+- [x] 2. Implement Store Size Management and LRU Eviction
+  - Add MAX_STORE_SIZE constant (1000 jobs)
+  - Update lastAccessedAt on every getJob() call
+  - Implement enforceSizeLimit() method that removes oldest jobs when size > MAX_STORE_SIZE
+  - Implement getOldestJob() method to find least recently accessed job
+  - _Requirements: 6.5_
 
-- [-] 3. Improve cache validation logic
-- [x] 3.1 Create isValidCache helper function
-  - Check for null/undefined recommendation
-  - Validate metadata structure
-  - Check totalStudies OR studiesUsed > 0
-  - Add comprehensive logging
-  - _Requirements: 4.2, 4.3, 4.5_
+- [x] 2.1 Write property test for LRU eviction
+  - **Property 24: Store evicts oldest jobs when full**
+  - **Validates: Requirements 6.5**
 
-- [x] 3.2 Write property test for cache validation
-  - **Property 8: Invalid cache is removed**
-  - **Validates: Requirements 4.2, 4.3**
-  - _Note: Tests created but need Next.js router mocks - will be fixed in checkpoint_
+- [x] 3. Improve Cleanup Logic
+  - Update cleanupExpired() to remove all jobs where isExpired() returns true
+  - Return count of removed jobs for metrics
+  - Call cleanupExpired() before enforceSizeLimit() to prioritize expired jobs
+  - _Requirements: 6.4_
 
-- [x] 3.3 Write property test for cache validation on load
-  - **Property 10: Cache validation runs on load**
-  - **Validates: Requirements 4.5**
-  - _Note: Tests created but need Next.js router mocks - will be fixed in checkpoint_
+- [x] 3.1 Write property test for cleanup
+  - **Property 23: Cleanup removes expired jobs**
+  - **Validates: Requirements 6.4**
 
-- [x] 3.4 Update cache retrieval logic to use validation
-  - Call isValidCache before using cached data
-  - Remove invalid cache and fetch fresh data
-  - Log cache hit/miss/invalid scenarios
-  - _Requirements: 4.1, 4.2, 4.3, 4.5_
+- [x] 4. Add Error Response Templates
+  - Create ERROR_MESSAGES constant with templates for all error types
+  - Implement formatErrorResponse() function that takes error type and returns structured response
+  - Include user-friendly messages in Spanish
+  - Add actionable suggestions for each error type
+  - Sanitize sensitive data from error responses (API keys, internal paths)
+  - _Requirements: 1.2, 1.3, 1.5, 4.4, 5.1, 5.2_
 
-- [x] 3.5 Write property test for empty cache
-  - **Property 7: Empty cache triggers API call**
-  - **Validates: Requirements 4.1**
-  - _Note: Tests created but need Next.js router mocks - will be fixed in checkpoint_
+- [x] 4.1 Write property test for sensitive data sanitization
+  - **Property 5: 500 errors include debug info without sensitive data**
+  - **Validates: Requirements 1.5**
 
-- [x] 3.6 Update cache storage logic
-  - Only cache recommendations with real data
-  - Add timestamp and TTL to cache
-  - Log cache storage operations
-  - _Requirements: 4.4_
-
-- [x] 3.7 Write property test for cache storage
-  - **Property 9: Fresh data is cached**
+- [x] 4.2 Write property test for validation error responses
+  - **Property 18: Validation failures return 400**
   - **Validates: Requirements 4.4**
-  - _Note: Tests created but need Next.js router mocks - will be fixed in checkpoint_
 
-- [x] 4. Fix conditional rendering logic
-- [x] 4.1 Separate loading, error, and no-data states
-  - Create explicit checks for each state
-  - Add logging for which branch is taken
-  - Ensure error state only shows when error !== null
-  - Ensure no-data state only shows when !recommendation AND !isLoading AND !error
-  - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
+- [x] 5. Update Enrichment Status Endpoint with Proper Status Codes
+  - Add correlation ID extraction from X-Correlation-ID header
+  - Check if job is expired using isExpired() and return 410 Gone with appropriate message
+  - Distinguish between job never existed (404) vs expired (410)
+  - Remove direct fetch fallback (will be handled by frontend retry)
+  - Return 202 Accepted for processing jobs with elapsedTime
+  - Return 200 OK for completed jobs with processingTime
+  - Return 500 for failed jobs with formatted error response
+  - Add structured logging for all error cases
+  - _Requirements: 1.1, 1.2, 1.3, 1.5, 3.1, 3.2, 3.4_
 
-- [x] 4.2 Write property test for loading state
-  - **Property 5: Loading state transitions correctly**
-  - **Validates: Requirements 2.4, 2.5**
+- [x] 5.1 Write property test for expired job responses
+  - **Property 2: Expired jobs return 410 Gone**
+  - **Validates: Requirements 1.2**
 
-- [x] 4.3 Add data-testid attributes for testing
-  - Add data-testid="loading-spinner" to IntelligentLoadingSpinner
-  - Add data-testid="error-state" to ErrorState
-  - Add data-testid="recommendation-display" to recommendation display
-  - _Requirements: Testing infrastructure_
+- [x] 5.2 Write property test for error logging
+  - **Property 10: Error logging includes required fields**
+  - **Validates: Requirements 3.1**
 
-- [x] 5. Verify recommendation data display
-- [x] 5.1 Ensure study data is displayed
-  - Check that totalStudies and totalParticipants are rendered
-  - Add fallback for missing study data
-  - Log when study data is missing
-  - _Requirements: 1.3_
+- [x] 5.3 Write property test for missing job time logging
+  - **Property 11: Missing job logs time delta**
+  - **Validates: Requirements 3.2**
 
-- [x] 5.2 Write property test for study data display
-  - **Property 2: Study data is displayed**
-  - **Validates: Requirements 1.3**
+- [x] 5.4 Write property test for correlation ID presence
+  - **Property 13: Polling requests include correlation ID**
+  - **Validates: Requirements 3.4**
 
-- [x] 5.3 Ensure all recommendation sections render
-  - Verify benefits section renders when data exists
-  - Verify dosage section renders when data exists
-  - Verify side effects section renders when data exists
-  - Add logging for missing sections
-  - _Requirements: 1.4_
+- [x] 6. Add Timeout Handling to Recommend Endpoint
+  - Update async job creation to set status='timeout' after 2 minutes
+  - Implement markTimeout() method in job store
+  - Clean up timed-out jobs from store
+  - Return 408 Request Timeout with retry suggestion
+  - Log timeout events with job details
+  - _Requirements: 2.1, 2.3, 2.4_
 
-- [x] 5.4 Write property test for complete sections
-  - **Property 3: Complete recommendation sections render**
+- [x] 6.1 Write property test for async timeout
+  - **Property 7: Async jobs timeout at 2 minutes**
+  - **Validates: Requirements 2.3**
+
+- [x] 6.2 Write property test for timeout cleanup
+  - **Property 8: Timeout triggers cleanup**
+  - **Validates: Requirements 2.4**
+
+- [x] 7. Implement Input Validation and Sanitization
+  - Add validateSupplementName() function to check for empty/whitespace-only names
+  - Update sanitizeQuery() to handle special characters correctly
+  - Add verifyNormalization() function to check normalization success
+  - Add detectProblematicQuery() function to identify edge cases
+  - Return 400 Bad Request for validation failures with descriptive messages
+  - Log warnings for problematic queries
+  - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
+
+- [x] 7.1 Write property test for empty name validation
+  - **Property 15: Empty supplement names are rejected**
+  - **Validates: Requirements 4.1**
+
+- [x] 7.2 Write property test for special character sanitization
+  - **Property 17: Special characters are sanitized**
+  - **Validates: Requirements 4.3**
+
+- [x] 7.3 Write property test for normalization verification
+  - **Property 16: Normalization success is verified**
+  - **Validates: Requirements 4.2**
+
+- [x] 7.4 Write property test for problematic query warnings
+  - **Property 19: Problematic queries log warnings**
+  - **Validates: Requirements 4.5**
+
+- [x] 8. Add Frontend Polling Limits and Exponential Backoff
+  - Add MAX_RETRY_ATTEMPTS constant (3 attempts)
+  - Track retry count in component state
+  - Stop polling after 3 consecutive failures
+  - Implement exponential backoff (2s, 4s, 8s)
+  - Generate and include X-Correlation-ID header in all polling requests
+  - Display appropriate error messages based on status code
+  - Show retry button for 408 Timeout errors
+  - Show "contact support" message after 3 failures
+  - _Requirements: 1.4, 2.2, 3.4, 5.3, 5.4_
+
+- [x] 8.1 Write property test for polling stop after failures
+  - **Property 4: Polling stops after 3 failures**
   - **Validates: Requirements 1.4**
 
-- [x] 6. Test cache persistence across page refreshes
-- [x] 6.1 Verify cache retrieval on page load
-  - ✅ Test that valid cached data is used
-  - ✅ Test that page doesn't show error with valid data
-  - ✅ Log cache retrieval success/failure (already implemented in code)
-  - _Requirements: 1.5_
+- [x] 9. Implement Retry Logic with New Job IDs
+  - Update retry handler to generate new job ID for each retry attempt
+  - Clear previous job state before retry
+  - Track retry count in job metadata
+  - Return 429 Too Many Requests if retry count > 5
+  - _Requirements: 2.5_
 
-- [x] 6.2 Write property test for cache retrieval
-  - **Property 4: Cache retrieval works correctly**
-  - **Validates: Requirements 1.5**
-  - ✅ 5/5 tests passing:
-    - Fresh data retrieval when no cache
-    - Data retrieval for different supplements
-    - Expired cache triggers API call
-    - Missing cache triggers API call
-    - Valid data prevents error state
+- [x] 9.1 Write property test for retry job ID generation
+  - **Property 9: Retry creates new job ID**
+  - **Validates: Requirements 2.5**
 
-- [x] 7. Checkpoint - Ensure all tests pass
-  - ✅ Fixed Next.js router mocks in all new property tests
-  - ✅ All new tests passing:
-    - state-transitions.property.test.tsx: 2/2 ✅
-    - valid-data-display.property.test.tsx: 4/4 ✅
-    - cache-validation.property.test.tsx: 3/3 ✅
-    - cache-storage.property.test.tsx: 1/1 ✅
-  - Total: 10/10 new property tests passing
-  - All tests use `mockImplementation` instead of `mockResolvedValueOnce`
-  - All tests use `jest.requireMock` instead of `require`
+- [x] 10. Add Structured Logging with Correlation IDs
+  - Create structured log format with timestamp, level, event, jobId, correlationId, requestId
+  - Update all console.log calls to use structured format
+  - Add log levels (error, warn, info, debug)
+  - Implement logEnrichmentError() function with all required fields
+  - Implement logDirectFetchFailure() function with complete response
+  - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [x] 8. Implement Robust Scientific Validation System
-  - ✅ Backend: Strict validation of scientific data (hasRealData check)
-  - ✅ Frontend: Intelligent error handling with fuzzy search suggestions
-  - ✅ UI: Enhanced ErrorState component with educational design
-  - ✅ Analytics: Complete tracking of failed searches
-  - ✅ Documentation: Architecture and implementation guide
-  - ✅ Build: Successful compilation with no errors
-  - ✅ Type Safety: All TypeScript types correctly defined
-  - _Requirements: All + Scientific Integrity_
-  - _Status: COMPLETED - Ready for manual testing_
+- [x] 10.1 Write property test for direct fetch failure logging
+  - **Property 12: Direct fetch failure logs complete response**
+  - **Validates: Requirements 3.3**
 
-- [x] 9. Manual testing and verification
-  - Test with ashwagandha search (should work - has studies)
-  - Test with omega-3 search (should work - has studies)
-  - Test with vitamin d search (should work - has studies)
-  - Test with magnesium search (should work - has studies)
-  - Test with "Rutina" search (should show educational error + suggestions)
-  - Test with "Quercetin" search (should show educational error + suggestions)
-  - Test with cleared browser cache
-  - Test with stale cached data
-  - Verify no ErrorState shown for valid supplements with studies
-  - Verify educational ErrorState (yellow) shown for supplements without studies
-  - Verify system ErrorState (red) shown for actual system errors
+- [x] 11. Implement Failure Pattern Detection and Alerting
+  - Track failure count per supplement in a time window (1 minute)
+  - Detect patterns of repeated failures (>5 in 1 minute)
+  - Generate alert when pattern is detected
+  - Log alert with supplement name, failure count, and time window
+  - Reset failure count after time window expires
+  - _Requirements: 3.5_
+
+- [x] 11.1 Write property test for repeated failure alerts
+  - **Property 14: Repeated failures trigger alerts**
+  - **Validates: Requirements 3.5**
+
+- [x] 12. Add Metrics Collection
+  - Implement metrics tracking for jobs created, completed, failed, timed out
+  - Track store size, cleanup operations, evictions
+  - Track error rates by status code
+  - Track endpoint latency (p50, p95, p99)
+  - Export metrics in structured format for monitoring dashboard
+  - _Requirements: Non-functional (Observability)_
+
+- [x] 13. Update Frontend Error Display Components
+  - Create ErrorMessage component with different styles for 4xx vs 5xx errors
+  - Display user-friendly messages from error responses
+  - Show actionable suggestions
+  - Add retry button for 408 Timeout errors
+  - Add "contact support" link for repeated failures
+  - Clear error messages on successful retry
+  - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
+
+- [x] 14. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 15. Integration Testing
+  - Write end-to-end test for successful polling flow (create → poll → complete)
+  - Write end-to-end test for timeout flow (create → poll → timeout → verify 408)
+  - Write end-to-end test for expiration flow (create → wait → poll → verify 410)
+  - Write end-to-end test for retry flow (timeout → retry with new ID → success)
+  - Write test for concurrent job processing
+  - Write test for store cleanup during active polling
   - _Requirements: All_
 
-- [ ] 10. Final Checkpoint - Ensure all tests pass
-  - Ensure all tests pass, ask the user if questions arise.
+- [x] 16. Performance Testing
+  - Load test with 100 concurrent jobs
+  - Verify endpoint latency < 100ms (p95)
+  - Verify cleanup duration < 10ms
+  - Verify eviction duration < 5ms
+  - Verify memory usage < 2MB for job store
+  - _Requirements: Non-functional (Performance)_
+
+- [x] 17. Documentation and Deployment
+  - Update API documentation with new status codes and error responses
+  - Create runbook for monitoring and troubleshooting
+  - Configure alerts in monitoring system
+  - Deploy to staging environment
+  - Run smoke tests in staging
+  - Monitor for issues
+  - Gradual rollout to production (10% → 50% → 100%)
+  - _Requirements: All_
