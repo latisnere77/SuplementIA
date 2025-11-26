@@ -387,6 +387,49 @@ function ResultsPageContent() {
   const [asyncSupplementName, setAsyncSupplementName] = useState<string | null>(null);
 
   // ====================================
+  // ASYNC ENRICHMENT CALLBACKS
+  // ====================================
+  const handleEnrichmentComplete = (enrichmentData: any) => {
+    console.log('[Async Enrichment] Completed:', enrichmentData);
+    
+    if (enrichmentData.success && enrichmentData.data) {
+      // Save recommendation
+      setRecommendation(enrichmentData.data);
+      setError(null);
+      setUseAsyncEnrichment(false);
+      
+      // Update URL with jobId for sharing
+      if (enrichmentData.data.recommendation_id && typeof window !== 'undefined') {
+        const newUrl = `/portal/results?id=${enrichmentData.data.recommendation_id}&supplement=${encodeURIComponent(asyncSupplementName || '')}`;
+        window.history.replaceState({}, '', newUrl);
+      }
+      
+      // Cache the recommendation
+      if (typeof window !== 'undefined' && enrichmentData.data.recommendation_id) {
+        try {
+          const cacheKey = `recommendation_${enrichmentData.data.recommendation_id}`;
+          const cacheData = {
+            recommendation: enrichmentData.data,
+            timestamp: Date.now(),
+            ttl: 24 * 60 * 60 * 1000, // 24 hours
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+          console.log('[Cache] Saved recommendation to cache:', cacheKey);
+        } catch (cacheError) {
+          console.error('[Cache] Failed to save to cache:', cacheError);
+        }
+      }
+    }
+  };
+
+  const handleEnrichmentError = (error: string) => {
+    console.error('[Async Enrichment] Error:', error);
+    setError(error);
+    setUseAsyncEnrichment(false);
+    setIsLoading(false);
+  };
+
+  // ====================================
   // LOGGING: State Change Tracking
   // ====================================
   useEffect(() => {
@@ -866,6 +909,14 @@ function ResultsPageContent() {
             if (searchResult.found) {
               searchTerm = searchResult.supplementName;
               console.log(`✅ Supplement found: "${normalizedQuery}" → "${searchTerm}" (source: ${searchResult.source}, similarity: ${searchResult.similarity})`);
+              
+              // ✅ FIX: Use AsyncEnrichmentLoader for direct searches
+              // This ensures job is created on server before polling
+              console.log('[Direct Search] Activating async enrichment for:', searchTerm);
+              setAsyncSupplementName(searchTerm);
+              setUseAsyncEnrichment(true);
+              setIsLoading(false); // AsyncEnrichmentLoader handles its own loading
+              return; // Exit early - AsyncEnrichmentLoader takes control
             } else {
               console.warn(`⚠️ Supplement not found: "${normalizedQuery}"`);
             }
@@ -1215,6 +1266,25 @@ function ResultsPageContent() {
     hasRecommendation: !!recommendation,
     willRender: isLoading ? 'LoadingSpinner' : error ? 'ErrorState' : !recommendation ? 'NoDataState' : 'Recommendation',
   });
+
+  // STATE 0: Show AsyncEnrichmentLoader for direct searches
+  if (useAsyncEnrichment && asyncSupplementName) {
+    console.log('[Render] Branch: ASYNC_ENRICHMENT - Showing AsyncEnrichmentLoader', {
+      reason: 'useAsyncEnrichment === true',
+      supplementName: asyncSupplementName,
+    });
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="container mx-auto px-4 py-8">
+          <AsyncEnrichmentLoader
+            supplementName={asyncSupplementName}
+            onComplete={handleEnrichmentComplete}
+            onError={handleEnrichmentError}
+          />
+        </div>
+      </div>
+    );
+  }
 
   // STATE 1: Show loading state (only while fetching, not while transforming)
   if (isLoading) {
