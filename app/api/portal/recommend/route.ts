@@ -11,7 +11,8 @@ import { randomUUID } from 'crypto';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
-import { createJob, markTimeout, createRetryJob, hasExceededRetryLimit, getJob } from '@/lib/portal/job-store';
+// REMOVED: job-store doesn't work in serverless (memory not shared between instances)
+// import { createJob, markTimeout, createRetryJob, hasExceededRetryLimit, getJob } from '@/lib/portal/job-store';
 import {
   logStructured,
   logRetryAttempt,
@@ -56,43 +57,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { category, age, gender, location, sensitivities = [], quiz_id } = body;
     
-    // Check if this is a retry attempt
-    const previousJobId = request.headers.get('X-Previous-Job-ID') || body.previousJobId;
-    const isRetry = !!previousJobId;
-    
-    let jobId: string;
-    let retryCount = 0;
-    
-    if (isRetry) {
-      // Check if previous job exceeded retry limit
-      if (hasExceededRetryLimit(previousJobId, 5)) {
-        const previousJob = getJob(previousJobId);
-        const retryCount = previousJob?.retryCount || 0;
-        
-        logRetryLimitExceeded(previousJobId, retryCount, { requestId });
-        
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'too_many_retries',
-            message: 'Demasiados intentos de reintento.',
-            suggestion: 'Por favor, espera unos minutos antes de intentar de nuevo.',
-            requestId,
-          },
-          { status: 429 } // 429 Too Many Requests
-        );
-      }
-      
-      // Create new job for retry
-      const retryResult = createRetryJob(previousJobId);
-      jobId = retryResult.newJobId;
-      retryCount = retryResult.retryCount;
-      
-      logRetryAttempt(previousJobId, jobId, retryCount, { requestId });
-    } else {
-      // New request - generate job ID
-      jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    }
+    // Generate job ID (no retry tracking in serverless - each request is independent)
+    const jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const isRetry = false; // Disabled retry tracking (doesn't work in serverless)
+    const retryCount = 0;
 
     logStructured('info', 'RECOMMEND_REQUEST', {
       jobId,
@@ -113,7 +81,6 @@ export async function POST(request: NextRequest) {
       location,
       isRetry,
       retryCount,
-      previousJobId: previousJobId || undefined,
       userAgent: request.headers.get('user-agent'),
       referer: request.headers.get('referer'),
     });
@@ -207,26 +174,10 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
       // If timeout, switch to async processing
       if (error.name === 'AbortError' || error.name === 'TimeoutError') {
-        
-        
         isAsync = true;
         
-        // Create job in store for tracking (with retry count if this is a retry)
-        if (!isRetry) {
-          createJob(jobId);
-        }
-        // If it's a retry, the job was already created by createRetryJob above
-        
-        // Set up timeout handler (2 minutes = 120000ms)
-        const timeoutHandle = setTimeout(() => {
-          markTimeout(jobId);
-          logStructured('warn', 'JOB_TIMEOUT', {
-            jobId,
-            supplementName: searchTerm,
-            category: sanitizedCategory,
-            requestId,
-          });
-        }, 120000); // 2 minutes
+        // REMOVED: job-store doesn't work in serverless
+        // createJob(jobId) and markTimeout(jobId) removed
         
         // Start async enrichment (fire and forget)
         fetch(ENRICH_API_URL, {
@@ -245,14 +196,8 @@ export async function POST(request: NextRequest) {
             yearFrom: 2010,
             jobId,
           }),
-        }).then((response) => {
-          // Clear timeout if enrichment completes
-          clearTimeout(timeoutHandle);
-          return response;
         }).catch((err) => {
           console.error('Background enrichment error:', err);
-          // Clear timeout on error too
-          clearTimeout(timeoutHandle);
         });
         
         // Return async response immediately
