@@ -955,5 +955,101 @@
     "last_searched_at": null,
     "created_at": "2025-11-25T14:37:20.489Z",
     "updated_at": "2025-11-25T14:37:20.489Z"
+  },
+  {
+    "name": "Potassium",
+    "scientific_name": "Potassium",
+    "common_names": [
+      "Potasio",
+      "Potassium",
+      "Potassium Citrate",
+      "Potassium Chloride"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "high",
+      "pubmedQuery": "(potassium) AND (blood pressure OR hypertension OR heart OR muscle OR cramps)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-26T00:00:00.000Z",
+    "updated_at": "2025-11-26T00:00:00.000Z"
+  },
+  {
+    "name": "Copper",
+    "scientific_name": "Copper",
+    "common_names": [
+      "Cobre",
+      "Copper",
+      "Copper Gluconate"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "medium",
+      "pubmedQuery": "(copper) AND (anemia OR bone OR connective tissue OR immune)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-26T00:00:00.000Z",
+    "updated_at": "2025-11-26T00:00:00.000Z"
+  },
+  {
+    "name": "Manganese",
+    "scientific_name": "Manganese",
+    "common_names": [
+      "Manganeso",
+      "Manganese"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "medium",
+      "pubmedQuery": "(manganese) AND (bone OR antioxidant OR metabolism)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-26T00:00:00.000Z",
+    "updated_at": "2025-11-26T00:00:00.000Z"
+  },
+  {
+    "name": "Iodine",
+    "scientific_name": "Iodine",
+    "common_names": [
+      "Yodo",
+      "Iodine",
+      "Potassium Iodide"
+    ],
+    "embedding": null,
+    "metadata": {
+      "category": "mineral",
+      "popularity": "medium",
+      "pubmedQuery": "(iodine) AND (thyroid OR metabolism OR cognitive)",
+      "pubmedFilters": {
+        "yearFrom": 2010,
+        "rctOnly": false,
+        "maxStudies": 10
+      }
+    },
+    "search_count": 0,
+    "last_searched_at": null,
+    "created_at": "2025-11-26T00:00:00.000Z",
+    "updated_at": "2025-11-26T00:00:00.000Z"
   }
 ]
