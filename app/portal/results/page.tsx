@@ -27,6 +27,7 @@ import { useAuth } from '@/lib/auth/useAuth';
 import { searchAnalytics } from '@/lib/portal/search-analytics';
 import { traceSearch } from '@/lib/portal/xray-client';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
+import { searchSupplement } from '@/lib/portal/supplement-search';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 
 // ====================================
@@ -857,14 +858,15 @@ function ResultsPageContent() {
           // Ingredients are typically: single words, compound words, or scientific names
           const isIngredientSearch = !matchedCategory;
 
-          // NORMALIZE QUERY BEFORE SENDING TO BACKEND
-          // This converts "carnitina" → "L-Carnitine", "magnesio" → "Magnesium", etc.
+          // SEARCH SUPPLEMENT (intelligent search with fallback)
           let searchTerm = normalizedQuery;
           if (isIngredientSearch) {
-            const normalized = normalizeQuery(normalizedQuery);
-            if (normalized.confidence >= 0.8) {
-              searchTerm = normalized.normalized;
-              console.log(`✅ Query normalized: "${normalizedQuery}" → "${searchTerm}" (confidence: ${normalized.confidence})`);
+            const searchResult = await searchSupplement(normalizedQuery);
+            if (searchResult.found) {
+              searchTerm = searchResult.supplementName;
+              console.log(`✅ Supplement found: "${normalizedQuery}" → "${searchTerm}" (source: ${searchResult.source}, similarity: ${searchResult.similarity})`);
+            } else {
+              console.warn(`⚠️ Supplement not found: "${normalizedQuery}"`);
             }
           }
 
