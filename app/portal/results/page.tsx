@@ -1057,9 +1057,9 @@ function ResultsPageContent() {
           
           // LEGACY SYNC PATTERN: Backend returned recommendation directly
           if (data.success && data.recommendation) {
-            // Validate recommendation structure
+            // Validate recommendation structure - use jobId for consistency
             if (!data.recommendation.recommendation_id) {
-              data.recommendation.recommendation_id = `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+              data.recommendation.recommendation_id = jobId; // Use existing jobId instead of generating rec_*
             }
             if (!data.recommendation.quiz_id) {
               data.recommendation.quiz_id = data.quiz_id || `quiz_${Date.now()}`;
