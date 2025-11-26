@@ -98,21 +98,51 @@ export async function POST(request: NextRequest) {
 
     console.log(`🚀 [Job ${jobId}] Starting async enrichment for: "${supplementName}" (Retry: ${isRetry}, Count: ${retryCount})`);
 
-    // Start enrichment in background (fire and forget)
-    // The Lambda will process and save to cache
-    // Frontend will poll /api/portal/status/[jobId] to check completion
+    // Start enrichment in background using quiz endpoint
+    // The quiz endpoint already handles enrichment properly
+    // Frontend will poll /api/portal/enrichment-status/[jobId] to check completion
+    
+    // Use absolute URL for internal fetch (required in production)
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
     
     // Fire and forget - no need to await
-    void fetch('/api/portal/enrich', {
+    void fetch(`${baseUrl}/api/portal/quiz`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Request-ID': correlationId,
         'X-Job-ID': jobId,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        category: supplementName,
+        age: 35, // Default
+        gender: 'male', // Default
+        location: 'CDMX', // Default
+        jobId,
+      }),
+    }).then(async (response) => {
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`✅ [Job ${jobId}] Background enrichment completed`);
+        
+        // Update job with recommendation data
+        const { storeJobResult } = await import('@/lib/portal/job-store');
+        if (data.recommendation) {
+          storeJobResult(jobId, 'completed', { recommendation: data.recommendation });
+        }
+      } else {
+        console.error(`❌ [Job ${jobId}] Background enrichment failed: ${response.status}`);
+        const { storeJobResult } = await import('@/lib/portal/job-store');
+        storeJobResult(jobId, 'failed', { error: `Enrichment failed with status ${response.status}` });
+      }
     }).catch((error) => {
       console.error(`❌ [Job ${jobId}] Background enrichment error:`, error);
+      // Update job status to failed
+      import('@/lib/portal/job-store').then(({ storeJobResult }) => {
+        storeJobResult(jobId, 'failed', { error: error.message });
+      });
     });
 
     // Don't await - let it run in background
