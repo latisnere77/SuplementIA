@@ -910,13 +910,9 @@ function ResultsPageContent() {
               searchTerm = searchResult.supplementName;
               console.log(`✅ Supplement found: "${normalizedQuery}" → "${searchTerm}" (source: ${searchResult.source}, similarity: ${searchResult.similarity})`);
               
-              // ✅ FIX: Use AsyncEnrichmentLoader for direct searches
-              // This ensures job is created on server before polling
-              console.log('[Direct Search] Activating async enrichment for:', searchTerm);
-              setAsyncSupplementName(searchTerm);
-              setUseAsyncEnrichment(true);
-              setIsLoading(false); // AsyncEnrichmentLoader handles its own loading
-              return; // Exit early - AsyncEnrichmentLoader takes control
+              // Direct searches use the same flow as category searches
+              // No need for AsyncEnrichmentLoader - quiz endpoint handles everything
+              console.log('[Direct Search] Using quiz endpoint for:', searchTerm);
             } else {
               console.warn(`⚠️ Supplement not found: "${normalizedQuery}"`);
             }
