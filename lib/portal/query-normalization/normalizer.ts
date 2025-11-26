@@ -1,16 +1,36 @@
 /**
- * Query Normalization Module
- * Normalizes supplement names and generates search variations
- *
- * Purpose:
- * - Convert user queries to canonical supplement names
- * - Generate search variations for better PubMed results
- * - Categorize supplements by type
- *
- * Design:
- * - Zero external dependencies
- * - Standalone module (can be imported anywhere)
- * - Fast performance (< 1ms per query)
+ * Query Normalization Module (DEPRECATED)
+ * 
+ * @deprecated This module is deprecated and will be removed in v2.0.0.
+ * Use intelligent search API instead: `/api/portal/search` or `useIntelligentSearch()` hook.
+ * 
+ * **Why deprecated:**
+ * - Hardcoded list of ~70 supplements (not scalable)
+ * - Requires manual updates for each new supplement
+ * - Cannot handle typos or semantic variations
+ * - No multilingual support beyond hardcoded translations
+ * 
+ * **Migration:**
+ * ```typescript
+ * // Old (deprecated)
+ * import { normalizeQuery } from '@/lib/portal/query-normalization/normalizer';
+ * const result = normalizeQuery('equinácea');
+ * 
+ * // New (recommended)
+ * import { useIntelligentSearch } from '@/lib/portal/useIntelligentSearch';
+ * const { search } = useIntelligentSearch();
+ * const result = await search('equinácea');
+ * ```
+ * 
+ * **Removal timeline:**
+ * - Now: Marked as deprecated, warnings added
+ * - 2 months: After 100% intelligent search rollout
+ * - 3 months: Moved to _archived/
+ * - 4 months: Deleted
+ * 
+ * @see /api/portal/search - Intelligent search API
+ * @see useIntelligentSearch - React hook for intelligent search
+ * @see backend/lambda/search-api - Vector search implementation
  */
 
 export type SupplementCategory =
@@ -223,8 +243,21 @@ const VARIATION_GENERATORS: Record<string, (canonical: string) => string[]> = {
 
 /**
  * Normalize a user query
+ * 
+ * @deprecated Use intelligent search API instead
+ * @see /api/portal/search
+ * @see useIntelligentSearch
  */
 export function normalizeQuery(query: string): NormalizedQuery {
+  // Deprecation warning (only in development)
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(
+      '[DEPRECATED] normalizeQuery() is deprecated. ' +
+      'Use intelligent search API (/api/portal/search) or useIntelligentSearch() hook instead. ' +
+      'This function will be removed in v2.0.0.'
+    );
+  }
+  
   const lowercased = query.toLowerCase().trim();
 
   // Exact match in normalization map
