@@ -742,13 +742,12 @@ function ResultsPageContent() {
             const maxPollTime = 180000; // 3 minutes max
             const startTime = Date.now();
             
-            // IMPORTANT: Use quiz endpoint for polling, NOT enrichment-status
-            // enrichment-status depends on job-store which doesn't work in serverless
-            const statusUrl = `/api/portal/quiz?jobId=${data.recommendation_id}`;
+            // Use enrichment-status endpoint for polling
+            const statusUrl = `/api/portal/enrichment-status/${data.recommendation_id}?supplement=${encodeURIComponent(category)}`;
             
             const pollStatus = async () => {
               try {
-                console.log('[Async Polling] Fetching status from quiz endpoint:', statusUrl);
+                console.log('[Async Polling] Fetching status:', statusUrl);
                 const statusResponse = await fetch(statusUrl);
                 const statusData = await statusResponse.json();
                 
