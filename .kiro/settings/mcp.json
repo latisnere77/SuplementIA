@@ -31,10 +31,22 @@
         "--access-token=${SENTRY_ACCESS_TOKEN}"
       ],
       "env": {
-        "SENTRY_ACCESS_TOKEN": ""
+        "FASTMCP_LOG_LEVEL": "ERROR"
       },
-      "disabled": true,
-      "autoApprove": []
+      "disabled": false,
+      "autoApprove": [
+        "mcp_sentry_whoami",
+        "mcp_sentry_find_organizations",
+        "mcp_sentry_find_teams",
+        "mcp_sentry_find_projects",
+        "mcp_sentry_find_releases",
+        "mcp_sentry_get_issue_details",
+        "mcp_sentry_get_trace_details",
+        "mcp_sentry_search_events",
+        "mcp_sentry_search_issues",
+        "mcp_sentry_search_docs",
+        "mcp_sentry_get_doc"
+      ]
     },
     "sequential-thinking": {
       "command": "npx",

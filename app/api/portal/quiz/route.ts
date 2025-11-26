@@ -142,9 +142,9 @@ export async function POST(request: NextRequest) {
     const altitude = detectAltitude(finalLocation);
     const climate = detectClimate(finalLocation);
 
-    // Create job in job-store for tracking
-    createJob(jobId, 0);
-
+    // Note: Job will be created by /api/portal/recommend if needed (async pattern)
+    // We don't create it here to avoid race conditions
+    
     // Note: Quiz data is sent to backend Lambda which can save it if needed
     // The frontend no longer accesses DynamoDB directly
 
@@ -306,6 +306,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             success: true,
+            jobId, // Include jobId for consistency
             quiz_id: quizId,
             recommendation_id: jobId, // Use our jobId for consistency
             status: 'processing',
