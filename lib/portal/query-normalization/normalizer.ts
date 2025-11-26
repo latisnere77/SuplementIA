@@ -149,6 +149,12 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'curcumin': { canonical: 'Turmeric', category: 'herb' },
   'turmeric': { canonical: 'Turmeric', category: 'herb' },
 
+  'equinacea': { canonical: 'Echinacea', category: 'herb' },
+  'equinácea': { canonical: 'Echinacea', category: 'herb' },
+  'echinacea': { canonical: 'Echinacea', category: 'herb' },
+  'equinacea purpurea': { canonical: 'Echinacea', category: 'herb' },
+  'echinacea purpurea': { canonical: 'Echinacea', category: 'herb' },
+
   // ========== MINERALS ==========
   'zinc': { canonical: 'Zinc', category: 'mineral' },
   'zinco': { canonical: 'Zinc', category: 'mineral' },
@@ -205,6 +211,13 @@ const VARIATION_GENERATORS: Record<string, (canonical: string) => string[]> = {
     'Creatine Monohydrate',
     'Creatine supplementation',
     '(Creatine OR Creatine Monohydrate)',
+  ],
+  'Echinacea': () => [
+    'Echinacea',
+    'Echinacea purpurea',
+    'Purple coneflower',
+    'Echinacea supplementation',
+    '(Echinacea OR Echinacea purpurea OR Purple coneflower)',
   ],
 };
 
