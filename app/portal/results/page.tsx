@@ -438,8 +438,9 @@ function ResultsPageContent() {
   const isFreeUser = !subscription || subscription.plan_id === 'free';
 
   const query = searchParams.get('q');
-  // Generate recommendationId if not provided (for direct searches)
-  const recommendationId = searchParams.get('id') || `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  // Generate jobId if not provided (for direct searches)
+  // Changed from rec_* to job_* to match job-store expectations
+  const jobId = searchParams.get('id') || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
   // ====================================
   // LOCALIZED SUPPLEMENT NAME
@@ -516,12 +517,12 @@ function ResultsPageContent() {
     let isMounted = true;
 
     const fetchRecommendation = async (retryCount = 0): Promise<boolean> => {
-      if (!recommendationId) return false;
+      if (!jobId) return false;
 
       // FIRST: Check localStorage cache
       if (typeof window !== 'undefined' && retryCount === 0) {
         try {
-          const cacheKey = `recommendation_${recommendationId}`;
+          const cacheKey = `recommendation_${jobId}`;
           console.log('[Cache Retrieval] Checking cache for key:', cacheKey);
           const cachedData = localStorage.getItem(cacheKey);
 
@@ -611,7 +612,7 @@ function ResultsPageContent() {
         // QUICK WIN #2: Structured logging
         console.log(JSON.stringify({
           event: 'FETCH_RECOMMENDATION',
-          recommendationId,
+          jobId,
           supplement,
           attempt: retryCount + 1,
           maxRetries: maxRetries + 1,
@@ -619,8 +620,8 @@ function ResultsPageContent() {
           timestamp: new Date().toISOString(),
         }));
         
-        // Use enrichment-status endpoint instead of deprecated recommendation endpoint
-        const response = await fetch(`/api/portal/enrichment-status/${recommendationId}?supplement=${encodeURIComponent(supplement)}`, {
+        // Use enrichment-status endpoint with job_* ID
+        const response = await fetch(`/api/portal/enrichment-status/${jobId}?supplement=${encodeURIComponent(supplement)}`, {
           signal: controller.signal,
         });
         
@@ -638,7 +639,7 @@ function ResultsPageContent() {
           if (response.status === 503 && retryCount < maxRetries) {
             console.log(JSON.stringify({
               event: 'RETRY_RECOMMENDATION',
-              recommendationId,
+              jobId,
               supplement,
               attempt: retryCount + 1,
               maxRetries,
@@ -789,8 +790,8 @@ function ResultsPageContent() {
     };
 
     // Handle different scenarios
-    if (recommendationId) {
-      // Initial fetch for existing recommendation
+    if (jobId) {
+      // Initial fetch for existing job
       fetchRecommendation(0);
     } else if (query) {
       // Generate new recommendation from search query
@@ -968,9 +969,9 @@ function ResultsPageContent() {
           if (response.status === 202 && data.recommendation_id) {
             console.log('[Async Polling] Starting polling for recommendation:', data.recommendation_id);
 
-            // Update URL immediately with recommendation ID (without navigation)
+            // Update URL immediately with job ID (without navigation)
             if (typeof window !== 'undefined') {
-              const newUrl = `/portal/results?id=${data.recommendation_id}`;
+              const newUrl = `/portal/results?id=${data.recommendation_id || data.jobId}`;
               const currentUrl = window.location.pathname + window.location.search;
               if (currentUrl !== newUrl) {
                 console.log('📝 Updating URL for polling:', newUrl);
@@ -1098,9 +1099,11 @@ function ResultsPageContent() {
 
             // CACHE: Save to localStorage for later retrieval
             // Only cache recommendations with real data (validated)
-            if (data.recommendation.recommendation_id && typeof window !== 'undefined') {
+            // Use jobId for cache key to match job-store
+            const cacheJobId = data.jobId || data.recommendation.recommendation_id || jobId;
+            if (cacheJobId && typeof window !== 'undefined') {
               console.log('[Cache Storage] Evaluating cache eligibility for:', {
-                recommendationId: data.recommendation.recommendation_id,
+                jobId: cacheJobId,
                 category: data.recommendation.category,
               });
 
@@ -1109,12 +1112,13 @@ function ResultsPageContent() {
 
               if (isValidForCache) {
                 try {
-                  const cacheKey = `recommendation_${data.recommendation.recommendation_id}`;
+                  const cacheKey = `recommendation_${cacheJobId}`;
                   const timestamp = Date.now();
                   const ttl = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
                   
                   const cacheData = {
                     recommendation: data.recommendation,
+                    jobId: cacheJobId,
                     timestamp,
                     ttl,
                   };
@@ -1123,7 +1127,7 @@ function ResultsPageContent() {
                   
                   console.log('[Cache Storage] ✅ Successfully cached recommendation:', {
                     cacheKey,
-                    recommendationId: data.recommendation.recommendation_id,
+                    jobId: cacheJobId,
                     category: data.recommendation.category,
                     timestamp: new Date(timestamp).toISOString(),
                     expiresAt: new Date(timestamp + ttl).toISOString(),
@@ -1189,7 +1193,7 @@ function ResultsPageContent() {
         pollingInterval = null;
       }
     };
-  }, [query, recommendationId, router]);
+  }, [query, jobId, router]);
 
   const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; directLink?: string; affiliateLink?: string }) => {
     if (isFreeUser && product.tier !== 'budget') {

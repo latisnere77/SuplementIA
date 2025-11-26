@@ -8,6 +8,7 @@ import { randomUUID } from 'crypto';
 import { getMockRecommendation } from '@/lib/portal/mockData';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
+import { createJob, storeJobResult } from '@/lib/portal/job-store';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -140,6 +141,9 @@ export async function POST(request: NextRequest) {
     // Auto-detect altitude and climate
     const altitude = detectAltitude(finalLocation);
     const climate = detectClimate(finalLocation);
+
+    // Create job in job-store for tracking
+    createJob(jobId, 0);
 
     // Note: Quiz data is sent to backend Lambda which can save it if needed
     // The frontend no longer accesses DynamoDB directly
@@ -315,14 +319,20 @@ export async function POST(request: NextRequest) {
 
       // LEGACY SYNC PATTERN: If backend returns recommendation directly (backward compatibility)
       if (responseData.recommendation) {
-        // Ensure recommendation_id is set
+        // Ensure recommendation_id is set - use jobId for consistency
         if (!responseData.recommendation.recommendation_id) {
-          responseData.recommendation.recommendation_id = `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          responseData.recommendation.recommendation_id = jobId;
         }
+
+        // Update job-store with completed recommendation
+        storeJobResult(jobId, 'completed', {
+          recommendation: responseData.recommendation,
+        });
 
         return NextResponse.json(
           {
             success: true,
+            jobId,  // Return jobId for frontend polling
             quiz_id: quizId,
             recommendation: responseData.recommendation,
           },
@@ -333,6 +343,11 @@ export async function POST(request: NextRequest) {
       // Invalid response
       console.error('❌ Backend response missing recommendation_id or recommendation field');
       console.error('Response:', JSON.stringify(responseData, null, 2));
+      
+      // Update job-store with failure
+      storeJobResult(jobId, 'failed', {
+        error: 'Invalid backend response',
+      });
       
       return NextResponse.json(
         {
@@ -374,9 +389,18 @@ export async function POST(request: NextRequest) {
       
       const mockRecommendation = getMockRecommendation(sanitizedCategory);
 
+      // Update job-store with mock data (fallback)
+      storeJobResult(jobId, 'completed', {
+        recommendation: {
+          ...mockRecommendation,
+          quiz_id: quizId,
+        },
+      });
+
       return NextResponse.json(
         {
           success: true,
+          jobId,  // Return jobId for consistency
           quiz_id: quizId,
           recommendation: {
             ...mockRecommendation,
@@ -396,6 +420,11 @@ export async function POST(request: NextRequest) {
       endpoint: '/api/portal/quiz',
       method: 'POST',
       statusCode: 500,
+    });
+
+    // Update job-store with failure
+    storeJobResult(jobId, 'failed', {
+      error: error.message || 'Internal server error',
     });
 
     return NextResponse.json(
