@@ -301,16 +301,18 @@ export async function POST(request: NextRequest) {
 
       // ASYNC PATTERN: Backend returns 202 with recommendation_id for polling
       if (recommendationResponse.status === 202 && responseData.recommendation_id) {
+        // Use the jobId we created (not the recommendation_id from backend)
+        // This ensures consistency with the job-store
         return NextResponse.json(
           {
             success: true,
             quiz_id: quizId,
-            recommendation_id: responseData.recommendation_id,
+            recommendation_id: jobId, // Use our jobId for consistency
             status: 'processing',
             message: responseData.message || 'Recomendación en proceso',
-            statusUrl: responseData.statusUrl || `/api/portal/enrichment-status/${responseData.recommendation_id}`,
-            estimatedTime: responseData.estimatedTime || '60-120 segundos',
-            pollInterval: responseData.pollInterval || '3 segundos',
+            statusUrl: `/api/portal/enrichment-status/${jobId}`,
+            estimatedTime: responseData.estimatedTime || 60,
+            pollInterval: responseData.pollInterval || 2000,
             requestId,
           },
           { status: 202 }
