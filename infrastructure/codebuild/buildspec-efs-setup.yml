@@ -1,0 +1,52 @@
+version: 0.2
+
+# CodeBuild buildspec for EFS setup
+# Downloads ML model and installs Python libraries to EFS
+
+env:
+  variables:
+    EFS_MOUNT_POINT: /mnt/efs
+    MODEL_NAME: all-MiniLM-L6-v2
+    PYTHON_VERSION: "3.11"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - echo "Installing dependencies..."
+      - pip3 install --upgrade pip
+      - pip3 install sentence-transformers lancedb boto3
+      
+  pre_build:
+    commands:
+      - echo "Verifying EFS mount..."
+      - df -h
+      - ls -la $EFS_MOUNT_POINT
+      - echo "EFS mounted successfully"
+      
+  build:
+    commands:
+      - echo "Step 1 - Downloading ML model to EFS..."
+      - mkdir -p $EFS_MOUNT_POINT/models
+      - bash infrastructure/scripts/download-model.sh
+      
+      - echo "Step 2 - Installing Python libraries to EFS..."
+      - mkdir -p $EFS_MOUNT_POINT/python
+      - pip3 install --target=$EFS_MOUNT_POINT/python lancedb sentence-transformers boto3
+      - echo "Libraries installed"
+      
+      - echo "Step 3 - Initializing LanceDB..."
+      - python3 infrastructure/scripts/init-lancedb.py
+      
+  post_build:
+    commands:
+      - echo "Setup complete!"
+      - echo "Verifying EFS contents..."
+      - ls -lh $EFS_MOUNT_POINT/
+      - du -sh $EFS_MOUNT_POINT/*
+      - echo "✓ EFS setup successful"
+
+artifacts:
+  files:
+    - '**/*'
