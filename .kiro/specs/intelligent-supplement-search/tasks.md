@@ -1,33 +1,32 @@
 # Implementation Plan
 
-- [x] 1. Setup infrastructure and database schema
-  - Create RDS Postgres database with pgvector extension
+- [ ] 1. Setup infrastructure and database schema
+  - Setup EFS for LanceDB + ML models (SuplementIA-specific)
   - Setup DynamoDB table for supplement cache
-  - Setup DynamoDB DAX cluster for L1 cache (microsecond latency)
-  - Setup ElastiCache Redis cluster for L2 cache
+  - Create DynamoDB table for discovery queue
   - Configure CloudFront distribution
   - Setup Lambda@Edge for edge computing
-  - Setup EFS for ML model storage
-  - Create DynamoDB table for discovery queue
+  - Configure VPC for EFS access
   - _Requirements: 4.1, 5.1_
 
-- [x] 2. Implement vector search core
-- [x] 2.1 Create RDS Postgres schema with pgvector
-  - Write migration for supplements table with vector column
-  - Create HNSW index for fast similarity search
-  - Add indexes for search_count and timestamps
-  - Configure Multi-AZ for high availability
+- [ ] 2. Implement vector search core with LanceDB
+- [ ] 2.1 Initialize LanceDB on EFS (SuplementIA)
+  - Create EFS directory: /mnt/efs/suplementia-lancedb/
+  - Initialize LanceDB database
+  - Create supplements table with schema
+  - Configure ANN index (HNSW/IVF_PQ)
   - _Requirements: 4.1_
 
 - [x] 2.2 Write property test for vector search similarity
   - **Property 1: Vector search finds semantically similar supplements**
   - **Validates: Requirements 1.1, 1.2**
 
-- [x] 2.3 Implement embedding generation service in Lambda
-  - Setup Lambda with Sentence Transformers (all-MiniLM-L6-v2)
-  - Mount EFS for model caching
-  - Create embedding generation endpoint
+- [ ] 2.3 Implement embedding generation service in Lambda ARM64
+  - Setup Lambda ARM64 with Sentence Transformers (all-MiniLM-L6-v2)
+  - Mount EFS: /mnt/efs/models/all-MiniLM-L6-v2/
+  - Download model to EFS (one-time setup)
   - Implement model loading from EFS
+  - Configure 512MB memory, 30s timeout
   - _Requirements: 6.1, 6.2, 6.5_
 
 - [x] 2.4 Write property test for embedding dimensions
@@ -42,50 +41,29 @@
   - **Property 14: Model caching for reuse**
   - **Validates: Requirements 6.5**
 
-- [x] 3. Implement smart cache system (AWS native)
-- [x] 3.1 Setup DynamoDB cache table
+- [ ] 3. Implement smart cache system (DynamoDB only)
+- [ ] 3.1 Setup DynamoDB cache table
   - Create table schema for supplement cache
   - Configure TTL (7 days)
   - Add GSI for query patterns
+  - Configure on-demand pricing
   - _Requirements: 2.1, 5.1_
 
-- [x] 3.2 Setup DynamoDB DAX cluster
-  - Create DAX cluster (t3.small)
-  - Configure endpoint
-  - Implement DAX client in Lambda
-  - _Requirements: 2.4, 5.1_
-
-- [x] 3.3 Setup ElastiCache Redis cluster
-  - Create Redis cluster (cache.t3.micro)
-  - Enable cluster mode
-  - Configure security groups
-  - Implement Redis client
-  - Configure LRU eviction policy
-  - _Requirements: 2.5, 5.2, 5.3, 5.4_
-
-- [x] 3.4 Write property test for cache tier ordering
-  - **Property 15: Cache tier ordering (DAX → Redis → RDS)**
+- [ ] 3.2 Write property test for cache tier ordering
+  - **Property 15: Cache tier ordering (DynamoDB → LanceDB)**
   - **Validates: Requirements 5.1**
 
-- [x] 3.5 Write property test for DAX latency
-  - **Property 4: DAX cache hit latency < 1ms**
+- [ ] 3.3 Write property test for DynamoDB latency
+  - **Property 4: DynamoDB cache hit latency < 10ms**
   - **Validates: Requirements 2.4**
 
-- [x] 3.6 Write property test for Redis latency
-  - **Property 5: Redis cache hit latency < 5ms**
-  - **Validates: Requirements 2.5**
-
-- [x] 3.7 Write property test for cache hit rate
+- [ ] 3.4 Write property test for cache hit rate
   - **Property 16: Cache hit rate threshold >= 85%**
   - **Validates: Requirements 5.2**
 
-- [x] 3.8 Write property test for cache TTL
+- [ ] 3.5 Write property test for cache TTL
   - **Property 17: Cache TTL configuration (7 days)**
   - **Validates: Requirements 5.3**
-
-- [x] 3.9 Write property test for LRU eviction
-  - **Property 18: LRU cache eviction**
-  - **Validates: Requirements 5.4**
 
 - [x] 4. Implement CloudFront + Lambda@Edge
 - [x] 4.1 Create CloudFront distribution
@@ -117,8 +95,8 @@
   - **Property 6: Cache miss latency bound < 200ms**
   - **Validates: Requirements 2.2**
 
-- [x] 4.7 Write property test for RDS performance
-  - **Property 7: RDS Postgres pgvector query performance < 50ms**
+- [ ] 4.7 Write property test for LanceDB performance
+  - **Property 7: LanceDB ANN search performance < 10ms**
   - **Validates: Requirements 2.6**
 
 - [x] 5. Implement multilingual support
@@ -152,12 +130,14 @@
   - Enable DynamoDB Streams
   - _Requirements: 7.1, 7.2, 7.3_
 
-- [x] 6.2 Implement background worker Lambda for discovery
-  - Create Lambda function triggered by DynamoDB Stream
+- [ ] 6.2 Implement background worker Lambda for discovery (ARM64)
+  - Create Lambda ARM64 triggered by DynamoDB Stream
+  - Mount EFS: /mnt/efs/suplementia-lancedb/
   - Add PubMed validation logic
-  - Implement automatic supplement insertion to RDS
+  - Generate embeddings with Sentence Transformers
+  - Insert into LanceDB on EFS
   - Add error handling and retry logic
-  - Implement cache invalidation via EventBridge
+  - Implement cache invalidation (DynamoDB)
   - _Requirements: 7.3, 7.4, 7.5_
 
 - [x] 6.3 Write property test for search prioritization
@@ -177,17 +157,18 @@
   - **Validates: Requirements 7.5**
 
 - [x] 7. Implement CRUD operations
-- [x] 7.1 Create supplement insertion endpoint
+- [ ] 7.1 Create supplement insertion endpoint
   - Implement POST /api/supplements
   - Add automatic embedding generation
   - Validate supplement data
-  - Insert into RDS Postgres
+  - Insert into LanceDB on EFS
   - _Requirements: 4.1, 4.2_
 
-- [x] 7.2 Create supplement update endpoint
+- [ ] 7.2 Create supplement update endpoint
   - Implement PUT /api/supplements/:id
-  - Add cache invalidation (DynamoDB + Redis)
+  - Add cache invalidation (DynamoDB)
   - Regenerate embedding if name changes
+  - Update LanceDB record
   - _Requirements: 4.5_
 
 - [x] 7.3 Write property test for auto-embedding
@@ -202,8 +183,8 @@
   - **Property 21: Scalability with large dataset (1000+ supplements)**
   - **Validates: Requirements 4.4**
 
-- [x] 7.6 Write property test for cache invalidation
-  - **Property 19: Cache invalidation on update (DynamoDB + Redis)**
+- [ ] 7.6 Write property test for cache invalidation
+  - **Property 19: Cache invalidation on update (DynamoDB)**
   - **Validates: Requirements 4.5, 5.5**
 
 - [x] 8. Implement monitoring and analytics
@@ -291,16 +272,16 @@
   - Generate embeddings for all supplements
   - _Requirements: 9.1_
 
-- [x] 11.2 Import into RDS Postgres
+- [ ] 11.2 Import into LanceDB on EFS
+  - Initialize LanceDB: /mnt/efs/suplementia-lancedb/
   - Bulk insert supplements with embeddings
-  - Verify vector index creation
+  - Create ANN index (HNSW/IVF_PQ)
   - Test search accuracy
   - _Requirements: 4.1_
 
-- [x] 11.3 Pre-populate caches
+- [ ] 11.3 Pre-populate cache
   - Load popular supplements into DynamoDB
-  - Warm up ElastiCache Redis
-  - Verify DAX is caching
+  - Verify cache is working
   - _Requirements: 5.1, 5.2_
 
 - [x] 11.4 Validate migration
@@ -310,17 +291,18 @@
   - _Requirements: 9.1, 9.5_
 
 - [x] 12. Integration testing
-- [x] 12.1 Write end-to-end integration tests
-  - Test complete search flow (CloudFront → DAX → Redis → RDS)
+- [ ] 12.1 Write end-to-end integration tests
+  - Test complete search flow (CloudFront → DynamoDB → LanceDB)
   - Test cache tier fallback
   - Test discovery queue processing
   - Test error handling and fallback
   - _Requirements: 1.1, 2.1, 5.1, 9.2_
 
-- [x] 12.2 Write performance tests
+- [ ] 12.2 Write performance tests
   - Benchmark latency (P50, P95, P99)
   - Test throughput (queries/second)
-  - Measure cache hit rate (DAX + Redis)
+  - Measure cache hit rate (DynamoDB)
+  - Test LanceDB query performance (< 10ms)
   - Test scalability (1K, 10K, 100K supplements)
   - _Requirements: 2.1, 2.2, 4.4, 5.2_
 
@@ -328,12 +310,11 @@
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 14. Deploy to staging
-- [x] 14.1 Deploy infrastructure with CloudFormation
-  - Deploy RDS Postgres
-  - Deploy DynamoDB tables + DAX
-  - Deploy ElastiCache Redis
-  - Deploy EFS
-  - Deploy Lambda functions
+- [ ] 14.1 Deploy infrastructure with CloudFormation
+  - Deploy EFS (for LanceDB + models)
+  - Deploy DynamoDB tables (cache + discovery)
+  - Deploy VPC + Security Groups (for EFS)
+  - Deploy Lambda ARM64 functions
   - Deploy CloudFront + Lambda@Edge
   - _Requirements: 4.1, 5.1_
 
@@ -343,9 +324,10 @@
   - Deploy monitoring
   - _Requirements: 1.1, 7.3, 8.1_
 
-- [x] 14.3 Run smoke tests
+- [ ] 14.3 Run smoke tests
   - Test basic search functionality
-  - Verify cache is working (DAX + Redis)
+  - Verify cache is working (DynamoDB)
+  - Verify LanceDB queries (< 10ms)
   - Check CloudWatch dashboards
   - Verify X-Ray traces
   - _Requirements: 1.1, 5.1, 8.1_
@@ -383,9 +365,10 @@
   - Document cost optimization strategies
   - _Requirements: 9.1_
 
-- [x] 17. Final checkpoint - Verify production stability
+- [ ] 17. Final checkpoint - Verify production stability
   - Ensure all tests pass, ask the user if questions arise.
   - Verify error rate < 1%
   - Verify latency P95 < 200ms
   - Verify cache hit rate >= 85%
-  - Verify AWS costs within budget ($25/month)
+  - Verify LanceDB query time < 10ms
+  - Verify AWS costs within budget ($5.59/month)
