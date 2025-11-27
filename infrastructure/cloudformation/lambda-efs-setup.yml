@@ -1,0 +1,222 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Lambda function for one-time EFS setup'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+  
+  EFSFileSystemId:
+    Type: String
+    Default: fs-03774cd22d8f9b3d9
+  
+  VPCId:
+    Type: String
+  
+  PrivateSubnetIds:
+    Type: CommaDelimitedList
+  
+  SecurityGroupId:
+    Type: String
+
+Resources:
+  # Lambda Execution Role
+  LambdaEFSSetupRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${Environment}-lambda-efs-setup-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/AmazonElasticFileSystemClientFullAccess
+      Policies:
+        - PolicyName: LambdaEFSSetupPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - elasticfilesystem:ClientMount
+                  - elasticfilesystem:ClientWrite
+                  - elasticfilesystem:ClientRootAccess
+                Resource: !Sub 'arn:aws:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:file-system/${EFSFileSystemId}'
+
+  # Lambda Layer with dependencies
+  EFSSetupLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: !Sub '${Environment}-efs-setup-dependencies'
+      Description: Python dependencies for EFS setup
+      Content:
+        S3Bucket: !Ref DependenciesBucket
+        S3Key: efs-setup-layer.zip
+      CompatibleRuntimes:
+        - python3.11
+      CompatibleArchitectures:
+        - arm64
+
+  # S3 Bucket for dependencies (temporary)
+  DependenciesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${Environment}-efs-setup-dependencies-${AWS::AccountId}'
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteAfter7Days
+            Status: Enabled
+            ExpirationInDays: 7
+
+  # Lambda Function
+  EFSSetupFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${Environment}-efs-setup'
+      Description: One-time EFS setup for LanceDB
+      Runtime: python3.11
+      Handler: index.handler
+      Role: !GetAtt LambdaEFSSetupRole.Arn
+      Timeout: 900
+      MemorySize: 3008
+      Architectures:
+        - arm64
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnetIds
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+      FileSystemConfigs:
+        - Arn: !Sub 'arn:aws:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:access-point/${EFSAccessPoint}'
+          LocalMountPath: /mnt/efs
+      Environment:
+        Variables:
+          EFS_MOUNT_POINT: /mnt/efs
+          MODEL_NAME: all-MiniLM-L6-v2
+      Code:
+        ZipFile: |
+          import json
+          import os
+          import subprocess
+          import sys
+          
+          def handler(event, context):
+              """
+              One-time EFS setup:
+              1. Download ML model
+              2. Install Python libraries
+              3. Initialize LanceDB
+              """
+              
+              efs_mount = os.environ['EFS_MOUNT_POINT']
+              model_name = os.environ['MODEL_NAME']
+              
+              try:
+                  # Step 1: Install dependencies
+                  print("Installing dependencies...")
+                  subprocess.check_call([
+                      sys.executable, "-m", "pip", "install",
+                      "--target", f"{efs_mount}/python",
+                      "sentence-transformers", "lancedb", "boto3"
+                  ])
+                  
+                  # Step 2: Download model
+                  print(f"Downloading model {model_name}...")
+                  sys.path.insert(0, f"{efs_mount}/python")
+                  from sentence_transformers import SentenceTransformer
+                  
+                  model_path = os.path.join(efs_mount, 'models', model_name)
+                  os.makedirs(os.path.dirname(model_path), exist_ok=True)
+                  
+                  model = SentenceTransformer(model_name)
+                  model.save(model_path)
+                  print(f"Model saved to {model_path}")
+                  
+                  # Step 3: Initialize LanceDB
+                  print("Initializing LanceDB...")
+                  import lancedb
+                  from datetime import datetime
+                  
+                  lancedb_path = os.path.join(efs_mount, 'suplementia-lancedb')
+                  db = lancedb.connect(lancedb_path)
+                  
+                  supplements = [
+                      {"name": "Vitamin D", "scientific_name": "Cholecalciferol", "category": "vitamin"},
+                      {"name": "Omega-3", "scientific_name": "Omega-3 Fatty Acids", "category": "fatty-acid"},
+                      {"name": "Magnesium", "scientific_name": "Magnesium", "category": "mineral"},
+                      {"name": "Vitamin C", "scientific_name": "Ascorbic Acid", "category": "vitamin"},
+                      {"name": "Zinc", "scientific_name": "Zinc", "category": "mineral"},
+                  ]
+                  
+                  data = []
+                  for idx, supp in enumerate(supplements, 1):
+                      embedding = model.encode(supp['name']).tolist()
+                      data.append({
+                          'id': idx,
+                          'name': supp['name'],
+                          'scientific_name': supp.get('scientific_name', ''),
+                          'common_names': [],
+                          'vector': embedding,
+                          'metadata': {
+                              'category': supp.get('category', 'other'),
+                              'popularity': 'high',
+                              'evidence_grade': 'A',
+                              'study_count': 100,
+                              'pubmed_query': supp['name']
+                          },
+                          'search_count': 0,
+                          'last_searched_at': datetime.now().isoformat(),
+                          'created_at': datetime.now().isoformat(),
+                          'updated_at': datetime.now().isoformat()
+                      })
+                  
+                  table = db.create_table('supplements', data=data, mode='overwrite')
+                  print(f"Created table with {len(data)} supplements")
+                  
+                  return {
+                      'statusCode': 200,
+                      'body': json.dumps({
+                          'message': 'EFS setup completed successfully',
+                          'supplements_count': len(data)
+                      })
+                  }
+                  
+              except Exception as e:
+                  print(f"Error: {str(e)}")
+                  return {
+                      'statusCode': 500,
+                      'body': json.dumps({'error': str(e)})
+                  }
+
+  # EFS Access Point
+  EFSAccessPoint:
+    Type: AWS::EFS::AccessPoint
+    Properties:
+      FileSystemId: !Ref EFSFileSystemId
+      PosixUser:
+        Uid: "1000"
+        Gid: "1000"
+      RootDirectory:
+        Path: "/"
+        CreationInfo:
+          OwnerUid: "1000"
+          OwnerGid: "1000"
+          Permissions: "755"
+
+Outputs:
+  FunctionName:
+    Description: Lambda function name
+    Value: !Ref EFSSetupFunction
+  
+  FunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt EFSSetupFunction.Arn

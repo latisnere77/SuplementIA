@@ -1,0 +1,199 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Intelligent Supplement Search - Simplified (DynamoDB + Lambda only)'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    Description: Environment name
+
+Resources:
+  # DynamoDB Tables (Primary Cache - replaces Redis)
+  SupplementCacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${Environment}-supplement-cache'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: searchQuery
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: search-query-index
+          KeySchema:
+            - AttributeName: searchQuery
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      TimeToLiveSpecification:
+        Enabled: true
+        AttributeName: ttl
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-supplement-cache'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: 'Primary cache - replaces Redis'
+        - Key: CostOptimized
+          Value: 'true'
+
+  DiscoveryQueueTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${Environment}-discovery-queue'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: priority
+          AttributeType: N
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: priority-index
+          KeySchema:
+            - AttributeName: priority
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${Environment}-discovery-queue'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # IAM Role for Lambda
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${Environment}-intelligent-search-lambda-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:DeleteItem
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                Resource:
+                  - !GetAtt SupplementCacheTable.Arn
+                  - !Sub '${SupplementCacheTable.Arn}/index/*'
+                  - !GetAtt DiscoveryQueueTable.Arn
+                  - !Sub '${DiscoveryQueueTable.Arn}/index/*'
+        - PolicyName: CloudWatchMetrics
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                Resource: '*'
+
+  # CloudWatch Log Groups (3 days retention)
+  SearchAPILogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${Environment}-search-api'
+      RetentionInDays: 3
+
+  # CloudWatch Alarms
+  HighErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-high-error-rate'
+      AlarmDescription: Alert when error rate exceeds 1%
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+
+  DynamoDBCacheHitRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${Environment}-low-dynamodb-cache-hit-rate'
+      AlarmDescription: Alert when DynamoDB cache hit rate drops below 80%
+      MetricName: CacheHitRate
+      Namespace: IntelligentSearch
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: notBreaching
+
+  # SNS Topic for Alerts
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${Environment}-intelligent-search-alerts'
+      DisplayName: Intelligent Search Alerts
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  SupplementCacheTableName:
+    Description: DynamoDB Supplement Cache Table Name (Primary Cache)
+    Value: !Ref SupplementCacheTable
+    Export:
+      Name: !Sub '${Environment}-SupplementCacheTable'
+
+  DiscoveryQueueTableName:
+    Description: DynamoDB Discovery Queue Table Name
+    Value: !Ref DiscoveryQueueTable
+    Export:
+      Name: !Sub '${Environment}-DiscoveryQueueTable'
+
+  LambdaExecutionRoleArn:
+    Description: Lambda Execution Role ARN
+    Value: !GetAtt LambdaExecutionRole.Arn
+    Export:
+      Name: !Sub '${Environment}-LambdaExecutionRoleArn'
+
+  AlertTopicArn:
+    Description: SNS Topic ARN for Alerts
+    Value: !Ref AlertTopic
+    Export:
+      Name: !Sub '${Environment}-AlertTopicArn'
+
+  CostOptimizations:
+    Description: Cost optimizations applied
+    Value: 'DynamoDB cache only, ARM64 ready, 3-day logs, No RDS/Redis/EFS'

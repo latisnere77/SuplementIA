@@ -1,13 +1,10 @@
 {
   "mcpServers": {
     "memory": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-memory"
-      ],
+      "command": "mcp-server-memory",
+      "args": [],
       "env": {
-        "FASTMCP_LOG_LEVEL": "ERROR"
+        "FASTMCP_LOG_LEVEL": "DEBUG"
       },
       "disabled": false,
       "autoApprove": [
@@ -24,36 +21,20 @@
       ]
     },
     "sentry": {
-      "command": "npx",
+      "command": "sentry-mcp",
       "args": [
-        "-y",
-        "@sentry/mcp-server@latest",
         "--access-token=${SENTRY_ACCESS_TOKEN}"
       ],
       "env": {
-        "FASTMCP_LOG_LEVEL": "ERROR"
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
       },
       "disabled": false,
-      "autoApprove": [
-        "mcp_sentry_whoami",
-        "mcp_sentry_find_organizations",
-        "mcp_sentry_find_teams",
-        "mcp_sentry_find_projects",
-        "mcp_sentry_find_releases",
-        "mcp_sentry_get_issue_details",
-        "mcp_sentry_get_trace_details",
-        "mcp_sentry_search_events",
-        "mcp_sentry_search_issues",
-        "mcp_sentry_search_docs",
-        "mcp_sentry_get_doc"
-      ]
+      "autoApprove": []
     },
     "sequential-thinking": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ],
+      "command": "mcp-server-sequential-thinking",
+      "args": [],
       "env": {
         "FASTMCP_LOG_LEVEL": "ERROR"
       },

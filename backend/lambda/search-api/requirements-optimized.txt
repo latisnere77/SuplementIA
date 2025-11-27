@@ -1,0 +1,3 @@
+# Optimized requirements - Redis removed
+boto3>=1.28.0
+psycopg2-binary>=2.9.0
