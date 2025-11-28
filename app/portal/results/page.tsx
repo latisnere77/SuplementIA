@@ -185,29 +185,58 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     output: transformedDosage,
   });
 
-  // ✅ USE STRUCTURED DATA for side effects and contraindications
-  const sideEffects = Array.isArray(supplement.sideEffects) ? supplement.sideEffects.map((item: any) => {
-    // Handle both structured objects and strings (legacy)
-    if (typeof item === 'string') return item;
-    return {
-      effect: item.effect || item.name || '',
-      frequency: item.frequency || 'Frecuencia variable',
-      severity: item.severity || 'Mild',
-      notes: item.notes || '',
-    };
-  }) : [];
+  // ✅ TRANSFORM side effects to expected structure: { common: [], rare: [], severity: string }
+  const rawSideEffects = Array.isArray(supplement.sideEffects) ? supplement.sideEffects : [];
+  const sideEffects = {
+    common: rawSideEffects
+      .filter((item: any) => {
+        if (typeof item === 'string') return true;
+        // Check frequency - "Common", "10-15%", etc. are considered common
+        const freq = (item.frequency || '').toLowerCase();
+        return freq.includes('common') || freq.includes('10') || freq.includes('15') || freq.includes('20') || !freq.includes('rare');
+      })
+      .map((item: any) => {
+        if (typeof item === 'string') return item;
+        const freq = item.frequency ? ` (${item.frequency})` : '';
+        const notes = item.notes ? ` - ${item.notes}` : '';
+        return `${item.effect || item.name}${freq}${notes}`;
+      }),
+    rare: rawSideEffects
+      .filter((item: any) => {
+        if (typeof item === 'string') return false;
+        const freq = (item.frequency || '').toLowerCase();
+        return freq.includes('rare') || freq.includes('<1') || freq.includes('< 1');
+      })
+      .map((item: any) => {
+        if (typeof item === 'string') return item;
+        const freq = item.frequency ? ` (${item.frequency})` : '';
+        const notes = item.notes ? ` - ${item.notes}` : '';
+        return `${item.effect || item.name}${freq}${notes}`;
+      }),
+    severity: (supplement.safety?.overallRating as any) || 'Generally mild',
+    notes: rawSideEffects.length > 0
+      ? rawSideEffects.find((s: any) => s.notes)?.notes
+      : undefined,
+  };
 
   const contraindications = Array.isArray(supplement.contraindications) ? supplement.contraindications : [];
 
-  const interactions = Array.isArray(supplement.interactions) ? supplement.interactions.map((item: any) => {
-    // Handle both structured objects and strings (legacy)
-    if (typeof item === 'string') return item;
-    return {
-      medication: item.medication || item.drug || item.substance || '',
-      severity: item.severity || 'Moderate',
-      description: item.description || item.effect || '',
-    };
-  }) : [];
+  // ✅ TRANSFORM interactions to expected structure: { medications: [], supplements: [] }
+  const rawInteractions = Array.isArray(supplement.interactions) ? supplement.interactions : [];
+  const interactions = {
+    medications: rawInteractions.map((item: any) => {
+      if (typeof item === 'string') {
+        return { medication: item, severity: 'Moderate' as const, description: '' };
+      }
+      return {
+        medication: item.medication || item.drug || item.substance || '',
+        severity: (item.severity || 'Moderate') as 'Mild' | 'Moderate' | 'Severe',
+        description: item.description || item.effect || item.mechanism || '',
+      };
+    }),
+    supplements: [], // Could be populated if we had supplement interaction data
+    foods: undefined,
+  };
 
   // Extract intelligent ranking from metadata
   const metadata = (recommendation as any)._enrichment_metadata || {};
@@ -230,15 +259,20 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
       hasRCTs: ingredients.some((i: any) => i.rctCount > 0),
       hasMetaAnalysis: worksFor.some((w: any) => w.metaAnalysis === true),
       longTermStudies: evidenceSummary.researchSpanYears >= 5,
-      safetyEstablished: sideEffects.length === 0 || sideEffects.every((s: any) =>
-        typeof s === 'object' ? s.severity === 'Mild' : true
-      ),
+      safetyEstablished: (sideEffects.common.length === 0 && sideEffects.rare.length === 0) ||
+        sideEffects.severity === 'Generally Safe' || sideEffects.severity === 'Generally mild',
     },
     // Use transformed dosage
     dosage: transformedDosage,
     sideEffects,
     interactions,
     contraindications,
+    // Mechanisms of action
+    mechanisms: Array.isArray(supplement.mechanisms) ? supplement.mechanisms.map((m: any) => ({
+      name: m.name || '',
+      description: m.description || '',
+      evidenceLevel: m.evidenceLevel || 'moderate',
+    })) : [],
     // NEW: Include intelligent ranking
     studies,
   };

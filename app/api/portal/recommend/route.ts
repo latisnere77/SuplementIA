@@ -328,7 +328,28 @@ export async function POST(request: NextRequest) {
     const metadata = enrichData.metadata || {};
 
     // CRITICAL VALIDATION: Ensure we have real scientific data
-    const hasRealData = metadata.hasRealData === true && (metadata.studiesUsed || 0) > 0;
+    // Check multiple indicators: metadata flags OR actual content presence
+    const hasMetadataStudies = metadata.hasRealData === true && (metadata.studiesUsed || 0) > 0;
+    const hasContentData = (
+      (enrichedContent.worksFor && enrichedContent.worksFor.length > 0) ||
+      (enrichedContent.totalStudies && enrichedContent.totalStudies > 0) ||
+      (enrichedContent.keyStudies && enrichedContent.keyStudies.length > 0)
+    );
+    const hasRealData = hasMetadataStudies || hasContentData;
+
+    // Log validation details for debugging
+    logStructured('info', 'RECOMMEND_VALIDATION_CHECK', {
+      requestId,
+      jobId,
+      category: sanitizedCategory,
+      hasMetadataStudies,
+      hasContentData,
+      hasRealData,
+      worksForCount: enrichedContent.worksFor?.length || 0,
+      totalStudies: enrichedContent.totalStudies || 0,
+      keyStudiesCount: enrichedContent.keyStudies?.length || 0,
+      cached: metadata.cached || false,
+    });
 
     if (!hasRealData) {
       logStructured('error', 'RECOMMEND_VALIDATION_FAILED', {
@@ -472,12 +493,22 @@ function transformToRecommendation(
       worksFor: enrichedContent.worksFor || [],
       doesntWorkFor: enrichedContent.doesntWorkFor || [],
       limitedEvidence: enrichedContent.limitedEvidence || [],
+      // Mechanisms of action
+      mechanisms: enrichedContent.mechanisms || [],
+      // Safety information (structured)
+      safety: enrichedContent.safety || {},
       // Side effects as structured objects
       sideEffects: enrichedContent.safety?.sideEffects || [],
       // Contraindications/warnings as array
       contraindications: enrichedContent.safety?.contraindications || [],
       // Interactions as structured objects
       interactions: enrichedContent.safety?.interactions || [],
+      // Primary uses
+      primaryUses: enrichedContent.primaryUses || [],
+      // Key studies for reference
+      keyStudies: enrichedContent.keyStudies || [],
+      // Practical recommendations
+      practicalRecommendations: enrichedContent.practicalRecommendations || [],
       // LEGACY: Keep old format for backwards compatibility
       benefits: enrichedContent.worksFor?.map((w: any) => {
         if (typeof w === 'string') return w;
@@ -491,8 +522,12 @@ function transformToRecommendation(
     },
     // Evidence summary (frontend expects this structure)
     evidence_summary: {
-      totalStudies: enrichedContent.totalStudies || metadata?.studiesUsed || 0,
-      totalParticipants: enrichedContent.totalParticipants || 0,
+      // Prefer content's totalStudies, then sum from worksFor, then metadata
+      totalStudies: enrichedContent.totalStudies ||
+        (enrichedContent.worksFor?.reduce((sum: number, w: any) => sum + (w.studyCount || 0), 0)) ||
+        metadata?.studiesUsed || 0,
+      totalParticipants: enrichedContent.totalParticipants ||
+        (enrichedContent.worksFor?.reduce((sum: number, w: any) => sum + (w.totalParticipants || 0), 0)) || 0,
       efficacyPercentage: enrichedContent.efficacyPercentage || 0,
       researchSpanYears: enrichedContent.researchSpanYears || 10,
       ingredients: enrichedContent.ingredients || [{
@@ -501,6 +536,7 @@ function transformToRecommendation(
         grade: enrichedContent.worksFor?.[0]?.evidenceGrade || enrichedContent.worksFor?.[0]?.grade || enrichedContent.evidenceGrade || 'C',
         studyCount: enrichedContent.worksFor?.[0]?.studyCount || metadata?.studiesUsed || 0,
         rctCount: enrichedContent.worksFor?.[0]?.rctCount || metadata?.rctCount || 0,
+        description: enrichedContent.whatIsIt || '',
       }],
     },
     // Evidence and studies (legacy, keep for compatibility)
@@ -557,13 +593,22 @@ function transformToRecommendation(
     ingredients: enrichedContent.ingredients || [],
     // Metadata
     _enrichment_metadata: {
-      hasRealData: metadata?.hasRealData || false,
-      studiesUsed: metadata?.studiesUsed || 0,
+      // Determine hasRealData from content if metadata is incomplete (e.g., cached responses)
+      hasRealData: metadata?.hasRealData ||
+        (enrichedContent.worksFor?.length > 0) ||
+        (enrichedContent.totalStudies > 0) ||
+        false,
+      // Calculate studiesUsed from content if not in metadata
+      studiesUsed: metadata?.studiesUsed ||
+        enrichedContent.totalStudies ||
+        (enrichedContent.worksFor?.reduce((sum: number, w: any) => sum + (w.studyCount || 0), 0)) ||
+        0,
       intelligentSystem: true,
       fallback: metadata?.fallback || false,
       error: metadata?.error,
       source: 'suplementia-intelligent-system',
       version: '2.0.0',
+      cached: metadata?.cached || false,
       timestamp: new Date().toISOString(),
     },
   };
