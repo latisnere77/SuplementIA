@@ -89,18 +89,37 @@ class SearchAnalyticsService {
 
   /**
    * Log a successful search
+   * Supports two signatures for backwards compatibility:
+   * - logSuccess(query, normalizedQuery, hadMapping, usedFallback) - legacy
+   * - logSuccess(query, { normalizedQuery, studiesFound, requestId }) - new
    */
-  async logSuccess(query: string, options: {
-    normalizedQuery?: string;
-    studiesFound: number;
-    requestId?: string;
-  }): Promise<void> {
-    await this.logSearch({
+  logSuccess(
+    query: string,
+    optionsOrNormalizedQuery?: string | { normalizedQuery?: string; studiesFound?: number; requestId?: string },
+    _hadMapping?: boolean,
+    _usedFallback?: boolean
+  ): void {
+    // Handle legacy signature: (query, normalizedQuery, hadMapping, usedFallback)
+    if (typeof optionsOrNormalizedQuery === 'string' || optionsOrNormalizedQuery === undefined) {
+      this.logSearch({
+        query,
+        normalizedQuery: optionsOrNormalizedQuery,
+        timestamp: Date.now(),
+        success: true,
+        studiesFound: 0,
+        suggestionsOffered: [],
+      });
+      return;
+    }
+
+    // Handle new signature: (query, options)
+    const options = optionsOrNormalizedQuery;
+    this.logSearch({
       query,
       normalizedQuery: options.normalizedQuery,
       timestamp: Date.now(),
       success: true,
-      studiesFound: options.studiesFound,
+      studiesFound: options.studiesFound || 0,
       suggestionsOffered: [],
       requestId: options.requestId,
     });
@@ -108,21 +127,44 @@ class SearchAnalyticsService {
 
   /**
    * Log a failed search
+   * Supports two signatures for backwards compatibility:
+   * - logFailure(query, normalizedQuery, suggestions) - legacy
+   * - logFailure(query, { normalizedQuery, errorType, suggestionsOffered, requestId }) - new
    */
-  async logFailure(query: string, options: {
-    normalizedQuery?: string;
-    errorType: SearchEvent['errorType'];
-    suggestionsOffered?: string[];
-    requestId?: string;
-  }): Promise<void> {
-    await this.logSearch({
+  logFailure(
+    query: string,
+    optionsOrNormalizedQuery?: string | {
+      normalizedQuery?: string;
+      errorType?: SearchEvent['errorType'];
+      suggestionsOffered?: string[];
+      requestId?: string;
+    },
+    suggestions?: string[]
+  ): void {
+    // Handle legacy signature: (query, normalizedQuery, suggestions)
+    if (typeof optionsOrNormalizedQuery === 'string' || optionsOrNormalizedQuery === undefined) {
+      this.logSearch({
+        query,
+        normalizedQuery: optionsOrNormalizedQuery,
+        timestamp: Date.now(),
+        success: false,
+        studiesFound: 0,
+        suggestionsOffered: suggestions || [],
+        errorType: 'insufficient_data',
+      });
+      return;
+    }
+
+    // Handle new signature: (query, options)
+    const options = optionsOrNormalizedQuery;
+    this.logSearch({
       query,
       normalizedQuery: options.normalizedQuery,
       timestamp: Date.now(),
       success: false,
       studiesFound: 0,
       suggestionsOffered: options.suggestionsOffered || [],
-      errorType: options.errorType,
+      errorType: options.errorType || 'insufficient_data',
       requestId: options.requestId,
     });
   }

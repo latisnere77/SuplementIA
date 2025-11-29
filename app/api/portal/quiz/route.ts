@@ -14,8 +14,10 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 120; // 2 minutes to allow for recommend endpoint processing
 
-// Check if we're in demo mode (only if API URL is explicitly disabled)
-const isDemoMode = process.env.PORTAL_API_URL === 'DISABLED' || process.env.PORTAL_API_URL === 'false';
+// Check if we're in demo mode
+// IMPORTANT: DISABLED or empty PORTAL_API_URL means use internal intelligent system, NOT demo mode
+// Demo mode is only for testing without any backend
+const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
 
 /**
  * Get the base URL for internal API calls
