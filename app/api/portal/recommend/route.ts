@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
           yearFrom: 2010,
           jobId,
         }),
-        signal: AbortSignal.timeout(30000), // 30s timeout - if longer, use async
+        signal: AbortSignal.timeout(100000), // 100s timeout - matches Lambda timeout (urolithin can take 40-60s)
       });
     } catch (error: any) {
       // If timeout, switch to async processing
