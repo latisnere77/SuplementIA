@@ -182,6 +182,17 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'calcium': { canonical: 'Calcium', category: 'mineral' },
   'hierro': { canonical: 'Iron', category: 'mineral' },
   'iron': { canonical: 'Iron', category: 'mineral' },
+
+  // ========== NAC / N-ACETYL CYSTEINE ==========
+  'nac': { canonical: 'NAC', category: 'amino_acid' },
+  'n-acetyl cysteine': { canonical: 'NAC', category: 'amino_acid' },
+  'n-acetylcysteine': { canonical: 'NAC', category: 'amino_acid' },
+  'n-acetil cisteina': { canonical: 'NAC', category: 'amino_acid' },
+  'n-acetil cisteína': { canonical: 'NAC', category: 'amino_acid' },
+  'n acetil cisteina': { canonical: 'NAC', category: 'amino_acid' },
+  'acetil cisteina': { canonical: 'NAC', category: 'amino_acid' },
+  'acetyl cysteine': { canonical: 'NAC', category: 'amino_acid' },
+  'n-acetyl-l-cysteine': { canonical: 'NAC', category: 'amino_acid' },
 };
 
 /**
@@ -238,6 +249,14 @@ const VARIATION_GENERATORS: Record<string, (canonical: string) => string[]> = {
     'Purple coneflower',
     'Echinacea supplementation',
     '(Echinacea OR Echinacea purpurea OR Purple coneflower)',
+  ],
+  'NAC': () => [
+    'NAC',
+    'N-Acetylcysteine',
+    'N-Acetyl Cysteine',
+    'N-Acetyl-L-Cysteine',
+    'N-Acetil Cisteína',
+    '(N-Acetylcysteine OR NAC OR N-Acetyl Cysteine)',
   ],
 };
 

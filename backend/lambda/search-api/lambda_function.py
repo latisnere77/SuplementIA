@@ -214,10 +214,90 @@ def generate_embedding(text: str) -> List[float]:
         raise
 
 
+def exact_name_search(query: str) -> Optional[Dict]:
+    """
+    Search RDS Postgres by exact name/common_names match
+
+    This runs BEFORE vector search to handle supplements with null embeddings
+    and ensure exact matches are prioritized.
+
+    Returns:
+        Matching supplement or None
+    """
+    try:
+        start_time = time.time()
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Normalize query for comparison
+        query_lower = query.lower().strip()
+
+        # Search by exact name match (case-insensitive) or in common_names array
+        cursor.execute("""
+            SELECT
+                id,
+                name,
+                scientific_name,
+                common_names,
+                metadata,
+                search_count
+            FROM supplements
+            WHERE LOWER(name) = %s
+               OR LOWER(scientific_name) = %s
+               OR EXISTS (
+                   SELECT 1 FROM unnest(common_names) AS cn
+                   WHERE LOWER(cn) = %s
+               )
+            LIMIT 1
+        """, (query_lower, query_lower, query_lower))
+
+        result = cursor.fetchone()
+        latency = (time.time() - start_time) * 1000  # ms
+
+        cursor.close()
+
+        if result:
+            supplement = {
+                'id': result[0],
+                'name': result[1],
+                'scientificName': result[2],
+                'commonNames': result[3],
+                'metadata': result[4],
+                'searchCount': result[5],
+                'similarity': 1.0  # Exact match = 100% similarity
+            }
+
+            print(f'Exact name search: Found {result[1]} (latency: {latency:.2f}ms)')
+
+            # Update search count
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE supplements
+                SET search_count = search_count + 1,
+                    last_searched_at = NOW()
+                WHERE id = %s
+            """, (supplement['id'],))
+            conn.commit()
+            cursor.close()
+
+            return {
+                'supplement': supplement,
+                'source': 'postgres-exact',
+                'latency': latency
+            }
+
+        print(f'Exact name search: No match for "{query}" (latency: {latency:.2f}ms)')
+        return None
+
+    except Exception as e:
+        print(f'Exact name search error: {str(e)}')
+        return None
+
+
 def vector_search(embedding: List[float]) -> Optional[Dict]:
     """
     Search RDS Postgres using pgvector similarity
-    
+
     Returns:
         Best matching supplement or None
     """
@@ -225,10 +305,11 @@ def vector_search(embedding: List[float]) -> Optional[Dict]:
         start_time = time.time()
         conn = get_db_connection()
         cursor = conn.cursor()
-        
+
         # Vector similarity search using cosine distance
+        # Only search supplements that HAVE embeddings (not null)
         cursor.execute("""
-            SELECT 
+            SELECT
                 id,
                 name,
                 scientific_name,
@@ -237,7 +318,8 @@ def vector_search(embedding: List[float]) -> Optional[Dict]:
                 search_count,
                 1 - (embedding <=> %s::vector) as similarity
             FROM supplements
-            WHERE 1 - (embedding <=> %s::vector) > %s
+            WHERE embedding IS NOT NULL
+              AND 1 - (embedding <=> %s::vector) > %s
             ORDER BY similarity DESC
             LIMIT %s
         """, (embedding, embedding, SIMILARITY_THRESHOLD, MAX_RESULTS))
@@ -452,9 +534,33 @@ def lambda_handler(event, context):
                 })
             }
         
-        # Step 3: Generate embedding and search RDS
+        # Step 3: Try exact name match first (handles supplements with null embeddings)
         publish_metrics('CacheMiss', 1, 'Count')
-        
+
+        exact_result = exact_name_search(query)
+        if exact_result:
+            # Cache the result
+            supplement = exact_result['supplement']
+            cache_supplement(query_hash, supplement)
+
+            total_latency = (time.time() - start_time) * 1000
+            publish_metrics('Latency', total_latency, 'Milliseconds')
+            publish_metrics('ExactMatchSuccess', 1, 'Count')
+
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json'},
+                'body': json.dumps({
+                    'success': True,
+                    'supplement': supplement,
+                    'similarity': 1.0,
+                    'latency': total_latency,
+                    'cacheHit': False,
+                    'source': 'postgres-exact'
+                })
+            }
+
+        # Step 4: Generate embedding and search RDS with vector similarity
         embedding = generate_embedding(query)
         search_result = vector_search(embedding)
         
@@ -463,11 +569,11 @@ def lambda_handler(event, context):
             supplement = search_result['supplement']
             supplement['embedding'] = embedding  # Include for caching
             cache_supplement(query_hash, supplement)
-            
+
             total_latency = (time.time() - start_time) * 1000
             publish_metrics('Latency', total_latency, 'Milliseconds')
             publish_metrics('VectorSearchSuccess', 1, 'Count')
-            
+
             return {
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json'},
@@ -480,8 +586,8 @@ def lambda_handler(event, context):
                     'source': 'postgres'
                 })
             }
-        
-        # Step 4: Not found - add to discovery queue
+
+        # Step 5: Not found - add to discovery queue
         print(f'Supplement not found: {query}')
         add_to_discovery_queue(query, 1)
         
