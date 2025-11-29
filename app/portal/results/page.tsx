@@ -8,7 +8,7 @@
 // This is a client component that requires search params
 // No need for dynamic export - client components are dynamic by default
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import EvidenceAnalysisPanelNew from '@/components/portal/EvidenceAnalysisPanelNew';
 import ProductRecommendationsGrid from '@/components/portal/ProductRecommendationsGrid';
@@ -470,9 +470,15 @@ function ResultsPageContent() {
   const isFreeUser = !subscription || subscription.plan_id === 'free';
 
   const query = searchParams.get('q');
-  // Generate jobId if not provided (for direct searches)
-  // Changed from rec_* to job_* to match job-store expectations
-  const jobId = searchParams.get('id') || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const urlJobId = searchParams.get('id');
+
+  // Generate jobId ONCE if not provided (for direct searches)
+  // Use useRef to keep it stable across renders - this prevents useEffect from re-running
+  const generatedJobIdRef = useRef<string | null>(null);
+  if (!generatedJobIdRef.current && !urlJobId) {
+    generatedJobIdRef.current = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+  const jobId = urlJobId || generatedJobIdRef.current || '';
 
   // ====================================
   // LOCALIZED SUPPLEMENT NAME
