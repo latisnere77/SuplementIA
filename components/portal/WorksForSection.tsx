@@ -6,8 +6,132 @@
 
 'use client';
 
-import { CheckCircle, XCircle, TrendingUp, Minus } from 'lucide-react';
+import { useState } from 'react';
+import { CheckCircle, XCircle, TrendingUp, Minus, HelpCircle, X } from 'lucide-react';
 import { SupplementGradeBadge, type GradeType } from './SupplementGrade';
+
+/**
+ * Componente de leyenda para explicar los grados de evidencia
+ */
+function EvidenceGradeLegend() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const grades = [
+    {
+      grade: 'A',
+      color: 'bg-green-500',
+      textColor: 'text-green-700',
+      bgLight: 'bg-green-50',
+      label: 'Evidencia Fuerte',
+      description: 'Múltiples estudios clínicos de alta calidad (RCTs) + meta-análisis confirman el efecto.',
+    },
+    {
+      grade: 'B',
+      color: 'bg-blue-500',
+      textColor: 'text-blue-700',
+      bgLight: 'bg-blue-50',
+      label: 'Evidencia Buena',
+      description: 'Varios estudios clínicos controlados muestran resultados consistentes.',
+    },
+    {
+      grade: 'C',
+      color: 'bg-yellow-500',
+      textColor: 'text-yellow-700',
+      bgLight: 'bg-yellow-50',
+      label: 'Evidencia Limitada',
+      description: 'Pocos estudios o resultados preliminares. Se necesita más investigación.',
+    },
+    {
+      grade: 'D',
+      color: 'bg-orange-500',
+      textColor: 'text-orange-700',
+      bgLight: 'bg-orange-50',
+      label: 'Evidencia Insuficiente',
+      description: 'Estudios escasos, de baja calidad, o con resultados contradictorios.',
+    },
+    {
+      grade: 'F',
+      color: 'bg-red-500',
+      textColor: 'text-red-700',
+      bgLight: 'bg-red-50',
+      label: 'Sin Evidencia / Negativo',
+      description: 'No hay respaldo científico o los estudios muestran que NO funciona.',
+    },
+  ];
+
+  return (
+    <div className="relative">
+      {/* Botón de ayuda */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg"
+        aria-label="Ver leyenda de grados de evidencia"
+      >
+        <HelpCircle className="h-4 w-4" />
+        <span className="hidden sm:inline">¿Qué significan A, B, C, D, F?</span>
+        <span className="sm:hidden">Leyenda</span>
+      </button>
+
+      {/* Modal/Popup de leyenda */}
+      {isOpen && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black/20 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Panel de leyenda */}
+          <div className="absolute right-0 top-full mt-2 z-50 w-80 sm:w-96 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 flex items-center justify-between">
+              <h3 className="text-white font-bold text-lg">
+                Grados de Evidencia Científica
+              </h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-white/80 hover:text-white transition-colors"
+                aria-label="Cerrar leyenda"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Contenido */}
+            <div className="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
+              {grades.map(({ grade, color, textColor, bgLight, label, description }) => (
+                <div
+                  key={grade}
+                  className={`${bgLight} rounded-lg p-3 border-l-4 ${color.replace('bg-', 'border-')}`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`${color} text-white font-bold w-7 h-7 rounded-full flex items-center justify-center text-sm`}>
+                      {grade}
+                    </span>
+                    <span className={`font-semibold ${textColor}`}>
+                      {label}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 ml-9">
+                    {description}
+                  </p>
+                </div>
+              ))}
+
+              {/* Nota adicional */}
+              <div className="bg-gray-50 rounded-lg p-3 mt-4 border border-gray-200">
+                <p className="text-xs text-gray-500">
+                  <strong>Nota:</strong> Estos grados se basan en la cantidad y calidad de estudios científicos disponibles,
+                  no en la efectividad personal. Consulta siempre a un profesional de salud.
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export interface WorksForItem {
   condition: string;
@@ -44,9 +168,13 @@ export default function WorksForSection({
 }: WorksForSectionProps) {
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-        ¿Para qué funciona?
-      </h2>
+      {/* Header con título y leyenda */}
+      <div className="flex items-start justify-between gap-4 mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">
+          ¿Para qué funciona?
+        </h2>
+        <EvidenceGradeLegend />
+      </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* FUNCIONA PARA */}
