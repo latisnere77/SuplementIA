@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
         supplementId: supplementName,
         category: category || 'general',
         forceRefresh: forceRefresh || false,
-        studies: studies.slice(0, 3), // Limit to 3 studies to prevent timeout (reduced from 5)
+        studies: studies.slice(0, 8), // Increased to 8 studies for richer evidence (5+ items per section)
       }),
       signal: AbortSignal.timeout(90000), // 90s timeout for Claude
     });
