@@ -1,4 +1,0 @@
-# LanceDB Vector Search Lambda (ARM64) - Optimized
-# Note: Model will be loaded from EFS, not packaged
-boto3>=1.34.0
-pyarrow>=14.0.0
