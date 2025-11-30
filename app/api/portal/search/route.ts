@@ -50,8 +50,12 @@ async function callSearchAPI(query: string): Promise<SearchResult> {
   const timeoutId = setTimeout(() => controller.abort(), LAMBDA_TIMEOUT_MS);
 
   try {
+    console.log('[DEBUG] SEARCH_API_URL constant:', SEARCH_API_URL);
+    console.log('[DEBUG] process.env.SEARCH_API_URL:', process.env.SEARCH_API_URL);
+    console.log('[DEBUG] process.env.NEXT_PUBLIC_SEARCH_API_URL:', process.env.NEXT_PUBLIC_SEARCH_API_URL);
+
     const url = `${SEARCH_API_URL}?q=${encodeURIComponent(query)}`;
-    
+
     console.log(`[Intelligent Search] Calling Lambda: ${url}`);
     
     const response = await fetch(url, {
