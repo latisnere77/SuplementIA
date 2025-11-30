@@ -146,7 +146,25 @@ interface WorksForSectionProps {
 }
 
 /**
+ * Función helper para ordenar items por grado de evidencia (A → F)
+ */
+function sortByEvidenceGrade(items: WorksForItem[]): WorksForItem[] {
+  const gradeOrder: Record<GradeType, number> = {
+    'A': 1,
+    'B': 2,
+    'C': 3,
+    'D': 4,
+    'F': 5,
+  };
+
+  return [...items].sort((a, b) => {
+    return gradeOrder[a.grade] - gradeOrder[b.grade];
+  });
+}
+
+/**
  * Sección visual "Funciona vs No Funciona"
+ * Los items se ordenan automáticamente por grado de evidencia (A → F)
  *
  * @example
  * ```tsx
@@ -166,6 +184,11 @@ export default function WorksForSection({
   doesntWorkFor,
   limitedEvidence = [],
 }: WorksForSectionProps) {
+  // Ordenar items por grado de evidencia (A → F)
+  const sortedWorksFor = sortByEvidenceGrade(worksFor);
+  const sortedDoesntWorkFor = sortByEvidenceGrade(doesntWorkFor);
+  const sortedLimitedEvidence = sortByEvidenceGrade(limitedEvidence);
+
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
       {/* Header con título y leyenda */}
@@ -178,7 +201,7 @@ export default function WorksForSection({
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* FUNCIONA PARA */}
-        {worksFor.length > 0 && (
+        {sortedWorksFor.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-green-100 p-2 rounded-lg">
@@ -190,7 +213,7 @@ export default function WorksForSection({
             </div>
 
             <ul className="space-y-3">
-              {worksFor.map((item, index) => (
+              {sortedWorksFor.map((item, index) => (
                 <li
                   key={index}
                   className="bg-green-50 border-2 border-green-200 rounded-lg p-4 hover:border-green-400 transition-colors"
@@ -217,7 +240,7 @@ export default function WorksForSection({
         )}
 
         {/* NO FUNCIONA PARA */}
-        {doesntWorkFor.length > 0 && (
+        {sortedDoesntWorkFor.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-red-100 p-2 rounded-lg">
@@ -229,7 +252,7 @@ export default function WorksForSection({
             </div>
 
             <ul className="space-y-3">
-              {doesntWorkFor.map((item, index) => (
+              {sortedDoesntWorkFor.map((item, index) => (
                 <li
                   key={index}
                   className="bg-red-50 border-2 border-red-200 rounded-lg p-4 hover:border-red-400 transition-colors"
@@ -257,7 +280,7 @@ export default function WorksForSection({
       </div>
 
       {/* EVIDENCIA LIMITADA (Opcional) */}
-      {limitedEvidence.length > 0 && (
+      {sortedLimitedEvidence.length > 0 && (
         <div className="mt-6 space-y-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-yellow-100 p-2 rounded-lg">
@@ -273,7 +296,7 @@ export default function WorksForSection({
               Los siguientes efectos tienen evidencia prometedora pero necesitan más investigación:
             </p>
             <ul className="space-y-2">
-              {limitedEvidence.map((item, index) => (
+              {sortedLimitedEvidence.map((item, index) => (
                 <li key={index} className="flex items-start gap-2">
                   <Minus className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">

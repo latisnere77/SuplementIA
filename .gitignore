@@ -3,6 +3,17 @@ node_modules/
 .pnp
 .pnp.js
 
+# Python virtual environments
+.venv/
+.venv-test/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Backend (separate Lambda deploys)
+backend/
+
 # Testing
 coverage/
 *.log
