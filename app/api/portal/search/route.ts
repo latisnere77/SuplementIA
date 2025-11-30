@@ -1,6 +1,7 @@
 /**
  * Intelligent Search API Route
- * 
+ * Updated: 2025-11-30
+ *
  * Proxies requests to Lambda search-api with vector similarity search.
  * Provides fallback to legacy normalizer for backward compatibility.
  * 
