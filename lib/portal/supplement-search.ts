@@ -37,6 +37,7 @@ export async function searchSupplement(query: string): Promise<SearchResult> {
 
   // Try intelligent search first (if enabled)
   const useIntelligent = process.env.NEXT_PUBLIC_USE_INTELLIGENT_SEARCH === 'true';
+  console.log('[DEBUG] NEXT_PUBLIC_USE_INTELLIGENT_SEARCH:', process.env.NEXT_PUBLIC_USE_INTELLIGENT_SEARCH, '| useIntelligent:', useIntelligent);
   
   if (useIntelligent) {
     try {
