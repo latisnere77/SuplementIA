@@ -41,7 +41,7 @@ export async function searchSupplement(query: string): Promise<SearchResult> {
   if (useIntelligent) {
     try {
       const result = await intelligentSearch(trimmedQuery);
-      
+
       if (result.success && result.supplement) {
         return {
           found: true,
@@ -49,6 +49,16 @@ export async function searchSupplement(query: string): Promise<SearchResult> {
           normalizedName: result.supplement.scientificName,
           similarity: result.similarity,
           source: 'intelligent',
+        };
+      }
+
+      // If not found, capture the error message from backend
+      if (!result.success && result.message) {
+        return {
+          found: false,
+          supplementName: trimmedQuery,
+          source: 'intelligent',
+          error: result.message,
         };
       }
     } catch (error) {
