@@ -50,6 +50,14 @@ function EvidenceGradeLegend() {
       description: 'Estudios escasos, de baja calidad, o con resultados contradictorios.',
     },
     {
+      grade: 'E',
+      color: 'bg-red-400',
+      textColor: 'text-red-600',
+      bgLight: 'bg-red-50',
+      label: 'Evidencia Muy Débil',
+      description: 'Evidencia insuficiente o contradictoria. Muy pocos estudios de calidad.',
+    },
+    {
       grade: 'F',
       color: 'bg-red-500',
       textColor: 'text-red-700',
@@ -154,7 +162,8 @@ function sortByEvidenceGrade(items: WorksForItem[]): WorksForItem[] {
     'B': 2,
     'C': 3,
     'D': 4,
-    'F': 5,
+    'E': 5,
+    'F': 6,
   };
 
   return [...items].sort((a, b) => {
