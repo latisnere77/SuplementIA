@@ -5,3 +5,4 @@ Sun Nov 23 13:18:05 CST 2025
 # Trigger redeploy with SEARCH_API_URL - domingo, 30 de noviembre de 2025, 09:55:07 CST
 # Redeploy with correct Lambda URL - domingo, 30 de noviembre de 2025, 09:57:49 CST
 # Redeploy with SEARCH_API_URL (server-side) - domingo, 30 de noviembre de 2025, 10:03:30 CST
+# Redeploy after removing incorrect SEARCH_API_URL - domingo, 30 de noviembre de 2025, 10:13:05 CST
