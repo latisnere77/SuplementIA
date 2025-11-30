@@ -17,10 +17,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { normalizeQuery } from '@/lib/portal/query-normalization/normalizer';
 
-// Lambda search-api endpoint
-const SEARCH_API_URL = process.env.SEARCH_API_URL || 
-  process.env.NEXT_PUBLIC_SEARCH_API_URL ||
-  'https://staging-search-api.execute-api.us-east-1.amazonaws.com/search';
+// Lambda search-api endpoint (read at runtime, not build time)
+function getSearchApiUrl(): string {
+  return process.env.SEARCH_API_URL ||
+    process.env.NEXT_PUBLIC_SEARCH_API_URL ||
+    'https://staging-search-api.execute-api.us-east-1.amazonaws.com/search';
+}
 
 // Timeout for Lambda calls (increased to 10s to prevent premature fallback)
 const LAMBDA_TIMEOUT_MS = 10000;
@@ -50,11 +52,12 @@ async function callSearchAPI(query: string): Promise<SearchResult> {
   const timeoutId = setTimeout(() => controller.abort(), LAMBDA_TIMEOUT_MS);
 
   try {
-    console.log('[DEBUG] SEARCH_API_URL constant:', SEARCH_API_URL);
+    const searchApiUrl = getSearchApiUrl();
+    console.log('[DEBUG] getSearchApiUrl():', searchApiUrl);
     console.log('[DEBUG] process.env.SEARCH_API_URL:', process.env.SEARCH_API_URL);
     console.log('[DEBUG] process.env.NEXT_PUBLIC_SEARCH_API_URL:', process.env.NEXT_PUBLIC_SEARCH_API_URL);
 
-    const url = `${SEARCH_API_URL}?q=${encodeURIComponent(query)}`;
+    const url = `${searchApiUrl}?q=${encodeURIComponent(query)}`;
 
     console.log(`[Intelligent Search] Calling Lambda: ${url}`);
     
