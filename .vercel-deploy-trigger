@@ -6,3 +6,4 @@ Sun Nov 23 13:18:05 CST 2025
 # Redeploy with correct Lambda URL - domingo, 30 de noviembre de 2025, 09:57:49 CST
 # Redeploy with SEARCH_API_URL (server-side) - domingo, 30 de noviembre de 2025, 10:03:30 CST
 # Redeploy after removing incorrect SEARCH_API_URL - domingo, 30 de noviembre de 2025, 10:13:05 CST
+# Force rebuild after env var cleanup - domingo, 30 de noviembre de 2025, 10:15:15 CST
