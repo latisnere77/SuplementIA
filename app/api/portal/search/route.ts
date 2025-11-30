@@ -19,9 +19,9 @@ import { normalizeQuery } from '@/lib/portal/query-normalization/normalizer';
 
 // Lambda search-api endpoint (read at runtime, not build time)
 function getSearchApiUrl(): string {
-  return process.env.SEARCH_API_URL ||
-    process.env.NEXT_PUBLIC_SEARCH_API_URL ||
-    'https://staging-search-api.execute-api.us-east-1.amazonaws.com/search';
+  // Use NEXT_PUBLIC_SEARCH_API_URL which is set in Vercel
+  return process.env.NEXT_PUBLIC_SEARCH_API_URL ||
+    'https://y7kmfjbldddeslucthyaomytem0etqnc.lambda-url.us-east-1.on.aws/';
 }
 
 // Timeout for Lambda calls (increased to 10s to prevent premature fallback)
