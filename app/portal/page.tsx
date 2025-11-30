@@ -341,12 +341,6 @@ export default function PortalPage() {
                       <button
                         type="submit"
                         disabled={!searchQuery.trim()}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log('[PortalPage] 🖱️ Button clicked');
-                          console.log('[PortalPage] 🖱️ searchQuery:', searchQuery);
-                          console.log('[PortalPage] 🖱️ disabled:', !searchQuery.trim());
-                        }}
                         className={cn(
                           "absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 z-20",
                           searchQuery.trim()
