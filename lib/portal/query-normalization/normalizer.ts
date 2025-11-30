@@ -141,6 +141,13 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'creatine': { canonical: 'Creatine', category: 'amino_acid' },
   'creatine monohydrate': { canonical: 'Creatine Monohydrate', category: 'amino_acid' },
 
+  // N-Acetyl Cysteine (NAC)
+  'nac': { canonical: 'N-Acetyl Cysteine', category: 'amino_acid' },
+  'n-acetyl cysteine': { canonical: 'N-Acetyl Cysteine', category: 'amino_acid' },
+  'n acetyl cysteine': { canonical: 'N-Acetyl Cysteine', category: 'amino_acid' },
+  'acetylcysteine': { canonical: 'N-Acetyl Cysteine', category: 'amino_acid' },
+  'acetilcisteina': { canonical: 'N-Acetyl Cysteine', category: 'amino_acid' },
+
   'fenilalanina': { canonical: 'L-Phenylalanine', category: 'amino_acid' },
   'phenylalanine': { canonical: 'L-Phenylalanine', category: 'amino_acid' },
   'l-fenilalanina': { canonical: 'L-Phenylalanine', category: 'amino_acid' },

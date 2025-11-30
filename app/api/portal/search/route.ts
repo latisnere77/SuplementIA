@@ -21,8 +21,8 @@ const SEARCH_API_URL = process.env.SEARCH_API_URL ||
   process.env.NEXT_PUBLIC_SEARCH_API_URL ||
   'https://staging-search-api.execute-api.us-east-1.amazonaws.com/search';
 
-// Timeout for Lambda calls
-const LAMBDA_TIMEOUT_MS = 5000;
+// Timeout for Lambda calls (increased to 10s to prevent premature fallback)
+const LAMBDA_TIMEOUT_MS = 10000;
 
 interface SearchResult {
   success: boolean;
