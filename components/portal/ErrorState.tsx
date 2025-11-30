@@ -75,8 +75,9 @@ export function ErrorState({
                   🔬 Sin Evidencia Científica Disponible
                 </h3>
                 <p className="text-base text-yellow-800 max-w-xl mx-auto leading-relaxed">
-                  No encontramos estudios científicos publicados en PubMed sobre{' '}
-                  <span className="font-semibold">&ldquo;{searchedFor}&rdquo;</span>.
+                  {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
+                    ? `La búsqueda de "${searchedFor}" está tardando más de lo esperado. Esto puede ocurrir con términos muy amplios que tienen miles de estudios en PubMed.`
+                    : `No encontramos estudios científicos publicados en PubMed sobre "${searchedFor}".`}
                 </p>
               </div>
 
@@ -84,21 +85,45 @@ export function ErrorState({
               <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
                 <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
-                  ¿Por qué es importante?
+                  {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
+                    ? '¿Por qué ocurre esto?'
+                    : '¿Por qué es importante?'}
                 </h4>
                 <p className="text-sm text-yellow-800 mb-3">
-                  En Suplementia, <strong>solo mostramos información respaldada por estudios científicos verificables</strong>. 
-                  Esto garantiza que las recomendaciones sean seguras y efectivas.
+                  {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout') ? (
+                    <>
+                      <strong>&ldquo;{searchedFor}&rdquo;</strong> puede ser un término demasiado genérico o amplio.
+                      Los términos genéricos tienen miles de estudios en PubMed, lo que hace que la búsqueda tarde demasiado.
+                    </>
+                  ) : (
+                    <>
+                      En Suplementia, <strong>solo mostramos información respaldada por estudios científicos verificables</strong>.
+                      Esto garantiza que las recomendaciones sean seguras y efectivas.
+                    </>
+                  )}
                 </p>
                 <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
                   <p className="text-xs text-yellow-700 font-medium mb-2">
-                    Posibles razones por las que no encontramos estudios:
+                    {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
+                      ? 'Recomendaciones para mejorar tu búsqueda:'
+                      : 'Posibles razones por las que no encontramos estudios:'}
                   </p>
                   <ul className="text-xs text-yellow-700 space-y-1">
-                    <li>• El suplemento no tiene investigación científica publicada</li>
-                    <li>• El nombre puede estar escrito de forma diferente en la literatura científica</li>
-                    <li>• Puede ser un nombre comercial sin respaldo científico independiente</li>
-                    <li>• Los estudios pueden estar en bases de datos especializadas que aún no indexamos</li>
+                    {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout') ? (
+                      <>
+                        <li>• <strong>Busca un suplemento específico</strong> en lugar de categorías amplias (ej: busca &ldquo;Colágeno hidrolizado&rdquo; en vez de &ldquo;péptidos bioactivos&rdquo;)</li>
+                        <li>• <strong>Usa nombres comerciales específicos</strong> de suplementos que conozcas</li>
+                        <li>• <strong>Especifica el tipo o función</strong> (ej: &ldquo;péptidos de colágeno para articulaciones&rdquo;)</li>
+                        <li>• El término ha sido agregado a nuestra cola de procesamiento para futura indexación</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>• El suplemento no tiene investigación científica publicada</li>
+                        <li>• El nombre puede estar escrito de forma diferente en la literatura científica</li>
+                        <li>• Puede ser un nombre comercial sin respaldo científico independiente</li>
+                        <li>• Los estudios pueden estar en bases de datos especializadas que aún no indexamos</li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </div>
