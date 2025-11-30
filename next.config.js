@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// Force redeploy with NEXT_PUBLIC_USE_INTELLIGENT_SEARCH env var
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
