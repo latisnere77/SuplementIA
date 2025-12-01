@@ -990,7 +990,7 @@ export async function expandAbbreviation(
   // The LLM will return empty array if no expansion/translation needed
   // Add timeout to prevent slow LLM calls from blocking the entire request
   const llmStartTime = Date.now();
-  const LLM_TIMEOUT = 5000; // 5 seconds max for LLM expansion
+  const LLM_TIMEOUT = 8000; // 8 seconds max for LLM expansion
   
   let llmAlternatives: string[] = [];
   try {
