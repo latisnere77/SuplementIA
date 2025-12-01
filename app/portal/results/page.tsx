@@ -249,7 +249,21 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
 
   // Extract intelligent ranking from metadata
   const metadata = (recommendation as any)._enrichment_metadata || {};
-  const studies = metadata.studies || null;
+  const studies = metadata.studies || {
+    ranked: {
+      positive: [],
+      negative: [],
+      metadata: {
+        consensus: 'neutral',
+        confidenceScore: 0,
+        totalPositive: 0,
+        totalNegative: 0,
+        totalNeutral: 0,
+      },
+    },
+    all: [],
+    total: 0,
+  };
 
   const result = {
     overallGrade,
