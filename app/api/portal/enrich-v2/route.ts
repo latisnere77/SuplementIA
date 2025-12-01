@@ -7,6 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120; // Increased to 120s to allow Claude processing
@@ -38,25 +39,14 @@ export async function POST(request: NextRequest) {
     // Step 0: Try LLM expansion for unknown terms (optional, non-blocking)
     let searchTerm = supplementName;
     try {
-      // Call abbreviation expander with short timeout
-      const expanderUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://suplementia.vercel.app'}/api/portal/expand-query`;
-      const expandResponse = await fetch(expanderUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: supplementName }),
-        signal: AbortSignal.timeout(5000), // 5s timeout - don't block on this
-      });
-      
-      if (expandResponse.ok) {
-        const expandData = await expandResponse.json();
-        if (expandData.success && expandData.alternatives?.length > 0) {
-          searchTerm = expandData.alternatives[0];
-          console.log(`[enrich-v2] Expanded "${supplementName}" → "${searchTerm}"`);
-        }
+      const expansion = await expandAbbreviation(supplementName);
+      if (expansion.alternatives.length > 0 && expansion.source !== 'none') {
+        searchTerm = expansion.alternatives[0];
+        console.log(`[enrich-v2] Expanded "${supplementName}" → "${searchTerm}" (Source: ${expansion.source})`);
       }
     } catch (error) {
       // Expansion failed - continue with original term
-      console.log(`[enrich-v2] Expansion failed, using original term: ${supplementName}`);
+      console.log(`[enrich-v2] Expansion failed, using original term: ${supplementName}`, error);
     }
     
     // Step 1: Fetch studies from Lambda
