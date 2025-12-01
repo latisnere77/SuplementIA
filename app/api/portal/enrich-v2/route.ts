@@ -44,9 +44,14 @@ export async function POST(request: NextRequest) {
         searchTerm = expansion.alternatives[0];
         console.log(`[enrich-v2] Expanded "${supplementName}" → "${searchTerm}" (Source: ${expansion.source})`);
       }
-    } catch (error) {
-      // Expansion failed - continue with original term
-      console.log(`[enrich-v2] Expansion failed, using original term: ${supplementName}`, error);
+    } catch (error: any) {
+      // Expansion failed - continue with original term, but log the detailed error
+      console.error(`[enrich-v2] CRITICAL: Abbreviation expansion failed instantly for term: ${supplementName}. This is likely an environment configuration issue.`, {
+        errorMessage: error.message,
+        errorStack: error.stack,
+        errorName: error.name,
+      });
+      console.log(`[enrich-v2] Proceeding with original term due to expansion failure: ${supplementName}`);
     }
     
     // Step 1: Fetch studies from Lambda
