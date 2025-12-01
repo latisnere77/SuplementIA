@@ -1,192 +1,68 @@
-/**
- * useIntelligentSearch Hook
- * 
- * React hook for intelligent supplement search with vector similarity.
- * Provides automatic fallback to legacy normalizer.
- * 
- * Features:
- * - Vector similarity search
- * - Multi-tier caching (DynamoDB + Redis + Postgres)
- * - Automatic discovery queue for unknown supplements
- * - Fallback to legacy normalizer
- * - Loading and error states
- * 
- * @example
- * ```tsx
- * const { search, result, loading, error } = useIntelligentSearch();
- * 
- * const handleSearch = async () => {
- *   await search('Equinácea');
- * };
- * ```
- */
-
 import { useState, useCallback } from 'react';
+import { z } from 'zod';
 
-// Feature flag - can be controlled via environment variable
-const USE_INTELLIGENT_SEARCH = 
-  process.env.NEXT_PUBLIC_USE_INTELLIGENT_SEARCH === 'true' ||
-  process.env.NEXT_PUBLIC_ENABLE_VECTOR_SEARCH === 'true';
+// Schema for a single search result
+const SearchResultSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  score: z.number(),
+});
 
-export interface SupplementResult {
-  id: string;
-  name: string;
-  scientificName?: string;
-  commonNames?: string[];
-  metadata?: Record<string, unknown>;
-  similarity?: number;
-}
+// Schema for the API response
+const ApiResponseSchema = z.array(SearchResultSchema);
 
-export interface SearchResult {
-  success: boolean;
-  supplement?: SupplementResult;
-  similarity?: number;
-  source?: 'dynamodb' | 'redis' | 'postgres' | 'discovery' | 'fallback';
-  cacheHit?: boolean;
-  latency?: number;
-  message?: string;
-  warning?: string;
-  addedToDiscovery?: boolean;
-}
+export type SearchResult = z.infer<typeof SearchResultSchema>;
 
-export interface UseIntelligentSearchReturn {
-  search: (query: string) => Promise<SearchResult>;
-  result: SearchResult | null;
-  loading: boolean;
-  error: string | null;
-  reset: () => void;
-}
-
-/**
- * Hook for intelligent supplement search
- */
-export function useIntelligentSearch(): UseIntelligentSearchReturn {
-  const [result, setResult] = useState<SearchResult | null>(null);
-  const [loading, setLoading] = useState(false);
+export function useIntelligentSearch() {
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [results, setResults] = useState<SearchResult[]>([]);
 
-  const search = useCallback(async (query: string): Promise<SearchResult> => {
-    // Reset state
-    setLoading(true);
+  const search = useCallback(async (query: string): Promise<SearchResult[]> => {
+    if (!query.trim()) {
+      setResults([]);
+      return [];
+    }
+
+    setIsLoading(true);
     setError(null);
-    setResult(null);
 
     try {
-      // Validate query
-      if (!query || query.trim().length < 2) {
-        throw new Error('Query too short (minimum 2 characters)');
+      const response = await fetch(`/api/portal/search?q=${encodeURIComponent(query)}`);
+
+      if (!response.ok) {
+        throw new Error(`API responded with status ${response.status}`);
       }
 
-      if (query.length > 200) {
-        throw new Error('Query too long (maximum 200 characters)');
+      const data = await response.json();
+      
+      // Validate API response with Zod
+      const validation = ApiResponseSchema.safeParse(data);
+
+      if (!validation.success) {
+        console.error('Zod validation error:', validation.error);
+        throw new Error('Invalid data structure received from API.');
       }
 
-      const trimmedQuery = query.trim();
-
-      // Call search API
-      const endpoint = USE_INTELLIGENT_SEARCH 
-        ? `/api/portal/search?q=${encodeURIComponent(trimmedQuery)}`
-        : `/api/portal/search?q=${encodeURIComponent(trimmedQuery)}&fallback=true`;
-
-      console.log(`[useIntelligentSearch] Searching: "${trimmedQuery}" (intelligent: ${USE_INTELLIGENT_SEARCH})`);
-
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data: SearchResult = await response.json();
-
-      // Handle success
-      if (response.ok && data.success) {
-        console.log(`[useIntelligentSearch] Found: ${data.supplement?.name} (source: ${data.source})`);
-        setResult(data);
-        return data;
-      }
-
-      // Handle not found (404)
-      if (response.status === 404) {
-        console.log(`[useIntelligentSearch] Not found: ${trimmedQuery}`);
-        setResult(data);
-        return data;
-      }
-
-      // Handle service unavailable (503)
-      if (response.status === 503) {
-        throw new Error('Search service temporarily unavailable. Please try again.');
-      }
-
-      // Handle other errors
-      throw new Error(data.message || 'Search failed');
+      setResults(validation.data);
+      return validation.data;
 
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      console.error('[useIntelligentSearch] Error:', errorMessage);
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+      console.error('[useIntelligentSearch] Search failed:', errorMessage);
       setError(errorMessage);
-      
-      // Return error result
-      const errorResult: SearchResult = {
-        success: false,
-        message: errorMessage,
-      };
-      setResult(errorResult);
-      return errorResult;
-
+      setResults([]); // Clear results on error
+      throw err; // Re-throw to allow caller to handle it
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  }, []);
-
-  const reset = useCallback(() => {
-    setResult(null);
-    setError(null);
-    setLoading(false);
   }, []);
 
   return {
     search,
-    result,
-    loading,
+    isLoading,
     error,
-    reset,
+    results,
   };
-}
-
-/**
- * Direct search function (without hook)
- * Useful for one-off searches or server-side usage
- */
-export async function intelligentSearch(query: string): Promise<SearchResult> {
-  try {
-    const trimmedQuery = query.trim();
-
-    if (!trimmedQuery || trimmedQuery.length < 2) {
-      return {
-        success: false,
-        message: 'Query too short (minimum 2 characters)',
-      };
-    }
-
-    const endpoint = `/api/portal/search?q=${encodeURIComponent(trimmedQuery)}`;
-    const response = await fetch(endpoint);
-    const data: SearchResult = await response.json();
-
-    return data;
-
-  } catch (error) {
-    console.error('[intelligentSearch] Error:', error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Search failed',
-    };
-  }
-}
-
-/**
- * Check if intelligent search is enabled
- */
-export function isIntelligentSearchEnabled(): boolean {
-  return USE_INTELLIGENT_SEARCH;
 }

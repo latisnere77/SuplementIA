@@ -1,0 +1,45 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "mcp-server-memory",
+      "args": [],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "DEBUG"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "create_entities",
+        "create_relations",
+        "add_observations",
+        "delete_observations",
+        "delete_entities",
+        "delete_relations",
+        "read_graph",
+        "search_nodes",
+        "open_nodes",
+        "add-note"
+      ]
+    },
+    "sentry": {
+      "command": "sentry-mcp",
+      "args": [
+        "--access-token=${SENTRY_ACCESS_TOKEN}"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "sequential-thinking": {
+      "command": "mcp-server-sequential-thinking",
+      "args": [],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

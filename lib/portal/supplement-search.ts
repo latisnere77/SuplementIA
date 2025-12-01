@@ -5,7 +5,6 @@
  * Small, focused, testable module.
  */
 
-import { intelligentSearch } from './useIntelligentSearch';
 import { normalizeQuery } from './query-normalization/normalizer';
 
 export interface SearchResult {
@@ -13,12 +12,12 @@ export interface SearchResult {
   supplementName: string;
   normalizedName?: string;
   similarity?: number;
-  source: 'intelligent' | 'legacy' | 'none';
+  source: 'legacy' | 'none';
   error?: string;
 }
 
 /**
- * Search for supplement using intelligent search with fallback
+ * Search for supplement using legacy normalization
  * 
  * @param query - User's search query
  * @returns Search result with supplement name
@@ -35,39 +34,7 @@ export async function searchSupplement(query: string): Promise<SearchResult> {
     };
   }
 
-  // Try intelligent search first (if enabled)
-  const useIntelligent = process.env.NEXT_PUBLIC_USE_INTELLIGENT_SEARCH === 'true';
-  console.log('[DEBUG] NEXT_PUBLIC_USE_INTELLIGENT_SEARCH:', process.env.NEXT_PUBLIC_USE_INTELLIGENT_SEARCH, '| useIntelligent:', useIntelligent);
-  
-  if (useIntelligent) {
-    try {
-      const result = await intelligentSearch(trimmedQuery);
-
-      if (result.success && result.supplement) {
-        return {
-          found: true,
-          supplementName: result.supplement.name,
-          normalizedName: result.supplement.scientificName,
-          similarity: result.similarity,
-          source: 'intelligent',
-        };
-      }
-
-      // If not found, capture the error message from backend
-      if (!result.success && result.message) {
-        return {
-          found: false,
-          supplementName: trimmedQuery,
-          source: 'intelligent',
-          error: result.message,
-        };
-      }
-    } catch (error) {
-      console.warn('[Search] Intelligent search failed, falling back to legacy:', error);
-    }
-  }
-
-  // Fallback to legacy normalizer
+  // Use legacy normalizer
   try {
     const normalized = normalizeQuery(trimmedQuery);
     
@@ -82,6 +49,12 @@ export async function searchSupplement(query: string): Promise<SearchResult> {
     }
   } catch (error) {
     console.error('[Search] Legacy normalizer failed:', error);
+    return {
+      found: false,
+      supplementName: trimmedQuery,
+      source: 'none',
+      error: 'An unexpected error occurred during search.',
+    };
   }
 
   // Not found

@@ -1,0 +1,273 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["SuplementIA/Search", "SearchLatency", {"stat": "p50", "label": "P50"}],
+          ["...", {"stat": "p95", "label": "P95"}],
+          ["...", {"stat": "p99", "label": "P99"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Search Latency (ms)",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 500
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["SuplementIA/Search", "CacheHit", {"stat": "Sum", "label": "Cache Hits"}],
+          [".", "CacheMiss", {"stat": "Sum", "label": "Cache Misses"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Cache Hit/Miss Count",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            {
+              "expression": "100 * (m1 / (m1 + m2))",
+              "label": "Cache Hit Rate %",
+              "id": "e1"
+            }
+          ],
+          ["SuplementIA/Search", "CacheHit", {"id": "m1", "visible": false}],
+          [".", "CacheMiss", {"id": "m2", "visible": false}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Cache Hit Rate (%)",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Target: 85%",
+              "value": 85,
+              "fill": "above",
+              "color": "#2ca02c"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["SuplementIA/Search", "CacheLatency", {"stat": "Average"}],
+          [".", "VectorSearchLatency", {"stat": "Average"}],
+          [".", "EmbeddingGenerationTime", {"stat": "Average"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Component Latency (ms)",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 12,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Lambda", "Invocations", {"stat": "Sum"}],
+          [".", "Errors", {"stat": "Sum"}],
+          [".", "Throttles", {"stat": "Sum"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Lambda Invocations & Errors",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 12,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            {
+              "expression": "100 * (m2 / m1)",
+              "label": "Error Rate %",
+              "id": "e1"
+            }
+          ],
+          ["AWS/Lambda", "Invocations", {"id": "m1", "visible": false}],
+          [".", "Errors", {"id": "m2", "visible": false}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Lambda Error Rate (%)",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 5
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Threshold: 1%",
+              "value": 1,
+              "fill": "above",
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 12,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Lambda", "Duration", {"stat": "Average"}],
+          ["...", {"stat": "p95"}],
+          ["...", {"stat": "Maximum"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Lambda Duration (ms)",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 18,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/DynamoDB", "ConsumedReadCapacityUnits", {"stat": "Sum"}],
+          [".", "ConsumedWriteCapacityUnits", {"stat": "Sum"}],
+          [".", "UserErrors", {"stat": "Sum"}],
+          [".", "SystemErrors", {"stat": "Sum"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "DynamoDB Metrics",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 18,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["SuplementIA/Search", "QueueSize", {"stat": "Average"}],
+          [".", "DiscoveryJobsProcessed", {"stat": "Sum"}],
+          [".", "DiscoveryJobsFailed", {"stat": "Sum"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Discovery Queue Metrics",
+        "period": 300,
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Alert Threshold: 100",
+              "value": 100,
+              "fill": "above",
+              "color": "#ff7f0e"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 24,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/aws/lambda/search-api-lancedb'\n| fields @timestamp, event_type, query, latency_ms, cache_hit, similarity\n| filter event_type = 'request_complete'\n| sort @timestamp desc\n| limit 20",
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "Recent Search Requests",
+        "view": "table"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 30,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/aws/lambda/search-api-lancedb'\n| fields @timestamp, event_type, error, error_type, query\n| filter event_type = 'lambda_error' or event_type = 'cache_error' or event_type = 'discovery_queue_error'\n| sort @timestamp desc\n| limit 20",
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "Recent Errors",
+        "view": "table"
+      }
+    }
+  ]
+}

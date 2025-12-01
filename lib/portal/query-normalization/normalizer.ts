@@ -189,6 +189,14 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'calcium': { canonical: 'Calcium', category: 'mineral' },
   'hierro': { canonical: 'Iron', category: 'mineral' },
   'iron': { canonical: 'Iron', category: 'mineral' },
+
+  // ========== PEPTIDES ==========
+  'copper peptides': { canonical: 'Copper Peptides', category: 'mineral' },
+  'peptidos de cobre': { canonical: 'Copper Peptides', category: 'mineral' },
+  'gkh-cu': { canonical: 'Copper Peptides', category: 'mineral' },
+  'ghk cu': { canonical: 'Copper Peptides', category: 'mineral' },
+  'copper peptide': { canonical: 'Copper Peptides', category: 'mineral' },
+
 };
 
 /**

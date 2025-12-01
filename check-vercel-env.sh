@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "Checking Vercel environment variables..."
+echo ""
+echo "Required variable: NEXT_PUBLIC_USE_INTELLIGENT_SEARCH=true"
+echo ""
+echo "To set it in Vercel:"
+echo "1. Go to https://vercel.com/latisnere77s-projects/suplementia/settings/environment-variables"
+echo "2. Add: NEXT_PUBLIC_USE_INTELLIGENT_SEARCH = true"
+echo "3. Select: Production, Preview, Development"
+echo "4. Redeploy"
+echo ""
+echo "Or use Vercel CLI:"
+echo "vercel env add NEXT_PUBLIC_USE_INTELLIGENT_SEARCH"
