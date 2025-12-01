@@ -683,42 +683,10 @@ function ResultsPageContent() {
           // Ingredients are typically: single words, compound words, or scientific names
           const isIngredientSearch = !matchedCategory;
 
-          // SEARCH SUPPLEMENT (intelligent search with fallback)
-          let searchTerm = normalizedQuery;
-          if (isIngredientSearch) {
-            const searchResult = await searchSupplement(normalizedQuery);
-            if (searchResult.found) {
-              searchTerm = searchResult.supplementName;
-              console.log(`✅ Supplement found: "${normalizedQuery}" → "${searchTerm}" (source: ${searchResult.source}, similarity: ${searchResult.similarity})`);
-
-              // Direct searches use the same flow as category searches
-              // No need for AsyncEnrichmentLoader - quiz endpoint handles everything
-              console.log('[Direct Search] Using quiz endpoint for:', searchTerm);
-            } else {
-              console.warn(`⚠️ Supplement not found: "${normalizedQuery}"`);
-
-              // If we have an error message from the backend, show it immediately
-              if (searchResult.error) {
-                console.log('[Search Error] Backend returned error:', searchResult.error);
-                setError({
-                  type: 'insufficient_scientific_data',
-                  message: searchResult.error,
-                  searchedFor: normalizedQuery,
-                  suggestions: [],
-                  metadata: {
-                    normalizedQuery: searchTerm,
-                    timestamp: new Date().toISOString(),
-                  },
-                });
-                setIsLoading(false);
-                return;
-              }
-            }
-          }
-
-          // For ingredient searches, use normalized term
-          // For category searches, use the mapped category
-          const category = matchedCategory || searchTerm;
+          // The quiz endpoint handles all normalization and enrichment.
+          // We send the raw user query directly to it.
+          const searchTerm = normalizedQuery;
+          const category = searchTerm;
 
           // Generate Job ID for complete traceability
           const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
