@@ -132,6 +132,22 @@ export async function POST(request: NextRequest) {
     // Sanitize category for safety
     const sanitizedCategory = sanitizeQuery(category);
 
+    // BENEFIT SEARCH LOGIC: Extract supplement and benefit
+    let supplementName = sanitizedCategory;
+    let benefitQuery: string | undefined = undefined;
+    
+    const benefitKeywords = [' for ', ' para '];
+    for (const keyword of benefitKeywords) {
+      if (sanitizedCategory.toLowerCase().includes(keyword)) {
+        const parts = sanitizedCategory.split(new RegExp(keyword, 'i'));
+        supplementName = parts[0].trim();
+        benefitQuery = parts.slice(1).join(keyword).trim();
+        break;
+      }
+    }
+
+    console.log(`[Benefit Search] Original: "${sanitizedCategory}", Supplement: "${supplementName}", Benefit: "${benefitQuery}"`);
+
     // Use defaults if not provided (search-first approach)
     const finalAge = age || 35;
     const finalGender = gender || 'male';
@@ -190,7 +206,8 @@ export async function POST(request: NextRequest) {
         },
         method: 'POST',
         body: JSON.stringify({
-          category: sanitizedCategory,
+          category: supplementName, // Use the extracted supplement name
+          benefitQuery, // Pass the extracted benefit query
           age: parseInt(finalAge.toString()),
           gender: finalGender,
           location: finalLocation,

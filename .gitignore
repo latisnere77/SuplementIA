@@ -87,3 +87,4 @@ _archived/
 mcp-servers/
 lib/portal/query-normalization/normalizer.test.ts
 backend/lambda/content-enricher/.deploy-temp/
+.next

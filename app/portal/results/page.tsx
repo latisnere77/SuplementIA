@@ -154,6 +154,15 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     studyCount: item.studyCount || 0,
   })) : [];
 
+  // NEW: Transform evidence_by_benefit
+  const evidenceByBenefit = Array.isArray(recommendation.evidence_by_benefit) ? recommendation.evidence_by_benefit.map((item: any) => ({
+    benefit: item.benefit || '',
+    evidenceLevel: item.evidence_level || 'Insuficiente',
+    studiesFound: item.studies_found || 0,
+    totalParticipants: item.total_participants || 0,
+    summary: item.summary || '',
+  })) : [];
+
   // DEBUG: Log parsed structured data
   console.log('[transformRecommendationToEvidence] Structured data:', {
     worksForCount: worksFor.length,
@@ -245,6 +254,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   const result = {
     overallGrade,
     whatIsItFor: supplement.description || `Suplemento: ${recommendation.category}`,
+    evidenceByBenefit, // Add the new transformed data
     worksFor,
     doesntWorkFor, // ✅ NOW POPULATED with real data
     limitedEvidence,
@@ -385,6 +395,13 @@ interface Recommendation {
     age?: number;
     location?: string;
   };
+  evidence_by_benefit?: Array<{
+    benefit: string;
+    evidence_level: 'Fuerte' | 'Moderada' | 'Limitada' | 'Insuficiente';
+    studies_found: number;
+    total_participants: number;
+    summary: string;
+  }>;
 }
 
 function ResultsPageContent() {

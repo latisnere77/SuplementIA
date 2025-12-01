@@ -1,10 +1,10 @@
-# Exclude MCP servers from Vercel build
-mcp-servers/
-
-# Exclude test scripts
-scripts/test-*.ts
-scripts/debug-*.ts
-
-# Exclude documentation
-*.md
-!README.md
+.env.local
+.env.production.local
+.env.development.local
+.hypothesis
+.next
+.swc
+.venv
+.venv-test
+node_modules
+test-data

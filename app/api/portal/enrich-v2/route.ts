@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   
   try {
     const body = await request.json();
-    const { supplementName, maxStudies = 10, category, forceRefresh = false } = body;
+    const { supplementName, benefitQuery, maxStudies = 10, category, forceRefresh = false } = body;
     
     console.log(`[enrich-v2] Request ${requestId}: ${supplementName}`);
     
@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         supplementName: searchTerm, // Use expanded term if available
+        benefitQuery, // Pass the benefit query to the Lambda
         maxResults: Math.min(maxStudies, 10),
         rctOnly: false,
         yearFrom: 2010,

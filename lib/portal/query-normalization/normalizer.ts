@@ -136,6 +136,11 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'cianocobalamina': { canonical: 'Vitamin B12', category: 'vitamin' },
   'cyanocobalamin': { canonical: 'Vitamin B12', category: 'vitamin' },
 
+  'biotina': { canonical: 'Biotin', category: 'vitamin' },
+  'biotin': { canonical: 'Biotin', category: 'vitamin' },
+  'vitamina b7': { canonical: 'Biotin', category: 'vitamin' },
+  'vitamin b7': { canonical: 'Biotin', category: 'vitamin' },
+
   // ========== AMINO ACIDS ==========
   'creatina': { canonical: 'Creatine', category: 'amino_acid' },
   'creatine': { canonical: 'Creatine', category: 'amino_acid' },

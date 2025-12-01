@@ -14,6 +14,7 @@ import { Shield, Beaker, Users, Calendar, ExternalLink, ChevronDown, ChevronUp }
 import SupplementGrade, { SupplementGradeBadge, type GradeType } from './SupplementGrade';
 import WorksForSection, { type WorksForItem } from './WorksForSection';
 import IntelligentRankingSection from './IntelligentRankingSection';
+import { BenefitEvidenceCard } from './BenefitEvidenceCard';
 
 interface EvidenceBadge {
   type: 'rct' | 'meta' | 'longterm' | 'safe';
@@ -37,6 +38,15 @@ interface EvidenceSummaryNew {
   // Descripción clara (lo que importa)
   whatIsItFor: string;
   summary?: string; // Rich data summary
+
+  // NEW: Evidence by Benefit
+  evidenceByBenefit?: Array<{
+    benefit: string;
+    evidenceLevel: 'Fuerte' | 'Moderada' | 'Limitada' | 'Insuficiente';
+    studiesFound: number;
+    totalParticipants: number;
+    summary: string;
+  }>;
 
   // Funciona vs No funciona
   worksFor: WorksForItem[];
@@ -215,12 +225,22 @@ export default function EvidenceAnalysisPanelNew({
         </div>
       </div>
 
-      {/* Funciona vs No Funciona */}
-      <WorksForSection
-        worksFor={evidenceSummary.worksFor}
-        doesntWorkFor={evidenceSummary.doesntWorkFor}
-        limitedEvidence={evidenceSummary.limitedEvidence}
-      />
+      {/* NEW: Evidence by Benefit Section */}
+      {evidenceSummary.evidenceByBenefit && evidenceSummary.evidenceByBenefit.length > 0 ? (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold text-gray-900">Evidencia por Beneficio</h2>
+          {evidenceSummary.evidenceByBenefit.map((benefit, index) => (
+            <BenefitEvidenceCard key={index} {...benefit} />
+          ))}
+        </div>
+      ) : (
+        // Fallback to old WorksForSection if new data structure is not present
+        <WorksForSection
+          worksFor={evidenceSummary.worksFor}
+          doesntWorkFor={evidenceSummary.doesntWorkFor}
+          limitedEvidence={evidenceSummary.limitedEvidence}
+        />
+      )}
 
       {/* Dosage Information */}
       {evidenceSummary.dosage && (

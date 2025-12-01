@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { category, age, gender, location, sensitivities = [], quiz_id } = body;
+    const { category, age, gender, location, sensitivities = [], quiz_id, benefitQuery } = body;
     
     // Generate job ID (no retry tracking in serverless - each request is independent)
     const jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -162,6 +162,7 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify({
           supplementName: searchTerm,
+          benefitQuery, // Pass it to the enrichment service
           category: searchTerm,
           forceRefresh: false, // Use cache when available (96% faster: 1s vs 30s)
           maxStudies: 10,

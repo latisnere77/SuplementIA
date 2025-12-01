@@ -16,7 +16,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useAutocomplete } from '@/lib/portal/useAutocomplete';
-import { useIntelligentSearch } from '@/lib/portal/useIntelligentSearch';
+import { validateSupplementQuery } from '@/lib/portal/query-validator';
+import { normalizeQuery } from '@/lib/portal/query-normalization';
 import FAQSection from '@/components/portal/FAQSection';
 
 export default function PortalPage() {
@@ -24,14 +25,14 @@ export default function PortalPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Hooks
+  // Hook de autocomplete con debouncing
   const { suggestions, isLoading: isLoadingSuggestions } = useAutocomplete(searchQuery, {
     debounceMs: 300,
-    limit: 10,
+    limit: 10, // Aumentado para mostrar más sugerencias
   });
-  const { search, isLoading } = useIntelligentSearch();
 
   // DEBUG: Ver qué sugerencias tenemos
   console.log('[PortalPage] Autocomplete state:', {
@@ -40,6 +41,7 @@ export default function PortalPage() {
     isLoadingSuggestions,
     suggestions: suggestions.map(s => s.text)
   });
+
   const placeholders = language === 'es' 
     ? [
         t('portal.search.placeholder'),
@@ -53,12 +55,14 @@ export default function PortalPage() {
         'Best supplements for energy',
         'Information about omega-3',
       ];
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
     }, 3000);
     return () => clearInterval(interval);
   }, [placeholders.length]);
+
   const categories = [
     {
       icon: Dumbbell,
@@ -103,6 +107,7 @@ export default function PortalPage() {
       id: 'fat-loss',
     },
   ];
+
   const popularSearches = language === 'es'
     ? [
         { term: 'Vitamina D', category: 'Vitaminas' },
@@ -120,6 +125,7 @@ export default function PortalPage() {
         { term: 'Creatine', category: 'Performance' },
         { term: 'Collagen', category: 'Skin & Joints' },
       ];
+
   const valueProps = [
     {
       icon: Search,
@@ -138,40 +144,51 @@ export default function PortalPage() {
     },
   ];
 
-  const handleSearch = async (query: string) => {
-    const trimmedQuery = query.trim();
-    console.log('[handleSearch] 🔍 Called with query:', trimmedQuery);
-
-    if (!trimmedQuery) {
+  const handleSearch = (query: string) => {
+    console.log('[handleSearch] 🔍 Called with query:', query);
+    
+    if (!query?.trim()) {
       console.log('[handleSearch] ❌ Empty query, returning');
       return;
     }
 
-    console.log('[handleSearch] ✅ Query is not empty, proceeding with intelligent search');
-    setValidationError(null);
+    console.log('[handleSearch] ✅ Query is not empty, proceeding with validation');
 
-    try {
-      const results = await search(trimmedQuery);
-      console.log('[handleSearch] 🧠 Intelligent search results:', results);
+    // VALIDACIÓN DE GUARDRAILS
+    const validation = validateSupplementQuery(query.trim());
+    console.log('[handleSearch] 📋 Validation result:', {
+      valid: validation.valid,
+      error: validation.error,
+      severity: validation.severity,
+    });
 
-      if (results && results.length > 0) {
-        const bestResult = results[0];
-        const targetUrl = `/portal/results?q=${encodeURIComponent(trimmedQuery)}&supplement=${encodeURIComponent(bestResult.name)}&slug=${bestResult.slug}`;
-        console.log('[handleSearch] 🚀 Navigating to:', targetUrl);
-        router.push(targetUrl);
-      } else {
-        console.log('[handleSearch] ⚠️ No results from intelligent search, navigating with original query');
-        const fallbackUrl = `/portal/results?q=${encodeURIComponent(trimmedQuery)}&supplement=${encodeURIComponent(trimmedQuery)}`;
-        router.push(fallbackUrl);
-      }
-    } catch (error) {
-      console.error('[handleSearch] 💥 Error during intelligent search:', error);
-      setValidationError('Ocurrió un error al buscar. Por favor, intenta de nuevo.');
-      
-      // Fallback navigation in case of API error
-      const errorUrl = `/portal/results?q=${encodeURIComponent(trimmedQuery)}&supplement=${encodeURIComponent(trimmedQuery)}&error=true`;
-      router.push(errorUrl);
+    if (!validation.valid) {
+      console.log('[handleSearch] ❌ Validation failed, showing error');
+      setValidationError(validation.error || 'Búsqueda inválida');
+      return;
     }
+
+    console.log('[handleSearch] ✅ Validation passed');
+
+    // Normalizar query (español → inglés, typos, etc.)
+    const normalized = normalizeQuery(query.trim());
+    const searchTerm = normalized.confidence >= 0.7 ? normalized.normalized : query.trim();
+    
+    console.log('[handleSearch] 🔄 Normalized query:', {
+      original: query.trim(),
+      normalized: normalized.normalized,
+      confidence: normalized.confidence,
+      finalSearchTerm: searchTerm,
+    });
+
+    // Limpiar error previo y proceder
+    setValidationError(null);
+    setIsLoading(true);
+    
+    const targetUrl = `/portal/results?q=${encodeURIComponent(searchTerm)}&supplement=${encodeURIComponent(searchTerm)}`;
+    console.log('[handleSearch] 🚀 Navigating to:', targetUrl);
+    
+    router.push(targetUrl);
   };
 
   const handleCategoryClick = (categoryId: string) => {
