@@ -137,6 +137,7 @@ function translateSpanishProgrammatically(term: string): string | null {
     'tiamina': 'thiamine',
     'riboflavina': 'riboflavin',
     'vitamina': 'vitamin',
+    'yodo': 'iodine',
 
     // Compound terms
     'acido hialuronico': 'hyaluronic acid',
