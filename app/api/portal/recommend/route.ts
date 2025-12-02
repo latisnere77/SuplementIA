@@ -613,7 +613,7 @@ function transformToRecommendation(
       version: '2.0.0',
       cached: metadata?.cached || false,
       timestamp: new Date().toISOString(),
-      studies: enrichedContent.studies || null,
+      studies: enrichData.studies || null,
     },
   };
 }
