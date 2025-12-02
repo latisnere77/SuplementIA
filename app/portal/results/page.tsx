@@ -448,6 +448,9 @@ function ResultsPageContent() {
   const [transformedEvidence, setTransformedEvidence] = useState<any>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('standard');
   const [examineContent, setExamineContent] = useState<any>(null);
+  const [benefitQuery, setBenefitQuery] = useState('');
+  const [submittedBenefitQuery, setSubmittedBenefitQuery] = useState('');
+
 
   // ====================================
   // LOGGING: State Change Tracking
@@ -706,6 +709,7 @@ function ResultsPageContent() {
               gender: 'male', // Default
               location: 'CDMX', // Default
               jobId, // Include in body for backend logging
+              benefitQuery: submittedBenefitQuery, // Pass the benefit query
             }),
           });
 
@@ -1002,7 +1006,7 @@ function ResultsPageContent() {
     return () => {
       isMounted = false;
     };
-  }, [query, jobId, router]);
+  }, [query, jobId, router, submittedBenefitQuery]);
 
   const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; directLink?: string; affiliateLink?: string }) => {
     if (isFreeUser && product.tier !== 'budget') {
@@ -1168,6 +1172,36 @@ function ResultsPageContent() {
               );
             }
           })()}
+        </div>
+
+        {/* Benefit Search Box */}
+        <div className="mb-8 bg-white p-6 rounded-xl border-2 border-gray-200 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">Buscar por Beneficio Específico</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            ¿Te interesa saber si este suplemento sirve para algo en particular? (ej: "memoria", "ansiedad", "pérdida de cabello").
+          </p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSubmittedBenefitQuery(benefitQuery);
+              setIsLoading(true); // Show loading spinner for new search
+            }}
+            className="flex flex-col sm:flex-row gap-3"
+          >
+            <input
+              type="text"
+              value={benefitQuery}
+              onChange={(e) => setBenefitQuery(e.target.value)}
+              placeholder="Escribe un beneficio o problema..."
+              className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
+            >
+              Buscar
+            </button>
+          </form>
         </div>
 
         {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
