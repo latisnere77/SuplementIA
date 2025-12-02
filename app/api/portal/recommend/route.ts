@@ -383,13 +383,12 @@ export async function POST(request: NextRequest) {
     }
 
     const recommendation = transformToRecommendation(
-      enrichedContent,
+      enrichData, // Pass the whole object
       sanitizedCategory,
       age || 35,
       gender || 'male',
       location || 'CDMX',
-      quiz_id,
-      metadata
+      quiz_id
     );
 
     const duration = Date.now() - startTime;
@@ -465,15 +464,18 @@ export async function POST(request: NextRequest) {
  * Transform enriched content to recommendation format expected by quiz frontend
  */
 function transformToRecommendation(
-  enrichedContent: any,
+  enrichData: any, // Pass the whole object from enrich-v2
   category: string,
   age: number,
   gender: string,
   location: string,
-  quiz_id?: string,
-  metadata?: any
+  quiz_id?: string
 ): any {
   const recId = `rec_${Date.now()}_${randomUUID().substring(0, 8)}`;
+  
+  // Extract data and metadata from the enrichData object
+  const enrichedContent = enrichData.data || {};
+  const metadata = enrichData.metadata || {};
 
   return {
     recommendation_id: recId,
