@@ -1,6 +1,7 @@
 /**
  * Portal Results Page
  * Displays evidence analysis, personalization, and product recommendations
+ * Force redeploy: 2025-12-02T00:30:00Z
  */
 
 'use client';
