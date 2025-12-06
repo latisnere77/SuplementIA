@@ -122,135 +122,13 @@ export default function BenefitStudiesModal({
         let doesntWorkFor = data.doesntWorkFor || [];
         let limitedEvidence = data.limitedEvidence || [];
 
-        // Debug: Log what we received
-        console.log('[Benefit Modal] Data received:', {
+        // Backend already filtered by benefitQuery - use data directly
+        console.log('[Benefit Modal] Data received from API:', {
           worksForCount: worksFor.length,
           doesntWorkForCount: doesntWorkFor.length,
           limitedEvidenceCount: limitedEvidence.length,
           sampleWorksFor: worksFor[0],
         });
-
-        // Skip all the old client-side filtering - backend already did it
-        if (false) {
-          const metadata = (recommendation as any)._enrichment_metadata || {};
-          const studies = metadata.studies || {};
-          const positiveStudies = studies.ranked?.positive || studies.all || [];
-          const negativeStudies = studies.ranked?.negative || [];
-
-          // Convert raw studies to benefit format
-          if (positiveStudies.length > 0) {
-            worksFor = positiveStudies.slice(0, 5).map((study: any, idx: number) => ({
-              benefit: study.title || `Estudio ${idx + 1}`,
-              evidence_level: 'Moderada' as const,
-              grade: 'B' as const,
-              studies_found: 1,
-              total_participants: study.participants || 0,
-              summary: study.abstract || study.conclusion || 'Ver estudio completo para más detalles',
-            }));
-          }
-
-          if (negativeStudies.length > 0) {
-            doesntWorkFor = negativeStudies.slice(0, 3).map((study: any, idx: number) => ({
-              benefit: study.title || `Estudio ${idx + 1}`,
-              evidence_level: 'Limitada' as const,
-              grade: 'D' as const,
-              studies_found: 1,
-              total_participants: study.participants || 0,
-              summary: study.abstract || study.conclusion || 'Ver estudio completo para más detalles',
-            }));
-          }
-        }
-
-        // Apply benefit filter if we have data
-        if (worksFor.length > 0 || doesntWorkFor.length > 0) {
-          // Apply intelligent filtering
-          // filterByBenefit expects structured_benefits, so we need to create that structure
-          const tempRecommendation = {
-            ...recommendation,
-            supplement: {
-              ...data,
-              structured_benefits: {
-                worksFor: worksFor.map((item: any) => ({
-                  benefit: item.condition || item.use || item.benefit || '',
-                  evidence_level: item.evidenceLevel || 'Moderada',
-                  grade: item.grade || 'C',
-                  studies_found: item.studyCount || 0,
-                  total_participants: 0,
-                  summary: item.description || item.notes || '',
-                })),
-                doesntWorkFor: doesntWorkFor.map((item: any) => ({
-                  benefit: item.condition || item.use || item.benefit || '',
-                  evidence_level: item.evidenceLevel || 'Limitada',
-                  grade: item.grade || 'D',
-                  studies_found: item.studyCount || 0,
-                  total_participants: 0,
-                  summary: item.description || item.notes || '',
-                })),
-                limitedEvidence: limitedEvidence.map((item: any) => ({
-                  benefit: item.condition || item.use || item.benefit || '',
-                  evidence_level: 'Limitada',
-                  grade: item.grade || 'C',
-                  studies_found: item.studyCount || 0,
-                  total_participants: 0,
-                  summary: item.description || item.notes || '',
-                })),
-              },
-            },
-          };
-
-          const filtered = filterByBenefit(tempRecommendation, benefitQuery);
-          const filteredBenefits = filtered.supplement?.structured_benefits || {};
-
-          // Convert back to BenefitEvidence format
-          worksFor = (filteredBenefits.worksFor || []).map((item: any) => ({
-            benefit: item.benefit,
-            evidence_level: item.evidence_level,
-            grade: item.grade,
-            studies_found: item.studies_found,
-            total_participants: item.total_participants,
-            summary: item.summary,
-          }));
-
-          doesntWorkFor = (filteredBenefits.doesntWorkFor || []).map((item: any) => ({
-            benefit: item.benefit,
-            evidence_level: item.evidence_level,
-            grade: item.grade,
-            studies_found: item.studies_found,
-            total_participants: item.total_participants,
-            summary: item.summary,
-          }));
-
-          limitedEvidence = (filteredBenefits.limitedEvidence || []).map((item: any) => ({
-            benefit: item.benefit,
-            evidence_level: item.evidence_level,
-            grade: item.grade,
-            studies_found: item.studies_found,
-            total_participants: item.total_participants,
-            summary: item.summary,
-          }));
-
-          // Filter by relevance score
-          const relevantWorksFor = worksFor.filter((item: any) => (item._relevanceScore || 0) > 0);
-          const relevantDoesntWorkFor = doesntWorkFor.filter((item: any) => (item._relevanceScore || 0) > 0);
-          const relevantLimitedEvidence = limitedEvidence.filter((item: any) => (item._relevanceScore || 0) > 0);
-
-          const hasRelevantData = relevantWorksFor.length > 0 ||
-                                  relevantDoesntWorkFor.length > 0 ||
-                                  relevantLimitedEvidence.length > 0;
-
-          // If no relevant data, show message instead of generic data
-          if (!hasRelevantData) {
-            console.log('[Benefit Modal] No relevant benefits found for:', benefitQuery);
-            // Clear arrays to show "not found" message
-            worksFor = [];
-            doesntWorkFor = [];
-            limitedEvidence = [];
-          } else {
-            worksFor = relevantWorksFor;
-            doesntWorkFor = relevantDoesntWorkFor;
-            limitedEvidence = relevantLimitedEvidence;
-          }
-        } // End of disabled client-side filtering
 
         setData({
           worksFor,
