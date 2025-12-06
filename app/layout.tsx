@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "SuplementIA - Evidence-Based Health Solutions",
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en" className="light">
       <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         {children}
+        <Analytics />
       </body>
     </html>
   );
