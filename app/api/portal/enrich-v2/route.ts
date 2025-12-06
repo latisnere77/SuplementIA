@@ -115,15 +115,16 @@ export async function POST(request: NextRequest) {
     
     const enrichResponse = await fetch(enricherUrl, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'X-Request-ID': requestId,
       },
       body: JSON.stringify({
         supplementId: supplementName,
         category: category || 'general',
-        forceRefresh: forceRefresh || false,
+        forceRefresh: benefitQuery ? true : (forceRefresh || false), // Force refresh for benefit-specific searches
         studies: studies.slice(0, 8), // Increased to 8 studies for richer evidence (5+ items per section)
+        benefitQuery: benefitQuery || undefined, // Pass benefitQuery to enricher for focused analysis
       }),
       signal: AbortSignal.timeout(90000), // 90s timeout for Claude
     });
