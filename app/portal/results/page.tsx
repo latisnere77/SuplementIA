@@ -32,6 +32,7 @@ import { searchSupplement } from '@/lib/portal/supplement-search';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 import { normalizeBenefit } from '@/lib/portal/benefit-normalization';
 import { getTopSuggestedBenefit, getSuggestedBenefits } from '@/lib/portal/supplement-benefit-suggestions';
+import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -893,7 +894,13 @@ function ResultsPageContent() {
                   console.log('[State Update] Before setting recommendation from polling - clearing error first');
                   setError(null); // Clear error before setting recommendation
                   console.log('[State Update] Setting recommendation from polling');
-                  setRecommendation(statusData.recommendation);
+
+                  // Apply client-side benefit filter if benefitQuery exists
+                  const finalRecommendation = submittedBenefitQuery
+                    ? filterByBenefit(statusData.recommendation, submittedBenefitQuery)
+                    : statusData.recommendation;
+
+                  setRecommendation(finalRecommendation);
                   console.log('[State Update] Setting isLoading to false');
                   setIsLoading(false);
                   return; // Stop polling
@@ -976,7 +983,13 @@ function ResultsPageContent() {
               console.log('[State Update] Before setting recommendation - clearing error first');
               setError(null); // Clear error before setting recommendation
               console.log('[State Update] Setting recommendation from quiz API');
-              setRecommendation(data.recommendation);
+
+              // Apply client-side benefit filter if benefitQuery exists
+              const finalRecommendation = submittedBenefitQuery
+                ? filterByBenefit(data.recommendation, submittedBenefitQuery)
+                : data.recommendation;
+
+              setRecommendation(finalRecommendation);
               console.log('[State Update] Setting isLoading to false');
               setIsLoading(false); // Stop loading spinner
             }
