@@ -211,9 +211,18 @@ export default function BenefitStudiesModal({
                                   relevantDoesntWorkFor.length > 0 ||
                                   relevantLimitedEvidence.length > 0;
 
-          worksFor = hasRelevantData ? relevantWorksFor : worksFor.slice(0, 3);
-          doesntWorkFor = hasRelevantData ? relevantDoesntWorkFor : doesntWorkFor.slice(0, 3);
-          limitedEvidence = hasRelevantData ? relevantLimitedEvidence : limitedEvidence.slice(0, 3);
+          // If no relevant data, show message instead of generic data
+          if (!hasRelevantData) {
+            console.log('[Benefit Modal] No relevant benefits found for:', benefitQuery);
+            // Clear arrays to show "not found" message
+            worksFor = [];
+            doesntWorkFor = [];
+            limitedEvidence = [];
+          } else {
+            worksFor = relevantWorksFor;
+            doesntWorkFor = relevantDoesntWorkFor;
+            limitedEvidence = relevantLimitedEvidence;
+          }
         }
 
         setData({
@@ -342,17 +351,30 @@ export default function BenefitStudiesModal({
                 </div>
               )}
 
-              {/* No data found - Show debug info */}
+              {/* No data found - Show helpful message */}
               {data.worksFor.length === 0 &&
                 data.doesntWorkFor.length === 0 &&
                 data.limitedEvidence.length === 0 && (
                   <div className="text-center py-8">
-                    <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 font-medium mb-2">
-                      No se encontraron beneficios estructurados
+                    <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+                    <p className="text-gray-900 font-bold text-lg mb-2">
+                      No encontramos estudios específicos de {supplementName} para {benefitQueryEs}
                     </p>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Hay {data.totalStudies} estudios disponibles, pero están en formato raw (sin estructurar).
+                    <p className="text-gray-600 mb-4">
+                      Nuestra base de datos tiene {data.totalStudies} estudios sobre {supplementName},
+                      pero ninguno enfocado específicamente en {benefitQueryEs.toLowerCase()}.
+                    </p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-left max-w-lg mx-auto">
+                      <p className="text-sm text-blue-900 font-medium mb-2">💡 ¿Qué puedes hacer?</p>
+                      <ul className="text-sm text-blue-800 space-y-1">
+                        <li>• Cierra este popup y revisa todos los beneficios disponibles de {supplementName}</li>
+                        <li>• Busca otros suplementos que SÍ tengan estudios para {benefitQueryEs.toLowerCase()}</li>
+                        <li>• Consulta fuentes adicionales como examine.com o PubMed directamente</li>
+                      </ul>
+                    </div>
+                    <p className="text-xs text-gray-500 mb-4">
+                      Nota: Aunque {supplementName} puede tener beneficios para {benefitQueryEs.toLowerCase()}
+                      (es un uso popular), nuestra base de datos aún no incluye estudios científicos específicos sobre esta combinación.
                     </p>
 
                     {/* DEBUG: Show what data we have */}
