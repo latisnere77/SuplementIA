@@ -74,37 +74,64 @@ export default function BenefitStudiesModal({
       return;
     }
 
-    // Process benefit-specific studies when modal opens
-    const processBenefitStudies = () => {
+    // Fetch benefit-specific studies from backend
+    const fetchBenefitStudies = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        console.log('[Benefit Modal] Processing studies:', {
+        console.log('[Benefit Modal] Fetching benefit-specific studies:', {
           supplement: supplementName,
           benefit: benefitQuery,
           benefitEs: benefitQueryEs,
-          hasRecommendation: !!passedRecommendation,
         });
 
-        // Use passed recommendation data (already loaded in parent)
-        if (!passedRecommendation) {
-          throw new Error('No hay datos de recomendación disponibles');
+        // Make API call with benefitQuery to get filtered results
+        const response = await fetch('/api/portal/enrich-v2', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            supplementName: supplementName,
+            benefitQuery: benefitQuery, // This is the key - backend will filter studies
+            maxStudies: 30, // Request more results to catch older studies
+            category: supplementName,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error fetching studies: ${response.status}`);
         }
 
-        // Try to get data from multiple sources
-        const recommendation = passedRecommendation;
+        const apiData = await response.json();
+
+        if (!apiData.success) {
+          throw new Error(apiData.error || 'Failed to fetch studies');
+        }
+
+        // Use the API response data
+        const recommendation = apiData;
         const evidenceSummary = recommendation.evidence_summary || {};
 
         // CORRECT PATH: Data is in supplement.worksFor, NOT supplement.structured_benefits.worksFor
         const supplement = recommendation.supplement || {};
 
+        // Backend already filtered studies by benefitQuery - use them directly
         let worksFor = supplement.worksFor || [];
         let doesntWorkFor = supplement.doesntWorkFor || [];
         let limitedEvidence = supplement.limitedEvidence || [];
 
-        // Source 2: If structured_benefits is empty, try to extract from raw studies
-        if (worksFor.length === 0 && doesntWorkFor.length === 0 && limitedEvidence.length === 0) {
+        // Debug: Log what we received
+        console.log('[Benefit Modal] Data received:', {
+          worksForCount: worksFor.length,
+          doesntWorkForCount: doesntWorkFor.length,
+          limitedEvidenceCount: limitedEvidence.length,
+          sampleWorksFor: worksFor[0],
+        });
+
+        // Skip all the old client-side filtering - backend already did it
+        if (false) {
           const metadata = (recommendation as any)._enrichment_metadata || {};
           const studies = metadata.studies || {};
           const positiveStudies = studies.ranked?.positive || studies.all || [];
@@ -223,7 +250,7 @@ export default function BenefitStudiesModal({
             doesntWorkFor = relevantDoesntWorkFor;
             limitedEvidence = relevantLimitedEvidence;
           }
-        }
+        } // End of disabled client-side filtering
 
         setData({
           worksFor,
@@ -240,8 +267,8 @@ export default function BenefitStudiesModal({
       }
     };
 
-    processBenefitStudies();
-  }, [isOpen, supplementName, benefitQuery, benefitQueryEs, passedRecommendation]);
+    fetchBenefitStudies();
+  }, [isOpen, supplementName, benefitQuery, benefitQueryEs]);
 
   if (!isOpen) return null;
 
