@@ -10,6 +10,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
 
 interface BenefitStudiesModalProps {
   isOpen: boolean;
@@ -106,39 +107,42 @@ export default function BenefitStudiesModal({
           throw new Error('No se encontraron estudios para este beneficio');
         }
 
-        // Extract benefit-specific data
-        const supplement = result.recommendation.supplement || {};
+        // Apply intelligent benefit filter with synonyms and scoring
+        const filteredRecommendation = filterByBenefit(result.recommendation, benefitQuery);
+
+        // Extract filtered data
+        const supplement = filteredRecommendation.supplement || {};
         const structuredBenefits = supplement.structured_benefits || {};
-        const evidenceSummary = result.recommendation.evidence_summary || {};
+        const evidenceSummary = filteredRecommendation.evidence_summary || {};
 
-        // Filter benefits related to the query
-        const worksFor = (structuredBenefits.worksFor || []).filter((item: BenefitEvidence) =>
-          isRelevantBenefit(item.benefit, benefitQuery, benefitQueryEs)
-        );
+        // Get filtered benefits (already sorted by relevance score)
+        const worksFor = structuredBenefits.worksFor || [];
+        const doesntWorkFor = structuredBenefits.doesntWorkFor || [];
+        const limitedEvidence = structuredBenefits.limitedEvidence || [];
 
-        const doesntWorkFor = (structuredBenefits.doesntWorkFor || []).filter((item: BenefitEvidence) =>
-          isRelevantBenefit(item.benefit, benefitQuery, benefitQueryEs)
-        );
+        // Filter to show only items with relevance score > 0 (if any exist)
+        const relevantWorksFor = worksFor.filter((item: any) => (item._relevanceScore || 0) > 0);
+        const relevantDoesntWorkFor = doesntWorkFor.filter((item: any) => (item._relevanceScore || 0) > 0);
+        const relevantLimitedEvidence = limitedEvidence.filter((item: any) => (item._relevanceScore || 0) > 0);
 
-        const limitedEvidence = (structuredBenefits.limitedEvidence || []).filter((item: BenefitEvidence) =>
-          isRelevantBenefit(item.benefit, benefitQuery, benefitQueryEs)
-        );
-
-        // If no relevant data found, show all data
-        const hasRelevantData = worksFor.length > 0 || doesntWorkFor.length > 0 || limitedEvidence.length > 0;
+        // If we found relevant items, use only those. Otherwise show top 3 of each category
+        const hasRelevantData = relevantWorksFor.length > 0 ||
+                                relevantDoesntWorkFor.length > 0 ||
+                                relevantLimitedEvidence.length > 0;
 
         setData({
-          worksFor: hasRelevantData ? worksFor : structuredBenefits.worksFor || [],
-          doesntWorkFor: hasRelevantData ? doesntWorkFor : structuredBenefits.doesntWorkFor || [],
-          limitedEvidence: hasRelevantData ? limitedEvidence : structuredBenefits.limitedEvidence || [],
+          worksFor: hasRelevantData ? relevantWorksFor : worksFor.slice(0, 3),
+          doesntWorkFor: hasRelevantData ? relevantDoesntWorkFor : doesntWorkFor.slice(0, 3),
+          limitedEvidence: hasRelevantData ? relevantLimitedEvidence : limitedEvidence.slice(0, 3),
           totalStudies: evidenceSummary.totalStudies || 0,
           totalParticipants: evidenceSummary.totalParticipants || 0,
         });
 
         console.log('[Benefit Modal] Data loaded:', {
-          worksFor: worksFor.length,
-          doesntWorkFor: doesntWorkFor.length,
-          limitedEvidence: limitedEvidence.length,
+          worksFor: hasRelevantData ? relevantWorksFor.length : worksFor.slice(0, 3).length,
+          doesntWorkFor: hasRelevantData ? relevantDoesntWorkFor.length : doesntWorkFor.slice(0, 3).length,
+          limitedEvidence: hasRelevantData ? relevantLimitedEvidence.length : limitedEvidence.slice(0, 3).length,
+          hasRelevantData,
         });
       } catch (err: any) {
         console.error('[Benefit Modal] Error:', err);
@@ -150,17 +154,6 @@ export default function BenefitStudiesModal({
 
     fetchBenefitStudies();
   }, [isOpen, supplementName, benefitQuery, benefitQueryEs]);
-
-  // Helper function to check if benefit is relevant
-  const isRelevantBenefit = (benefit: string, queryEn: string, queryEs: string): boolean => {
-    const lowerBenefit = benefit.toLowerCase();
-    const lowerQueryEn = queryEn.toLowerCase();
-    const lowerQueryEs = queryEs.toLowerCase();
-
-    // Check if benefit contains any words from the queries
-    const queryWords = [...lowerQueryEn.split(/\s+/), ...lowerQueryEs.split(/\s+/)];
-    return queryWords.some(word => word.length > 3 && lowerBenefit.includes(word));
-  };
 
   if (!isOpen) return null;
 
@@ -276,11 +269,12 @@ export default function BenefitStudiesModal({
                 data.limitedEvidence.length === 0 && (
                   <div className="text-center py-8">
                     <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">
-                      No se encontraron estudios específicos para "{benefitQueryEs}"
+                    <p className="text-gray-600 font-medium mb-2">
+                      No se encontraron estudios para este suplemento
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Intenta con un término más general o consulta la página principal
+                    <p className="text-sm text-gray-500">
+                      Esto puede significar que aún no hay suficientes estudios científicos publicados
+                      sobre {supplementName.toLowerCase()} y {benefitQueryEs.toLowerCase()}.
                     </p>
                   </div>
                 )}
