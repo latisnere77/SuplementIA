@@ -118,23 +118,55 @@ export default function BenefitStudiesModal({
         const data = recommendation.data || {};
 
         // Backend already filtered studies by benefitQuery - use them directly
-        let worksFor = data.worksFor || [];
-        let doesntWorkFor = data.doesntWorkFor || [];
-        let limitedEvidence = data.limitedEvidence || [];
+        const rawWorksFor = data.worksFor || [];
+        const rawDoesntWorkFor = data.doesntWorkFor || [];
+        const rawLimitedEvidence = data.limitedEvidence || [];
 
-        // Backend already filtered by benefitQuery - use data directly
-        console.log('[Benefit Modal] Data received from API:', {
+        console.log('[Benefit Modal] Raw data from API:', {
+          worksForCount: rawWorksFor.length,
+          sampleWorksFor: rawWorksFor[0],
+        });
+
+        // Map API fields to UI expected format
+        // API returns: condition, evidenceGrade, notes, studyCount
+        // UI expects: benefit, grade, summary, studies_found
+        const worksFor = rawWorksFor.map((item: any) => ({
+          benefit: item.condition || item.benefit || '',
+          evidence_level: item.evidenceLevel || 'Moderada',
+          grade: item.evidenceGrade || item.grade || 'C',
+          studies_found: item.studyCount || item.studies_found || 0,
+          total_participants: item.totalParticipants || item.total_participants || 0,
+          summary: item.notes || item.summary || '',
+        }));
+
+        const doesntWorkFor = rawDoesntWorkFor.map((item: any) => ({
+          benefit: item.condition || item.benefit || '',
+          evidence_level: item.evidenceLevel || 'Limitada',
+          grade: item.evidenceGrade || item.grade || 'D',
+          studies_found: item.studyCount || item.studies_found || 0,
+          total_participants: item.totalParticipants || item.total_participants || 0,
+          summary: item.notes || item.summary || '',
+        }));
+
+        const limitedEvidence = rawLimitedEvidence.map((item: any) => ({
+          benefit: item.condition || item.benefit || '',
+          evidence_level: item.evidenceLevel || 'Limitada',
+          grade: item.evidenceGrade || item.grade || 'C',
+          studies_found: item.studyCount || item.studies_found || 0,
+          total_participants: item.totalParticipants || item.total_participants || 0,
+          summary: item.notes || item.summary || '',
+        }));
+
+        console.log('[Benefit Modal] Mapped data for UI:', {
           worksForCount: worksFor.length,
-          doesntWorkForCount: doesntWorkFor.length,
-          limitedEvidenceCount: limitedEvidence.length,
-          sampleWorksFor: worksFor[0],
+          sampleMapped: worksFor[0],
         });
 
         setData({
           worksFor,
           doesntWorkFor,
           limitedEvidence,
-          totalStudies: evidenceSummary.totalStudies || 0,
+          totalStudies: data.totalStudies || evidenceSummary.totalStudies || 0,
           totalParticipants: evidenceSummary.totalParticipants || 0,
         });
       } catch (err: any) {
