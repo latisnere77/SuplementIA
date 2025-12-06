@@ -114,13 +114,13 @@ export default function BenefitStudiesModal({
         const recommendation = apiData;
         const evidenceSummary = recommendation.evidence_summary || {};
 
-        // CORRECT PATH: Data is in supplement.worksFor, NOT supplement.structured_benefits.worksFor
-        const supplement = recommendation.supplement || {};
+        // CORRECT PATH: API returns data in data.worksFor, NOT supplement.worksFor
+        const data = recommendation.data || {};
 
         // Backend already filtered studies by benefitQuery - use them directly
-        let worksFor = supplement.worksFor || [];
-        let doesntWorkFor = supplement.doesntWorkFor || [];
-        let limitedEvidence = supplement.limitedEvidence || [];
+        let worksFor = data.worksFor || [];
+        let doesntWorkFor = data.doesntWorkFor || [];
+        let limitedEvidence = data.limitedEvidence || [];
 
         // Debug: Log what we received
         console.log('[Benefit Modal] Data received:', {
@@ -168,7 +168,7 @@ export default function BenefitStudiesModal({
           const tempRecommendation = {
             ...recommendation,
             supplement: {
-              ...supplement,
+              ...data,
               structured_benefits: {
                 worksFor: worksFor.map((item: any) => ({
                   benefit: item.condition || item.use || item.benefit || '',
