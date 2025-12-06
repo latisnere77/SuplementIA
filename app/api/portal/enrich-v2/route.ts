@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         supplementName: searchTerm, // Use expanded term if available
         ...(benefitQuery && { benefitQuery }), // Only include if provided
-        maxResults: Math.min(maxStudies, 10),
+        maxResults: benefitQuery ? Math.min(maxStudies, 30) : Math.min(maxStudies, 10), // More results for benefit searches to catch older studies
         rctOnly: false,
         yearFrom: 2010,
         humanStudiesOnly: true,
