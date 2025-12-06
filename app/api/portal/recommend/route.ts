@@ -190,6 +190,7 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             supplementName: searchTerm,
+            benefitQuery, // Pass benefit query in async mode too
             category: searchTerm,
             forceRefresh: false,
             maxStudies: 10,
