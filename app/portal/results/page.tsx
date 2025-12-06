@@ -33,6 +33,7 @@ import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 import { normalizeBenefit } from '@/lib/portal/benefit-normalization';
 import { getTopSuggestedBenefit, getSuggestedBenefits } from '@/lib/portal/supplement-benefit-suggestions';
 import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
+import BenefitStudiesModal from '@/components/portal/BenefitStudiesModal';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -455,6 +456,9 @@ function ResultsPageContent() {
   const [benefitQuery, setBenefitQuery] = useState('');
   const [submittedBenefitQuery, setSubmittedBenefitQuery] = useState('');
 
+  // Modal state for benefit-specific studies popup
+  const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
+  const [selectedBenefit, setSelectedBenefit] = useState<{ en: string; es: string } | null>(null);
 
   // ====================================
   // LOGGING: State Change Tracking
@@ -1276,9 +1280,12 @@ function ResultsPageContent() {
                         key={idx}
                         type="button"
                         onClick={() => {
-                          setBenefitQuery(suggestion.benefitEs);
-                          setSubmittedBenefitQuery(suggestion.benefit);
-                          setIsLoading(true);
+                          // Open modal with benefit-specific studies
+                          setSelectedBenefit({
+                            en: suggestion.benefit,
+                            es: suggestion.benefitEs,
+                          });
+                          setIsBenefitModalOpen(true);
                         }}
                         className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-full text-xs font-medium text-blue-700 transition-colors"
                         title={suggestion.reason}
@@ -1461,6 +1468,20 @@ function ResultsPageContent() {
           }
         }}
       />
+
+      {/* Benefit Studies Modal */}
+      {selectedBenefit && (
+        <BenefitStudiesModal
+          isOpen={isBenefitModalOpen}
+          onClose={() => {
+            setIsBenefitModalOpen(false);
+            setSelectedBenefit(null);
+          }}
+          supplementName={recommendation?.category || query || 'supplement'}
+          benefitQuery={selectedBenefit.en}
+          benefitQueryEs={selectedBenefit.es}
+        />
+      )}
     </div>
   );
 }
