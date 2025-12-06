@@ -297,18 +297,45 @@ export default function BenefitStudiesModal({
                 </div>
               )}
 
-              {/* No data found */}
+              {/* No data found - Show debug info */}
               {data.worksFor.length === 0 &&
                 data.doesntWorkFor.length === 0 &&
                 data.limitedEvidence.length === 0 && (
                   <div className="text-center py-8">
                     <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-600 font-medium mb-2">
-                      No se encontraron estudios para este suplemento
+                      No se encontraron beneficios estructurados
                     </p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Hay {data.totalStudies} estudios disponibles, pero están en formato raw (sin estructurar).
+                    </p>
+
+                    {/* DEBUG: Show what data we have */}
+                    <details className="text-left bg-gray-50 border border-gray-200 rounded p-4 mb-4">
+                      <summary className="cursor-pointer font-medium text-gray-700 mb-2">
+                        🔍 Debug: Ver estructura de datos
+                      </summary>
+                      <pre className="text-xs text-gray-600 overflow-auto max-h-96 whitespace-pre-wrap">
+                        {JSON.stringify({
+                          hasRecommendation: !!passedRecommendation,
+                          hasSupplement: !!(passedRecommendation?.supplement),
+                          hasStructuredBenefits: !!(passedRecommendation?.supplement?.structured_benefits),
+                          structuredBenefitsKeys: passedRecommendation?.supplement?.structured_benefits
+                            ? Object.keys(passedRecommendation.supplement.structured_benefits)
+                            : [],
+                          worksForLength: passedRecommendation?.supplement?.structured_benefits?.worksFor?.length || 0,
+                          doesntWorkForLength: passedRecommendation?.supplement?.structured_benefits?.doesntWorkFor?.length || 0,
+                          hasMetadata: !!(passedRecommendation as any)?._enrichment_metadata,
+                          hasStudies: !!(passedRecommendation as any)?._enrichment_metadata?.studies,
+                          studiesKeys: (passedRecommendation as any)?._enrichment_metadata?.studies
+                            ? Object.keys((passedRecommendation as any)._enrichment_metadata.studies)
+                            : [],
+                        }, null, 2)}
+                      </pre>
+                    </details>
+
                     <p className="text-sm text-gray-500">
-                      Esto puede significar que aún no hay suficientes estudios científicos publicados
-                      sobre {supplementName.toLowerCase()} y {benefitQueryEs.toLowerCase()}.
+                      Por favor toma un screenshot de la sección Debug arriba y compártela con el desarrollador.
                     </p>
                   </div>
                 )}
