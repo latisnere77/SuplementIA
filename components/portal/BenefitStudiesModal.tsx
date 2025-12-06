@@ -107,6 +107,18 @@ export default function BenefitStudiesModal({
           throw new Error('No se encontraron estudios para este beneficio');
         }
 
+        // DEBUG: Log raw data structure
+        console.log('[Benefit Modal] Raw recommendation structure:', {
+          hasRecommendation: !!result.recommendation,
+          hasSupplement: !!(result.recommendation?.supplement),
+          hasStructuredBenefits: !!(result.recommendation?.supplement?.structured_benefits),
+          hasEvidenceSummary: !!result.recommendation?.evidence_summary,
+          supplementKeys: result.recommendation?.supplement ? Object.keys(result.recommendation.supplement) : [],
+          evidenceSummaryKeys: result.recommendation?.evidence_summary ? Object.keys(result.recommendation.evidence_summary) : [],
+        });
+
+        console.log('[Benefit Modal] Structured benefits:', result.recommendation?.supplement?.structured_benefits);
+
         // Apply intelligent benefit filter with synonyms and scoring
         const filteredRecommendation = filterByBenefit(result.recommendation, benefitQuery);
 
@@ -114,6 +126,13 @@ export default function BenefitStudiesModal({
         const supplement = filteredRecommendation.supplement || {};
         const structuredBenefits = supplement.structured_benefits || {};
         const evidenceSummary = filteredRecommendation.evidence_summary || {};
+
+        console.log('[Benefit Modal] After filter - structuredBenefits:', {
+          hasWorksFor: !!structuredBenefits.worksFor,
+          worksForLength: structuredBenefits.worksFor?.length || 0,
+          hasDoesntWorkFor: !!structuredBenefits.doesntWorkFor,
+          doesntWorkForLength: structuredBenefits.doesntWorkFor?.length || 0,
+        });
 
         // Get filtered benefits (already sorted by relevance score)
         const worksFor = structuredBenefits.worksFor || [];
