@@ -30,6 +30,8 @@ import { traceSearch } from '@/lib/portal/xray-client';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
 import { searchSupplement } from '@/lib/portal/supplement-search';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
+import { normalizeBenefit } from '@/lib/portal/benefit-normalization';
+import { getTopSuggestedBenefit, getSuggestedBenefits } from '@/lib/portal/supplement-benefit-suggestions';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -501,6 +503,70 @@ function ResultsPageContent() {
       setError(null);
     }
   }, [isOnline, error]);
+
+  // ====================================
+  // BENEFIT QUERY EXTRACTION FROM URL
+  // ====================================
+  // Extract and normalize benefit query from URL (e.g., "magnesio para dormir")
+  // This ensures benefit-specific searches work from the main search bar
+  useEffect(() => {
+    const query = searchParams.get('q');
+    if (!query) return;
+
+    let benefitDetected = false;
+
+    // 1. Check for explicit benefit keywords: " para " (Spanish) or " for " (English)
+    const benefitKeywords = [' para ', ' for '];
+
+    for (const keyword of benefitKeywords) {
+      if (query.toLowerCase().includes(keyword)) {
+        // Split query: "magnesio para dormir" → ["magnesio", "dormir"]
+        const parts = query.split(new RegExp(keyword, 'i'));
+        const extractedBenefit = parts.slice(1).join(keyword).trim();
+
+        if (extractedBenefit) {
+          // Normalize benefit from Spanish to English
+          const normalized = normalizeBenefit(extractedBenefit);
+
+          console.log('[Benefit Extraction] URL benefit detected:', {
+            original: extractedBenefit,
+            normalized: normalized.normalized,
+            confidence: normalized.confidence,
+            category: normalized.category,
+          });
+
+          // Use normalized English term if confidence is high enough
+          const finalBenefit = normalized.confidence >= 0.7
+            ? normalized.normalized
+            : extractedBenefit;
+
+          setBenefitQuery(extractedBenefit); // Show original in UI
+          setSubmittedBenefitQuery(finalBenefit); // Use normalized for API
+          benefitDetected = true;
+        }
+        break;
+      }
+    }
+
+    // 2. If NO explicit benefit, check for auto-suggested benefits based on supplement
+    if (!benefitDetected) {
+      const topSuggestion = getTopSuggestedBenefit(query);
+
+      if (topSuggestion) {
+        console.log('[Benefit Auto-Suggestion] Supplement has suggested benefits:', {
+          supplement: query,
+          topBenefit: topSuggestion.benefit,
+          benefitEs: topSuggestion.benefitEs,
+          priority: topSuggestion.priority,
+          reason: topSuggestion.reason,
+        });
+
+        // Auto-populate with top suggested benefit
+        setBenefitQuery(topSuggestion.benefitEs); // Show Spanish in UI
+        setSubmittedBenefitQuery(topSuggestion.benefit); // Use English for API
+      }
+    }
+  }, [searchParams]);
 
   const isFreeUser = !subscription || subscription.plan_id === 'free';
 
@@ -1179,12 +1245,64 @@ function ResultsPageContent() {
         <div className="mb-8 bg-white p-6 rounded-xl border-2 border-gray-200 shadow-sm">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">Buscar por Beneficio Específico</h2>
           <p className="text-sm text-gray-600 mb-4">
-            ¿Te interesa saber si este suplemento sirve para algo en particular? (ej: "memoria", "ansiedad", "pérdida de cabello").
+            ¿Te interesa saber si este suplemento sirve para algo en particular? Escribe en español, buscamos en la literatura científica en inglés.
+          </p>
+
+          {/* Auto-suggested benefits for this supplement */}
+          {(() => {
+            const suggestions = getSuggestedBenefits(recommendation.category);
+            if (suggestions.length > 0) {
+              return (
+                <div className="mb-4">
+                  <p className="text-xs font-medium text-blue-700 mb-2">
+                    🎯 Beneficios más investigados para {recommendation.category}:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {suggestions.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setBenefitQuery(suggestion.benefitEs);
+                          setSubmittedBenefitQuery(suggestion.benefit);
+                          setIsLoading(true);
+                        }}
+                        className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-full text-xs font-medium text-blue-700 transition-colors"
+                        title={suggestion.reason}
+                      >
+                        {suggestion.benefitEs}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
+
+          <p className="text-xs text-gray-500 mb-3">
+            💡 O escribe tu propio beneficio: "crecimiento de cabello", "piel hidratada", "cansancio", "memoria"
           </p>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              setSubmittedBenefitQuery(benefitQuery);
+
+              // Normalize benefit query from Spanish to English
+              const normalized = normalizeBenefit(benefitQuery);
+
+              console.log('[Benefit Form Submit] Normalizing benefit:', {
+                original: benefitQuery,
+                normalized: normalized.normalized,
+                confidence: normalized.confidence,
+                category: normalized.category,
+              });
+
+              // Use normalized English term if confidence is high enough
+              const finalBenefit = normalized.confidence >= 0.7
+                ? normalized.normalized
+                : benefitQuery;
+
+              setSubmittedBenefitQuery(finalBenefit);
               setIsLoading(true); // Show loading spinner for new search
             }}
             className="flex flex-col sm:flex-row gap-3"
@@ -1193,7 +1311,7 @@ function ResultsPageContent() {
               type="text"
               value={benefitQuery}
               onChange={(e) => setBenefitQuery(e.target.value)}
-              placeholder="Escribe un beneficio o problema..."
+              placeholder="ej: crecimiento de cabello, piel hidratada..."
               className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             />
             <button
