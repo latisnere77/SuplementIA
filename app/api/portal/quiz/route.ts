@@ -12,7 +12,7 @@ import { createJob, storeJobResult } from '@/lib/portal/job-store';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 120; // 2 minutes to allow for recommend endpoint processing
+export const maxDuration = 180; // 3 minutes to allow for complex supplements with many studies
 
 // Check if we're in demo mode
 // IMPORTANT: DISABLED or empty PORTAL_API_URL means use internal intelligent system, NOT demo mode

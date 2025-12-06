@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 
 export const runtime = 'nodejs';
-export const maxDuration = 120; // Increased to 120s to allow Claude processing
+export const maxDuration = 180; // Increased to 180s for complex supplements with many studies
 export const dynamic = 'force-dynamic';
 
 // Simple UUID generator
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
         studies: studies.slice(0, 8), // Increased to 8 studies for richer evidence (5+ items per section)
         benefitQuery: benefitQuery || undefined, // Pass benefitQuery to enricher for focused analysis
       }),
-      signal: AbortSignal.timeout(90000), // 90s timeout for Claude
+      signal: AbortSignal.timeout(150000), // 150s timeout for Claude (complex supplements can take longer)
     });
     
     if (!enrichResponse.ok) {
