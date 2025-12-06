@@ -107,61 +107,91 @@ export default function BenefitStudiesModal({
           throw new Error('No se encontraron estudios para este beneficio');
         }
 
-        // DEBUG: Log raw data structure
-        console.log('[Benefit Modal] Raw recommendation structure:', {
-          hasRecommendation: !!result.recommendation,
-          hasSupplement: !!(result.recommendation?.supplement),
-          hasStructuredBenefits: !!(result.recommendation?.supplement?.structured_benefits),
-          hasEvidenceSummary: !!result.recommendation?.evidence_summary,
-          supplementKeys: result.recommendation?.supplement ? Object.keys(result.recommendation.supplement) : [],
-          evidenceSummaryKeys: result.recommendation?.evidence_summary ? Object.keys(result.recommendation.evidence_summary) : [],
-        });
+        // Try to get data from multiple sources
+        const recommendation = result.recommendation;
+        const evidenceSummary = recommendation.evidence_summary || {};
 
-        console.log('[Benefit Modal] Structured benefits:', result.recommendation?.supplement?.structured_benefits);
-
-        // Apply intelligent benefit filter with synonyms and scoring
-        const filteredRecommendation = filterByBenefit(result.recommendation, benefitQuery);
-
-        // Extract filtered data
-        const supplement = filteredRecommendation.supplement || {};
+        // Source 1: structured_benefits (preferred)
+        const supplement = recommendation.supplement || {};
         const structuredBenefits = supplement.structured_benefits || {};
-        const evidenceSummary = filteredRecommendation.evidence_summary || {};
 
-        console.log('[Benefit Modal] After filter - structuredBenefits:', {
-          hasWorksFor: !!structuredBenefits.worksFor,
-          worksForLength: structuredBenefits.worksFor?.length || 0,
-          hasDoesntWorkFor: !!structuredBenefits.doesntWorkFor,
-          doesntWorkForLength: structuredBenefits.doesntWorkFor?.length || 0,
-        });
+        let worksFor = structuredBenefits.worksFor || [];
+        let doesntWorkFor = structuredBenefits.doesntWorkFor || [];
+        let limitedEvidence = structuredBenefits.limitedEvidence || [];
 
-        // Get filtered benefits (already sorted by relevance score)
-        const worksFor = structuredBenefits.worksFor || [];
-        const doesntWorkFor = structuredBenefits.doesntWorkFor || [];
-        const limitedEvidence = structuredBenefits.limitedEvidence || [];
+        // Source 2: If structured_benefits is empty, try to extract from raw studies
+        if (worksFor.length === 0 && doesntWorkFor.length === 0 && limitedEvidence.length === 0) {
+          const metadata = (recommendation as any)._enrichment_metadata || {};
+          const studies = metadata.studies || {};
+          const positiveStudies = studies.ranked?.positive || studies.all || [];
+          const negativeStudies = studies.ranked?.negative || [];
 
-        // Filter to show only items with relevance score > 0 (if any exist)
-        const relevantWorksFor = worksFor.filter((item: any) => (item._relevanceScore || 0) > 0);
-        const relevantDoesntWorkFor = doesntWorkFor.filter((item: any) => (item._relevanceScore || 0) > 0);
-        const relevantLimitedEvidence = limitedEvidence.filter((item: any) => (item._relevanceScore || 0) > 0);
+          // Convert raw studies to benefit format
+          if (positiveStudies.length > 0) {
+            worksFor = positiveStudies.slice(0, 5).map((study: any, idx: number) => ({
+              benefit: study.title || `Estudio ${idx + 1}`,
+              evidence_level: 'Moderada' as const,
+              grade: 'B' as const,
+              studies_found: 1,
+              total_participants: study.participants || 0,
+              summary: study.abstract || study.conclusion || 'Ver estudio completo para más detalles',
+            }));
+          }
 
-        // If we found relevant items, use only those. Otherwise show top 3 of each category
-        const hasRelevantData = relevantWorksFor.length > 0 ||
-                                relevantDoesntWorkFor.length > 0 ||
-                                relevantLimitedEvidence.length > 0;
+          if (negativeStudies.length > 0) {
+            doesntWorkFor = negativeStudies.slice(0, 3).map((study: any, idx: number) => ({
+              benefit: study.title || `Estudio ${idx + 1}`,
+              evidence_level: 'Limitada' as const,
+              grade: 'D' as const,
+              studies_found: 1,
+              total_participants: study.participants || 0,
+              summary: study.abstract || study.conclusion || 'Ver estudio completo para más detalles',
+            }));
+          }
+        }
+
+        // Apply benefit filter if we have data
+        if (worksFor.length > 0 || doesntWorkFor.length > 0) {
+          // Apply intelligent filtering
+          const tempRecommendation = {
+            ...recommendation,
+            supplement: {
+              ...supplement,
+              structured_benefits: {
+                worksFor,
+                doesntWorkFor,
+                limitedEvidence,
+              },
+            },
+          };
+
+          const filtered = filterByBenefit(tempRecommendation, benefitQuery);
+          const filteredBenefits = filtered.supplement?.structured_benefits || {};
+
+          worksFor = filteredBenefits.worksFor || [];
+          doesntWorkFor = filteredBenefits.doesntWorkFor || [];
+          limitedEvidence = filteredBenefits.limitedEvidence || [];
+
+          // Filter by relevance score
+          const relevantWorksFor = worksFor.filter((item: any) => (item._relevanceScore || 0) > 0);
+          const relevantDoesntWorkFor = doesntWorkFor.filter((item: any) => (item._relevanceScore || 0) > 0);
+          const relevantLimitedEvidence = limitedEvidence.filter((item: any) => (item._relevanceScore || 0) > 0);
+
+          const hasRelevantData = relevantWorksFor.length > 0 ||
+                                  relevantDoesntWorkFor.length > 0 ||
+                                  relevantLimitedEvidence.length > 0;
+
+          worksFor = hasRelevantData ? relevantWorksFor : worksFor.slice(0, 3);
+          doesntWorkFor = hasRelevantData ? relevantDoesntWorkFor : doesntWorkFor.slice(0, 3);
+          limitedEvidence = hasRelevantData ? relevantLimitedEvidence : limitedEvidence.slice(0, 3);
+        }
 
         setData({
-          worksFor: hasRelevantData ? relevantWorksFor : worksFor.slice(0, 3),
-          doesntWorkFor: hasRelevantData ? relevantDoesntWorkFor : doesntWorkFor.slice(0, 3),
-          limitedEvidence: hasRelevantData ? relevantLimitedEvidence : limitedEvidence.slice(0, 3),
+          worksFor,
+          doesntWorkFor,
+          limitedEvidence,
           totalStudies: evidenceSummary.totalStudies || 0,
           totalParticipants: evidenceSummary.totalParticipants || 0,
-        });
-
-        console.log('[Benefit Modal] Data loaded:', {
-          worksFor: hasRelevantData ? relevantWorksFor.length : worksFor.slice(0, 3).length,
-          doesntWorkFor: hasRelevantData ? relevantDoesntWorkFor.length : doesntWorkFor.slice(0, 3).length,
-          limitedEvidence: hasRelevantData ? relevantLimitedEvidence.length : limitedEvidence.slice(0, 3).length,
-          hasRelevantData,
         });
       } catch (err: any) {
         console.error('[Benefit Modal] Error:', err);
