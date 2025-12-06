@@ -1480,6 +1480,7 @@ function ResultsPageContent() {
           supplementName={recommendation?.category || query || 'supplement'}
           benefitQuery={selectedBenefit.en}
           benefitQueryEs={selectedBenefit.es}
+          recommendation={recommendation}
         />
       )}
     </div>

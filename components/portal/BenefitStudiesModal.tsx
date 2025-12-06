@@ -18,6 +18,7 @@ interface BenefitStudiesModalProps {
   supplementName: string;
   benefitQuery: string;
   benefitQueryEs: string; // Spanish display name
+  recommendation?: any; // Pass existing recommendation data instead of fetching new
 }
 
 interface BenefitEvidence {
@@ -59,6 +60,7 @@ export default function BenefitStudiesModal({
   supplementName,
   benefitQuery,
   benefitQueryEs,
+  recommendation: passedRecommendation,
 }: BenefitStudiesModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,43 +74,26 @@ export default function BenefitStudiesModal({
       return;
     }
 
-    // Fetch benefit-specific studies when modal opens
-    const fetchBenefitStudies = async () => {
+    // Process benefit-specific studies when modal opens
+    const processBenefitStudies = () => {
       setLoading(true);
       setError(null);
 
       try {
-        console.log('[Benefit Modal] Fetching studies:', {
+        console.log('[Benefit Modal] Processing studies:', {
           supplement: supplementName,
           benefit: benefitQuery,
           benefitEs: benefitQueryEs,
+          hasRecommendation: !!passedRecommendation,
         });
 
-        const response = await fetch('/api/portal/quiz', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            category: supplementName,
-            benefitQuery, // Pass benefit query to backend
-            age: 35,
-            gender: 'male',
-            location: 'CDMX',
-            jobId: `benefit_modal_${Date.now()}`,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: No se pudieron cargar los estudios`);
-        }
-
-        const result = await response.json();
-
-        if (!result.success || !result.recommendation) {
-          throw new Error('No se encontraron estudios para este beneficio');
+        // Use passed recommendation data (already loaded in parent)
+        if (!passedRecommendation) {
+          throw new Error('No hay datos de recomendación disponibles');
         }
 
         // Try to get data from multiple sources
-        const recommendation = result.recommendation;
+        const recommendation = passedRecommendation;
         const evidenceSummary = recommendation.evidence_summary || {};
 
         // Source 1: structured_benefits (preferred)
@@ -201,8 +186,8 @@ export default function BenefitStudiesModal({
       }
     };
 
-    fetchBenefitStudies();
-  }, [isOpen, supplementName, benefitQuery, benefitQueryEs]);
+    processBenefitStudies();
+  }, [isOpen, supplementName, benefitQuery, benefitQueryEs, passedRecommendation]);
 
   if (!isOpen) return null;
 
