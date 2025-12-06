@@ -25,8 +25,11 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { supplementName, benefitQuery, maxStudies = 10, category, forceRefresh = false } = body;
-    
-    console.log(`[enrich-v2] Request ${requestId}: ${supplementName}`);
+
+    console.log(`[enrich-v2] Request ${requestId}: ${supplementName}`, {
+      benefitQuery: benefitQuery || 'none',
+      hasbenefitQuery: !!benefitQuery,
+    });
     
     // Validate input
     if (!supplementName) {
@@ -62,13 +65,13 @@ export async function POST(request: NextRequest) {
     
     const studiesResponse = await fetch(studiesUrl, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'X-Request-ID': requestId,
       },
       body: JSON.stringify({
         supplementName: searchTerm, // Use expanded term if available
-        benefitQuery, // Pass the benefit query to the Lambda
+        ...(benefitQuery && { benefitQuery }), // Only include if provided
         maxResults: Math.min(maxStudies, 10),
         rctOnly: false,
         yearFrom: 2010,
