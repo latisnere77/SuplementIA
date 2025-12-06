@@ -548,22 +548,22 @@ function ResultsPageContent() {
       }
     }
 
-    // 2. If NO explicit benefit, check for auto-suggested benefits based on supplement
+    // 2. If NO explicit benefit, DON'T auto-send to backend
+    // Just log that suggestions are available (they'll show as buttons in UI)
     if (!benefitDetected) {
       const topSuggestion = getTopSuggestedBenefit(query);
 
       if (topSuggestion) {
-        console.log('[Benefit Auto-Suggestion] Supplement has suggested benefits:', {
+        console.log('[Benefit Auto-Suggestion] Supplement has suggested benefits (UI only):', {
           supplement: query,
           topBenefit: topSuggestion.benefit,
           benefitEs: topSuggestion.benefitEs,
           priority: topSuggestion.priority,
-          reason: topSuggestion.reason,
+          note: 'NOT auto-sending to backend - user must click button or type manually',
         });
 
-        // Auto-populate with top suggested benefit
-        setBenefitQuery(topSuggestion.benefitEs); // Show Spanish in UI
-        setSubmittedBenefitQuery(topSuggestion.benefit); // Use English for API
+        // DO NOT auto-populate - let user click the button
+        // setBenefitQuery and setSubmittedBenefitQuery remain empty
       }
     }
   }, [searchParams]);
