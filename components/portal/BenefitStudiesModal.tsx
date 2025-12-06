@@ -96,13 +96,12 @@ export default function BenefitStudiesModal({
         const recommendation = passedRecommendation;
         const evidenceSummary = recommendation.evidence_summary || {};
 
-        // Source 1: structured_benefits (preferred)
+        // CORRECT PATH: Data is in supplement.worksFor, NOT supplement.structured_benefits.worksFor
         const supplement = recommendation.supplement || {};
-        const structuredBenefits = supplement.structured_benefits || {};
 
-        let worksFor = structuredBenefits.worksFor || [];
-        let doesntWorkFor = structuredBenefits.doesntWorkFor || [];
-        let limitedEvidence = structuredBenefits.limitedEvidence || [];
+        let worksFor = supplement.worksFor || [];
+        let doesntWorkFor = supplement.doesntWorkFor || [];
+        let limitedEvidence = supplement.limitedEvidence || [];
 
         // Source 2: If structured_benefits is empty, try to extract from raw studies
         if (worksFor.length === 0 && doesntWorkFor.length === 0 && limitedEvidence.length === 0) {
@@ -138,14 +137,36 @@ export default function BenefitStudiesModal({
         // Apply benefit filter if we have data
         if (worksFor.length > 0 || doesntWorkFor.length > 0) {
           // Apply intelligent filtering
+          // filterByBenefit expects structured_benefits, so we need to create that structure
           const tempRecommendation = {
             ...recommendation,
             supplement: {
               ...supplement,
               structured_benefits: {
-                worksFor,
-                doesntWorkFor,
-                limitedEvidence,
+                worksFor: worksFor.map((item: any) => ({
+                  benefit: item.condition || item.use || item.benefit || '',
+                  evidence_level: item.evidenceLevel || 'Moderada',
+                  grade: item.grade || 'C',
+                  studies_found: item.studyCount || 0,
+                  total_participants: 0,
+                  summary: item.description || item.notes || '',
+                })),
+                doesntWorkFor: doesntWorkFor.map((item: any) => ({
+                  benefit: item.condition || item.use || item.benefit || '',
+                  evidence_level: item.evidenceLevel || 'Limitada',
+                  grade: item.grade || 'D',
+                  studies_found: item.studyCount || 0,
+                  total_participants: 0,
+                  summary: item.description || item.notes || '',
+                })),
+                limitedEvidence: limitedEvidence.map((item: any) => ({
+                  benefit: item.condition || item.use || item.benefit || '',
+                  evidence_level: 'Limitada',
+                  grade: item.grade || 'C',
+                  studies_found: item.studyCount || 0,
+                  total_participants: 0,
+                  summary: item.description || item.notes || '',
+                })),
               },
             },
           };
@@ -153,9 +174,33 @@ export default function BenefitStudiesModal({
           const filtered = filterByBenefit(tempRecommendation, benefitQuery);
           const filteredBenefits = filtered.supplement?.structured_benefits || {};
 
-          worksFor = filteredBenefits.worksFor || [];
-          doesntWorkFor = filteredBenefits.doesntWorkFor || [];
-          limitedEvidence = filteredBenefits.limitedEvidence || [];
+          // Convert back to BenefitEvidence format
+          worksFor = (filteredBenefits.worksFor || []).map((item: any) => ({
+            benefit: item.benefit,
+            evidence_level: item.evidence_level,
+            grade: item.grade,
+            studies_found: item.studies_found,
+            total_participants: item.total_participants,
+            summary: item.summary,
+          }));
+
+          doesntWorkFor = (filteredBenefits.doesntWorkFor || []).map((item: any) => ({
+            benefit: item.benefit,
+            evidence_level: item.evidence_level,
+            grade: item.grade,
+            studies_found: item.studies_found,
+            total_participants: item.total_participants,
+            summary: item.summary,
+          }));
+
+          limitedEvidence = (filteredBenefits.limitedEvidence || []).map((item: any) => ({
+            benefit: item.benefit,
+            evidence_level: item.evidence_level,
+            grade: item.grade,
+            studies_found: item.studies_found,
+            total_participants: item.total_participants,
+            summary: item.summary,
+          }));
 
           // Filter by relevance score
           const relevantWorksFor = worksFor.filter((item: any) => (item._relevanceScore || 0) > 0);
@@ -319,16 +364,14 @@ export default function BenefitStudiesModal({
                         {JSON.stringify({
                           hasRecommendation: !!passedRecommendation,
                           hasSupplement: !!(passedRecommendation?.supplement),
-                          hasStructuredBenefits: !!(passedRecommendation?.supplement?.structured_benefits),
-                          structuredBenefitsKeys: passedRecommendation?.supplement?.structured_benefits
-                            ? Object.keys(passedRecommendation.supplement.structured_benefits)
-                            : [],
-                          worksForLength: passedRecommendation?.supplement?.structured_benefits?.worksFor?.length || 0,
-                          doesntWorkForLength: passedRecommendation?.supplement?.structured_benefits?.doesntWorkFor?.length || 0,
+                          hasWorksFor: !!(passedRecommendation?.supplement?.worksFor),
+                          worksForLength: passedRecommendation?.supplement?.worksFor?.length || 0,
+                          doesntWorkForLength: passedRecommendation?.supplement?.doesntWorkFor?.length || 0,
+                          limitedEvidenceLength: passedRecommendation?.supplement?.limitedEvidence?.length || 0,
                           hasMetadata: !!(passedRecommendation as any)?._enrichment_metadata,
                           hasStudies: !!(passedRecommendation as any)?._enrichment_metadata?.studies,
-                          studiesKeys: (passedRecommendation as any)?._enrichment_metadata?.studies
-                            ? Object.keys((passedRecommendation as any)._enrichment_metadata.studies)
+                          supplementKeys: passedRecommendation?.supplement
+                            ? Object.keys(passedRecommendation.supplement).slice(0, 10)
                             : [],
                         }, null, 2)}
                       </pre>
