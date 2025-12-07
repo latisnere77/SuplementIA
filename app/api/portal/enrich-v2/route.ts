@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         supplementId: supplementName,
         category: category || 'general',
-        forceRefresh: benefitQuery ? true : (forceRefresh || false), // Force refresh for benefit-specific searches
+        forceRefresh: forceRefresh || false, // Let enricher use cache - it can focus on benefitQuery even with cached data
         studies: studies.slice(0, 8), // Increased to 8 studies for richer evidence (5+ items per section)
         benefitQuery: benefitQuery || undefined, // Pass benefitQuery to enricher for focused analysis
       }),
