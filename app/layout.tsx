@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./layout.css";
 import { Analytics } from '@vercel/analytics/next';
 
 export const metadata = {
