@@ -9,6 +9,8 @@ import { getMockRecommendation } from '@/lib/portal/mockData';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { createJob, storeJobResult } from '@/lib/portal/job-store';
+import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
+import { searchPubMed } from '@/lib/services/pubmed-search';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -131,6 +133,43 @@ export async function POST(request: NextRequest) {
 
     // Sanitize category for safety
     const sanitizedCategory = sanitizeQuery(category);
+
+    // =================================================================
+    // INTENT DETECTION LOGIC (Phase 1)
+    // =================================================================
+    let searchType: 'ingredient' | 'condition' | 'unknown' = 'unknown';
+    const normalizedQuery = sanitizedCategory.toLowerCase();
+    
+    const dbMatch = SUPPLEMENTS_DATABASE.find(
+      (entry) => entry.name.toLowerCase() === normalizedQuery || entry.aliases.some(a => a.toLowerCase() === normalizedQuery)
+    );
+
+    if (dbMatch) {
+      if (dbMatch.category === 'condition') {
+        searchType = 'condition';
+      } else {
+        searchType = 'ingredient';
+      }
+    } else {
+      // If no direct match, assume it's a condition search for now.
+      // This allows users to search for conditions not explicitly listed.
+      searchType = 'condition';
+    }
+
+    console.log(`[Intent Detection] Query: "${sanitizedCategory}", Detected Type: "${searchType}"`);
+    // =================================================================
+
+    // Si es una condición, usar el nuevo flujo de búsqueda de evidencia.
+    if (searchType === 'condition') {
+      const pubmedResults = await searchPubMed(sanitizedCategory);
+      console.log(`[PubMed Search] Found graded evidence for "${sanitizedCategory}"`);
+
+      // Devolver la nueva estructura de datos directamente al cliente.
+      return NextResponse.json(pubmedResults, { status: 200 });
+    }
+    // Si es un ingrediente, continuar con el flujo existente.
+
+
 
     // BENEFIT SEARCH LOGIC: Extract supplement and benefit
     let supplementName = sanitizedCategory;

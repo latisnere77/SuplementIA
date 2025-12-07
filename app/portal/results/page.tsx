@@ -36,6 +36,8 @@ import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
 import BenefitStudiesModal from '@/components/portal/BenefitStudiesModal';
 import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
 import type { GradeType } from '@/components/portal/SupplementGrade';
+import type { PubMedQueryResult, SupplementEvidence } from '@/lib/services/pubmed-search';
+import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -442,6 +444,8 @@ function ResultsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
+  const [conditionResult, setConditionResult] = useState<PubMedQueryResult | null>(null);
+  const [searchType, setSearchType] = useState<'ingredient' | 'condition' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | {
     type: 'insufficient_scientific_data' | 'system_error' | 'network_error' | 'generic';
@@ -862,14 +866,26 @@ function ResultsPageContent() {
           }
 
           const data = await response.json();
-          console.log('[Quiz API Response] Received data:', {
-            success: data.success,
-            status: response.status,
-            hasRecommendation: !!data.recommendation,
-            hasRecommendationId: !!data.recommendation_id,
-            demo: data.demo,
-            keys: Object.keys(data),
-          });
+
+          if (data.searchType === 'condition') {
+            console.log('[Data Fetch] ✅ Received CONDITION result:', data);
+            setConditionResult(data);
+            setRecommendation(null); // Clear other state
+            setSearchType('condition');
+          } else if (data.success && data.recommendation) {
+            // LEGACY SYNC PATTERN or ingredient search
+            console.log('[Data Fetch] ✅ Received INGREDIENT result:', data.recommendation);
+            setRecommendation(data.recommendation);
+            setConditionResult(null); // Clear other state
+            setSearchType('ingredient');
+          } else {
+            // Handle cases where response is not in expected format
+            throw new Error('Invalid API response format');
+          }
+          
+          setIsLoading(false);
+          return; // End of successful data handling
+
           
           // ASYNC PATTERN: Backend returned 202 with recommendation_id - start polling
           if (response.status === 202 && data.recommendation_id) {
@@ -1409,61 +1425,63 @@ function ResultsPageContent() {
           );
         })()}
 
-        {/* Evidence Analysis - NUEVO DISEÑO VISUAL */}
+        {/* Conditional Rendering: Condition View vs. Ingredient View */}
         <div className="mb-8">
-          {transformedEvidence ? (
-            <>
-              {/* View Toggle */}
-              <ViewToggle mode={viewMode} onChange={setViewMode} />
-              
-              {/* Conditional Rendering based on view mode */}
-              {viewMode === 'standard' ? (
-                <EvidenceAnalysisPanelNew
-                  evidenceSummary={transformedEvidence}
-                  supplementName={localizedSupplementName}
-                />
-              ) : (
-                examineContent && (
-                  <ExamineStyleView
-                    content={examineContent}
-                    supplementName={localizedSupplementName}
-                  />
-                )
-              )}
-            </>
+          {searchType === 'condition' && conditionResult ? (
+            <ConditionResultsDisplay result={conditionResult} />
           ) : (
-            <div className="bg-white rounded-xl border-2 border-gray-200 p-8 text-center">
-              <div className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-              </div>
-              <p className="text-gray-500 text-sm mt-4">Procesando evidencia científica...</p>
-            </div>
+            searchType === 'ingredient' && recommendation && (
+              <>
+                {transformedEvidence ? (
+                  <>
+                    <ViewToggle mode={viewMode} onChange={setViewMode} />
+                    {viewMode === 'standard' ? (
+                      <EvidenceAnalysisPanelNew
+                        evidenceSummary={transformedEvidence}
+                        supplementName={localizedSupplementName}
+                      />
+                    ) : (
+                      examineContent && (
+                        <ExamineStyleView
+                          content={examineContent}
+                          supplementName={localizedSupplementName}
+                        />
+                      )
+                    )}
+                  </>
+                ) : (
+                  <div className="bg-white rounded-xl border-2 border-gray-200 p-8 text-center">
+                    <div className="animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                    </div>
+                    <p className="text-gray-500 text-sm mt-4">Procesando evidencia científica...</p>
+                  </div>
+                )}
+              </>
+            )
           )}
         </div>
 
-        {/* Scientific Studies from PubMed */}
-        <div className="mb-8">
-          <ScientificStudiesPanel
-            supplementName={localizedSupplementName}
-            maxStudies={5}
-            filters={{
-              rctOnly: false,
-              yearFrom: 2010,
-            }}
-            autoLoad={false}
-          />
-        </div>
-
-        {/* Product Recommendations */}
-        <div className="mb-8">
-          <ProductRecommendationsGrid products={recommendation.products} onBuyClick={handleBuyClick} />
-        </div>
-
-        {/* Share & Referral */}
-        <div className="mb-8">
-          <ShareReferralCard recommendationId={recommendation.recommendation_id} />
-        </div>
+        {/* Common sections for ingredient view */}
+        {searchType === 'ingredient' && recommendation && (
+          <>
+            <div className="mb-8">
+              <ScientificStudiesPanel
+                supplementName={localizedSupplementName}
+                maxStudies={5}
+                filters={{ rctOnly: false, yearFrom: 2010 }}
+                autoLoad={false}
+              />
+            </div>
+            <div className="mb-8">
+              <ProductRecommendationsGrid products={recommendation.products} onBuyClick={handleBuyClick} />
+            </div>
+            <div className="mb-8">
+              <ShareReferralCard recommendationId={recommendation.recommendation_id} />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Paywall Modal */}
