@@ -1191,11 +1191,11 @@ function ResultsPageContent() {
     );
   }
 
-  // STATE 3: Show no-data state when !recommendation AND !isLoading AND !error
-  if (!recommendation) {
-    console.log('[Render] Branch: NO_DATA - Showing ErrorState (no recommendation)', {
-      reason: '!recommendation AND !isLoading AND !error',
-      hasRecommendation: !!recommendation,
+  // STATE 3: Handle no-data state. If conditionResult exists (even if empty),
+  // show the condition display. Otherwise, show the error state.
+  if (!recommendation && !conditionResult) {
+    console.log('[Render] Branch: NO_DATA - No data for ingredient or condition.', {
+      reason: '!recommendation && !conditionResult && !isLoading && !error',
       isLoading,
       hasError: !!error,
     });
@@ -1212,10 +1212,10 @@ function ResultsPageContent() {
 
   // STATE 4: Show recommendation display when we have valid data
   console.log('[Render] Branch: RECOMMENDATION - Showing recommendation display', {
-    reason: 'recommendation !== null AND !isLoading AND !error',
-    category: recommendation.category,
-    id: recommendation.recommendation_id,
-    hasTransformedEvidence: !!transformedEvidence,
+    reason: '(recommendation || conditionResult) && !isLoading && !error',
+    searchType,
+    hasRecommendation: !!recommendation,
+    hasConditionResult: !!conditionResult,
   });
 
   return (
@@ -1249,10 +1249,10 @@ function ResultsPageContent() {
           </h1>
           {(() => {
             // Extract study data with fallbacks
-            const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
-            const totalParticipants = recommendation.evidence_summary?.totalParticipants || 0;
+            const totalStudies = recommendation?.evidence_summary?.totalStudies || 0;
+            const totalParticipants = recommendation?.evidence_summary?.totalParticipants || 0;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const metadata = (recommendation as any)._enrichment_metadata || {};
+            const metadata = (recommendation as any)?._enrichment_metadata || {};
             const studiesUsed = metadata.studiesUsed || 0;
             
             // Log study data availability
@@ -1260,15 +1260,15 @@ function ResultsPageContent() {
               totalStudies,
               totalParticipants,
               studiesUsed,
-              hasEvidenceSummary: !!recommendation.evidence_summary,
-              category: recommendation.category,
+              hasEvidenceSummary: !!recommendation?.evidence_summary,
+              category: recommendation?.category,
             });
             
             // Check if we have real study data
             const hasRealStudyData = totalStudies > 0 || studiesUsed > 0;
             
             if (!hasRealStudyData) {
-              console.log('[Study Data Display] ⚠️ No real study data found for:', recommendation.category);
+              console.log('[Study Data Display] ⚠️ No real study data found for:', recommendation?.category);
             }
             
             // Display study data if available
@@ -1300,7 +1300,7 @@ function ResultsPageContent() {
 
           {/* Auto-suggested benefits for this supplement */}
           {(() => {
-            const suggestions = getSuggestedBenefits(recommendation.category);
+            const suggestions = getSuggestedBenefits(recommendation?.category || '');
             if (suggestions.length > 0) {
               return (
                 <div className="mb-4">
@@ -1391,10 +1391,10 @@ function ResultsPageContent() {
         {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
         {(() => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const metadata = (recommendation as any)._enrichment_metadata || {};
+          const metadata = (recommendation as any)?._enrichment_metadata || {};
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const supplement = (recommendation as any).supplement || {};
-          const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
+          const supplement = (recommendation as any)?.supplement || {};
+          const totalStudies = recommendation?.evidence_summary?.totalStudies || 0;
           const metadataStudiesUsed = metadata.studiesUsed || 0;
           
           // Check if there's actual evidence data (worksFor, dosage, etc.)
