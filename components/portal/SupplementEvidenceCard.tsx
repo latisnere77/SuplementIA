@@ -41,22 +41,37 @@ const SupplementEvidenceCard: React.FC<SupplementEvidenceCardProps> = ({ supplem
         aria-label={`Ver análisis completo para ${supplement.supplementName}`}
       >
         <Card
-          className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-lg"
+          className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col"
         >
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div>
               <CardTitle className="text-lg font-semibold text-gray-900">{supplement.supplementName}</CardTitle>
               <CardDescription className="text-sm text-gray-600 mt-1">
-                {supplement.studyCount} estudios analizados
+                {supplement.totalStudyCount} estudios analizados en total
               </CardDescription>
             </div>
-            <Badge className={`text-sm font-bold px-3 py-1 border ${gradeColors[supplement.grade]}`}>
-              Grado {supplement.grade}
+            <Badge className={`text-sm font-bold px-3 py-1 border ${gradeColors[supplement.overallGrade]}`}>
+              Grado {supplement.overallGrade}
             </Badge>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-700 mb-4">{supplement.evidenceSummary}</p>
-            <div className="flex items-center text-blue-600 group-hover:translate-x-1 transition-transform">
+          <CardContent className="flex-grow flex flex-col justify-between">
+            <div>
+              <h4 className="text-sm font-semibold text-gray-800 mb-2">Evidencia por Beneficio:</h4>
+              <ul className="space-y-2 mb-4">
+                {supplement.benefits.map((benefit) => (
+                  <li key={benefit.benefitName} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-700">{benefit.benefitName}</span>
+                    <Badge className={`text-xs font-bold px-2 py-0.5 border ${gradeColors[benefit.grade]}`}>
+                      {benefit.grade} ({benefit.studyCount})
+                    </Badge>
+                  </li>
+                ))}
+                {supplement.benefits.length === 0 && (
+                   <p className="text-xs text-gray-500">No se encontró evidencia específica para beneficios predefinidos.</p>
+                )}
+              </ul>
+            </div>
+            <div className="flex items-center text-blue-600 group-hover:translate-x-1 transition-transform mt-auto">
               <span className="text-sm font-medium">Ver análisis completo</span>
               <ChevronRight className="h-4 w-4 ml-1" />
             </div>

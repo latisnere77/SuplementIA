@@ -25,9 +25,19 @@ describe('/api/portal/quiz POST', () => {
     const mockResult: pubmedSearch.PubMedQueryResult = {
       searchType: 'condition',
       condition: 'joint pain',
-      summary: 'Analysis complete.',
+      summary: 'Enriched analysis complete.',
       supplementsByEvidence: {
-        gradeA: [{ supplementName: 'Turmeric', evidenceSummary: 'Strong evidence', studyCount: 10, grade: 'A' }],
+        gradeA: [
+          {
+            supplementName: 'Turmeric',
+            overallGrade: 'A',
+            totalStudyCount: 50,
+            benefits: [
+              { benefitName: 'Reduce inflammation', grade: 'A', studyCount: 25, summary: 'Strong evidence.' },
+              { benefitName: 'Improves mobility', grade: 'B', studyCount: 15, summary: 'Moderate evidence.' },
+            ],
+          },
+        ],
         gradeB: [],
         gradeC: [],
         gradeD: [],
@@ -37,8 +47,6 @@ describe('/api/portal/quiz POST', () => {
 
     const request = new NextRequest('http://localhost/api/portal/quiz', {
       method: 'POST',
-      // The query is passed in the 'category' field.
-      // 'joint pain' is not in our mocked SUPPLEMENTS_DATABASE, so it will be treated as a condition.
       body: JSON.stringify({ category: 'joint pain' }),
       headers: { 'Content-Type': 'application/json' },
     });
