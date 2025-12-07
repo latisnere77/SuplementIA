@@ -35,6 +35,7 @@ import { getTopSuggestedBenefit, getSuggestedBenefits } from '@/lib/portal/suppl
 import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
 import BenefitStudiesModal from '@/components/portal/BenefitStudiesModal';
 import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
+import type { GradeType } from '@/components/portal/SupplementGrade';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -153,12 +154,25 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     studyCount: item.studyCount || 0,
   })) : [];
 
-  const limitedEvidence = Array.isArray(supplement.limitedEvidence) ? supplement.limitedEvidence.map((item: any) => ({
-    condition: item.condition || item.use || '',
-    grade: item.evidenceGrade || item.grade || 'C',
-    description: item.notes || '',
-    studyCount: item.studyCount || 0,
-  })) : [];
+  const limitedEvidence = Array.isArray(supplement.limitedEvidence) ? supplement.limitedEvidence.map((item: any) => {
+    // CONSISTENCY FIX: Force items in limitedEvidence to have grade C or lower
+    // Items with grade A/B should be in worksFor, not limitedEvidence
+    // This prevents showing "Evidencia Limitada" with "Grado A" which is contradictory
+    //
+    // TODO(backend): Backend should properly categorize items by evidence strength:
+    // - Grade A/B → worksFor
+    // - Grade C → limitedEvidence or worksFor (depending on confidence)
+    // - Grade D/E/F → doesntWorkFor or limitedEvidence
+    const rawGrade = item.evidenceGrade || item.grade || 'C';
+    const adjustedGrade = (rawGrade === 'A' || rawGrade === 'B') ? 'C' : rawGrade;
+
+    return {
+      condition: item.condition || item.use || '',
+      grade: adjustedGrade as GradeType,
+      description: item.notes || '',
+      studyCount: item.studyCount || 0,
+    };
+  }) : [];
 
   // NEW: Transform evidence_by_benefit
   const evidenceByBenefit = Array.isArray(recommendation.evidence_by_benefit) ? recommendation.evidence_by_benefit.map((item: any) => ({
