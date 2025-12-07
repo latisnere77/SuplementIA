@@ -192,7 +192,8 @@ export default function PortalPage() {
   };
 
   const handleCategoryClick = (categoryId: string) => {
-    router.push(`/portal/results?category=${encodeURIComponent(categoryId)}&supplement=${encodeURIComponent(categoryId)}`);
+    // FIX: Use 'q' parameter to match the search logic on the results page.
+    router.push(`/portal/results?q=${encodeURIComponent(categoryId)}`);
   };
 
   const handlePopularSearch = (term: string) => {
