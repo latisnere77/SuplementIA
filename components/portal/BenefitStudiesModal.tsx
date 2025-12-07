@@ -371,10 +371,36 @@ function BenefitCard({
   const gradeColor = GRADE_COLORS[grade];
   const evidenceLabel = EVIDENCE_LABELS[item.evidence_level] || item.evidence_level;
 
+  // Quality indicator (traffic light)
+  const getQualityIndicator = () => {
+    const studyCount = item.studies_found || 0;
+    const participants = item.total_participants || 0;
+
+    // High quality: Grade A-B, many studies, many participants
+    if ((grade === 'A' || grade === 'B') && studyCount >= 10 && participants >= 500) {
+      return { color: 'bg-green-500', label: 'Alta Calidad', emoji: '🟢' };
+    }
+    // Medium quality: Grade B-C, moderate studies
+    if ((grade === 'B' || grade === 'C') && studyCount >= 3) {
+      return { color: 'bg-yellow-500', label: 'Calidad Moderada', emoji: '🟡' };
+    }
+    // Low quality: Grade D-F or few studies
+    return { color: 'bg-orange-500', label: 'Evidencia Limitada', emoji: '🟠' };
+  };
+
+  const quality = getQualityIndicator();
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between gap-3 mb-2">
-        <h4 className="font-semibold text-gray-900 flex-1">{item.benefit}</h4>
+        <div className="flex-1">
+          <h4 className="font-semibold text-gray-900">{item.benefit}</h4>
+          {/* Quality indicator */}
+          <div className="flex items-center gap-2 mt-1">
+            <div className={`w-2 h-2 rounded-full ${quality.color}`} />
+            <span className="text-xs font-medium text-gray-600">{quality.label}</span>
+          </div>
+        </div>
         <span
           className={`px-3 py-1 rounded-full text-sm font-bold border ${gradeColor}`}
         >
