@@ -120,9 +120,9 @@ export async function POST(request: NextRequest) {
         'X-Request-ID': requestId,
       },
       body: JSON.stringify({
-        supplementId: supplementName,
+        supplementId: benefitQuery ? `${supplementName}-${benefitQuery}` : supplementName, // Unique cache key for benefit queries
         category: category || 'general',
-        forceRefresh: forceRefresh || false, // Let enricher use cache - it can focus on benefitQuery even with cached data
+        forceRefresh: benefitQuery ? true : (forceRefresh || false), // Force refresh for benefit queries to avoid English cached data
         studies: studies.slice(0, 8), // Increased to 8 studies for richer evidence (5+ items per section)
         benefitQuery: benefitQuery || undefined, // Pass benefitQuery to enricher for focused analysis
       }),
