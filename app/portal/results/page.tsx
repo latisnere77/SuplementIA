@@ -34,6 +34,7 @@ import { normalizeBenefit } from '@/lib/portal/benefit-normalization';
 import { getTopSuggestedBenefit, getSuggestedBenefits } from '@/lib/portal/supplement-benefit-suggestions';
 import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
 import BenefitStudiesModal from '@/components/portal/BenefitStudiesModal';
+import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -589,8 +590,10 @@ function ResultsPageContent() {
   // ====================================
   // LOCALIZED SUPPLEMENT NAME
   // ====================================
-  // Use the category directly - normalization already handles language
-  const localizedSupplementName = recommendation?.category || query || 'supplement';
+  // Translate the supplement name to the user's language
+  const localizedSupplementName = recommendation?.category
+    ? getLocalizedSupplementName(recommendation.category, language as 'en' | 'es')
+    : query || 'supplement';
 
   // Transform evidence data when recommendation changes (CLIENT-SIDE, instant)
   useEffect(() => {
@@ -1212,7 +1215,7 @@ function ResultsPageContent() {
             {t('results.back')}
           </button>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            {t('results.title')} {recommendation.category}
+            {t('results.title')} {localizedSupplementName}
           </h1>
           {(() => {
             // Extract study data with fallbacks
@@ -1272,7 +1275,7 @@ function ResultsPageContent() {
               return (
                 <div className="mb-4">
                   <p className="text-xs font-medium text-blue-700 mb-2">
-                    🎯 Beneficios más investigados para {recommendation.category}:
+                    🎯 Beneficios más investigados para {localizedSupplementName}:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {suggestions.map((suggestion, idx) => (
@@ -1369,7 +1372,7 @@ function ResultsPageContent() {
                 <div className="text-yellow-600 mt-0.5">⚠️</div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-yellow-900 mb-1">
-                    No se encontraron estudios científicos para "{recommendation.category}"
+                    No se encontraron estudios científicos para "{localizedSupplementName}"
                   </h3>
                   <p className="text-yellow-800 text-sm mb-2">
                     No encontramos estudios científicos publicados sobre este suplemento. La información mostrada es de carácter general y no está respaldada por evidencia científica específica.
@@ -1477,7 +1480,7 @@ function ResultsPageContent() {
             setIsBenefitModalOpen(false);
             setSelectedBenefit(null);
           }}
-          supplementName={recommendation?.category || query || 'supplement'}
+          supplementName={localizedSupplementName}
           benefitQuery={selectedBenefit.en}
           benefitQueryEs={selectedBenefit.es}
           recommendation={recommendation}
