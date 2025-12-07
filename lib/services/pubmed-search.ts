@@ -147,6 +147,19 @@ export async function searchPubMed(condition: string): Promise<PubMedQueryResult
   }
   const esummaryJson: ESummaryResult = await esummaryResponse.json();
 
+  // Defensive check: Ensure the response structure is what we expect.
+  // The API can return a 200 OK with an error object instead of a result object.
+  if (!esummaryJson.result || !Array.isArray(esummaryJson.result.uids)) {
+    console.error('[PubMed Service] Invalid or empty ESummary response structure:', esummaryJson);
+    // Return a controlled "no results" state instead of crashing.
+    return {
+      searchType: 'condition',
+      condition: condition,
+      summary: 'No se encontraron estudios coincidentes en PubMed para esta condición.',
+      supplementsByEvidence: { gradeA: [], gradeB: [], gradeC: [], gradeD: [] },
+    };
+  }
+
   // Step 3: Parse the articles from the ESummary response
   const articles: PubMedArticle[] = esummaryJson.result.uids.map(uid => {
     const articleData = esummaryJson.result[uid];
