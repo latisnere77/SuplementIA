@@ -1310,6 +1310,11 @@ function ResultsPageContent() {
             onSubmit={(e) => {
               e.preventDefault();
 
+              // Validate input
+              if (!benefitQuery.trim()) {
+                return;
+              }
+
               // Normalize benefit query from Spanish to English
               const normalized = normalizeBenefit(benefitQuery);
 
@@ -1325,8 +1330,15 @@ function ResultsPageContent() {
                 ? normalized.normalized
                 : benefitQuery;
 
-              setSubmittedBenefitQuery(finalBenefit);
-              setIsLoading(true); // Show loading spinner for new search
+              // Open modal with benefit-specific studies (same as pre-loaded buttons)
+              setSelectedBenefit({
+                en: finalBenefit,
+                es: benefitQuery, // Keep original Spanish text for display
+              });
+              setIsBenefitModalOpen(true);
+
+              // Clear input after opening modal
+              setBenefitQuery('');
             }}
             className="flex flex-col sm:flex-row gap-3"
           >
