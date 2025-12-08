@@ -54,7 +54,7 @@ async function signAndFetch(url: string, body: object) {
   // **DEBUGGING ADICIONAL:** Log the full Authorization header before making the fetch call.
   console.log('DEBUG: AWS Signed Headers (before fetch):', JSON.stringify(signedRequest.headers, null, 2));
   console.log('DEBUG: Sanitized Access Key ID (first 5 chars): ', credentials.accessKeyId.substring(0, 5));
-  
+
   // Correctly construct the Headers object for fetch
   const headers = new Headers();
   for (const [key, value] of Object.entries(signedRequest.headers)) {
@@ -71,6 +71,56 @@ async function signAndFetch(url: string, body: object) {
   });
 }
 
+// Utility function to sign and fetch with POST method and query parameters
+async function signAndFetchPost(url: string) {
+  // Manually construct and SANITIZE credentials to fix Vercel environment variable issues.
+  const credentials = {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID?.replace(/\s/g, '') || '',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY?.replace(/\s/g, '') || '',
+    sessionToken: process.env.AWS_SESSION_TOKEN?.replace(/\s/g, ''),
+  };
+
+  if (!credentials.accessKeyId || !credentials.secretAccessKey) {
+    throw new Error('AWS credentials are not properly configured in the environment.');
+  }
+
+  const sigv4 = new SignatureV4({
+    credentials,
+    region: REGION,
+    service: 'execute-api',
+    sha256: Sha256,
+  });
+
+  const urlObject = new URL(url);
+
+  const request = new HttpRequest({
+    hostname: urlObject.hostname,
+    path: urlObject.pathname + urlObject.search, // Include query string in path
+    method: 'POST',
+    protocol: 'https',
+    headers: {
+      host: urlObject.hostname,
+    },
+  });
+
+  const signedRequest = await sigv4.sign(request);
+
+  console.log('DEBUG: POST request to:', url);
+
+  // Construct the Headers object for fetch
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(signedRequest.headers)) {
+    if (value) {
+      headers.append(key, value.toString());
+    }
+  }
+
+  return fetch(url, {
+    method: 'POST',
+    headers: headers,
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body: StudySearchRequest = await request.json();
@@ -78,12 +128,12 @@ export async function POST(request: NextRequest) {
     if (!body.supplementName) {
       return NextResponse.json({ success: false, error: 'supplementName is required' }, { status: 400 });
     }
-    
-    // Use the new vector search API
-    const response = await signAndFetch(VECTOR_SEARCH_API_URL, {
-        query: body.supplementName, // The new API expects a 'query' field
-        top_k: body.maxResults || 10,
-    });
+
+    // Build URL with query parameters - the Lambda expects ?q=supplement_name in a POST request
+    const searchUrl = `${VECTOR_SEARCH_API_URL}?q=${encodeURIComponent(body.supplementName)}&top_k=${body.maxResults || 10}`;
+
+    // Use POST method with query parameters (API Gateway route is POST /search)
+    const response = await signAndFetchPost(searchUrl);
 
     if (!response.ok) {
       const error = await response.text();

@@ -132,8 +132,9 @@ Resources:
     Properties:
       ApiId: !Ref VectorSearchApi
       IntegrationType: AWS_PROXY
-      IntegrationUri: !GetAtt VectorSearchFunction.Arn
+      IntegrationUri: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:production-search-api-lancedb"
       PayloadFormatVersion: '2.0'
+      TimeoutInMillis: 30000
 
   ApiRoute:
     Type: AWS::ApiGatewayV2::Route
@@ -154,7 +155,7 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref VectorSearchFunction
+      FunctionName: production-search-api-lancedb
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${VectorSearchApi}/*"
       
