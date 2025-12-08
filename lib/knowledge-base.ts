@@ -196,37 +196,133 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
     slug: 'joint-bone-health',
     name: 'Salud Articular y Ósea',
     description: 'Suplementos para fortalecer los huesos, mejorar la flexibilidad y aliviar el dolor articular.',
-    supplements: [],
+    supplements: [
+      {
+        name: 'Vitamina D',
+        evidenceGrade: 'A',
+        summary: 'Esencial para la absorción de calcio y la salud ósea. Su deficiencia está ligada a un mayor riesgo de osteoporosis.',
+        slug: 'vitamin-d',
+      },
+      {
+        name: 'Glucosamina',
+        evidenceGrade: 'B',
+        summary: 'Componente natural del cartílago. A menudo se usa para aliviar el dolor de la osteoartritis, con evidencia moderada de eficacia.',
+        slug: 'glucosamine',
+      },
+      {
+        name: 'Colágeno Hidrolizado',
+        evidenceGrade: 'B',
+        summary: 'Puede ayudar a reducir el dolor articular y mejorar la salud de la piel y los tejidos conectivos.',
+        slug: 'hydrolyzed-collagen',
+      },
+    ],
   },
   {
     slug: 'gut-health',
     name: 'Salud Digestiva',
     description: 'Probióticos, enzimas y otros suplementos para una digestión saludable y un microbioma equilibrado.',
-    supplements: [],
+    supplements: [
+      {
+        name: 'Probióticos',
+        evidenceGrade: 'A',
+        summary: 'Microorganismos vivos que, en cantidades adecuadas, confieren un beneficio para la salud del huésped, especialmente para la diarrea y el SII.',
+        slug: 'probiotics',
+      },
+      {
+        name: 'Fibra (Psyllium)',
+        evidenceGrade: 'A',
+        summary: 'Muy eficaz para mejorar la regularidad intestinal y aliviar tanto el estreñimiento como la diarrea leve.',
+        slug: 'fiber-psyllium',
+      },
+    ],
   },
   {
     slug: 'skin-hair-health',
     name: 'Salud de la Piel y Cabello',
     description: 'Nutrientes para una piel radiante, un cabello fuerte y uñas saludables.',
-    supplements: [],
+    supplements: [
+      {
+        name: 'Colágeno',
+        evidenceGrade: 'B',
+        summary: 'Mejora la elasticidad e hidratación de la piel, reduciendo la aparición de arrugas.',
+        slug: 'collagen',
+      },
+      {
+        name: 'Biotina (Vitamina B7)',
+        evidenceGrade: 'C',
+        summary: 'Popular para el cabello y las uñas, pero la suplementación solo ha demostrado ser efectiva en casos de deficiencia.',
+        slug: 'biotin',
+      },
+    ],
   },
   {
     slug: 'immunity',
     name: 'Inmunidad',
     description: 'Vitaminas y hierbas para fortalecer el sistema inmunológico y prevenir enfermedades.',
-    supplements: [],
+    supplements: [
+      {
+        name: 'Vitamina C',
+        evidenceGrade: 'B',
+        summary: 'Antioxidante clave para la función inmune. Puede reducir la duración del resfriado común.',
+        slug: 'vitamin-c',
+      },
+      {
+        name: 'Zinc',
+        evidenceGrade: 'B',
+        summary: 'Mineral esencial para el desarrollo y la función de las células inmunitarias. Puede acortar la duración de los resfriados si se toma al inicio.',
+        slug: 'zinc',
+      },
+      {
+        name: 'Equinácea',
+        evidenceGrade: 'C',
+        summary: 'Hierba popular para prevenir resfriados, pero la evidencia científica es mixta y a menudo de baja calidad.',
+        slug: 'echinacea',
+      },
+    ],
   },
   {
     slug: 'mens-health',
     name: 'Salud Masculina',
     description: 'Suplementos enfocados en la vitalidad, salud prostática y equilibrio hormonal masculino.',
-    supplements: [],
+    supplements: [
+      {
+        name: 'Saw Palmetto',
+        evidenceGrade: 'B',
+        summary: 'Utilizado comúnmente para aliviar los síntomas de la hiperplasia prostática benigna (HPB).',
+        slug: 'saw-palmetto',
+      },
+      {
+        name: 'Zinc',
+        evidenceGrade: 'A',
+        summary: 'Fundamental para la producción de testosterona y la salud reproductiva masculina.',
+        slug: 'zinc',
+      },
+    ],
   },
   {
     slug: 'womens-health',
     name: 'Salud Femenina',
     description: 'Apoyo para el equilibrio hormonal, el ciclo menstrual y la salud ósea en mujeres.',
-    supplements: [],
+    supplements: [
+      {
+        name: 'Ácido Fólico (Folato)',
+        evidenceGrade: 'A',
+        summary: 'Crucial durante el embarazo para prevenir defectos del tubo neural en el feto.',
+        slug: 'folic-acid',
+      },
+      {
+        name: 'Hierro',
+        evidenceGrade: 'A',
+        summary: 'Importante para prevenir la anemia, especialmente en mujeres con menstruaciones abundantes.',
+        slug: 'iron',
+      },
+      {
+        name: 'Calcio',
+        evidenceGrade: 'A',
+        summary: 'Esencial para la salud ósea y la prevención de la osteoporosis, particularmente después de la menopausia.',
+        slug: 'calcium',
+      },
+    ],
   },
 ];
 
