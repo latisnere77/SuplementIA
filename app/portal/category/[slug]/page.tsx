@@ -4,11 +4,19 @@
  * Renders a curated list of supplements for a specific health category,
  * ordered by evidence level.
  */
-import { getCategoryBySlug } from '@/lib/knowledge-base';
+import { getCategoryBySlug, getAllCategories } from '@/lib/knowledge-base';
 import { SupplementEvidenceCard } from '@/components/portal/SupplementEvidenceCard';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+
+// Tell Next.js about all possible category slugs to pre-render them
+export async function generateStaticParams() {
+  const categories = getAllCategories();
+  return categories.map((category) => ({
+    slug: category.slug,
+  }));
+}
 
 interface CategoryPageProps {
   params: {

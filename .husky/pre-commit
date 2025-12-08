@@ -1,14 +1,1 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-echo "🔍 Running pre-commit checks..."
-
-# Only type checking (fast)
-echo "📝 Type checking..."
-npm run type-check || {
-  echo "❌ Type check failed. Fix TypeScript errors before committing."
-  exit 1
-}
-
-echo "✅ Type check passed! (Build will run on Vercel)"
-echo "💡 To run full validation locally: npm run validate"
+npm test
