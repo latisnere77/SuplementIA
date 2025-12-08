@@ -1,0 +1,16 @@
+# x86_64 version - wheels pre-compiled available
+FROM public.ecr.aws/lambda/python:3.11
+
+# Install Python dependencies (all have pre-built wheels for x86_64)
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir \
+    torch \
+    sentence-transformers \
+    lancedb \
+    boto3
+
+# Copy function code
+COPY lambda_function.py ${LAMBDA_TASK_ROOT}/
+
+# Set the CMD to your handler
+CMD ["lambda_function.lambda_handler"]

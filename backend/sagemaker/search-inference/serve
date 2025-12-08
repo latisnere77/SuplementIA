@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""
+SageMaker Serving script - HTTP server for inference
+Handles /ping and /invocations endpoints
+"""
+
+import os
+import sys
+import json
+import time
+import signal
+import traceback
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+# Add the code directory to path
+sys.path.insert(0, '/opt/ml/code')
+
+from inference import model_fn, input_fn, predict_fn, output_fn, log_structured
+
+# Global model reference
+model = None
+
+
+class InferenceHandler(BaseHTTPRequestHandler):
+    """HTTP handler for SageMaker inference requests"""
+
+    def log_message(self, format, *args):
+        """Custom logging to structured format"""
+        log_structured('http_request', message=format % args)
+
+    def do_GET(self):
+        """Handle GET requests (health checks)"""
+        if self.path == '/ping':
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({'status': 'healthy'}).encode())
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+    def do_POST(self):
+        """Handle POST requests (invocations)"""
+        global model
+
+        if self.path == '/invocations':
+            try:
+                # Get content length and type
+                content_length = int(self.headers.get('Content-Length', 0))
+                content_type = self.headers.get('Content-Type', 'application/json')
+                accept = self.headers.get('Accept', 'application/json')
+
+                # Read request body
+                request_body = self.rfile.read(content_length).decode('utf-8')
+
+                # Process request
+                input_data = input_fn(request_body, content_type)
+                prediction = predict_fn(input_data, model)
+                response_body, response_content_type = output_fn(prediction, accept)
+
+                # Send response
+                self.send_response(200)
+                self.send_header('Content-Type', response_content_type)
+                self.end_headers()
+                self.wfile.write(response_body.encode())
+
+            except Exception as e:
+                log_structured('invocation_error', error=str(e), traceback=traceback.format_exc())
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                error_response = json.dumps({
+                    'error': 'InternalServerError',
+                    'message': str(e)
+                })
+                self.wfile.write(error_response.encode())
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+
+def main():
+    """Start the inference server"""
+    global model
+
+    log_structured('server_starting')
+
+    # Load model at startup
+    model_dir = os.environ.get('SM_MODEL_DIR', '/opt/ml/model')
+    log_structured('loading_model', model_dir=model_dir)
+
+    start_time = time.time()
+    model = model_fn(model_dir)
+    load_time = time.time() - start_time
+    log_structured('model_loaded', duration_s=load_time)
+
+    # Start HTTP server
+    port = int(os.environ.get('SAGEMAKER_BIND_TO_PORT', 8080))
+    server = HTTPServer(('0.0.0.0', port), InferenceHandler)
+
+    log_structured('server_ready', port=port)
+
+    # Handle graceful shutdown
+    def signal_handler(signum, frame):
+        log_structured('shutdown_signal_received', signal=signum)
+        server.shutdown()
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
+
+    # Serve forever
+    server.serve_forever()
+
+
+if __name__ == '__main__':
+    main()

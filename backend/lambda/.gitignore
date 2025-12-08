@@ -1,0 +1,16 @@
+# Python packages
+*/package/
+package/
+
+# Node modules
+node_modules/
+
+# Build artifacts
+*.pyc
+__pycache__/
+*.so
+*.dylib
+*.dll
+
+# Lambda deployment packages
+*.zip

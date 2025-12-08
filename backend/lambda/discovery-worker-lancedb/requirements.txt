@@ -1,0 +1,5 @@
+lancedb>=0.3.0
+sentence-transformers>=2.3.0
+boto3>=1.28.0
+requests>=2.31.0
+numpy<2.0

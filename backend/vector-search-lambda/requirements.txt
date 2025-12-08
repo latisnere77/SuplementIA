@@ -1,0 +1,5 @@
+fastapi
+pydantic
+lancedb
+mangum  # Adapter for running FastAPI on AWS Lambda
+boto3   # AWS SDK for Python, useful for future integrations

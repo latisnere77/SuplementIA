@@ -1,0 +1,167 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Ultra-cost-effective vector search stack using LanceDB on Lambda with EFS.
+  This stack provisions the necessary networking, file system, IAM roles, and
+  Lambda function to run a serverless vector database.
+
+Resources:
+  # --- Networking ---
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: suplementia-lancedb-vpc
+
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: suplementia-lancedb-subnet
+
+  LambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Allows Lambda to access EFS"
+      VpcId: !Ref VPC
+
+  # --- IAM Role for Lambda ---
+  LambdaEFSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: LambdaEFSAccesPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - elasticfilesystem:ClientMount
+                  - elasticfilesystem:ClientWrite
+                  - elasticfilesystem:ClientRead
+                Resource: !Sub "arn:aws:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:file-system/${EFSVectorData}"
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v1"
+
+  # --- EFS for LanceDB Data ---
+  EFSVectorData:
+    Type: AWS::EFS::FileSystem
+    Properties:
+      PerformanceMode: generalPurpose
+      Encrypted: true
+      # Tags are added via a separate resource to avoid validation issues
+      FileSystemTags:
+        - Key: Name
+          Value: suplementia-lancedb-data
+
+  EFSMountTarget:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref EFSVectorData
+      SubnetId: !Ref Subnet
+      SecurityGroups:
+        - !Ref LambdaSecurityGroup
+
+  EFSDataAccessPoint:
+    Type: AWS::EFS::AccessPoint
+    Properties:
+      FileSystemId: !Ref EFSVectorData
+      PosixUser:
+        Uid: "1001"
+        Gid: "1001"
+      RootDirectory:
+        Path: "/lancedb"
+        CreationInfo:
+          OwnerUid: "1001"
+          OwnerGid: "1001"
+          Permissions: "750"
+
+  # --- Lambda Function ---
+  VectorSearchFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: EFSMountTarget
+    Properties:
+      FunctionName: SuplementiaVectorSearch
+      PackageType: Image
+      Code:
+        ImageUri: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/suplementia-lancedb:latest"
+      Role: !GetAtt LambdaEFSRole.Arn
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+        SubnetIds:
+          - !Ref Subnet
+      FileSystemConfigs:
+        - Arn: !GetAtt EFSDataAccessPoint.Arn
+          LocalMountPath: /mnt/db
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: "amazon.titan-embed-text-v1"
+          APP_REGION: !Ref AWS::Region
+
+  # --- API Gateway ---
+  VectorSearchApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: VectorSearchApi
+      ProtocolType: HTTP
+      Description: "API for Suplementia's LanceDB vector search"
+
+  LambdaIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref VectorSearchApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt VectorSearchFunction.Arn
+      PayloadFormatVersion: '2.0'
+
+  ApiRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref VectorSearchApi
+      RouteKey: 'POST /search'
+      AuthorizationType: AWS_IAM
+      Target: !Join ['/', ['integrations', !Ref LambdaIntegration]]
+
+  ApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref VectorSearchApi
+      StageName: '$default'
+      AutoDeploy: true
+
+  LambdaApiPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref VectorSearchFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${VectorSearchApi}/*"
+      
+Outputs:
+  ApiEndpoint:
+    Description: "The endpoint URL for the Vector Search API"
+    Value: !GetAtt VectorSearchApi.ApiEndpoint
+  LambdaRoleArn:
+    Description: "The ARN of the IAM role for the Lambda function"
+    Value: !GetAtt LambdaEFSRole.Arn

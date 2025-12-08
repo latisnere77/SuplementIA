@@ -1,0 +1,19 @@
+# Working version with lancedb 0.9.0 (stable, no lance_namespace dependency)
+FROM public.ecr.aws/lambda/python:3.11-arm64
+
+# Install system dependencies
+RUN yum install -y gcc gcc-c++ && yum clean all
+
+# Install dependencies in order
+RUN pip install --upgrade pip && \
+    pip install numpy && \
+    pip install torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install sentence-transformers && \
+    pip install lancedb==0.9.0 && \
+    pip install boto3
+
+# Copy function code
+COPY lambda_function.py ${LAMBDA_TASK_ROOT}/
+
+# Set the CMD to your handler
+CMD ["lambda_function.lambda_handler"]

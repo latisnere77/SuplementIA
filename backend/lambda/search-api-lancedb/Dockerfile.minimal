@@ -1,0 +1,24 @@
+# Minimal build - install only what we absolutely need
+FROM public.ecr.aws/lambda/python:3.11-arm64
+
+# Install system dependencies for compilation
+RUN yum install -y gcc gcc-c++ cmake git && yum clean all
+
+# Install numpy first (needed by many packages)
+RUN pip install --upgrade pip && \
+    pip install numpy
+
+# Install torch (CPU only for smaller size)
+RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# Install sentence-transformers and its dependencies
+RUN pip install sentence-transformers
+
+# Install lancedb and boto3
+RUN pip install lancedb boto3
+
+# Copy function code
+COPY lambda_function.py ${LAMBDA_TASK_ROOT}/
+
+# Set the CMD to your handler
+CMD ["lambda_function.lambda_handler"]
