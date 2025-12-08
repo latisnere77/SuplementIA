@@ -42,7 +42,7 @@ export default function SupplementDetailPage() {
       setError(null);
       try {
         // This endpoint is already configured to make a secure, signed request to AWS
-        const response = await fetch(`/api/portal/studies?supplementName=${slug} for ${benefit}`);
+        const response = await fetch(`/api/portal/studies?supplementName=${slug}`);
         
         if (!response.ok) {
           const errorText = await response.text();
