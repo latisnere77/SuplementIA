@@ -8,7 +8,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Stomach, Sparkles, HeartPulse, User, Woman } from 'lucide-react';
+import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Milestone, Sparkles, User, Venus, Mars } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { Badge } from '@/components/ui/badge';
@@ -30,11 +30,11 @@ const categoryIcons: { [key: string]: React.ElementType } = {
   'cognitive-function': Brain,
   'heart-health': Heart,
   'joint-bone-health': Bone,
-  'gut-health': Stomach,
+  'gut-health': Milestone, // Icono de reemplazo para 'Stomach'
   'skin-hair-health': Sparkles,
-  immunity: Shield, // Re-using shield for now
-  'mens-health': User,
-  'womens-health': Woman,
+  immunity: Shield, // Re-usando Shield para inmunidad
+  'mens-health': Mars, // Icono de reemplazo para 'User'
+  'womens-health': Venus, // Icono de reemplazo para 'Woman'
 };
 
 export default function PortalPage() {
