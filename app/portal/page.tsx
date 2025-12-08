@@ -487,7 +487,7 @@ export default function PortalPage() {
             const Icon = category.icon;
             return (
               <motion.div
-                key={category.id}
+                key={category.slug}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -495,13 +495,13 @@ export default function PortalPage() {
               >
                 <Card
                   className="group h-full hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800"
-                  onClick={() => handleCategoryClick(category.id)}
+                  onClick={() => handleCategoryClick(category.slug)}
                 >
                   <CardHeader>
                     <div className={cn('w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center mb-4', category.color)}>
                       <Icon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
                     </div>
-                    <CardTitle className="text-xl text-gray-900 dark:text-gray-100">{category.title}</CardTitle>
+                    <CardTitle className="text-xl text-gray-900 dark:text-gray-100">{category.name}</CardTitle>
                     <CardDescription className="text-gray-600 dark:text-gray-300">{category.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
