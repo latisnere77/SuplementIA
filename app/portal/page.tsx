@@ -19,6 +19,17 @@ import { useAutocomplete } from '@/lib/portal/useAutocomplete';
 import { validateSupplementQuery } from '@/lib/portal/query-validator';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
 import FAQSection from '@/components/portal/FAQSection';
+import { getAllCategories } from '@/lib/knowledge-base'; // Importar la fuente de la verdad
+
+// Mapeo de slugs a iconos para mantener la consistencia visual
+const categoryIcons: { [key: string]: React.ElementType } = {
+  sleep: Moon,
+  energy: TrendingUp,
+  anxiety: Shield,
+  'muscle-gain': Dumbbell,
+  'cognitive-function': Brain,
+  'heart-health': Heart,
+};
 
 export default function PortalPage() {
   const { t, language } = useTranslation();
@@ -31,15 +42,7 @@ export default function PortalPage() {
   // Hook de autocomplete con debouncing
   const { suggestions, isLoading: isLoadingSuggestions } = useAutocomplete(searchQuery, {
     debounceMs: 300,
-    limit: 10, // Aumentado para mostrar más sugerencias
-  });
-
-  // DEBUG: Ver qué sugerencias tenemos
-  console.log('[PortalPage] Autocomplete state:', {
-    searchQuery,
-    suggestionsCount: suggestions.length,
-    isLoadingSuggestions,
-    suggestions: suggestions.map(s => s.text)
+    limit: 10,
   });
 
   const placeholders = language === 'es' 
@@ -62,51 +65,20 @@ export default function PortalPage() {
     }, 3000);
     return () => clearInterval(interval);
   }, [placeholders.length]);
-
-  const categories = [
-    {
-      icon: Moon,
-      title: t('category.sleep'),
-      description: t('category.sleep.desc'),
-      color: 'from-indigo-500/20 to-indigo-600/20',
-      id: 'sleep',
-    },
-    {
-      icon: TrendingUp,
-      title: t('category.energy'),
-      description: t('category.energy.desc'),
-      color: 'from-orange-500/20 to-amber-500/20',
-      id: 'energy',
-    },
-    {
-      icon: Shield,
-      title: t('category.anxiety'),
-      description: t('category.anxiety.desc'),
-      color: 'from-green-500/20 to-green-600/20',
-      id: 'anxiety',
-    },
-    {
-      icon: Dumbbell,
-      title: t('category.muscle-gain'),
-      description: t('category.muscle-gain.desc'),
-      color: 'from-blue-500/20 to-blue-600/20',
-      id: 'muscle-gain',
-    },
-    {
-      icon: Brain,
-      title: t('category.cognitive'),
-      description: t('category.cognitive.desc'),
-      color: 'from-purple-500/20 to-purple-600/20',
-      id: 'cognitive',
-    },
-    {
-      icon: Heart,
-      title: t('category.heart'),
-      description: t('category.heart.desc'),
-      color: 'from-red-500/20 to-pink-500/20',
-      id: 'heart',
-    },
-  ];
+  
+  // ¡Ahora las categorías se cargan dinámicamente!
+  const categories = getAllCategories().map(category => ({
+    ...category,
+    icon: categoryIcons[category.slug] || BookOpen, // Usar icono mapeado o uno por defecto
+    color: {
+      sleep: 'from-indigo-500/20 to-indigo-600/20',
+      energy: 'from-orange-500/20 to-amber-500/20',
+      anxiety: 'from-green-500/20 to-green-600/20',
+      'muscle-gain': 'from-blue-500/20 to-blue-600/20',
+      'cognitive-function': 'from-purple-500/20 to-purple-600/20',
+      'heart-health': 'from-red-500/20 to-pink-500/20',
+    }[category.slug] || 'from-gray-500/20 to-gray-600/20',
+  }));
 
   const popularSearches = language === 'es'
     ? [

@@ -117,6 +117,81 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
       },
     ],
   },
+  {
+    slug: 'muscle-gain',
+    name: 'Ganancia de Músculo y Ejercicio',
+    description: 'Desarrolla músculo, mejora la fuerza y aumenta el rendimiento físico.',
+    supplements: [
+      {
+        name: 'Proteína de Suero',
+        evidenceGrade: 'A',
+        summary: 'Fundamental para la reparación y crecimiento muscular post-entrenamiento. Alta biodisponibilidad y perfil completo de aminoácidos.',
+        slug: 'whey-protein',
+      },
+      {
+        name: 'Creatina',
+        evidenceGrade: 'A',
+        summary: 'El suplemento más estudiado y efectivo para aumentar la fuerza, la potencia y la masa muscular.',
+        slug: 'creatine',
+      },
+      {
+        name: 'Beta-Alanina',
+        evidenceGrade: 'B',
+        summary: 'Aumenta los niveles de carnosina en los músculos, retrasando la fatiga muscular en ejercicios de alta intensidad.',
+        slug: 'beta-alanine',
+      },
+    ],
+  },
+  {
+    slug: 'cognitive-function',
+    name: 'Memoria y Concentración',
+    description: 'Mejora la función cognitiva, la memoria y la claridad mental.',
+    supplements: [
+      {
+        name: 'Omega-3 (DHA)',
+        evidenceGrade: 'A',
+        summary: 'El DHA es un componente estructural clave del cerebro. Esencial para la función cognitiva y la salud neuronal.',
+        slug: 'omega-3',
+      },
+      {
+        name: 'Bacopa Monnieri',
+        evidenceGrade: 'B',
+        summary: 'Hierba adaptogénica utilizada en la medicina ayurvédica para mejorar la memoria y el procesamiento de la información.',
+        slug: 'bacopa-monnieri',
+      },
+      {
+        name: 'Ginkgo Biloba',
+        evidenceGrade: 'C',
+        summary: 'Puede mejorar el flujo sanguíneo al cerebro, pero la evidencia sobre una mejora cognitiva significativa es mixta.',
+        slug: 'ginkgo-biloba',
+      },
+    ],
+  },
+  {
+    slug: 'heart-health',
+    name: 'Salud Cardíaca',
+    description: 'Suplementos que apoyan la salud cardiovascular, la presión arterial y los niveles de colesterol.',
+    supplements: [
+      {
+        name: 'Omega-3 (EPA/DHA)',
+        evidenceGrade: 'A',
+        summary: 'Reducen los triglicéridos, la presión arterial y la inflamación, siendo claves para la salud del corazón.',
+        slug: 'omega-3',
+      },
+      {
+        name: 'Coenzima Q10',
+        evidenceGrade: 'B',
+        summary: 'Antioxidante que mejora la producción de energía en las células del corazón y puede beneficiar a pacientes con insuficiencia cardíaca.',
+        slug: 'coenzyme-q10',
+      },
+      {
+        name: 'Ajo',
+        evidenceGrade: 'B',
+        summary: 'Demostrado que tiene efectos modestos pero significativos en la reducción de la presión arterial y el colesterol.',
+        slug: 'garlic',
+      },
+    ],
+  },
 ];
 
 // --- Accessor Functions ---
