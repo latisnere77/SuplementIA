@@ -83,35 +83,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
-
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const supplementName = searchParams.get('supplementName');
-
-  if (!supplementName) {
-    return NextResponse.json({ success: false, error: 'supplementName is required' }, { status: 400 });
-  }
-
-  const maxResults = parseInt(searchParams.get('maxResults') || '10');
-
-  try {
-    // Use the new vector search API
-    const response = await signAndFetch(VECTOR_SEARCH_API_URL, {
-        query: supplementName,
-        top_k: maxResults,
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('Vector Search API error:', error);
-      return NextResponse.json({ success: false, error: 'Failed to fetch studies from vector search' }, { status: response.status });
-    }
-
-    const data = await response.json();
-    return NextResponse.json({ success: true, studies: data.results });
-
-  } catch (error: any) {
-    console.error('Studies route error:', error);
-    return NextResponse.json({ success: false, error: error.message || 'Internal server error' }, { status: 500 });
-  }
-}
