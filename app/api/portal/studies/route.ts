@@ -15,8 +15,20 @@ export interface StudySearchRequest {
 
 // Utility function to sign and fetch
 async function signAndFetch(url: string, body: object) {
+  // Manually construct credentials to bypass potential issues with defaultProvider in Vercel's environment
+  const credentials = {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
+  };
+
+  // If any credential is missing, throw an error.
+  if (!credentials.accessKeyId || !credentials.secretAccessKey) {
+    throw new Error('AWS credentials are not configured in the environment.');
+  }
+
   const sigv4 = new SignatureV4({
-    credentials: defaultProvider(),
+    credentials,
     region: REGION,
     service: 'execute-api',
     sha256: Sha256,
