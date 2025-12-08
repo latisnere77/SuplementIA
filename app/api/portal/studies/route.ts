@@ -16,12 +16,15 @@ export interface StudySearchRequest {
 // Utility function to sign and fetch
 async function signAndFetch(url: string, body: object) {
   // Manually construct and SANITIZE credentials to fix Vercel environment variable issues.
-  // Vercel can inject newlines into env vars, which corrupts the AWS signature.
+  // Vercel can inject various whitespace characters into env vars, which corrupts the AWS signature.
   const credentials = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID?.replace(/\\n/g, '') || '',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY?.replace(/\\n/g, '') || '',
-    sessionToken: process.env.AWS_SESSION_TOKEN?.replace(/\\n/g, ''),
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID?.replace(/\s/g, '') || '',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY?.replace(/\s/g, '') || '',
+    sessionToken: process.env.AWS_SESSION_TOKEN?.replace(/\s/g, ''),
   };
+
+  // Add a debug log to verify the sanitized accessKeyId before signing
+  console.log('DEBUG: Sanitized Access Key ID (first 5 chars): ', credentials.accessKeyId.substring(0, 5));
 
   // If any essential credential is missing, throw a clear error.
   if (!credentials.accessKeyId || !credentials.secretAccessKey) {
