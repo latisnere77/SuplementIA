@@ -23,9 +23,6 @@ async function signAndFetch(url: string, body: object) {
     sessionToken: process.env.AWS_SESSION_TOKEN?.replace(/\s/g, ''),
   };
 
-  // Add a debug log to verify the sanitized accessKeyId before signing
-  console.log('DEBUG: Sanitized Access Key ID (first 5 chars): ', credentials.accessKeyId.substring(0, 5));
-
   // If any essential credential is missing, throw a clear error.
   if (!credentials.accessKeyId || !credentials.secretAccessKey) {
     throw new Error('AWS credentials are not properly configured in the environment.');
@@ -54,6 +51,10 @@ async function signAndFetch(url: string, body: object) {
 
   const signedRequest = await sigv4.sign(request);
 
+  // **DEBUGGING ADICIONAL:** Log the full Authorization header before making the fetch call.
+  console.log('DEBUG: AWS Signed Headers (before fetch):', JSON.stringify(signedRequest.headers, null, 2));
+  console.log('DEBUG: Sanitized Access Key ID (first 5 chars): ', credentials.accessKeyId.substring(0, 5));
+  
   // Correctly construct the Headers object for fetch
   const headers = new Headers();
   for (const [key, value] of Object.entries(signedRequest.headers)) {
