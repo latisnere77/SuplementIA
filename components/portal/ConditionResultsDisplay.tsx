@@ -5,8 +5,9 @@
  * suplementos por su nivel de evidencia científica.
  */
 import React from 'react';
-import type { PubMedQueryResult, SupplementEvidence } from '@/lib/services/pubmed-search';
-import SupplementEvidenceCard from './SupplementEvidenceCard';
+import type { PubMedQueryResult } from '@/lib/services/pubmed-search';
+import { SupplementEvidenceCard } from './SupplementEvidenceCard';
+import type { SupplementEvidence } from '@/lib/knowledge-base'; // Use the new unified type
 
 interface ConditionResultsDisplayProps {
   result: PubMedQueryResult;
@@ -14,13 +15,14 @@ interface ConditionResultsDisplayProps {
 
 interface GradeSectionProps {
   title: string;
-  supplements: SupplementEvidence[];
+  supplements: any[]; // Loosening type here to accommodate old structure temporarily
   borderColor: string;
+  categorySlug: string;
 }
 
-const GradeSection: React.FC<GradeSectionProps> = ({ title, supplements, borderColor }) => {
+const GradeSection: React.FC<GradeSectionProps> = ({ title, supplements, borderColor, categorySlug }) => {
   if (supplements.length === 0) {
-    return null; // No renderizar la sección si no hay suplementos
+    return null;
   }
 
   return (
@@ -30,13 +32,21 @@ const GradeSection: React.FC<GradeSectionProps> = ({ title, supplements, borderC
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {supplements.map((supplement) => (
-          <SupplementEvidenceCard key={supplement.supplementName} supplement={supplement} />
+          <SupplementEvidenceCard 
+            key={supplement.supplementName} 
+            supplement={{
+              name: supplement.supplementName,
+              evidenceGrade: supplement.grade,
+              summary: supplement.summary,
+              slug: supplement.supplementName.toLowerCase().replace(/ /g, '-'), // Create a slug on the fly
+            }}
+            categorySlug={categorySlug}
+          />
         ))}
       </div>
     </div>
   );
 };
-
 
 const ConditionResultsDisplay: React.FC<ConditionResultsDisplayProps> = ({ result }) => {
   const allSupplements = [
@@ -45,6 +55,8 @@ const ConditionResultsDisplay: React.FC<ConditionResultsDisplayProps> = ({ resul
     ...result.supplementsByEvidence.gradeC,
     ...result.supplementsByEvidence.gradeD,
   ];
+  
+  const categorySlug = result.condition.toLowerCase().replace(/ /g, '-');
 
   return (
     <div className="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-sm">
@@ -59,21 +71,25 @@ const ConditionResultsDisplay: React.FC<ConditionResultsDisplayProps> = ({ resul
             title="Grado A: Evidencia Fuerte"
             supplements={result.supplementsByEvidence.gradeA}
             borderColor="border-green-300"
+            categorySlug={categorySlug}
           />
           <GradeSection
             title="Grado B: Evidencia Moderada"
             supplements={result.supplementsByEvidence.gradeB}
             borderColor="border-yellow-300"
+            categorySlug={categorySlug}
           />
           <GradeSection
             title="Grado C: Evidencia Limitada"
             supplements={result.supplementsByEvidence.gradeC}
             borderColor="border-orange-300"
+            categorySlug={categorySlug}
           />
           <GradeSection
             title="Grado D: Evidencia en Contra o Inexistente"
             supplements={result.supplementsByEvidence.gradeD}
             borderColor="border-red-300"
+            categorySlug={categorySlug}
           />
         </div>
       ) : (

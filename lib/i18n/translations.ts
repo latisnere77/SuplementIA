@@ -33,6 +33,10 @@ export const translations = {
     'category.heart.desc': 'Support cardiovascular health',
     'category.fat-loss': 'Fat Loss',
     'category.fat-loss.desc': 'Support healthy weight management',
+    'category.energy': 'Energy & Fatigue',
+    'category.energy.desc': 'Boost energy levels and combat fatigue',
+    'category.anxiety': 'Anxiety & Stress',
+    'category.anxiety.desc': 'Help reduce anxiety and improve stress response',
 
     // Results Page
     'results.title': 'Recommendations for',
@@ -215,6 +219,10 @@ export const translations = {
     'category.heart.desc': 'Apoya la salud cardiovascular',
     'category.fat-loss': 'Pérdida de Grasa',
     'category.fat-loss.desc': 'Apoya el manejo saludable del peso',
+    'category.energy': 'Energía y Fatiga',
+    'category.energy.desc': 'Aumenta los niveles de energía y combate la fatiga',
+    'category.anxiety': 'Ansiedad y Estrés',
+    'category.anxiety.desc': 'Ayuda a reducir la ansiedad y mejorar la respuesta al estrés',
 
     // Results Page
     'results.title': 'Recomendaciones para',

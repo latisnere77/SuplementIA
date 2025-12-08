@@ -65,6 +65,27 @@ export default function PortalPage() {
 
   const categories = [
     {
+      icon: Moon,
+      title: t('category.sleep'),
+      description: t('category.sleep.desc'),
+      color: 'from-indigo-500/20 to-indigo-600/20',
+      id: 'sleep',
+    },
+    {
+      icon: TrendingUp,
+      title: t('category.energy'),
+      description: t('category.energy.desc'),
+      color: 'from-orange-500/20 to-amber-500/20',
+      id: 'energy',
+    },
+    {
+      icon: Shield,
+      title: t('category.anxiety'),
+      description: t('category.anxiety.desc'),
+      color: 'from-green-500/20 to-green-600/20',
+      id: 'anxiety',
+    },
+    {
       icon: Dumbbell,
       title: t('category.muscle-gain'),
       description: t('category.muscle-gain.desc'),
@@ -79,32 +100,11 @@ export default function PortalPage() {
       id: 'cognitive',
     },
     {
-      icon: Moon,
-      title: t('category.sleep'),
-      description: t('category.sleep.desc'),
-      color: 'from-indigo-500/20 to-indigo-600/20',
-      id: 'sleep',
-    },
-    {
-      icon: Shield,
-      title: t('category.immune'),
-      description: t('category.immune.desc'),
-      color: 'from-green-500/20 to-green-600/20',
-      id: 'immune',
-    },
-    {
       icon: Heart,
       title: t('category.heart'),
       description: t('category.heart.desc'),
       color: 'from-red-500/20 to-pink-500/20',
       id: 'heart',
-    },
-    {
-      icon: TrendingUp,
-      title: t('category.fat-loss'),
-      description: t('category.fat-loss.desc'),
-      color: 'from-orange-500/20 to-amber-500/20',
-      id: 'fat-loss',
     },
   ];
 
@@ -192,8 +192,7 @@ export default function PortalPage() {
   };
 
   const handleCategoryClick = (categoryId: string) => {
-    // FIX: Use 'q' parameter to match the search logic on the results page.
-    router.push(`/portal/results?q=${encodeURIComponent(categoryId)}`);
+    router.push(`/portal/category/${encodeURIComponent(categoryId)}`);
   };
 
   const handlePopularSearch = (term: string) => {

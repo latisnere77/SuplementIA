@@ -1,85 +1,56 @@
 /**
  * SupplementEvidenceCard Component
- *
- * Muestra una tarjeta individual para un suplemento, resumiendo la evidencia
- * encontrada para una condición específica.
+ * 
+ * Displays a single supplement's evidence level for a specific health condition.
+ * It features a prominent evidence grade, a color-coded indicator, and a brief summary.
  */
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { ChevronRight } from 'lucide-react';
-import type { SupplementEvidence, EvidenceGrade } from '@/lib/services/pubmed-search';
+import { EvidenceGrade } from '@/lib/knowledge-base';
 
 interface SupplementEvidenceCardProps {
-  supplement: SupplementEvidence;
+  supplement: {
+    name: string;
+    evidenceGrade: EvidenceGrade;
+    summary: string;
+    slug: string;
+  };
+  categorySlug: string;
 }
 
-const gradeColors: Record<EvidenceGrade, string> = {
-  A: 'bg-green-100 text-green-800 border-green-300',
-  B: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  C: 'bg-orange-100 text-orange-800 border-orange-300',
-  D: 'bg-red-100 text-red-800 border-red-300',
+const gradeColorMap: Record<EvidenceGrade, { bg: string; text: string; ring: string }> = {
+  A: { bg: 'bg-green-100', text: 'text-green-800', ring: 'ring-green-300' },
+  B: { bg: 'bg-lime-100', text: 'text-lime-800', ring: 'ring-lime-300' },
+  C: { bg: 'bg-yellow-100', text: 'text-yellow-800', ring: 'ring-yellow-300' },
+  D: { bg: 'bg-orange-100', text: 'text-orange-800', ring: 'ring-orange-300' },
+  F: { bg: 'bg-red-100', text: 'text-red-800', ring: 'ring-red-300' },
 };
 
-const SupplementEvidenceCard: React.FC<SupplementEvidenceCardProps> = ({ supplement }) => {
-  const router = useRouter();
-
-  const handleCardClick = () => {
-    router.push(`/portal/results?q=${encodeURIComponent(supplement.supplementName)}`);
-  };
+export const SupplementEvidenceCard: React.FC<SupplementEvidenceCardProps> = ({ supplement, categorySlug }) => {
+  const { name, evidenceGrade, summary, slug } = supplement;
+  const colors = gradeColorMap[evidenceGrade];
 
   return (
     <motion.div
       whileHover={{ scale: 1.03 }}
       transition={{ type: 'spring', stiffness: 300 }}
     >
-      <button
-        onClick={handleCardClick}
-        className="w-full text-left"
-        aria-label={`Ver análisis completo para ${supplement.supplementName}`}
-      >
-        <Card
-          className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col"
-        >
-          <CardHeader className="flex flex-row items-start justify-between gap-4">
-            <div>
-              <CardTitle className="text-lg font-semibold text-gray-900">{supplement.supplementName}</CardTitle>
-              <CardDescription className="text-sm text-gray-600 mt-1">
-                {supplement.totalStudyCount} estudios analizados en total
-              </CardDescription>
+      <Link href={`/portal/supplement/${slug}?benefit=${categorySlug}`} passHref>
+        <div className="flex items-start p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer h-full">
+          <div className="flex-shrink-0 mr-4">
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl ring-4 ${colors.bg} ${colors.text} ${colors.ring}`}
+            >
+              {evidenceGrade}
             </div>
-            <Badge className={`text-sm font-bold px-3 py-1 border ${gradeColors[supplement.overallGrade]}`}>
-              Grado {supplement.overallGrade}
-            </Badge>
-          </CardHeader>
-          <CardContent className="flex-grow flex flex-col justify-between">
-            <div>
-              <h4 className="text-sm font-semibold text-gray-800 mb-2">Evidencia por Beneficio:</h4>
-              <ul className="space-y-2 mb-4">
-                {supplement.benefits.map((benefit) => (
-                  <li key={benefit.benefitName} className="flex items-center justify-between text-sm">
-                    <span className="text-gray-700">{benefit.benefitName}</span>
-                    <Badge className={`text-xs font-bold px-2 py-0.5 border ${gradeColors[benefit.grade]}`}>
-                      {benefit.grade} ({benefit.studyCount})
-                    </Badge>
-                  </li>
-                ))}
-                {supplement.benefits.length === 0 && (
-                   <p className="text-xs text-gray-500">No se encontró evidencia específica para beneficios predefinidos.</p>
-                )}
-              </ul>
-            </div>
-            <div className="flex items-center text-blue-600 group-hover:translate-x-1 transition-transform mt-auto">
-              <span className="text-sm font-medium">Ver análisis completo</span>
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </div>
-          </CardContent>
-        </Card>
-      </button>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
+            <p className="text-gray-600 mt-1">{summary}</p>
+          </div>
+        </div>
+      </Link>
     </motion.div>
   );
 };
-
-export default SupplementEvidenceCard;
