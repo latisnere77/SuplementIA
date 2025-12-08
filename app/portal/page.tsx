@@ -8,7 +8,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon } from 'lucide-react';
+import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Stomach, Sparkles, HeartPulse, User, Woman } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +29,12 @@ const categoryIcons: { [key: string]: React.ElementType } = {
   'muscle-gain': Dumbbell,
   'cognitive-function': Brain,
   'heart-health': Heart,
+  'joint-bone-health': Bone,
+  'gut-health': Stomach,
+  'skin-hair-health': Sparkles,
+  immunity: Shield, // Re-using shield for now
+  'mens-health': User,
+  'womens-health': Woman,
 };
 
 export default function PortalPage() {
@@ -77,6 +83,12 @@ export default function PortalPage() {
       'muscle-gain': 'from-blue-500/20 to-blue-600/20',
       'cognitive-function': 'from-purple-500/20 to-purple-600/20',
       'heart-health': 'from-red-500/20 to-pink-500/20',
+      'joint-bone-health': 'from-gray-500/20 to-gray-600/20',
+      'gut-health': 'from-lime-500/20 to-lime-600/20',
+      'skin-hair-health': 'from-pink-500/20 to-rose-500/20',
+      immunity: 'from-teal-500/20 to-cyan-500/20',
+      'mens-health': 'from-sky-500/20 to-sky-600/20',
+      'womens-health': 'from-fuchsia-500/20 to-fuchsia-600/20',
     }[category.slug] || 'from-gray-500/20 to-gray-600/20',
   }));
 

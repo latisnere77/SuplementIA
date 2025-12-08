@@ -192,6 +192,42 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
       },
     ],
   },
+  {
+    slug: 'joint-bone-health',
+    name: 'Salud Articular y Ósea',
+    description: 'Suplementos para fortalecer los huesos, mejorar la flexibilidad y aliviar el dolor articular.',
+    supplements: [],
+  },
+  {
+    slug: 'gut-health',
+    name: 'Salud Digestiva',
+    description: 'Probióticos, enzimas y otros suplementos para una digestión saludable y un microbioma equilibrado.',
+    supplements: [],
+  },
+  {
+    slug: 'skin-hair-health',
+    name: 'Salud de la Piel y Cabello',
+    description: 'Nutrientes para una piel radiante, un cabello fuerte y uñas saludables.',
+    supplements: [],
+  },
+  {
+    slug: 'immunity',
+    name: 'Inmunidad',
+    description: 'Vitaminas y hierbas para fortalecer el sistema inmunológico y prevenir enfermedades.',
+    supplements: [],
+  },
+  {
+    slug: 'mens-health',
+    name: 'Salud Masculina',
+    description: 'Suplementos enfocados en la vitalidad, salud prostática y equilibrio hormonal masculino.',
+    supplements: [],
+  },
+  {
+    slug: 'womens-health',
+    name: 'Salud Femenina',
+    description: 'Apoyo para el equilibrio hormonal, el ciclo menstrual y la salud ósea en mujeres.',
+    supplements: [],
+  },
 ];
 
 // --- Accessor Functions ---
