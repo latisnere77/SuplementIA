@@ -38,10 +38,18 @@ async function signAndFetch(url: string, body: object) {
 
   const signedRequest = await sigv4.sign(request);
 
+  // Correctly construct the Headers object for fetch
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(signedRequest.headers)) {
+    if (value) {
+      headers.append(key, value.toString());
+    }
+  }
+
   // Use the signed request headers and body for the fetch call
   return fetch(url, {
     method: signedRequest.method,
-    headers: signedRequest.headers,
+    headers: headers,
     body: signedRequest.body,
   });
 }
