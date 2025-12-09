@@ -22,22 +22,22 @@ interface EvidenceSummary {
   overallGrade: GradeType;
   whatIsItFor: string;
   summary?: string;
-  worksFor?: Array<{
+  worksFor: Array<{
     condition: string;
     grade: GradeType;
     description: string;
   }>;
-  doesntWorkFor?: Array<{
+  doesntWorkFor: Array<{
     condition: string;
     grade: GradeType;
     description: string;
   }>;
-  limitedEvidence?: Array<{
+  limitedEvidence: Array<{
     condition: string;
     grade: GradeType;
     description: string;
   }>;
-  ingredients?: Array<{
+  ingredients: Array<{
     name: string;
     grade: GradeType;
     studyCount: number;
@@ -140,17 +140,17 @@ export default function SupplementDetailPage() {
       whatIsItFor: evidence.whatIsItFor || evidence.description || evidence.summary ||
         `${supplementName} es un suplemento con evidencia científica para diversos beneficios de salud.`,
       summary: evidence.summary || evidence.description,
-      worksFor: worksFor.map((item: any) => ({
+      worksFor: (worksFor || []).map((item: any) => ({
         condition: item.condition || item.benefit || item.name,
         grade: mapGrade(item.grade || 'B'),
         description: item.description || item.explanation || '',
       })),
-      doesntWorkFor: doesntWorkFor.map((item: any) => ({
+      doesntWorkFor: (doesntWorkFor || []).map((item: any) => ({
         condition: item.condition || item.benefit || item.name,
         grade: mapGrade(item.grade || 'D'),
         description: item.description || item.explanation || '',
       })),
-      limitedEvidence: limitedEvidence.map((item: any) => ({
+      limitedEvidence: (limitedEvidence || []).map((item: any) => ({
         condition: item.condition || item.benefit || item.name,
         grade: mapGrade(item.grade || 'C'),
         description: item.description || item.explanation || '',
