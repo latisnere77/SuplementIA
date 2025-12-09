@@ -11,7 +11,8 @@
 
 import { useState } from 'react';
 import { Shield, Beaker, Users, Calendar, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
-import SupplementGrade, { SupplementGradeBadge, type GradeType } from './SupplementGrade';
+import SupplementGrade, { SupplementGradeBadge } from './SupplementGrade';
+import type { GradeType } from '@/types/supplement-grade';
 import WorksForSection, { type WorksForItem } from './WorksForSection';
 import IntelligentRankingSection from './IntelligentRankingSection';
 import { BenefitEvidenceCard } from './BenefitEvidenceCard';
@@ -351,14 +352,14 @@ export default function EvidenceAnalysisPanelNew({
               <div className="space-y-4">
                 {evidenceSummary.interactions.medications.map((interaction, index) => (
                   <div key={index} className={`border-2 rounded-lg p-4 ${interaction.severity === 'Severe' ? 'border-red-300 bg-red-50' :
-                      interaction.severity === 'Moderate' ? 'border-orange-300 bg-orange-50' :
-                        'border-yellow-300 bg-yellow-50'
+                    interaction.severity === 'Moderate' ? 'border-orange-300 bg-orange-50' :
+                      'border-yellow-300 bg-yellow-50'
                     }`}>
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-gray-900">{interaction.medication}</h4>
                       <span className={`text-xs font-bold px-2 py-1 rounded ${interaction.severity === 'Severe' ? 'bg-red-200 text-red-800' :
-                          interaction.severity === 'Moderate' ? 'bg-orange-200 text-orange-800' :
-                            'bg-yellow-200 text-yellow-800'
+                        interaction.severity === 'Moderate' ? 'bg-orange-200 text-orange-800' :
+                          'bg-yellow-200 text-yellow-800'
                         }`}>
                         {interaction.severity}
                       </span>
@@ -427,14 +428,14 @@ export default function EvidenceAnalysisPanelNew({
           <div className="space-y-4">
             {evidenceSummary.mechanisms.map((mechanism, index) => (
               <div key={index} className={`border-2 rounded-lg p-4 ${mechanism.evidenceLevel === 'strong' ? 'border-green-300 bg-green-50' :
-                  mechanism.evidenceLevel === 'moderate' ? 'border-blue-300 bg-blue-50' :
-                    'border-gray-300 bg-gray-50'
+                mechanism.evidenceLevel === 'moderate' ? 'border-blue-300 bg-blue-50' :
+                  'border-gray-300 bg-gray-50'
                 }`}>
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="font-semibold text-gray-900">{mechanism.name}</h4>
                   <span className={`text-xs font-bold px-2 py-1 rounded ${mechanism.evidenceLevel === 'strong' ? 'bg-green-200 text-green-800' :
-                      mechanism.evidenceLevel === 'moderate' ? 'bg-blue-200 text-blue-800' :
-                        'bg-gray-200 text-gray-800'
+                    mechanism.evidenceLevel === 'moderate' ? 'bg-blue-200 text-blue-800' :
+                      'bg-gray-200 text-gray-800'
                     }`}>
                     {mechanism.evidenceLevel}
                   </span>
