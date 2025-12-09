@@ -161,6 +161,23 @@ export async function POST(request: NextRequest) {
       studiesList = data.results;
     } else if (Array.isArray(data.data)) {
       studiesList = data.data;
+    } else if (data.supplement) {
+      // Check if studies are nested inside the supplement object
+      if (Array.isArray(data.supplement.studies)) {
+        studiesList = data.supplement.studies;
+      } else if (Array.isArray(data.supplement.evidence)) {
+        studiesList = data.supplement.evidence;
+      } else if (Array.isArray(data.supplement.relatedStudies)) {
+        studiesList = data.supplement.relatedStudies;
+      } else if (Array.isArray(data.supplement.references)) {
+        studiesList = data.supplement.references;
+      } else {
+        console.error('Supplement found but no studies array inside:', JSON.stringify(data.supplement));
+        return NextResponse.json({
+          success: false,
+          error: `Supplement found but no studies. Content: ${JSON.stringify(data.supplement).substring(0, 500)}...`
+        }, { status: 502 });
+      }
     } else {
       console.error('Unexpected Lambda response format:', JSON.stringify(data));
       return NextResponse.json({
