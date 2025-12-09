@@ -9,6 +9,9 @@
 import { CheckCircle2, XCircle, AlertCircle, TrendingUp } from 'lucide-react';
 import type { GradeType } from '@/types/supplement-grade';
 
+// Re-export for backward compatibility
+export type { GradeType };
+
 interface SupplementGradeProps {
   grade: GradeType;
   supplementName?: string;
