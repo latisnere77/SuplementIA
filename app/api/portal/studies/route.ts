@@ -152,8 +152,25 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
+
+    // Determine where the array of studies is located locally
+    let studiesList = [];
+    if (Array.isArray(data)) {
+      studiesList = data;
+    } else if (Array.isArray(data.results)) {
+      studiesList = data.results;
+    } else if (Array.isArray(data.data)) {
+      studiesList = data.data;
+    } else {
+      console.error('Unexpected Lambda response format:', JSON.stringify(data));
+      return NextResponse.json({
+        success: false,
+        error: `Unexpected Lambda response format. Received keys: ${Object.keys(data).join(', ')}`
+      }, { status: 502 });
+    }
+
     // Adapt the response if necessary to match the old format expected by the frontend
-    return NextResponse.json({ success: true, studies: data.results });
+    return NextResponse.json({ success: true, studies: studiesList });
 
   } catch (error: any) {
     console.error('Studies route error:', error);
