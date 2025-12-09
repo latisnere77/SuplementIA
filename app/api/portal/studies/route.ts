@@ -93,19 +93,28 @@ async function signAndFetchPost(url: string) {
 
   const urlObject = new URL(url);
 
+  // Convert URLSearchParams to a plain object for the query property
+  const query: Record<string, string> = {};
+  urlObject.searchParams.forEach((value, key) => {
+    query[key] = value;
+  });
+
   const request = new HttpRequest({
     hostname: urlObject.hostname,
-    path: urlObject.pathname + urlObject.search, // Include query string in path
+    path: urlObject.pathname,
+    query: query,
     method: 'POST',
     protocol: 'https',
     headers: {
       host: urlObject.hostname,
     },
+    body: '', // Explicit empty body for POST
   });
 
   const signedRequest = await sigv4.sign(request);
 
   console.log('DEBUG: POST request to:', url);
+  console.log('DEBUG: Query Params:', JSON.stringify(query));
 
   // Construct the Headers object for fetch
   const headers = new Headers();
@@ -118,6 +127,7 @@ async function signAndFetchPost(url: string) {
   return fetch(url, {
     method: 'POST',
     headers: headers,
+    body: '', // Ensure fetch also sends empty body if implicit
   });
 }
 
