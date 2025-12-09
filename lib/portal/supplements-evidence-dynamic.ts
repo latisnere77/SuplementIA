@@ -8,7 +8,7 @@
  * 3. Generate from PubMed + AI (slow, first time only)
  */
 
-import type { GradeType } from '@/components/portal/SupplementGrade';
+import type { GradeType } from '@/types/supplement-grade';
 import type { WorksForItem } from '@/components/portal/WorksForSection';
 import type { SupplementEvidenceData } from './supplements-evidence-data';
 import type { PubMedArticle } from '@/lib/services/medical-mcp-client';

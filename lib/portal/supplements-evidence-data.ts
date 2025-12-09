@@ -4,7 +4,7 @@
  * Evita llamadas a Bedrock para suplementos comunes
  */
 
-import type { GradeType } from '@/components/portal/SupplementGrade';
+import type { GradeType } from '@/types/supplement-grade';
 import type { WorksForItem } from '@/components/portal/WorksForSection';
 
 export interface SupplementEvidenceData {

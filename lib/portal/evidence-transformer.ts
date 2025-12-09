@@ -4,7 +4,7 @@
  * OPTIMIZADO: Sistema de 3 niveles - Static → DynamoDB → Dynamic Generation
  */
 
-import type { GradeType } from '@/components/portal/SupplementGrade';
+import type { GradeType } from '@/types/supplement-grade';
 import type { WorksForItem } from '@/components/portal/WorksForSection';
 import { getSupplementEvidenceFromCache } from './supplements-evidence-data';
 import { getRichSupplementData } from './supplements-evidence-rich';

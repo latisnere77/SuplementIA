@@ -8,7 +8,7 @@ import {
   InvokeModelCommand,
 } from '@aws-sdk/client-bedrock-runtime';
 import type { PubMedArticle } from './medical-mcp-client';
-import type { GradeType } from '@/components/portal/SupplementGrade';
+import type { GradeType } from '@/types/supplement-grade';
 import type { WorksForItem } from '@/components/portal/WorksForSection';
 
 // ====================================
