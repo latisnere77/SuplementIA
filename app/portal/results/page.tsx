@@ -35,7 +35,7 @@ import { getTopSuggestedBenefit, getSuggestedBenefits } from '@/lib/portal/suppl
 import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
 import BenefitStudiesModal from '@/components/portal/BenefitStudiesModal';
 import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
-import type { GradeType } from '@/components/portal/SupplementGrade';
+import type { GradeType } from '@/types/supplement-grade';
 import type { PubMedQueryResult, SupplementEvidence } from '@/lib/services/pubmed-search';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
 

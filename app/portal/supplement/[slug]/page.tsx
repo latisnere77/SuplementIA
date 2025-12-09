@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, LoaderCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import EvidenceAnalysisPanelNew from '@/components/portal/EvidenceAnalysisPanelNew';
-import type { GradeType } from '@/components/portal/SupplementGrade';
+import type { GradeType } from '@/types/supplement-grade';
 
 // Evidence summary structure from enrichment API
 interface EvidenceSummary {

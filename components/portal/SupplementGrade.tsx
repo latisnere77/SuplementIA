@@ -7,8 +7,7 @@
 'use client';
 
 import { CheckCircle2, XCircle, AlertCircle, TrendingUp } from 'lucide-react';
-
-export type GradeType = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
+import type { GradeType } from '@/types/supplement-grade';
 
 interface SupplementGradeProps {
   grade: GradeType;
