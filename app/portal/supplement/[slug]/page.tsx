@@ -77,8 +77,8 @@ export default function SupplementDetailPage() {
     setError(null);
 
     try {
-      // Call the enrichment API that orchestrates studies-fetcher + content-enricher
-      const response = await fetch('/api/portal/enrich', {
+      // Call the simplified enrichment API that bypasses TDZ errors
+      const response = await fetch('/api/portal/enrich-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
