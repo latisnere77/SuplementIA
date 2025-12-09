@@ -172,11 +172,18 @@ export async function POST(request: NextRequest) {
       } else if (Array.isArray(data.supplement.references)) {
         studiesList = data.supplement.references;
       } else {
-        console.error('Supplement found but no studies array inside:', JSON.stringify(data.supplement));
-        return NextResponse.json({
-          success: false,
-          error: `Supplement found but no studies. Content: ${JSON.stringify(data.supplement).substring(0, 500)}...`
-        }, { status: 502 });
+        // No studies array found, but we have supplement data
+        // Return the supplement info so frontend can show it
+        const supplement = data.supplement;
+        const pubmedQuery = supplement.metadata?.pubmed_query || supplement.name;
+        const pubmedUrl = `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(pubmedQuery)}`;
+
+        // Create a synthetic study entry with PubMed link
+        studiesList = [{
+          title: `${supplement.name} - Evidence Grade: ${supplement.metadata?.evidence_grade || 'N/A'}`,
+          summary: `Scientific Name: ${supplement.scientificName || 'N/A'}. Common Names: ${(supplement.commonNames || []).join(', ')}. Approximately ${supplement.metadata?.study_count || 'many'} studies available on PubMed.`,
+          url: pubmedUrl
+        }];
       }
     } else {
       console.error('Unexpected Lambda response format:', JSON.stringify(data));
