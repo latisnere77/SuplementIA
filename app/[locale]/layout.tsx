@@ -1,5 +1,6 @@
 import "./globals.css";
-import "./layout.css";
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
 
 export const metadata = {
@@ -12,15 +13,21 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params: { locale }
 }: {
   children: React.ReactNode;
+  params: { locale: string };
 }) {
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className="light">
+    <html lang={locale} className="light">
       <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-        {children}
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
         <Analytics />
       </body>
     </html>
