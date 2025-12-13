@@ -1,12 +1,5 @@
-import { useTranslations } from 'next-intl';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { redirect } from '@/src/i18n/navigation';
 
-export default function Index() {
-  const t = useTranslations('Index');
-  return (
-    <div>
-      <h1>{t('title')}</h1>
-      <LanguageSwitcher />
-    </div>
-  );
+export default function Index({ params: { locale } }: { params: { locale: string } }) {
+  redirect({ href: '/portal', locale });
 }
