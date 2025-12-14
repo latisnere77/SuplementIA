@@ -75,8 +75,8 @@ export default function PortalPage() {
   // ¡Ahora las categorías se cargan dinámicamente!
   const categories = getAllCategories().map(category => ({
     ...category,
-    name: t(`portal.categories.${category.slug}.name`, { defaultMessage: category.name }),
-    description: t(`portal.categories.${category.slug}.desc`, { defaultMessage: category.description }),
+    name: t(`portal.categories.${category.slug}.name` as any, { defaultMessage: category.name }),
+    description: t(`portal.categories.${category.slug}.desc` as any, { defaultMessage: category.description }),
     icon: categoryIcons[category.slug] || BookOpen, // Usar icono mapeado o uno por defecto
     color: {
       sleep: 'from-indigo-500/20 to-indigo-600/20',
@@ -521,7 +521,7 @@ export default function PortalPage() {
                   <CardContent>
                     <div className="flex items-center text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
                       <span className="text-sm font-medium">
-                        {t('portal.browse.view_more', { defaultMessage: language === 'es' ? 'Ver más' : 'Learn more' })}
+                        {t('portal.browse.view_more' as any, { defaultMessage: language === 'es' ? 'Ver más' : 'Learn more' })}
                       </span>
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </div>
