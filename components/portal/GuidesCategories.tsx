@@ -8,7 +8,7 @@
 
 import { Brain, Heart, Zap, Moon, Dumbbell, ShieldCheck, Smile, Leaf, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations, useLocale } from 'next-intl';
 
 export interface HealthCategory {
   id: string;
@@ -146,7 +146,8 @@ export default function GuidesCategories({
   maxCategories,
 }: GuidesCategoriesProps) {
   const router = useRouter();
-  const { t, language } = useTranslation();
+  const t = useTranslations();
+  const language = useLocale();
 
   const categories = maxCategories
     ? HEALTH_CATEGORIES.slice(0, maxCategories)

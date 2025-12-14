@@ -6,7 +6,7 @@
 'use client';
 
 import { MapPin, Cloud, Users, DollarSign } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 interface PersonalizationFactors {
   altitude?: number;
@@ -64,7 +64,7 @@ export default function PersonalizationExplanation({
   factors,
   adjustments = [],
 }: PersonalizationExplanationProps) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const getLocationDescription = () => {
     if (factors.altitude && factors.altitude > 2000) {
       return t('personalization.altitude.desc', { altitude: factors.altitude.toString() });

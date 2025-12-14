@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react';
 import { Check, Zap, Crown, Gift } from 'lucide-react';
 import { useAuth } from '@/lib/auth/useAuth';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 import AuthModal from './AuthModal';
 
 interface Plan {
@@ -27,7 +27,7 @@ interface Plan {
 }
 
 export default function SubscriptionPlans() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const { user } = useAuth();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -108,9 +108,8 @@ export default function SubscriptionPlans() {
           return (
             <div
               key={plan.id}
-              className={`relative rounded-xl border-2 ${
-                isPopular ? 'border-blue-400 shadow-lg ring-2 ring-blue-200' : 'border-gray-200'
-              } bg-white p-6 hover:shadow-xl transition-all`}
+              className={`relative rounded-xl border-2 ${isPopular ? 'border-blue-400 shadow-lg ring-2 ring-blue-200' : 'border-gray-200'
+                } bg-white p-6 hover:shadow-xl transition-all`}
             >
               {isPopular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -149,11 +148,10 @@ export default function SubscriptionPlans() {
 
               <button
                 onClick={() => handleSubscribe(plan.id)}
-                className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
-                  plan.id === 'free'
+                className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${plan.id === 'free'
                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     : `bg-gradient-to-r ${color} text-white hover:opacity-90`
-                }`}
+                  }`}
               >
                 {plan.id === 'free' ? 'Current Plan' : 'Subscribe'}
               </button>

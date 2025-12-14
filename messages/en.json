@@ -83,7 +83,76 @@
   },
   "autocomplete": {
     "loading": "Searching...",
-    "no.results": "No results found. Try a different search.",
+    "no_results": "No results found. Try a different search.",
     "categories": "Category"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about SupplementAI",
+    "categories": {
+      "all": "All",
+      "general": "General",
+      "science": "Science",
+      "products": "Products",
+      "safety": "Safety"
+    },
+    "questions": {
+      "what_is": {
+        "question": "What is SupplementAI?",
+        "answer": "SupplementAI is a platform that analyzes scientific studies from PubMed to provide evidence-based supplement recommendations. We don't invent information; we only analyze published and verifiable research."
+      },
+      "is_free": {
+        "question": "Is it free?",
+        "answer": "Yes, we offer a free plan that allows basic searches. The Pro plan offers access to all product options, deeper analysis, and unlimited searches."
+      },
+      "source_studies": {
+        "question": "Where do the scientific studies come from?",
+        "answer": "All studies come from PubMed, the world's largest biomedical research database, maintained by the US National Institutes of Health (NIH). It contains over 35 million peer-reviewed scientific articles."
+      },
+      "grades_meaning": {
+        "question": "What do the A, B, C grades mean?",
+        "answer": "Grades reflect the quality of scientific evidence:\n\n• Grade A: Strong evidence from multiple RCTs (Randomized Controlled Trials) and meta-analyses\n• Grade B: Moderate evidence from some RCTs\n• Grade C: Limited evidence, mainly observational studies\n\nWe base these grades on the number, quality, and consistency of available studies."
+      },
+      "what_is_rct": {
+        "question": "What is an RCT (Randomized Controlled Trial)?",
+        "answer": "An RCT (Randomized Controlled Trial) is the gold standard in scientific research. Participants are randomly assigned to two groups: one receives the supplement and the other a placebo. This eliminates bias and determines if the supplement actually works."
+      },
+      "missing_info": {
+        "question": "Why do some supplements have no information?",
+        "answer": "If we don't find information on a supplement, it may be because:\n\n1. The name is misspelled (try variations)\n2. It's a very new product with no published studies\n3. No scientific studies exist in PubMed for that compound\n4. It's a brand name (try searching for the active ingredient)\n\nWe never generate false information. If there are no studies, we tell you clearly."
+      },
+      "why_products": {
+        "question": "Why do you recommend these specific products?",
+        "answer": "Product recommendations are NOT based on advertising or special fees. We show:\n\n• Budget Option: Basic accessible products\n• Value Option: Best price-quality ratio\n• Premium Option: Optimized formulations (like ANKONERE)\n\nAll options contain the same active ingredients backed by science."
+      },
+      "affiliate_disclosure": {
+        "question": "Do you make money from product links?",
+        "answer": "Yes, we are transparent about this. Some links are affiliate links, meaning we may receive a small commission if you buy through them (at no extra cost to you). This allows us to keep the service free and continue improving the platform."
+      },
+      "what_is_ankonere": {
+        "question": "What is ANKONERE?",
+        "answer": "ANKONERE is our premium line of supplements formulated specifically for the Latin American market, with optimized dosages based on the scientific evidence we analyze. It is an option, not an obligation."
+      },
+      "trust_recommendations": {
+        "question": "Can I trust the recommendations?",
+        "answer": "Our recommendations are based EXCLUSIVELY on published, peer-reviewed scientific studies. However, we are NOT a substitute for professional medical advice. You should always consult with a doctor or health professional before taking any supplement."
+      },
+      "safety_warning": {
+        "question": "Is it safe to take these supplements?",
+        "answer": "Supplements in our recommendations have been studied in scientific research and are generally considered safe for most people at indicated doses. However:\n\n• They may interact with medications\n• They may not be safe during pregnancy/breastfeeding\n• They may have side effects\n• Individual doses vary\n\nALWAYS consult a health professional before taking supplements!"
+      },
+      "adverse_reaction": {
+        "question": "What if I have an adverse reaction?",
+        "answer": "If you experience any adverse reaction:\n\n1. Stop taking the supplement immediately\n2. Consult a doctor as soon as possible\n3. Report the reaction to your country's health authorities\n\nWe are not responsible for adverse reactions. Supplements, although natural, can have side effects."
+      },
+      "verify_products": {
+        "question": "Do you verify the quality of recommended products?",
+        "answer": "No. We do not physically analyze products or verify their quality in a lab. We recommend buying supplements from recognized brands that:\n\n• Have third-party certifications (USP, NSF, etc.)\n• Show transparency in ingredients\n• Have a good market reputation\n• Comply with local regulations"
+      }
+    },
+    "contact": {
+      "text": "Didn't find what you were looking for? Contact us at",
+      "help": "and we will help you."
+    }
   }
 }

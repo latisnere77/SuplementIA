@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { Star, Send } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 interface CheckInFormProps {
   recommendationId: string;
@@ -29,7 +29,7 @@ export default function CheckInForm({
   onSubmit,
   isLoading = false,
 }: CheckInFormProps) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [rating, setRating] = useState(0);
   const [notes, setNotes] = useState('');
   const [efficacyScore, setEfficacyScore] = useState<number | null>(null);
@@ -81,11 +81,10 @@ export default function CheckInForm({
                 key={star}
                 type="button"
                 onClick={() => setRating(star)}
-                className={`p-2 rounded-lg transition-colors ${
-                  star <= rating
+                className={`p-2 rounded-lg transition-colors ${star <= rating
                     ? 'text-yellow-400 bg-yellow-50'
                     : 'text-gray-300 hover:text-yellow-300'
-                }`}
+                  }`}
               >
                 <Star className="h-8 w-8 fill-current" />
               </button>
@@ -167,11 +166,10 @@ export default function CheckInForm({
                     );
                   }
                 }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  sideEffects.includes(effect) || (effect === 'checkin.side.effects.none' && sideEffects.length === 0)
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${sideEffects.includes(effect) || (effect === 'checkin.side.effects.none' && sideEffects.length === 0)
                     ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
                     : 'bg-gray-100 text-gray-700 border-2 border-transparent hover:border-gray-300'
-                }`}
+                  }`}
               >
                 {t(effect as any)}
               </button>

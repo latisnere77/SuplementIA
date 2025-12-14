@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { X, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '@/lib/auth/useAuth';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: AuthModalProps) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup' | 'verify'>(initialMode);
   const [email, setEmail] = useState('');

@@ -2,12 +2,11 @@
 
 export const locales = ['en', 'es'] as const;
 
+// Strict pathname mapping is causing 404s on dynamic routes.
+// We allow all paths to be handled by the App Router.
 export const pathnames = {
   '/': '/',
-  '/portal': {
-    en: '/portal',
-    es: '/portal',
-  },
-};
+  // Allow all other paths to be passed through
+} as const;
 
 export type AppPathnames = keyof typeof pathnames;

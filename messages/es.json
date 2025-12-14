@@ -83,7 +83,76 @@
   },
   "autocomplete": {
     "loading": "Buscando...",
-    "no.results": "No se encontraron resultados. Intenta una búsqueda diferente.",
+    "no_results": "No se encontraron resultados. Intenta una búsqueda diferente.",
     "categories": "Categoría"
+  },
+  "faq": {
+    "title": "Preguntas Frecuentes",
+    "subtitle": "Todo lo que necesitas saber sobre SuplementAI",
+    "categories": {
+      "all": "Todas",
+      "general": "General",
+      "science": "Ciencia",
+      "products": "Productos",
+      "safety": "Seguridad"
+    },
+    "questions": {
+      "what_is": {
+        "question": "¿Qué es SuplementAI?",
+        "answer": "SuplementAI es una plataforma que analiza estudios científicos de PubMed para proporcionarte recomendaciones de suplementos basadas en evidencia real. No inventamos información, solo analizamos investigaciones publicadas y verificables."
+      },
+      "is_free": {
+        "question": "¿Es gratuito?",
+        "answer": "Sí, ofrecemos un plan gratuito que te permite realizar búsquedas básicas. El plan Pro ofrece acceso a todas las opciones de productos, análisis más profundos, y sin límites de búsqueda."
+      },
+      "source_studies": {
+        "question": "¿De dónde vienen los estudios científicos?",
+        "answer": "Todos los estudios provienen de PubMed, la base de datos de investigación biomédica más grande del mundo, mantenida por el National Institutes of Health (NIH) de Estados Unidos. Contiene más de 35 millones de artículos científicos revisados por pares."
+      },
+      "grades_meaning": {
+        "question": "¿Qué significan las calificaciones A, B, C?",
+        "answer": "Las calificaciones reflejan la calidad de la evidencia científica:\n\n• Grado A: Evidencia sólida de múltiples estudios RCT (ensayos controlados aleatorios) y meta-análisis\n• Grado B: Evidencia moderada de algunos estudios RCT\n• Grado C: Evidencia limitada, principalmente estudios observacionales\n\nBasamos estas calificaciones en el número, calidad y consistencia de los estudios disponibles."
+      },
+      "what_is_rct": {
+        "question": "¿Qué es un RCT (Randomized Controlled Trial)?",
+        "answer": "Un RCT (Ensayo Controlado Aleatorio) es el estándar de oro en investigación científica. Los participantes se asignan aleatoriamente a dos grupos: uno recibe el suplemento y otro recibe un placebo. Esto elimina sesgos y permite determinar si el suplemento realmente funciona."
+      },
+      "missing_info": {
+        "question": "¿Por qué algunos suplementos no tienen información?",
+        "answer": "Si no encontramos información sobre un suplemento, puede ser porque:\n\n1. El nombre está mal escrito (intenta con variaciones)\n2. Es un producto muy nuevo sin estudios publicados\n3. No existen estudios científicos en PubMed sobre ese compuesto\n4. Es un nombre comercial (intenta buscar con el nombre del ingrediente activo)\n\nNunca generamos información falsa. Si no hay estudios, te lo decimos claramente."
+      },
+      "why_products": {
+        "question": "¿Por qué recomiendan estos productos específicos?",
+        "answer": "Las recomendaciones de productos NO están basadas en publicidad o comisiones especiales. Mostramos:\n\n• Opción Económica: Productos básicos accesibles\n• Opción de Valor: Mejor relación calidad-precio\n• Opción Premium: Formulaciones optimizadas (como ANKONERE)\n\nTodas las opciones contienen los mismos ingredientes activos respaldados por la ciencia."
+      },
+      "affiliate_disclosure": {
+        "question": "¿Ganan dinero con los enlaces de productos?",
+        "answer": "Sí, somos transparentes al respecto. Algunos enlaces son de afiliados, lo que significa que podemos recibir una pequeña comisión si compras a través de ellos (sin costo adicional para ti). Esto nos permite mantener el servicio gratuito y seguir mejorando la plataforma."
+      },
+      "what_is_ankonere": {
+        "question": "¿Qué es ANKONERE?",
+        "answer": "ANKONERE es nuestra línea premium de suplementos formulados específicamente para el mercado latinoamericano, con dosificaciones optimizadas basadas en la evidencia científica que analizamos. Es una opción, no una obligación."
+      },
+      "trust_recommendations": {
+        "question": "¿Puedo confiar en las recomendaciones?",
+        "answer": "Nuestras recomendaciones están basadas EXCLUSIVAMENTE en estudios científicos publicados y revisados por pares. Sin embargo, NO somos un sustituto del consejo médico profesional. Siempre debes consultar con un médico o profesional de salud antes de tomar cualquier suplemento."
+      },
+      "safety_warning": {
+        "question": "¿Es seguro tomar estos suplementos?",
+        "answer": "Los suplementos que aparecen en nuestras recomendaciones han sido estudiados en investigaciones científicas y generalmente se consideran seguros para la mayoría de las personas en las dosis indicadas. Sin embargo:\n\n• Pueden interactuar con medicamentos\n• Pueden no ser seguros durante el embarazo/lactancia\n• Pueden tener efectos secundarios\n• Las dosis individuales varían\n\n¡SIEMPRE consulta con un profesional de salud antes de tomar suplementos!"
+      },
+      "adverse_reaction": {
+        "question": "¿Qué pasa si tengo una reacción adversa?",
+        "answer": "Si experimentas cualquier reacción adversa:\n\n1. Suspende inmediatamente el suplemento\n2. Consulta a un médico lo antes posible\n3. Reporta la reacción a las autoridades sanitarias de tu país\n\nNo somos responsables de reacciones adversas. Los suplementos, aunque naturales, pueden tener efectos secundarios."
+      },
+      "verify_products": {
+        "question": "¿Verifican la calidad de los productos que recomiendan?",
+        "answer": "No. No analizamos físicamente los productos ni verificamos su calidad en laboratorio. Recomendamos que compres suplementos de marcas reconocidas que:\n\n• Tengan certificaciones de terceros (USP, NSF, etc.)\n• Muestren transparencia en ingredientes\n• Tengan buena reputación en el mercado\n• Cumplan con regulaciones locales"
+      }
+    },
+    "contact": {
+      "text": "¿No encontraste lo que buscabas? Contáctanos en",
+      "help": "y te ayudaremos."
+    }
   }
 }

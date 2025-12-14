@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { BookOpen, Users, TrendingUp, Calendar, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 import { IngredientBadges } from './IngredientBadges';
 
 interface EvidenceSummary {
@@ -51,7 +51,7 @@ export default function EvidenceAnalysisPanel({
   evidenceSummary,
   onViewStudies,
 }: EvidenceAnalysisPanelProps) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [expandedIngredient, setExpandedIngredient] = useState<string | null>(null);
 
   return (
@@ -113,7 +113,7 @@ export default function EvidenceAnalysisPanel({
                     {t('evidence.grade')} {ingredient.grade}
                   </span>
                   {/* Badges with real data */}
-                  <IngredientBadges 
+                  <IngredientBadges
                     ingredient={{
                       evidenceGrade: ingredient.evidenceGrade || ingredient.grade,
                       evidenceConfidence: ingredient.evidenceConfidence,

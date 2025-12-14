@@ -1,7 +1,7 @@
 /**
  * Portal Results Page
  * Displays evidence analysis, personalization, and product recommendations
- * Force redeploy: 2025-12-02T00:30:00Z
+ * Force redeploy: 2025-12-14T08:00:00Z
  */
 
 'use client';
@@ -52,7 +52,7 @@ import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay
  */
 function isValidCache(cachedRecommendation: any): boolean {
   console.log('[Cache Validation] Starting validation...');
-  
+
   // Check 1: Null/undefined recommendation
   if (!cachedRecommendation) {
     console.log('[Cache Validation] ❌ Recommendation is null or undefined');
@@ -68,7 +68,7 @@ function isValidCache(cachedRecommendation: any): boolean {
   // Check 3: Validate metadata structure
   const metadata = cachedRecommendation._enrichment_metadata || {};
   const hasMetadata = Object.keys(metadata).length > 0;
-  
+
   console.log('[Cache Validation] Metadata check:', {
     hasMetadata,
     metadataKeys: Object.keys(metadata),
@@ -77,10 +77,10 @@ function isValidCache(cachedRecommendation: any): boolean {
   // Check 4: Validate study data - check totalStudies OR studiesUsed > 0
   const totalStudies = cachedRecommendation.evidence_summary?.totalStudies || 0;
   const studiesUsed = metadata.studiesUsed || 0;
-  
+
   // Valid if either totalStudies > 0 OR studiesUsed > 0
   const hasRealData = totalStudies > 0 || studiesUsed > 0;
-  
+
   console.log('[Cache Validation] Study data check:', {
     totalStudies,
     studiesUsed,
@@ -91,7 +91,7 @@ function isValidCache(cachedRecommendation: any): boolean {
   // Check 5: Additional validation - ensure not fake/generated data
   // Fake data has totalStudies > 0 but studiesUsed = 0
   const hasFakeData = totalStudies > 0 && studiesUsed === 0 && !hasMetadata;
-  
+
   if (hasFakeData) {
     console.log('[Cache Validation] ❌ Detected fake/generated data (totalStudies > 0 but studiesUsed = 0)');
     return false;
@@ -340,7 +340,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
  */
 function transformToExamineFormat(recommendation: Recommendation): any {
   const supplement = (recommendation as any).supplement || {};
-  
+
   return {
     overview: {
       whatIsIt: supplement.description || supplement.whatIsIt || `Suplemento: ${recommendation.category}`,
@@ -624,7 +624,7 @@ function ResultsPageContent() {
     const metadata = (recommendation as any)._enrichment_metadata || {};
     const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
     const metadataStudiesUsed = metadata.studiesUsed || 0;
-    
+
     // SIMPLE FIX: Trust totalStudies from evidence_summary if available
     // This handles cases where metadata is incomplete but evidence_summary has data
     const hasRealData = totalStudies > 0 || (metadata.hasRealData && metadataStudiesUsed > 0);
@@ -639,7 +639,7 @@ function ResultsPageContent() {
 
     // Simple client-side transformation (no API calls needed)
     const transformed = transformRecommendationToEvidence(recommendation);
-    
+
     // Log section availability
     const supplement = (recommendation as any).supplement || {};
     console.log('[Recommendation Sections]', {
@@ -658,7 +658,7 @@ function ResultsPageContent() {
       ),
       hasContraindications: Array.isArray(transformed.contraindications) && transformed.contraindications.length > 0,
     });
-    
+
     // Log missing sections
     if (!transformed.worksFor || transformed.worksFor.length === 0) {
       console.warn('[Recommendation Sections] ⚠️ Missing worksFor section for:', recommendation.category);
@@ -669,9 +669,9 @@ function ResultsPageContent() {
     if (!transformed.sideEffects || transformed.sideEffects.length === 0) {
       console.warn('[Recommendation Sections] ⚠️ Missing sideEffects section for:', recommendation.category);
     }
-    
+
     setTransformedEvidence(transformed);
-    
+
     // Also transform to Examine format
     const examineFormatted = transformToExamineFormat(recommendation);
     setExamineContent(examineFormatted);
@@ -701,7 +701,7 @@ function ResultsPageContent() {
               return;
             }
           }
-          
+
           // Cache miss or expired - redirect to new search
           console.log('[Cache Retrieval] Cache miss for shared link - redirecting to homepage');
           setError('Esta recomendación ya no está disponible. Por favor, genera una nueva búsqueda.');
@@ -720,7 +720,7 @@ function ResultsPageContent() {
           // Smart detection: ingredient vs category
           // Categories are typically action/goal words, ingredients are typically noun compounds
           const normalizedQuery = query.toLowerCase().trim();
-          
+
           // Known categories (action/goal words)
           const categoryMap: Record<string, string> = {
             // English - Categories (goals/actions)
@@ -771,7 +771,7 @@ function ResultsPageContent() {
             'digestión': 'digestion',
             'energía': 'energy',
           };
-          
+
           // Check if query matches a known category
           const matchedCategory = categoryMap[normalizedQuery];
 
@@ -792,7 +792,7 @@ function ResultsPageContent() {
           // The quiz endpoint already handles enrichment with proper timeout handling
           const response = await fetch('/api/portal/quiz', {
             method: 'POST',
-            headers: { 
+            headers: {
               'Content-Type': 'application/json',
               'X-Job-ID': jobId,
             },
@@ -836,7 +836,7 @@ function ResultsPageContent() {
 
               console.log('[State Update] Setting error - clearing recommendation first');
               setRecommendation(null); // Clear recommendation before setting error
-              
+
               // Show error message
               setError({
                 type: 'insufficient_scientific_data',
@@ -882,11 +882,11 @@ function ResultsPageContent() {
             // Handle cases where response is not in expected format
             throw new Error('Invalid API response format');
           }
-          
+
           setIsLoading(false);
           return; // End of successful data handling
 
-          
+
           // ASYNC PATTERN: Backend returned 202 with recommendation_id - start polling
           if (response.status === 202 && data.recommendation_id) {
             console.log('[Async Polling] Starting polling for recommendation:', data.recommendation_id);
@@ -901,28 +901,28 @@ function ResultsPageContent() {
                 // DO NOT call router.push() - it causes unnecessary page reload
               }
             }
-            
+
             // Start polling for status using quiz endpoint
             const pollInterval = parseInt(data.pollInterval || '3') * 1000; // Convert to ms
             const maxPollTime = 180000; // 3 minutes max
             const startTime = Date.now();
-            
+
             // Use enrichment-status endpoint for polling
             const statusUrl = `/api/portal/enrichment-status/${data.recommendation_id}?supplement=${encodeURIComponent(category)}`;
-            
+
             const pollStatus = async () => {
               try {
                 console.log('[Async Polling] Fetching status:', statusUrl);
                 const statusResponse = await fetch(statusUrl);
                 const statusData = await statusResponse.json();
-                
+
                 console.log('[Async Polling] Status update:', {
                   status: statusData.status,
                   progress: statusData.progress,
                   message: statusData.progressMessage,
                   hasRecommendation: !!statusData.recommendation,
                 });
-                
+
                 if (statusData.status === 'completed' && statusData.recommendation) {
                   console.log('[Async Polling] ✅ Recommendation completed:', {
                     id: statusData.recommendation.recommendation_id,
@@ -977,12 +977,12 @@ function ResultsPageContent() {
                 }
               }
             };
-            
+
             // Start polling after initial delay
             setTimeout(pollStatus, pollInterval);
             return; // Don't set isLoading to false yet - we're polling
           }
-          
+
           // LEGACY SYNC PATTERN: Backend returned recommendation directly
           if (data.success && data.recommendation) {
             // Validate recommendation structure - use jobId for consistency
@@ -992,7 +992,7 @@ function ResultsPageContent() {
             if (!data.recommendation.quiz_id) {
               data.recommendation.quiz_id = data.quiz_id || `quiz_${Date.now()}`;
             }
-            
+
             console.log('[Quiz API] ✅ Recommendation received (sync pattern):', {
               id: data.recommendation.recommendation_id,
               category: data.recommendation.category,
@@ -1049,16 +1049,16 @@ function ResultsPageContent() {
                   const cacheKey = `recommendation_${cacheJobId}`;
                   const timestamp = Date.now();
                   const ttl = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-                  
+
                   const cacheData = {
                     recommendation: data.recommendation,
                     jobId: cacheJobId,
                     timestamp,
                     ttl,
                   };
-                  
+
                   localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-                  
+
                   console.log('[Cache Storage] ✅ Successfully cached recommendation:', {
                     cacheKey,
                     jobId: cacheJobId,
@@ -1165,22 +1165,22 @@ function ResultsPageContent() {
       errorType: typeof error === 'object' ? error.type : 'string',
       hasRecommendation: !!recommendation,
     });
-    
+
     // If error is already an object with type, pass it directly
     // Otherwise, create a generic error object with fallback suggestions
     const errorObject = typeof error === 'object' && error.type
       ? error
       : {
-          type: 'generic' as const,
-          message: typeof error === 'string' ? error : 'Error desconocido',
-          searchedFor: query || 'supplement',
-          suggestions: [
-            { name: 'Ashwagandha', hasStudies: true },
-            { name: 'Omega-3', hasStudies: true },
-            { name: 'Vitamin D', hasStudies: true },
-            { name: 'Magnesium', hasStudies: true },
-          ],
-        };
+        type: 'generic' as const,
+        message: typeof error === 'string' ? error : 'Error desconocido',
+        searchedFor: query || 'supplement',
+        suggestions: [
+          { name: 'Ashwagandha', hasStudies: true },
+          { name: 'Omega-3', hasStudies: true },
+          { name: 'Vitamin D', hasStudies: true },
+          { name: 'Magnesium', hasStudies: true },
+        ],
+      };
 
     return (
       <ErrorState
@@ -1199,7 +1199,7 @@ function ResultsPageContent() {
       isLoading,
       hasError: !!error,
     });
-    
+
     return (
       <ErrorState
         error="Recommendation not found"
@@ -1231,7 +1231,7 @@ function ResultsPageContent() {
           </div>
         </div>
       )}
-      
+
       {/* Legal Disclaimer Banner */}
       <LegalDisclaimer />
 
@@ -1254,7 +1254,7 @@ function ResultsPageContent() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const metadata = (recommendation as any)?._enrichment_metadata || {};
             const studiesUsed = metadata.studiesUsed || 0;
-            
+
             // Log study data availability
             console.log('[Study Data Display]', {
               totalStudies,
@@ -1263,14 +1263,14 @@ function ResultsPageContent() {
               hasEvidenceSummary: !!recommendation?.evidence_summary,
               category: recommendation?.category,
             });
-            
+
             // Check if we have real study data
             const hasRealStudyData = totalStudies > 0 || studiesUsed > 0;
-            
+
             if (!hasRealStudyData) {
               console.log('[Study Data Display] ⚠️ No real study data found for:', recommendation?.category);
             }
-            
+
             // Display study data if available
             if (hasRealStudyData) {
               return (
@@ -1396,17 +1396,17 @@ function ResultsPageContent() {
           const supplement = (recommendation as any)?.supplement || {};
           const totalStudies = recommendation?.evidence_summary?.totalStudies || 0;
           const metadataStudiesUsed = metadata.studiesUsed || 0;
-          
+
           // Check if there's actual evidence data (worksFor, dosage, etc.)
           const hasWorksFor = Array.isArray(supplement.worksFor) && supplement.worksFor.length > 0;
           const hasDosage = supplement.dosage && typeof supplement.dosage === 'object';
           const hasEvidenceData = hasWorksFor || hasDosage;
-          
+
           // Only show warning if NO studies AND NO evidence data
           const hasNoData = totalStudies === 0 && metadataStudiesUsed === 0 && !hasEvidenceData;
-          
+
           if (!hasNoData) return null;
-          
+
           // Suggestion functionality removed - using vector search now
           return (
             <div className="mb-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">

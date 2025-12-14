@@ -14,14 +14,14 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Award, 
-  Sparkles, 
-  Users, 
+import {
+  Award,
+  Sparkles,
+  Users,
   FlaskConical
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 interface IngredientBadgeData {
   evidenceGrade?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
@@ -45,12 +45,12 @@ interface IngredientBadgesProps {
  * Evidence Quality Badge
  * Shows scientific evidence quality in simple terms
  */
-function EvidenceQualityBadge({ 
-  grade, 
+function EvidenceQualityBadge({
+  grade,
   className,
   size = 'md',
   t
-}: { 
+}: {
   grade?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
   className?: string;
   size?: 'sm' | 'md' | 'lg';
@@ -59,41 +59,41 @@ function EvidenceQualityBadge({
   if (!grade) return null;
 
   const gradeConfig = {
-    A: { 
-      label: t('badges.evidence.strong') || 'Evidencia Sólida', 
-      color: 'bg-green-600 text-white border-green-700 dark:bg-green-700 dark:border-green-800', 
-      icon: Award, 
-      tooltip: t('badges.evidence.strong.tooltip') || 'Evidencia científica sólida - Múltiples estudios de alta calidad respaldan su efectividad' 
+    A: {
+      label: t('badges.evidence.strong') || 'Evidencia Sólida',
+      color: 'bg-green-600 text-white border-green-700 dark:bg-green-700 dark:border-green-800',
+      icon: Award,
+      tooltip: t('badges.evidence.strong.tooltip') || 'Evidencia científica sólida - Múltiples estudios de alta calidad respaldan su efectividad'
     },
-    B: { 
-      label: t('badges.evidence.moderate') || 'Evidencia Moderada', 
-      color: 'bg-blue-600 text-white border-blue-700 dark:bg-blue-700 dark:border-blue-800', 
-      icon: Award, 
-      tooltip: t('badges.evidence.moderate.tooltip') || 'Evidencia científica moderada - Estudios respaldan su uso, pero con limitaciones' 
+    B: {
+      label: t('badges.evidence.moderate') || 'Evidencia Moderada',
+      color: 'bg-blue-600 text-white border-blue-700 dark:bg-blue-700 dark:border-blue-800',
+      icon: Award,
+      tooltip: t('badges.evidence.moderate.tooltip') || 'Evidencia científica moderada - Estudios respaldan su uso, pero con limitaciones'
     },
-    C: { 
-      label: t('badges.evidence.limited') || 'Evidencia Limitada', 
-      color: 'bg-yellow-600 text-white border-yellow-700 dark:bg-yellow-700 dark:border-yellow-800', 
-      icon: Award, 
-      tooltip: t('badges.evidence.limited.tooltip') || 'Evidencia científica limitada - Algunos estudios sugieren beneficios, pero se necesita más investigación' 
+    C: {
+      label: t('badges.evidence.limited') || 'Evidencia Limitada',
+      color: 'bg-yellow-600 text-white border-yellow-700 dark:bg-yellow-700 dark:border-yellow-800',
+      icon: Award,
+      tooltip: t('badges.evidence.limited.tooltip') || 'Evidencia científica limitada - Algunos estudios sugieren beneficios, pero se necesita más investigación'
     },
-    D: { 
-      label: t('badges.evidence.weak') || 'Evidencia Débil', 
-      color: 'bg-orange-600 text-white border-orange-700 dark:bg-orange-700 dark:border-orange-800', 
-      icon: Award, 
-      tooltip: t('badges.evidence.weak.tooltip') || 'Evidencia científica débil - Muy pocos estudios o resultados inconsistentes' 
+    D: {
+      label: t('badges.evidence.weak') || 'Evidencia Débil',
+      color: 'bg-orange-600 text-white border-orange-700 dark:bg-orange-700 dark:border-orange-800',
+      icon: Award,
+      tooltip: t('badges.evidence.weak.tooltip') || 'Evidencia científica débil - Muy pocos estudios o resultados inconsistentes'
     },
-    E: { 
-      label: t('badges.evidence.insufficient') || 'Evidencia Insuficiente', 
-      color: 'bg-red-600 text-white border-red-700 dark:bg-red-700 dark:border-red-800', 
-      icon: Award, 
-      tooltip: t('badges.evidence.insufficient.tooltip') || 'Evidencia científica insuficiente - No hay suficientes estudios para evaluar su efectividad' 
+    E: {
+      label: t('badges.evidence.insufficient') || 'Evidencia Insuficiente',
+      color: 'bg-red-600 text-white border-red-700 dark:bg-red-700 dark:border-red-800',
+      icon: Award,
+      tooltip: t('badges.evidence.insufficient.tooltip') || 'Evidencia científica insuficiente - No hay suficientes estudios para evaluar su efectividad'
     },
-    F: { 
-      label: t('badges.evidence.none') || 'Sin Evidencia', 
-      color: 'bg-gray-600 text-white border-gray-700 dark:bg-gray-700 dark:border-gray-800', 
-      icon: Award, 
-      tooltip: t('badges.evidence.none.tooltip') || 'Sin evidencia científica confiable - No se encontraron estudios que respalden su uso' 
+    F: {
+      label: t('badges.evidence.none') || 'Sin Evidencia',
+      color: 'bg-gray-600 text-white border-gray-700 dark:bg-gray-700 dark:border-gray-800',
+      icon: Award,
+      tooltip: t('badges.evidence.none.tooltip') || 'Sin evidencia científica confiable - No se encontraron estudios que respalden su uso'
     },
   };
 
@@ -121,13 +121,13 @@ function EvidenceQualityBadge({
  * Synergy Badge
  * Shows if ingredient works well with others (user-friendly)
  */
-function SynergyBadge({ 
-  score, 
+function SynergyBadge({
+  score,
   partnerCount,
   className,
   size = 'md',
   t
-}: { 
+}: {
   score?: number;
   partnerCount?: number;
   className?: string;
@@ -154,7 +154,7 @@ function SynergyBadge({
     lg: 'h-5 w-5 text-sm px-3 py-1.5',
   };
 
-  const tooltip = partnerCount 
+  const tooltip = partnerCount
     ? (t('badges.synergy.tooltip.withPartners' as any) || `Funciona mejor cuando se combina con otros ingredientes - Compatible con ${partnerCount} ingrediente${partnerCount > 1 ? 's' : ''}`)
     : (t('badges.synergy.tooltip') || 'Funciona mejor cuando se combina con otros ingredientes - Potencia sus efectos');
 
@@ -174,12 +174,12 @@ function SynergyBadge({
  * Real-World Results Badge
  * Shows validation from similar users' experiences (user-friendly version of ML boost)
  */
-function RealWorldResultsBadge({ 
-  boost, 
+function RealWorldResultsBadge({
+  boost,
   className,
   size = 'md',
   t
-}: { 
+}: {
   boost?: number;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
@@ -219,12 +219,12 @@ function RealWorldResultsBadge({
  * Clinical Support Badge
  * Shows level of clinical research backing (user-friendly)
  */
-function ClinicalSupportBadge({ 
-  strength, 
+function ClinicalSupportBadge({
+  strength,
   className,
   size = 'md',
   t
-}: { 
+}: {
   strength?: number;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
@@ -269,14 +269,14 @@ function ClinicalSupportBadge({
  * Combines all available badges for an ingredient
  * Only shows badges that are meaningful for end-users
  */
-export function IngredientBadges({ 
-  ingredient, 
+export function IngredientBadges({
+  ingredient,
   className,
   showAll = false,
   size = 'md'
 }: IngredientBadgesProps) {
-  const { t } = useTranslation();
-  const hasData = 
+  const t = useTranslations();
+  const hasData =
     ingredient.evidenceGrade !== undefined ||
     (ingredient.synergy_score !== undefined && ingredient.synergy_score >= 40) ||
     (ingredient.ml_boost !== undefined && ingredient.ml_boost >= 0.4) ||
@@ -288,24 +288,24 @@ export function IngredientBadges({
 
   return (
     <div className={cn('flex flex-wrap items-center gap-2', className)}>
-      <EvidenceQualityBadge 
-        grade={ingredient.evidenceGrade} 
+      <EvidenceQualityBadge
+        grade={ingredient.evidenceGrade}
         size={size}
         t={t}
       />
-      <SynergyBadge 
-        score={ingredient.synergy_score} 
+      <SynergyBadge
+        score={ingredient.synergy_score}
         partnerCount={ingredient.synergy_partner_count}
         size={size}
         t={t}
       />
-      <RealWorldResultsBadge 
-        boost={ingredient.ml_boost} 
+      <RealWorldResultsBadge
+        boost={ingredient.ml_boost}
         size={size}
         t={t}
       />
-      <ClinicalSupportBadge 
-        strength={ingredient.clinical_evidence_strength} 
+      <ClinicalSupportBadge
+        strength={ingredient.clinical_evidence_strength}
         size={size}
         t={t}
       />
@@ -316,14 +316,14 @@ export function IngredientBadges({
 /**
  * Compact version for table cells or small spaces
  */
-export function IngredientBadgesCompact({ 
-  ingredient, 
-  className 
-}: { 
+export function IngredientBadgesCompact({
+  ingredient,
+  className
+}: {
   ingredient: IngredientBadgeData;
   className?: string;
 }) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const badges = [];
 
   if (ingredient.evidenceGrade) {

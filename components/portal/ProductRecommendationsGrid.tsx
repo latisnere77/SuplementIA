@@ -7,7 +7,7 @@
 'use client';
 
 import { ShoppingCart, ExternalLink, Star, Check } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 interface Product {
   tier: 'budget' | 'value' | 'premium';
@@ -55,7 +55,7 @@ export default function ProductRecommendationsGrid({
   products,
   onBuyClick,
 }: ProductRecommendationsGridProps) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const handleBuyClick = (product: Product) => {
     if (onBuyClick) {
       onBuyClick(product);
@@ -83,11 +83,9 @@ export default function ProductRecommendationsGrid({
           return (
             <div
               key={product.tier}
-              className={`relative rounded-xl border-2 ${
-                isHighlighted ? 'border-purple-400 shadow-lg' : config.borderColor
-              } ${config.bgColor} p-6 hover:shadow-xl transition-all ${
-                isHighlighted ? 'ring-2 ring-purple-200' : ''
-              }`}
+              className={`relative rounded-xl border-2 ${isHighlighted ? 'border-purple-400 shadow-lg' : config.borderColor
+                } ${config.bgColor} p-6 hover:shadow-xl transition-all ${isHighlighted ? 'ring-2 ring-purple-200' : ''
+                }`}
             >
               {/* Badge */}
               <div className="absolute top-4 right-4">

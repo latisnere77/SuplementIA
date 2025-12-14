@@ -360,7 +360,7 @@ export default function PortalPage() {
                           </div>
                         ) : suggestions.length === 0 ? (
                           <div className="px-4 py-3 text-sm text-gray-500">
-                            {t('autocomplete.no.results')}
+                            {t('autocomplete.no_results')}
                           </div>
                         ) : (
                           suggestions.map((suggestion, idx) => (

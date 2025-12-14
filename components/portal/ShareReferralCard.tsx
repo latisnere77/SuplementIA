@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { Share2, Copy, Check, MessageCircle, Mail, Twitter, Facebook, Linkedin } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 interface ShareReferralCardProps {
   recommendationId: string;
@@ -21,7 +21,7 @@ export default function ShareReferralCard({
   referralLink,
   onShare,
 }: ShareReferralCardProps) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [copied, setCopied] = useState(false);
 
   // Get supplement name from URL or page

@@ -57,6 +57,8 @@ export const config = {
     // Enable a redirect to a locale when there is no locale in the pathname
     // Also exclude all files in the public folder and other Next.js specific files
     // See https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-    '/((?!api|_next|_vercel|.*\..*).*)'
+    '/((?!api|_next|_vercel|.*\\..*).*)',
+    // Explicitly match portal routes to ensure they are handled by next-intl
+    '/portal/:path*'
   ]
 };

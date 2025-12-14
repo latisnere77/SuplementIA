@@ -23,6 +23,7 @@ const VALID_SUPPLEMENTS = new Set([
   // Suplementos populares
   'ashwagandha', 'cbd', 'cannabidiol', 'thc', 'tetrahydrocannabinol', 'cannabis', 'hemp', 'cáñamo', 'canamo',
   'melatonin', 'melatonina', 'creatine', 'creatina',
+  'nad', 'nad+', 'nmn', 'nicotinamide', 'riboside', 'niacinamide',
   'protein', 'proteina', 'whey', 'collagen', 'colageno', 'caffeine', 'cafeina',
   'bcaa', 'glutamine', 'glutamina', 'beta-alanine', 'beta-alanina',
   'l-carnitine', 'l-carnitina', 'coq10', 'rhodiola', 'ginseng',
@@ -239,48 +240,25 @@ export function validateSupplementQuery(query: string): ValidationResult {
   }
 
   // 5. VALIDACIÓN HEURÍSTICA - PERMISIVA: Confiar en sistema inteligente
-  if (!hasValidTerm) {
-    // Nueva filosofía: Permitir casi todo que parezca un suplemento legítimo
-    // Solo bloquear si es CLARAMENTE no relacionado con suplementos
+  // Si no está en lista negra ni patrones sospechosos, y tiene longitud adecuada, permitirlo.
+  // Esto cumple con el requerimiento de "funcionar para cualquier nuevo ingrediente".
 
-    const looksLikeIngredient =
-      // Palabras con letras y números (mínimo 3 chars) - PERMITE CoQ10, B12, etc
-      /^[a-z0-9]{3,}(-[a-z0-9]{2,})*$/i.test(normalized) ||
+  // Validar caracteres mínimos: al menos letras, números o símbolos comunes de suplementos (+, -)
+  const hasValidChars = /[a-z0-9+]/i.test(normalized);
 
-      // Terminaciones científicas comunes
-      /acid|ine|ate|ol|um|in|an|en$/i.test(normalized) ||
-
-      // Formatos de suplementos
-      /extract|extracto|powder|polvo|oil|aceite|berry|root|raiz|leaf|hoja|seed|semilla/i.test(normalized) ||
-
-      // Palabras compuestas (ej: "lion's mane", "st john's wort")
-      /[a-z]+['']?s?\s+[a-z]+/i.test(normalized) ||
-
-      // Nombres científicos (dos palabras con mayúscula)
-      /^[A-Z][a-z]+\s+[a-z]+$/i.test(query) ||
-
-      // Suplementos con números (CoQ10, B12, Omega-3, Q10, etc.)
-      /[a-z]+\d+|[a-z]-\d+|\d+[a-z]+/i.test(normalized) ||
-
-      // Múltiples palabras (ej: "bacopa monnieri", "lion mane")
-      words.length >= 2 && words.every(w => w.length >= 3);
-
-    // SOLO rechazar si definitivamente NO parece un suplemento
-    if (!looksLikeIngredient) {
-      // Permitir de todos modos si es una palabra simple de 4+ caracteres
-      // (confiamos en el sistema inteligente para manejar el resto)
-      const isSimpleWord = /^[a-z]{4,}$/i.test(normalized);
-
-      if (!isSimpleWord) {
-        return {
-          valid: false,
-          error: 'No reconocemos este término. ¿Estás buscando un suplemento o categoría de salud?',
-          severity: 'warning',
-          suggestion: 'Ejemplos: ashwagandha, omega-3, vitamin-d, sleep, cognitive, muscle-gain',
-        };
-      }
-    }
+  if (!hasValidChars) {
+    return {
+      valid: false,
+      error: 'La búsqueda contiene caracteres no válidos.',
+      severity: 'warning',
+    };
   }
+
+  // ✅ QUERY VÁLIDA POR DEFECTO
+  // Si pasó los filtros de seguridad (lista negra/patrones), asumimos que es una intención de búsqueda válida.
+  return {
+    valid: true,
+  };
 
   // ✅ QUERY VÁLIDA
   return {

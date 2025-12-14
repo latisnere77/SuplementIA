@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useLocale } from 'next-intl';
 import type { AutocompleteSuggestion } from './autocomplete-suggestions-fuzzy';
 
 interface UseAutocompleteOptions {
@@ -46,7 +46,7 @@ export function useAutocomplete(
     limit = 5
   } = options;
 
-  const { language } = useTranslation();
+  const language = useLocale();
   const [suggestions, setSuggestions] = useState<AutocompleteSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
