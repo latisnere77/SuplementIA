@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Milestone, Sparkles, User, Venus, Mars } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations, useLocale } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -38,7 +38,8 @@ const categoryIcons: { [key: string]: React.ElementType } = {
 };
 
 export default function PortalPage() {
-  const { t, language } = useTranslation();
+  const t = useTranslations();
+  const language = useLocale();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
