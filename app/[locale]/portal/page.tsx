@@ -116,18 +116,18 @@ export default function PortalPage() {
   const valueProps = [
     {
       icon: Search,
-      title: t('portal.value.realtime'),
-      description: t('portal.value.realtime.desc'),
+      title: t('portal.value.realtime.title' as any),
+      description: t('portal.value.realtime.desc' as any),
     },
     {
       icon: BookOpen,
-      title: t('portal.value.evidence'),
-      description: t('portal.value.evidence.desc'),
+      title: t('portal.value.evidence.title' as any),
+      description: t('portal.value.evidence.desc' as any),
     },
     {
       icon: Globe,
-      title: t('portal.value.latam'),
-      description: t('portal.value.latam.desc'),
+      title: t('portal.value.latam.title' as any),
+      description: t('portal.value.latam.desc' as any),
     },
   ];
 

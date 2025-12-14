@@ -67,12 +67,18 @@
       }
     },
     "value": {
-      "realtime": "Real-Time Analysis",
-      "realtime.desc": "Get recommendations based on the latest research, analyzed in seconds",
-      "evidence": "Evidence Grades",
-      "evidence.desc": "See study counts, evidence quality (A/B/C), and personalized adjustments",
-      "latam": "LATAM Optimized",
-      "latam.desc": "Personalized for altitude, climate, and local availability in Latin America"
+      "realtime": {
+        "title": "Real-Time Analysis",
+        "desc": "Get recommendations based on the latest research, analyzed in seconds"
+      },
+      "evidence": {
+        "title": "Evidence Grades",
+        "desc": "See study counts, evidence quality (A/B/C), and personalized adjustments"
+      },
+      "latam": {
+        "title": "LATAM Optimized",
+        "desc": "Personalized for altitude, climate, and local availability in Latin America"
+      }
     }
   },
   "autocomplete": {

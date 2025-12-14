@@ -67,12 +67,18 @@
       }
     },
     "value": {
-      "realtime": "Análisis en Tiempo Real",
-      "realtime.desc": "Obtén recomendaciones basadas en la investigación más reciente, analizada en segundos",
-      "evidence": "Grados de Evidencia",
-      "evidence.desc": "Mira conteos de estudios, calidad de evidencia (A/B/C) y ajustes personalizados",
-      "latam": "Optimizado para LATAM",
-      "latam.desc": "Personalizado para altitud, clima y disponibilidad local en América Latina"
+      "realtime": {
+        "title": "Análisis en Tiempo Real",
+        "desc": "Obtén recomendaciones basadas en la investigación más reciente, analizada en segundos"
+      },
+      "evidence": {
+        "title": "Grados de Evidencia",
+        "desc": "Mira conteos de estudios, calidad de evidencia (A/B/C) y ajustes personalizados"
+      },
+      "latam": {
+        "title": "Optimizado para LATAM",
+        "desc": "Personalizado para altitud, clima y disponibilidad local en América Latina"
+      }
     }
   },
   "autocomplete": {
