@@ -2,5 +2,82 @@
   "Index": {
     "title": "Hello, World!",
     "changeLanguage": "Change Language"
+  },
+  "portal": {
+    "title": "Evidence-Based Health Solutions",
+    "subtitle": "Find what the science says about supplements and interventions for your health goals. Powered by 240M+ scientific papers, analyzed in real-time.",
+    "search": {
+      "placeholder": "Try searching for..."
+    },
+    "popular": {
+      "searches": "Popular Searches"
+    },
+    "browse": {
+      "categories": "Browse by Category",
+      "view_more": "{defaultMessage}"
+    },
+    "categories": {
+      "sleep": {
+        "name": "Sleep",
+        "desc": "Supplements regarding sleep quality and duration."
+      },
+      "energy": {
+        "name": "Energy & Fatigue",
+        "desc": "Compounds that may help increase energy levels and combat fatigue."
+      },
+      "anxiety": {
+        "name": "Anxiety & Stress",
+        "desc": "Supplements and herbs that may help reduce anxiety symptoms."
+      },
+      "muscle-gain": {
+        "name": "Muscle Gain & Exercise",
+        "desc": "Build muscle, improve strength, and increase physical performance."
+      },
+      "cognitive-function": {
+        "name": "Memory & Focus",
+        "desc": "Improves cognitive function, memory, and mental clarity."
+      },
+      "heart-health": {
+        "name": "Heart Health",
+        "desc": "Supplements supporting cardiovascular health and blood pressure."
+      },
+      "joint-bone-health": {
+        "name": "Joint & Bone Health",
+        "desc": "Supplements to strengthen bones and relieve joint pain."
+      },
+      "gut-health": {
+        "name": "Gut Health",
+        "desc": "Probiotics and enzymes for healthy digestion."
+      },
+      "skin-hair-health": {
+        "name": "Skin & Hair Health",
+        "desc": "Nutrients for radiant skin, strong hair, and healthy nails."
+      },
+      "immunity": {
+        "name": "Immunity",
+        "desc": "Vitamins and herbs to strengthen the immune system."
+      },
+      "mens-health": {
+        "name": "Men's Health",
+        "desc": "Supplements focused on vitality and hormonal balance."
+      },
+      "womens-health": {
+        "name": "Women's Health",
+        "desc": "Support for hormonal balance and bone health."
+      }
+    },
+    "value": {
+      "realtime": "Real-Time Analysis",
+      "realtime.desc": "Get recommendations based on the latest research, analyzed in seconds",
+      "evidence": "Evidence Grades",
+      "evidence.desc": "See study counts, evidence quality (A/B/C), and personalized adjustments",
+      "latam": "LATAM Optimized",
+      "latam.desc": "Personalized for altitude, climate, and local availability in Latin America"
+    }
+  },
+  "autocomplete": {
+    "loading": "Searching...",
+    "no.results": "No results found. Try a different search.",
+    "categories": "Category"
   }
 }

@@ -51,19 +51,19 @@ export default function PortalPage() {
     limit: 10,
   });
 
-  const placeholders = language === 'es' 
+  const placeholders = language === 'es'
     ? [
-        t('portal.search.placeholder'),
-        '¿Qué beneficios tiene la vitamina D?',
-        'Mejores suplementos para energía',
-        'Información sobre omega-3',
-      ]
+      t('portal.search.placeholder'),
+      '¿Qué beneficios tiene la vitamina D?',
+      'Mejores suplementos para energía',
+      'Información sobre omega-3',
+    ]
     : [
-        t('portal.search.placeholder'),
-        'What are the benefits of vitamin D?',
-        'Best supplements for energy',
-        'Information about omega-3',
-      ];
+      t('portal.search.placeholder'),
+      'What are the benefits of vitamin D?',
+      'Best supplements for energy',
+      'Information about omega-3',
+    ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -71,10 +71,12 @@ export default function PortalPage() {
     }, 3000);
     return () => clearInterval(interval);
   }, [placeholders.length]);
-  
+
   // ¡Ahora las categorías se cargan dinámicamente!
   const categories = getAllCategories().map(category => ({
     ...category,
+    name: t(`portal.categories.${category.slug}.name`, { defaultMessage: category.name }),
+    description: t(`portal.categories.${category.slug}.desc`, { defaultMessage: category.description }),
     icon: categoryIcons[category.slug] || BookOpen, // Usar icono mapeado o uno por defecto
     color: {
       sleep: 'from-indigo-500/20 to-indigo-600/20',
@@ -94,21 +96,21 @@ export default function PortalPage() {
 
   const popularSearches = language === 'es'
     ? [
-        { term: 'Vitamina D', category: 'Vitaminas' },
-        { term: 'Omega-3', category: 'Ácidos Grasos' },
-        { term: 'Magnesio', category: 'Minerales' },
-        { term: 'Proteína Whey', category: 'Proteínas' },
-        { term: 'Creatina', category: 'Rendimiento' },
-        { term: 'Colágeno', category: 'Piel y Articulaciones' },
-      ]
+      { term: 'Vitamina D', category: 'Vitaminas' },
+      { term: 'Omega-3', category: 'Ácidos Grasos' },
+      { term: 'Magnesio', category: 'Minerales' },
+      { term: 'Proteína Whey', category: 'Proteínas' },
+      { term: 'Creatina', category: 'Rendimiento' },
+      { term: 'Colágeno', category: 'Piel y Articulaciones' },
+    ]
     : [
-        { term: 'Vitamin D', category: 'Vitamins' },
-        { term: 'Omega-3', category: 'Fatty Acids' },
-        { term: 'Magnesium', category: 'Minerals' },
-        { term: 'Whey Protein', category: 'Proteins' },
-        { term: 'Creatine', category: 'Performance' },
-        { term: 'Collagen', category: 'Skin & Joints' },
-      ];
+      { term: 'Vitamin D', category: 'Vitamins' },
+      { term: 'Omega-3', category: 'Fatty Acids' },
+      { term: 'Magnesium', category: 'Minerals' },
+      { term: 'Whey Protein', category: 'Proteins' },
+      { term: 'Creatine', category: 'Performance' },
+      { term: 'Collagen', category: 'Skin & Joints' },
+    ];
 
   const valueProps = [
     {
@@ -130,7 +132,7 @@ export default function PortalPage() {
 
   const handleSearch = (query: string) => {
     console.log('[handleSearch] 🔍 Called with query:', query);
-    
+
     if (!query?.trim()) {
       console.log('[handleSearch] ❌ Empty query, returning');
       return;
@@ -157,7 +159,7 @@ export default function PortalPage() {
     // Normalizar query (español → inglés, typos, etc.)
     const normalized = normalizeQuery(query.trim());
     const searchTerm = normalized.confidence >= 0.7 ? normalized.normalized : query.trim();
-    
+
     console.log('[handleSearch] 🔄 Normalized query:', {
       original: query.trim(),
       normalized: normalized.normalized,
@@ -168,10 +170,10 @@ export default function PortalPage() {
     // Limpiar error previo y proceder
     setValidationError(null);
     setIsLoading(true);
-    
+
     const targetUrl = `/portal/results?q=${encodeURIComponent(searchTerm)}&supplement=${encodeURIComponent(searchTerm)}`;
     console.log('[handleSearch] 🚀 Navigating to:', targetUrl);
-    
+
     router.push(targetUrl);
   };
 
@@ -190,7 +192,7 @@ export default function PortalPage() {
       <div className="relative min-h-[80vh] w-full flex items-center justify-center overflow-x-hidden bg-white dark:bg-gray-950">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/50 dark:from-primary/10 dark:via-transparent dark:to-accent/10 blur-3xl" />
-        
+
         {/* Floating Shapes */}
         <motion.div
           initial={{ opacity: 0, y: -150, rotate: -15 }}
@@ -262,7 +264,7 @@ export default function PortalPage() {
                   console.log('[PortalPage] 📝 searchQuery value:', searchQuery);
                   console.log('[PortalPage] 📝 searchQuery trimmed:', searchQuery.trim());
                   console.log('[PortalPage] 📝 searchQuery length:', searchQuery.trim().length);
-                  
+
                   if (searchQuery.trim()) {
                     console.log('[PortalPage] ✅ searchQuery is valid, calling handleSearch');
                     handleSearch(searchQuery);
@@ -298,23 +300,23 @@ export default function PortalPage() {
                       autoComplete="off"
                     />
 
-                  {/* Animated Placeholder */}
-                  <div className="absolute inset-0 flex items-center pl-12 pointer-events-none">
-                    <AnimatePresence mode="wait">
-                      {!searchQuery && (
-                        <motion.p
-                          key={currentPlaceholder}
-                          initial={{ y: 5, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          exit={{ y: -15, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: 'linear' }}
-                          className="text-gray-500 dark:text-gray-400 text-base truncate"
-                        >
-                          {placeholders[currentPlaceholder]}
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                    {/* Animated Placeholder */}
+                    <div className="absolute inset-0 flex items-center pl-12 pointer-events-none">
+                      <AnimatePresence mode="wait">
+                        {!searchQuery && (
+                          <motion.p
+                            key={currentPlaceholder}
+                            initial={{ y: 5, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -15, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: 'linear' }}
+                            className="text-gray-500 dark:text-gray-400 text-base truncate"
+                          >
+                            {placeholders[currentPlaceholder]}
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                    </div>
 
                     {/* Search Button or Loading Spinner */}
                     {isLoading || isLoadingSuggestions ? (
@@ -463,12 +465,12 @@ export default function PortalPage() {
                 onClick={() => handlePopularSearch(search.term)}
                 className="group px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all shadow-sm"
               >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{search.term}</span>
-                    <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300">
-                      {search.category}
-                    </Badge>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{search.term}</span>
+                  <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300">
+                    {search.category}
+                  </Badge>
+                </div>
               </motion.button>
             ))}
           </div>
@@ -519,7 +521,7 @@ export default function PortalPage() {
                   <CardContent>
                     <div className="flex items-center text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
                       <span className="text-sm font-medium">
-                        {language === 'es' ? 'Ver más' : 'Learn more'}
+                        {t('portal.browse.view_more', { defaultMessage: language === 'es' ? 'Ver más' : 'Learn more' })}
                       </span>
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </div>

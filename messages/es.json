@@ -2,5 +2,82 @@
   "Index": {
     "title": "¡Hola, Mundo!",
     "changeLanguage": "Cambiar Idioma"
+  },
+  "portal": {
+    "title": "Soluciones de Salud Basadas en Evidencia",
+    "subtitle": "Encuentra lo que dice la ciencia sobre suplementos e intervenciones para tus objetivos de salud. Potenciado por más de 240M de artículos científicos, analizados en tiempo real.",
+    "search": {
+      "placeholder": "Intenta buscar..."
+    },
+    "popular": {
+      "searches": "Búsquedas Populares"
+    },
+    "browse": {
+      "categories": "Explorar por Categoría",
+      "view_more": "{defaultMessage}"
+    },
+    "categories": {
+      "sleep": {
+        "name": "Sueño",
+        "desc": "Suplementos que pueden ayudar a mejorar la calidad y la duración del sueño, facilitando el descanso nocturno."
+      },
+      "energy": {
+        "name": "Energía y Fatiga",
+        "desc": "Compuestos que pueden ayudar a aumentar los niveles de energía, combatir la fatiga y mejorar el rendimiento físico y mental."
+      },
+      "anxiety": {
+        "name": "Ansiedad y Estrés",
+        "desc": "Suplementos y hierbas que pueden ayudar a reducir los síntomas de la ansiedad y a mejorar la respuesta del cuerpo al estrés."
+      },
+      "muscle-gain": {
+        "name": "Ganancia de Músculo y Ejercicio",
+        "desc": "Desarrolla músculo, mejora la fuerza y aumenta el rendimiento físico."
+      },
+      "cognitive-function": {
+        "name": "Memoria y Concentración",
+        "desc": "Mejora la función cognitiva, la memoria y la claridad mental."
+      },
+      "heart-health": {
+        "name": "Salud Cardíaca",
+        "desc": "Suplementos que apoyan la salud cardiovascular, la presión arterial y los niveles de colesterol."
+      },
+      "joint-bone-health": {
+        "name": "Salud Articular y Ósea",
+        "desc": "Suplementos para fortalecer los huesos, mejorar la flexibilidad y aliviar el dolor articular."
+      },
+      "gut-health": {
+        "name": "Salud Digestiva",
+        "desc": "Probióticos, enzimas y otros suplementos para una digestión saludable y un microbioma equilibrado."
+      },
+      "skin-hair-health": {
+        "name": "Salud de la Piel y Cabello",
+        "desc": "Nutrientes para una piel radiante, un cabello fuerte y uñas saludables."
+      },
+      "immunity": {
+        "name": "Inmunidad",
+        "desc": "Vitaminas y hierbas para fortalecer el sistema inmunológico y prevenir enfermedades."
+      },
+      "mens-health": {
+        "name": "Salud Masculina",
+        "desc": "Suplementos enfocados en la vitalidad, salud prostática y equilibrio hormonal masculino."
+      },
+      "womens-health": {
+        "name": "Salud Femenina",
+        "desc": "Apoyo para el equilibrio hormonal, el ciclo menstrual y la salud ósea en mujeres."
+      }
+    },
+    "value": {
+      "realtime": "Análisis en Tiempo Real",
+      "realtime.desc": "Obtén recomendaciones basadas en la investigación más reciente, analizada en segundos",
+      "evidence": "Grados de Evidencia",
+      "evidence.desc": "Mira conteos de estudios, calidad de evidencia (A/B/C) y ajustes personalizados",
+      "latam": "Optimizado para LATAM",
+      "latam.desc": "Personalizado para altitud, clima y disponibilidad local en América Latina"
+    }
+  },
+  "autocomplete": {
+    "loading": "Buscando...",
+    "no.results": "No se encontraron resultados. Intenta una búsqueda diferente.",
+    "categories": "Categoría"
   }
 }
