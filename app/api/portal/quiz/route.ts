@@ -5,7 +5,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { getMockRecommendation, MockRecommendation } from '@/lib/portal/mockData';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { normalizeQuery } from '@/lib/portal/query-normalization/normalizer';
@@ -64,7 +63,7 @@ function detectClimate(location: string): string {
 /**
  * Helper: Transform Weaviate hits to Recommendation object
  */
-function transformHitsToRecommendation(hits: any[], query: string, quizId: string): MockRecommendation {
+function transformHitsToRecommendation(hits: any[], query: string, quizId: string): any {
   const totalStudies = hits.length;
   const ingredientsMap = new Map<string, number>();
   const conditionsMap = new Map<string, number>();
@@ -247,16 +246,10 @@ export async function POST(request: NextRequest) {
     const altitude = detectAltitude(finalLocation);
     const climate = detectClimate(finalLocation);
 
-    if (isDemoMode) {
-      console.log('🎭 Demo mode: Using mock recommendation data');
-      const mockRecommendation = getMockRecommendation(sanitizedCategory);
-      return NextResponse.json({
-        success: true,
-        quiz_id: quizId,
-        recommendation: { ...mockRecommendation, quiz_id: quizId },
-        demo: true,
-      }, { status: 200 });
-    }
+    // STAGE 2: Backend Recommendation Service (Source of Truth)
+    // We prioritize Hybrid Search (Weaviate) above. If that didn't return early, 
+    // we must rely on the backend service to generate specific recommendations.
+    // Mocks and fallbacks have been removed to ensure data integrity.
 
     const backendCallStart = Date.now();
     const QUIZ_API_URL = `${getBaseUrl()}/api/portal/recommend`;
@@ -292,9 +285,14 @@ export async function POST(request: NextRequest) {
       });
 
       if (!recommendationResponse.ok) {
-        // ... (Error handling omitted for brevity but logic is same as before: handle 404, etc)
-        // For rebuilding file, I'll simplify error handling return
-        return NextResponse.json({ success: false, error: 'Backend Error' }, { status: recommendationResponse.status });
+        // If backend fails, propagate the error. NO MOCKS.
+        console.error(`[CRITICAL] Backend Recommendation Service Failed: ${recommendationResponse.status}`);
+        return NextResponse.json({
+          success: false,
+          error: 'backend_service_error',
+          message: 'El servicio de recomendaciones no está disponible en este momento.',
+          details: `Status: ${recommendationResponse.status}`
+        }, { status: recommendationResponse.status });
       }
 
       const responseData = await recommendationResponse.json();
@@ -325,19 +323,24 @@ export async function POST(request: NextRequest) {
         }, { status: 200 });
       }
 
-      return NextResponse.json({ success: false, error: 'Invalid backend response' }, { status: 500 });
+      // If we got here, response was 200 but had no recommendation data.
+      return NextResponse.json({
+        success: false,
+        error: 'invalid_response_structure',
+        message: 'Error interno: Estructura de respuesta inválida.'
+      }, { status: 500 });
 
     } catch (apiError: any) {
-      // Fallback to mock if backend dies
-      const mockRecommendation = getMockRecommendation(sanitizedCategory);
-      storeJobResult(jobId, 'completed', { recommendation: { ...mockRecommendation, quiz_id: quizId } });
+      console.error('[CRITICAL] Backend API Connection Error:', apiError);
+      // NO FALLBACK TO MOCK. Return 500.
       return NextResponse.json({
-        success: true,
+        success: false,
         jobId,
         quiz_id: quizId,
-        recommendation: { ...mockRecommendation, quiz_id: quizId },
-        fallback: true
-      }, { status: 200 });
+        error: 'backend_connection_failed',
+        message: 'No se pudo conectar con el servicio de recomendaciones.',
+        details: apiError.message
+      }, { status: 500 });
     }
 
   } catch (error: any) {
