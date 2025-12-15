@@ -1,0 +1,167 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Enterprise-grade admin API for Weaviate ECS control.
+  Implements least-privilege IAM, audit logging, and API Gateway authentication.
+
+Parameters:
+  WeaviateClusterName:
+    Type: String
+    Default: 'suplementia-weaviate-oss-prod-cluster'
+    Description: Name of the ECS cluster running Weaviate
+  
+  WeaviateServiceName:
+    Type: String
+    Default: 'weaviate-service'
+    Description: Name of the ECS service for Weaviate
+
+Resources:
+  # IAM Role for Lambda with least-privilege permissions
+  WeaviateAdminLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-lambda-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: WeaviateECSControl
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ECSServiceControl
+                Effect: Allow
+                Action:
+                  - ecs:DescribeServices
+                  - ecs:UpdateService
+                  - ecs:ListTasks
+                  - ecs:DescribeTasks
+                Resource:
+                  - !Sub 'arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:service/${WeaviateClusterName}/${WeaviateServiceName}'
+                  - !Sub 'arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:task/${WeaviateClusterName}/*'
+              - Sid: EC2NetworkInterfaceRead
+                Effect: Allow
+                Action:
+                  - ec2:DescribeNetworkInterfaces
+                Resource: '*'
+
+  # CloudWatch Log Group for audit logging
+  WeaviateAdminLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-admin'
+      RetentionInDays: 30
+
+  # Lambda Function
+  WeaviateAdminFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-admin'
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Role: !GetAtt WeaviateAdminLambdaRole.Arn
+      Code:
+        ZipFile: |
+          // Placeholder - will be replaced with actual deployment
+          exports.handler = async (event) => {
+            return {
+              statusCode: 503,
+              body: JSON.stringify({ error: 'Function not deployed yet' })
+            };
+          };
+      Environment:
+        Variables:
+          CLUSTER_NAME: !Ref WeaviateClusterName
+          SERVICE_NAME: !Ref WeaviateServiceName
+      Timeout: 30
+      MemorySize: 256
+      LoggingConfig:
+        LogGroup: !Ref WeaviateAdminLogGroup
+
+  # API Gateway HTTP API
+  WeaviateAdminApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub '${AWS::StackName}-api'
+      ProtocolType: HTTP
+      Description: Enterprise admin API for Weaviate control
+      CorsConfiguration:
+        AllowOrigins:
+          - 'https://suplementai.com'
+          - 'https://www.suplementai.com'
+        AllowMethods:
+          - POST
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+          - X-API-Key
+        MaxAge: 300
+
+  # Lambda Integration
+  WeaviateAdminIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref WeaviateAdminApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WeaviateAdminFunction.Arn}/invocations'
+      PayloadFormatVersion: '2.0'
+
+  # API Route
+  WeaviateAdminRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref WeaviateAdminApi
+      RouteKey: 'POST /admin'
+      Target: !Sub 'integrations/${WeaviateAdminIntegration}'
+      AuthorizationType: AWS_IAM
+
+  # API Stage
+  WeaviateAdminStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref WeaviateAdminApi
+      StageName: 'prod'
+      AutoDeploy: true
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiAccessLogGroup.Arn
+        Format: '$context.requestId $context.identity.sourceIp $context.requestTime $context.routeKey $context.status'
+
+  # API Access Logs
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/apigateway/${AWS::StackName}'
+      RetentionInDays: 30
+
+  # Lambda Permission for API Gateway
+  ApiGatewayInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WeaviateAdminFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WeaviateAdminApi}/*/*'
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${WeaviateAdminApi}.execute-api.${AWS::Region}.amazonaws.com/prod/admin'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiEndpoint'
+  
+  LambdaFunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt WeaviateAdminFunction.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-LambdaArn'
+  
+  LogGroupName:
+    Description: CloudWatch Log Group for audit logs
+    Value: !Ref WeaviateAdminLogGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-LogGroup'

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const ADMIN_API_URL = process.env.WEAVIATE_ADMIN_API_URL || 'https://424nk9ljj7.execute-api.us-east-1.amazonaws.com/prod/admin';
+
 // Simple auth check
 function isAuthorized(request: NextRequest): boolean {
     const authHeader = request.headers.get('authorization');
@@ -12,14 +14,26 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Return helpful message about AWS credentials
-    return NextResponse.json({
-        error: 'AWS credentials not configured in Vercel',
-        message: 'Use the local script: ./scripts/weaviate-control.sh',
-        instructions: {
-            status: './scripts/weaviate-control.sh status',
-            start: './scripts/weaviate-control.sh start',
-            stop: './scripts/weaviate-control.sh stop'
-        }
-    }, { status: 503 });
+    try {
+        const { action } = await request.json();
+
+        // Proxy request to AWS Lambda via API Gateway
+        const response = await fetch(ADMIN_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action })
+        });
+
+        const data = await response.json();
+
+        return NextResponse.json(data, { status: response.status });
+    } catch (error: any) {
+        console.error('Proxy error:', error);
+        return NextResponse.json({
+            error: 'Failed to communicate with admin API',
+            details: error.message
+        }, { status: 500 });
+    }
 }
