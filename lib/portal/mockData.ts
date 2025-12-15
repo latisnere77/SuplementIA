@@ -364,95 +364,56 @@ export function getMockRecommendation(category: string): MockRecommendation {
   // Known categories (goals/actions, not ingredients)
   const knownCategories = ['muscle-gain', 'cognitive', 'sleep', 'immune', 'heart', 'fat-loss', 'skin', 'hair', 'digestion', 'energy'];
   const isIngredientSearch = !knownCategories.includes(category.toLowerCase());
-  
-  // If it's an ingredient search, try to find specific data or use generic ingredient template
-  let selectedData = categoryData[category] || categoryData[category.toLowerCase()];
-  
-  // If no specific data and it's an ingredient search, create generic ingredient response
-  if (!selectedData && isIngredientSearch) {
-    // Normalize ingredient name for display
+
+  // If no specific data found, return a generic "Not Found" or "Neutral" response
+  // instead of falling back to the hardcoded Muscle Gain/B12 example.
+  if (!selectedData) {
     const ingredientDisplayName = category
       .split(/[-_]/)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
-    
-    selectedData = {
+
+    // Return a generic template for the requested category
+    return {
+      recommendation_id: `rec_${Date.now()}_fallback`,
+      quiz_id: `quiz_${Date.now()}_fallback`,
       category: ingredientDisplayName,
       evidence_summary: {
-        totalStudies: 85,
-        totalParticipants: 6500,
-        efficacyPercentage: 75,
-        researchSpanYears: 10,
-        ingredients: [
-          { name: ingredientDisplayName, grade: 'B', studyCount: 45, rctCount: 18 },
-        ],
+        totalStudies: 0,
+        totalParticipants: 0,
+        efficacyPercentage: 0,
+        researchSpanYears: 0,
+        ingredients: []
       },
-      ingredients: [
-        { name: ingredientDisplayName, grade: 'B', adjustedDose: 'Dosis estándar', adjustmentReason: 'Basado en evidencia científica disponible' },
-      ],
-      products: [
-        {
-          tier: 'budget',
-          name: `${ingredientDisplayName} Básico`,
-          price: 150,
-          currency: 'MXN',
-          contains: [ingredientDisplayName],
-          whereToBuy: 'Amazon México',
-          affiliateLink: `https://amazon.com.mx/search?k=${encodeURIComponent(category)}`,
-          description: `Suplemento de ${ingredientDisplayName.toLowerCase()} de calidad básica`,
-          isAnkonere: false,
-        },
-        {
-          tier: 'value',
-          name: `${ingredientDisplayName} Premium`,
-          price: 320,
-          currency: 'MXN',
-          contains: [ingredientDisplayName, 'Co-factores'],
-          whereToBuy: 'Amazon México',
-          affiliateLink: `https://amazon.com.mx/search?k=${encodeURIComponent(category)}`,
-          description: `Fórmula mejorada con ${ingredientDisplayName.toLowerCase()} y co-factores para mejor absorción`,
-          isAnkonere: false,
-        },
-        {
-          tier: 'premium',
-          name: `ANKONERE ${ingredientDisplayName} Pro`,
-          price: 450,
-          currency: 'MXN',
-          contains: [ingredientDisplayName, 'Formulación optimizada'],
-          whereToBuy: 'ANKONERE Direct',
-          directLink: `https://ankonere.com/product/${category}`,
-          description: `Fórmula premium con ${ingredientDisplayName.toLowerCase()} optimizada para LATAM`,
-          isAnkonere: true,
-        },
-      ],
+      ingredients: [],
+      products: [],
       personalization_factors: {
         altitude: 2250,
         climate: 'tropical',
-        gender: 'male',
+        gender: 'neutral',
         age: 35,
         location: 'CDMX',
-        sensitivities: [],
+        sensitivities: []
       },
+      // Custom flag to let frontend know this is empty/generic
+      // isGeneric: true 
     };
   }
 
   const defaultData: MockRecommendation = {
     recommendation_id: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     quiz_id: `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`,
-    category: selectedData?.category || category,
-    evidence_summary: selectedData?.evidence_summary || {
-      totalStudies: 150,
-      totalParticipants: 10000,
-      efficacyPercentage: 80,
-      researchSpanYears: 10,
-      ingredients: [
-        { name: 'Ingredient A', grade: 'A', studyCount: 50, rctCount: 25 },
-        { name: 'Ingredient B', grade: 'B', studyCount: 30, rctCount: 12 },
-      ],
+    category: selectedData.category || category,
+    evidence_summary: selectedData.evidence_summary || {
+      totalStudies: 0,
+      totalParticipants: 0,
+      efficacyPercentage: 0,
+      researchSpanYears: 0,
+      ingredients: [],
     },
-    ingredients: selectedData?.ingredients || [],
-    products: selectedData?.products || [],
-    personalization_factors: selectedData?.personalization_factors || {
+    ingredients: selectedData.ingredients || [],
+    products: selectedData.products || [],
+    personalization_factors: selectedData.personalization_factors || {
       altitude: 2250,
       climate: 'tropical',
       gender: 'male',
