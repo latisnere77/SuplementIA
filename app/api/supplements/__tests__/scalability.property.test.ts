@@ -13,7 +13,7 @@ class MockEmbeddingService {
     // Fast embedding generation
     const hash = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const embedding = Array.from({ length: 384 }, (_, i) => Math.sin(hash + i));
-    
+
     // Normalize to unit length
     const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
     return embedding.map(val => val / norm);
@@ -40,9 +40,9 @@ class MockVectorSearchService {
 
   async searchByEmbedding(embedding: number[], options: any = {}): Promise<any[]> {
     const startTime = performance.now();
-    
+
     const { minSimilarity = 0.85, limit = 5 } = options;
-    
+
     // Calculate cosine similarity for all supplements
     const results = Array.from(this.supplements.values())
       .map(supplement => {
@@ -58,7 +58,7 @@ class MockVectorSearchService {
 
     const endTime = performance.now();
     const latency = endTime - startTime;
-    
+
     return results.map(r => ({ ...r, latency }));
   }
 
@@ -145,16 +145,16 @@ describe('Scalability Property Tests', () => {
         supplementNameArbitrary,
         async (queryName) => {
           const queryEmbedding = await embeddingService.generateEmbedding(queryName);
-          
+
           const startTime = performance.now();
           const results = await vectorSearchService.searchByEmbedding(queryEmbedding, {
             minSimilarity: 0.85,
             limit: 5,
           });
           const endTime = performance.now();
-          
+
           const searchLatency = endTime - startTime;
-          
+
           // Verify: Search completes in < 200ms even with 1000+ supplements
           return searchLatency < 200;
         }
@@ -170,13 +170,13 @@ describe('Scalability Property Tests', () => {
    */
   it('Property 21b: Search time scales linearly', async () => {
     const embeddingService = new MockEmbeddingService();
-    
+
     const testSizes = [100, 500, 1000];
     const latencies: number[] = [];
 
     for (const size of testSizes) {
       const vectorSearchService = new MockVectorSearchService();
-      
+
       // Insert supplements
       for (let i = 0; i < size; i++) {
         const name = `Supplement ${i}`;
@@ -203,13 +203,13 @@ describe('Scalability Property Tests', () => {
         limit: 5,
       });
       const endTime = performance.now();
-      
+
       latencies.push(endTime - startTime);
     }
 
     // Verify: All search times are < 200ms
     const allUnder200ms = latencies.every(lat => lat < 200);
-    
+
     // Verify: Growth is not exponential (10x data should not cause 100x slowdown)
     const ratio = latencies[2] / latencies[0]; // 1000 vs 100
     const linearGrowth = ratio < 20; // Allow some overhead, but not exponential
@@ -254,20 +254,20 @@ describe('Scalability Property Tests', () => {
 
           for (const queryName of queryNames) {
             const queryEmbedding = await embeddingService.generateEmbedding(queryName);
-            
+
             const startTime = performance.now();
             await vectorSearchService.searchByEmbedding(queryEmbedding, {
               minSimilarity: 0.85,
               limit: 5,
             });
             const endTime = performance.now();
-            
+
             latencies.push(endTime - startTime);
           }
 
           // Verify: All searches complete in < 200ms
           const allUnder200ms = latencies.every(lat => lat < 200);
-          
+
           // Verify: Variance is low (consistent performance)
           const avg = latencies.reduce((sum, lat) => sum + lat, 0) / latencies.length;
           const variance = latencies.reduce((sum, lat) => sum + Math.pow(lat - avg, 2), 0) / latencies.length;

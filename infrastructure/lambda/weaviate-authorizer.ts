@@ -9,37 +9,24 @@ interface AuthorizerEvent {
     };
 }
 
-export const handler = async (event: AuthorizerEvent) => {
-    const token = event.headers?.authorization?.replace('Bearer ', '');
+export const handler = async (event: any) => {
+    // Handle both v2 payload (headers) and v1 (headers)
+    const headers = event.headers;
+    const authHeader = headers?.authorization || headers?.Authorization;
+    const token = authHeader?.replace('Bearer ', '');
     const validToken = process.env.ADMIN_API_KEY || 'dev-key-change-me';
+
+    const isAuthorized = token === validToken;
 
     // Audit log
     console.log(JSON.stringify({
         type: 'authorization_attempt',
-        methodArn: event.methodArn,
+        routeArn: event.routeArn,
         timestamp: new Date().toISOString(),
-        authorized: token === validToken
+        authorized: isAuthorized
     }));
 
-    if (token === validToken) {
-        return generatePolicy('user', 'Allow', event.methodArn);
-    }
-
-    return generatePolicy('user', 'Deny', event.methodArn);
-};
-
-function generatePolicy(principalId: string, effect: string, resource: string) {
     return {
-        principalId,
-        policyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-                {
-                    Action: 'execute-api:Invoke',
-                    Effect: effect,
-                    Resource: resource
-                }
-            ]
-        }
+        isAuthorized: isAuthorized
     };
-}
+};

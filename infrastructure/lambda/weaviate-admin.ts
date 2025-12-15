@@ -11,7 +11,10 @@ interface AdminEvent {
     body: string;
     requestContext: {
         requestId: string;
-        identity: {
+        http?: {
+            sourceIp: string;
+        };
+        identity?: {
             sourceIp: string;
         };
     };
@@ -24,7 +27,7 @@ export const handler = async (event: AdminEvent) => {
     console.log(JSON.stringify({
         action,
         requestId: event.requestContext.requestId,
-        sourceIp: event.requestContext.identity.sourceIp,
+        sourceIp: event.requestContext.http?.sourceIp || event.requestContext.identity?.sourceIp || 'unknown',
         timestamp: new Date().toISOString(),
         cluster: CLUSTER,
         service: SERVICE

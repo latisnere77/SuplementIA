@@ -11,7 +11,34 @@ describe('Multilingual Embedding Support', () => {
   let service: EmbeddingService;
 
   beforeAll(() => {
-    // Use mock endpoint for testing
+    // Mock global.fetch to handle single and batch requests
+    global.fetch = jest.fn((url, options: any) => {
+      const body = JSON.parse(options.body);
+
+      if (body.texts) {
+        // Handle batch request
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({
+            embeddings: body.texts.map(() => Array(384).fill(0.1)),
+            model: 'all-MiniLM-L6-v2',
+            dimensions: 384,
+            count: body.texts.length
+          })
+        });
+      }
+
+      // Handle single request
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({
+          embedding: Array(384).fill(0.1),
+          model: 'all-MiniLM-L6-v2',
+          dimensions: 384
+        })
+      });
+    }) as any;
+
     service = new EmbeddingService({
       endpoint: process.env.EMBEDDING_SERVICE_ENDPOINT || 'http://localhost:3000/embed',
       timeout: 10000,
@@ -33,7 +60,7 @@ describe('Multilingual Embedding Support', () => {
 
     for (const text of spanishTexts) {
       const embedding = await service.generateEmbedding(text);
-      
+
       expect(embedding).toBeDefined();
       expect(embedding.length).toBe(384);
       expect(embedding.every(val => typeof val === 'number')).toBe(true);
@@ -55,7 +82,7 @@ describe('Multilingual Embedding Support', () => {
 
     for (const text of englishTexts) {
       const embedding = await service.generateEmbedding(text);
-      
+
       expect(embedding).toBeDefined();
       expect(embedding.length).toBe(384);
       expect(embedding.every(val => typeof val === 'number')).toBe(true);
@@ -77,7 +104,7 @@ describe('Multilingual Embedding Support', () => {
 
     for (const text of portugueseTexts) {
       const embedding = await service.generateEmbedding(text);
-      
+
       expect(embedding).toBeDefined();
       expect(embedding.length).toBe(384);
       expect(embedding.every(val => typeof val === 'number')).toBe(true);
@@ -124,7 +151,7 @@ describe('Multilingual Embedding Support', () => {
 
     expect(embeddings).toBeDefined();
     expect(embeddings.length).toBe(multilingualTexts.length);
-    
+
     for (const embedding of embeddings) {
       expect(embedding.length).toBe(384);
       expect(embedding.every(val => typeof val === 'number')).toBe(true);

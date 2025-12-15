@@ -14,12 +14,12 @@ jest.mock('aws-xray-sdk-core', () => ({
   captureHTTPsGlobal: jest.fn(),
   getSegment: jest.fn(() => ({
     addNewSubsegment: jest.fn(() => ({
-      addAnnotation: jest.fn(),
+      addAnnotation: jest.fn(), addMetadata: jest.fn(),
       addMetadata: jest.fn(),
       addError: jest.fn(),
       close: jest.fn(),
       addNewSubsegment: jest.fn(() => ({
-        addAnnotation: jest.fn(),
+        addAnnotation: jest.fn(), addMetadata: jest.fn(),
         addError: jest.fn(),
         close: jest.fn(),
       })),
@@ -90,8 +90,8 @@ describe('Studies Fetcher Lambda Handler', () => {
       const event: APIGatewayProxyEvent = {
         httpMethod: 'POST',
         body: JSON.stringify({
-          supplementName: 'Vitamin D',
-          maxResults: 10,
+          supplementName: '"vitamin d"[MeSH] OR "cholecalciferol"[MeSH]',
+          maxResults: 15,
         }),
         headers: {},
         multiValueHeaders: {},
@@ -109,8 +109,8 @@ describe('Studies Fetcher Lambda Handler', () => {
 
       expect(response.statusCode).toBe(200);
       expect(pubmed.searchPubMed).toHaveBeenCalledWith({
-        supplementName: 'Vitamin D',
-        maxResults: 10,
+        supplementName: '"vitamin d"[MeSH] OR "cholecalciferol"[MeSH]',
+        maxResults: 15,
         filters: {},
       });
 
@@ -118,7 +118,7 @@ describe('Studies Fetcher Lambda Handler', () => {
       expect(body.success).toBe(true);
       expect(body.data.studies).toEqual(mockStudies);
       expect(body.data.totalFound).toBe(2);
-      expect(body.metadata.supplementName).toBe('Vitamin D');
+      expect(body.metadata.supplementName).toBe('"vitamin d"[MeSH] OR "cholecalciferol"[MeSH]');
       expect(body.metadata.source).toBe('pubmed');
     });
 
@@ -128,7 +128,7 @@ describe('Studies Fetcher Lambda Handler', () => {
       const event: APIGatewayProxyEvent = {
         httpMethod: 'POST',
         body: JSON.stringify({
-          supplementName: 'Creatine',
+          supplementName: '"creatine"[MeSH]',
         }),
         headers: {},
         multiValueHeaders: {},
@@ -145,8 +145,8 @@ describe('Studies Fetcher Lambda Handler', () => {
       await handler(event, mockContext);
 
       expect(pubmed.searchPubMed).toHaveBeenCalledWith({
-        supplementName: 'Creatine',
-        maxResults: 10, // default
+        supplementName: '"creatine"[MeSH]',
+        maxResults: 15, // default
         filters: {},
       });
     });
@@ -157,7 +157,7 @@ describe('Studies Fetcher Lambda Handler', () => {
       const event: APIGatewayProxyEvent = {
         httpMethod: 'POST',
         body: JSON.stringify({
-          supplementName: 'Omega-3',
+          supplementName: '"fatty acids, omega-3"[MeSH]',
           maxResults: 5,
           filters: {
             rctOnly: true,
@@ -180,7 +180,7 @@ describe('Studies Fetcher Lambda Handler', () => {
       await handler(event, mockContext);
 
       expect(pubmed.searchPubMed).toHaveBeenCalledWith({
-        supplementName: 'Omega-3',
+        supplementName: '"fatty acids, omega-3"[MeSH]',
         maxResults: 5,
         filters: {
           rctOnly: true,

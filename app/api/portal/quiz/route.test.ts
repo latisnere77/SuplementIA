@@ -14,9 +14,22 @@ jest.mock('@/lib/portal/supplements-database', () => ({
   ],
 }));
 
+// Mock Weaviate Client
+jest.mock('@/lib/weaviate-client', () => ({
+  getWeaviateClient: jest.fn(),
+  WEAVIATE_CLASS_NAME: 'Supplement'
+}));
+
+import { getWeaviateClient } from '@/lib/weaviate-client';
+
 const mockedSearchPubMed = pubmedSearch.searchPubMed as jest.Mock;
 
 describe('/api/portal/quiz POST', () => {
+  beforeEach(() => {
+    // Default to NO Weaviate client (PubMed fallback)
+    (getWeaviateClient as jest.Mock).mockReturnValue(null);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
