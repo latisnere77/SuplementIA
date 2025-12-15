@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
-import { normalizeQuery } from '@/lib/portal/query-normalization/normalizer';
+import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
@@ -186,24 +186,29 @@ export async function POST(request: NextRequest) {
     if (detectedSeparator) {
       // Handle Benefit Query
       const [ingredientPart, benefitPart] = sanitizedCategory.split(detectedSeparator);
-      const normalizedIngredient = normalizeQuery(ingredientPart.trim());
 
-      if (normalizedIngredient.normalized !== ingredientPart.trim()) {
-        searchTerm = `${normalizedIngredient.normalized}${detectedSeparator}${benefitPart}`;
+      // Intelligent Expansion (LLM/Heuristic)
+      const expandedIngredient = await expandAbbreviation(ingredientPart.trim());
+      const canonicalIngredient = expandedIngredient.alternatives[0] || ingredientPart.trim();
+
+      if (canonicalIngredient.toLowerCase() !== ingredientPart.trim().toLowerCase()) {
+        searchTerm = `${canonicalIngredient}${detectedSeparator}${benefitPart}`;
         isExpanded = true;
-        expansionNote = `(Benefit Query: "${ingredientPart.trim()}" expanded to "${normalizedIngredient.normalized}")`;
+        expansionNote = `(Benefit Query: "${ingredientPart.trim()}" expanded via LLM to "${canonicalIngredient}")`;
       } else {
-        // Even if ingredient didn't change, we might want to normalize the whole string? 
-        // Usually not, as "X for Y" won't match exact map.
-        // But we keep the original structure for Weaviate to see the relation.
         searchTerm = sanitizedCategory;
       }
     } else {
-      // Handle Standard Query
-      const normalized = normalizeQuery(sanitizedCategory);
-      searchTerm = normalized.normalized;
+      // Handle Standard Query via Dynamic Intelligent Expansion
+      const expanded = await expandAbbreviation(sanitizedCategory);
+      const canonicalTerm = expanded.alternatives[0] || sanitizedCategory;
+
+      searchTerm = canonicalTerm;
       isExpanded = searchTerm.toLowerCase() !== sanitizedCategory.toLowerCase();
-      if (isExpanded) expansionNote = `(expanded from "${sanitizedCategory}")`;
+
+      if (isExpanded) {
+        expansionNote = `(LLM expanded "${sanitizedCategory}" -> "${searchTerm}")`;
+      }
     }
 
     // =================================================================
