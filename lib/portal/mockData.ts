@@ -365,6 +365,10 @@ export function getMockRecommendation(category: string): MockRecommendation {
   const knownCategories = ['muscle-gain', 'cognitive', 'sleep', 'immune', 'heart', 'fat-loss', 'skin', 'hair', 'digestion', 'energy'];
   const isIngredientSearch = !knownCategories.includes(category.toLowerCase());
 
+  // If it's an ingredient search, try to find specific data or use generic ingredient template
+  // This WAS removed by mistake in previous edit, restoring now to fix build error
+  let selectedData = categoryData[category] || categoryData[category.toLowerCase()];
+
   // If no specific data found, return a generic "Not Found" or "Neutral" response
   // instead of falling back to the hardcoded Muscle Gain/B12 example.
   if (!selectedData) {
