@@ -203,6 +203,12 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'ghk cu': { canonical: 'Copper Peptides', category: 'mineral' },
   'copper peptide': { canonical: 'Copper Peptides', category: 'mineral' },
 
+  // ========== ALOE VERA ==========
+  'sabila': { canonical: 'Aloe Vera', category: 'herb' },
+  'sábila': { canonical: 'Aloe Vera', category: 'herb' },
+  'aloe': { canonical: 'Aloe Vera', category: 'herb' },
+  'aloe vera': { canonical: 'Aloe Vera', category: 'herb' },
+
   // ========== COENZYME Q10 ==========
   'q10': { canonical: 'Coenzyme Q10', category: 'other' },
   'coq10': { canonical: 'Coenzyme Q10', category: 'other' },
