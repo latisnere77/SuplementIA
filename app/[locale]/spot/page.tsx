@@ -10,12 +10,26 @@ interface ServiceStatus {
     url: string | null;
 }
 
+interface SeedingProgress {
+    isRunning: boolean;
+    currentMineral: string;
+    completed: number;
+    total: number;
+    history: Array<{
+        timestamp: string;
+        mineral: string;
+        status: 'success' | 'error';
+        count?: number;
+    }>;
+}
+
 export default function AdminControlPanel() {
     const [status, setStatus] = useState<ServiceStatus | null>(null);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [authenticated, setAuthenticated] = useState(false);
     const [apiKey, setApiKey] = useState('');
+    const [seedingProgress, setSeedingProgress] = useState<SeedingProgress | null>(null);
 
     const fetchStatus = async () => {
         if (!authenticated) return;
@@ -45,6 +59,57 @@ export default function AdminControlPanel() {
         }
     };
 
+    const fetchSeedingStatus = async () => {
+        if (!authenticated) return;
+
+        try {
+            const response = await fetch('/api/admin/seed-weaviate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({ action: 'status' })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setSeedingProgress(data.progress);
+            }
+        } catch (error) {
+            console.error('Error fetching seeding status:', error);
+        }
+    };
+
+    const startSeeding = async () => {
+        try {
+            const response = await fetch('/api/admin/seed-weaviate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({ action: 'start' })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setMessage('Seeding started!');
+                // Poll for progress
+                const pollInterval = setInterval(async () => {
+                    await fetchSeedingStatus();
+                    if (seedingProgress && !seedingProgress.isRunning) {
+                        clearInterval(pollInterval);
+                    }
+                }, 2000);
+            } else {
+                setMessage('Error: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            setMessage('Error starting seeding');
+        }
+    };
+
     const executeAction = async (action: 'start' | 'stop') => {
         if (!authenticated) return;
 
@@ -63,7 +128,6 @@ export default function AdminControlPanel() {
             const data = await response.json();
             if (data.success) {
                 setMessage(data.message);
-                // Refresh status after action
                 setTimeout(fetchStatus, 2000);
             } else {
                 setMessage('Error: ' + (data.error || 'Unknown error'));
@@ -80,13 +144,18 @@ export default function AdminControlPanel() {
         if (apiKey) {
             setAuthenticated(true);
             fetchStatus();
+            fetchSeedingStatus();
         }
     };
 
     useEffect(() => {
         if (authenticated) {
             fetchStatus();
-            const interval = setInterval(fetchStatus, 30000); // Auto-refresh every 30s
+            fetchSeedingStatus();
+            const interval = setInterval(() => {
+                fetchStatus();
+                fetchSeedingStatus();
+            }, 30000);
             return () => clearInterval(interval);
         }
     }, [authenticated]);
@@ -115,6 +184,10 @@ export default function AdminControlPanel() {
             </div>
         );
     }
+
+    const progressPercentage = seedingProgress
+        ? (seedingProgress.completed / seedingProgress.total) * 100
+        : 0;
 
     return (
         <div className="min-h-screen bg-gray-900 p-8">
@@ -188,15 +261,67 @@ export default function AdminControlPanel() {
                     </button>
                 </div>
 
+                {/* Seeding Card */}
+                <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold text-white">Data Seeding</h2>
+                        <button
+                            onClick={startSeeding}
+                            disabled={seedingProgress?.isRunning || (status?.running ?? 0) === 0}
+                            className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded transition"
+                        >
+                            🌱 Start Seeding
+                        </button>
+                    </div>
+
+                    {seedingProgress?.isRunning && (
+                        <div className="mb-4">
+                            <div className="flex justify-between text-sm text-gray-400 mb-2">
+                                <span>Processing: {seedingProgress.currentMineral}</span>
+                                <span>{seedingProgress.completed} / {seedingProgress.total}</span>
+                            </div>
+                            <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+                                <div
+                                    className="bg-purple-600 h-full transition-all duration-500"
+                                    style={{ width: `${progressPercentage}%` }}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* History */}
+                    {seedingProgress && seedingProgress.history.length > 0 && (
+                        <div className="mt-4">
+                            <h3 className="text-sm font-bold text-gray-400 mb-2">Recent History</h3>
+                            <div className="space-y-2 max-h-60 overflow-y-auto">
+                                {seedingProgress.history.map((entry, idx) => (
+                                    <div key={idx} className="flex justify-between items-center text-sm p-2 bg-gray-700 rounded">
+                                        <span className="text-gray-300">{entry.mineral}</span>
+                                        <div className="flex items-center gap-2">
+                                            {entry.count && <span className="text-gray-400">{entry.count} docs</span>}
+                                            <span className={entry.status === 'success' ? 'text-green-400' : 'text-red-400'}>
+                                                {entry.status === 'success' ? '✓' : '✗'}
+                                            </span>
+                                            <span className="text-gray-500 text-xs">
+                                                {new Date(entry.timestamp).toLocaleTimeString()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 {/* Message Display */}
                 {message && (
-                    <div className={`p-4 rounded-lg ${message.includes('Error') ? 'bg-red-900/50 text-red-200' : 'bg-blue-900/50 text-blue-200'}`}>
+                    <div className={`p-4 rounded-lg mb-6 ${message.includes('Error') ? 'bg-red-900/50 text-red-200' : 'bg-blue-900/50 text-blue-200'}`}>
                         {message}
                     </div>
                 )}
 
                 {/* Info Card */}
-                <div className="bg-gray-800 rounded-lg shadow-xl p-6 mt-6">
+                <div className="bg-gray-800 rounded-lg shadow-xl p-6">
                     <h3 className="text-lg font-bold text-white mb-3">💰 Cost Information</h3>
                     <ul className="text-gray-300 space-y-2 text-sm">
                         <li>• <strong>Running 24/7:</strong> ~$30/month</li>
