@@ -165,17 +165,53 @@ export async function POST(request: NextRequest) {
 
     const sanitizedCategory = sanitizeQuery(category);
 
-    // Normalize query to handle synonyms (e.g., Q10 -> Coenzyme Q10)
-    const normalized = normalizeQuery(sanitizedCategory);
-    const searchTerm = normalized.normalized;
-    const isExpanded = searchTerm.toLowerCase() !== sanitizedCategory.toLowerCase();
+    // Intelligent Query Expansion with Benefit Detection
+    // Case 1: Simple Ingredient ("Q10") -> Normalize -> "Coenzyme Q10"
+    // Case 2: Ingredient + Benefit ("Q10 para la piel") -> Split -> Normalize "Q10" -> "Coenzyme Q10 para la piel"
+
+    let searchTerm = sanitizedCategory;
+    let isExpanded = false;
+    let expansionNote = '';
+
+    const expansionSeparators = [' for ', ' para '];
+    let detectedSeparator = null;
+
+    for (const keyword of expansionSeparators) {
+      if (sanitizedCategory.toLowerCase().includes(keyword)) {
+        detectedSeparator = keyword;
+        break;
+      }
+    }
+
+    if (detectedSeparator) {
+      // Handle Benefit Query
+      const [ingredientPart, benefitPart] = sanitizedCategory.split(detectedSeparator);
+      const normalizedIngredient = normalizeQuery(ingredientPart.trim());
+
+      if (normalizedIngredient.normalized !== ingredientPart.trim()) {
+        searchTerm = `${normalizedIngredient.normalized}${detectedSeparator}${benefitPart}`;
+        isExpanded = true;
+        expansionNote = `(Benefit Query: "${ingredientPart.trim()}" expanded to "${normalizedIngredient.normalized}")`;
+      } else {
+        // Even if ingredient didn't change, we might want to normalize the whole string? 
+        // Usually not, as "X for Y" won't match exact map.
+        // But we keep the original structure for Weaviate to see the relation.
+        searchTerm = sanitizedCategory;
+      }
+    } else {
+      // Handle Standard Query
+      const normalized = normalizeQuery(sanitizedCategory);
+      searchTerm = normalized.normalized;
+      isExpanded = searchTerm.toLowerCase() !== sanitizedCategory.toLowerCase();
+      if (isExpanded) expansionNote = `(expanded from "${sanitizedCategory}")`;
+    }
 
     // =================================================================
     // NEW: Hybrid Search First Strategy
     // =================================================================
     const weaviateClient = getWeaviateClient();
     if (weaviateClient) {
-      console.log(`[Hybrid Search] Attempting search for: "${searchTerm}"${isExpanded ? ` (expanded from "${sanitizedCategory}")` : ''}`);
+      console.log(`[Hybrid Search] Attempting search for: "${searchTerm}" ${expansionNote}`);
       try {
         const result = await weaviateClient.graphql
           .get()
