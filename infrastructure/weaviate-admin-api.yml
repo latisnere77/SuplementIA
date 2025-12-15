@@ -111,6 +111,51 @@ Resources:
       IntegrationUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WeaviateAdminFunction.Arn}/invocations'
       PayloadFormatVersion: '2.0'
 
+  # Authorizer Lambda Function
+  WeaviateAuthorizerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-authorizer'
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Role: !GetAtt WeaviateAdminLambdaRole.Arn
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+            return {
+              isAuthorized: false
+            };
+          };
+      Environment:
+        Variables:
+          ADMIN_API_KEY: 'dev-key-change-me' # Should be updated in console or via params
+      Timeout: 5
+      MemorySize: 128
+      LoggingConfig:
+        LogGroup: !Ref WeaviateAdminLogGroup
+
+  # API Gateway Authorizer
+  WeaviateApiAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      Name: WeaviateLambdaAuthorizer
+      ApiId: !Ref WeaviateAdminApi
+      AuthorizerType: REQUEST
+      AuthorizerUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WeaviateAuthorizerFunction.Arn}/invocations'
+      IdentitySource:
+        - '$request.header.Authorization'
+      AuthorizerPayloadFormatVersion: '2.0'
+      EnableSimpleResponses: true
+
+  # Lambda Permission for Authorizer
+  AuthorizerInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WeaviateAuthorizerFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WeaviateAdminApi}/*/*'
+
   # API Route
   WeaviateAdminRoute:
     Type: AWS::ApiGatewayV2::Route
@@ -118,7 +163,8 @@ Resources:
       ApiId: !Ref WeaviateAdminApi
       RouteKey: 'POST /admin'
       Target: !Sub 'integrations/${WeaviateAdminIntegration}'
-      AuthorizationType: AWS_IAM
+      AuthorizationType: CUSTOM
+      AuthorizerId: !Ref WeaviateApiAuthorizer
 
   # API Stage
   WeaviateAdminStage:

@@ -12,7 +12,7 @@
         "esbuild": "^0.19.0"
     },
     "scripts": {
-        "build": "esbuild weaviate-admin.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --external:@aws-sdk/*",
-        "package": "cd dist && zip -r ../weaviate-admin.zip ."
+        "build": "esbuild weaviate-admin.ts --bundle --platform=node --target=node20 --outfile=dist/admin/index.js --external:@aws-sdk/* && esbuild weaviate-authorizer.ts --bundle --platform=node --target=node20 --outfile=dist/authorizer/index.js",
+        "package": "cd dist/admin && zip -r ../../weaviate-admin.zip . && cd ../authorizer && zip -r ../../weaviate-authorizer.zip ."
     }
 }

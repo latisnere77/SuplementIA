@@ -18,10 +18,14 @@ export async function POST(request: NextRequest) {
         const { action } = await request.json();
 
         // Proxy request to AWS Lambda via API Gateway
+        // We use the same ADMIN_API_KEY for both Vercel auth and AWS Authorizer
+        const adminKey = process.env.ADMIN_API_KEY || 'dev-key-change-me';
+
         const response = await fetch(ADMIN_API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${adminKey}`
             },
             body: JSON.stringify({ action })
         });
