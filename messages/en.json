@@ -99,7 +99,7 @@
     "questions": {
       "what_is": {
         "question": "What is SupplementAI?",
-        "answer": "SupplementAI is a platform that analyzes scientific studies from PubMed to provide evidence-based supplement recommendations. We don't invent information; we only analyze published and verifiable research."
+        "answer": "SupplementAI is a platform that analyzes scientific studies from global databases to provide evidence-based supplement recommendations. We don't invent information; we only analyze published and verifiable research."
       },
       "is_free": {
         "question": "Is it free?",
@@ -107,7 +107,7 @@
       },
       "source_studies": {
         "question": "Where do the scientific studies come from?",
-        "answer": "All studies come from PubMed, the world's largest biomedical research database, maintained by the US National Institutes of Health (NIH). It contains over 35 million peer-reviewed scientific articles."
+        "answer": "All studies come from global biomedical databases, the world's largest sources of biomedical research, maintained by international institutions. It contains over 35 million peer-reviewed scientific articles."
       },
       "grades_meaning": {
         "question": "What do the A, B, C grades mean?",

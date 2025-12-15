@@ -306,7 +306,7 @@ export default function BenefitStudiesModal({
                       <ul className="text-sm text-blue-800 space-y-1">
                         <li>• Cierra este popup y revisa todos los beneficios disponibles de {supplementName}</li>
                         <li>• Busca otros suplementos que SÍ tengan estudios para {benefitQueryEs.toLowerCase()}</li>
-                        <li>• Consulta fuentes adicionales como examine.com o PubMed directamente</li>
+                        <li>• Consulta fuentes científicas globales directamente</li>
                       </ul>
                     </div>
                     <p className="text-xs text-gray-500 mb-4">

@@ -485,38 +485,10 @@ export default function EvidenceAnalysisPanelNew({
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      setExpandedIngredient(
-                        expandedIngredient === ingredient.name ? null : ingredient.name
-                      );
-                      if (onViewStudies) {
-                        onViewStudies(ingredient.name);
-                      }
-                    }}
-                    className="ml-4 p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                  >
-                    {expandedIngredient === ingredient.name ? (
-                      <ChevronUp className="h-5 w-5" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5" />
-                    )}
-                  </button>
+                  {/* Toggle button removed as it only showed external link */}
                 </div>
 
-                {expandedIngredient === ingredient.name && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <a
-                      href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(ingredient.name)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
-                    >
-                      Ver estudios en PubMed
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
-                )}
+                {/* Expanded content removed */}
               </div>
             ))}
           </div>

@@ -99,7 +99,7 @@
     "questions": {
       "what_is": {
         "question": "¿Qué es SuplementAI?",
-        "answer": "SuplementAI es una plataforma que analiza estudios científicos de PubMed para proporcionarte recomendaciones de suplementos basadas en evidencia real. No inventamos información, solo analizamos investigaciones publicadas y verificables."
+        "answer": "SuplementAI es una plataforma que analiza estudios científicos de bases de datos globales para proporcionarte recomendaciones de suplementos basadas en evidencia real. No inventamos información, solo analizamos investigaciones publicadas y verificables."
       },
       "is_free": {
         "question": "¿Es gratuito?",
@@ -107,7 +107,7 @@
       },
       "source_studies": {
         "question": "¿De dónde vienen los estudios científicos?",
-        "answer": "Todos los estudios provienen de PubMed, la base de datos de investigación biomédica más grande del mundo, mantenida por el National Institutes of Health (NIH) de Estados Unidos. Contiene más de 35 millones de artículos científicos revisados por pares."
+        "answer": "Todos los estudios provienen de bases de datos biomédicas globales, las fuentes de investigación más grandes del mundo, mantenidas por instituciones internacionales. Contiene más de 35 millones de artículos científicos revisados por pares."
       },
       "grades_meaning": {
         "question": "¿Qué significan las calificaciones A, B, C?",

@@ -128,7 +128,7 @@ function StudyCard({ study, sentiment }: { study: Study; sentiment: 'positive' |
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
         >
-          Ver en PubMed
+          Ver Fuente Original
           <ExternalLink className="w-3 h-3" />
         </a>
       </CardContent>

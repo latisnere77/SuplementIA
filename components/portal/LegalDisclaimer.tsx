@@ -73,7 +73,7 @@ export default function LegalDisclaimer() {
                   </ul>
 
                   <p className="text-xs pt-2 border-t border-yellow-300">
-                    <strong>Fuente de información:</strong> Los estudios y datos presentados provienen de PubMed, la base de datos de investigación biomédica del NIH (National Institutes of Health). Sin embargo, la interpretación de estos estudios no reemplaza el juicio clínico de un profesional de salud.
+                    <strong>Fuente de información:</strong> Los estudios y datos presentados provienen de bases de datos de investigación biomédica globales y verificables. Sin embargo, la interpretación de estos estudios no reemplaza el juicio clínico de un profesional de salud.
                   </p>
                 </div>
 

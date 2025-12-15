@@ -1,6 +1,6 @@
 /**
  * Evidence Analysis Panel
- * Shows study stats, ingredient grades, and PubMed links
+ * Shows study stats, ingredient grades, and scientific links
  * Academic credibility aesthetic
  */
 
@@ -159,15 +159,7 @@ export default function EvidenceAnalysisPanel({
                 <p className="text-sm text-gray-600 mb-3">
                   {t('evidence.view.studies')} {ingredient.studyCount} {t('evidence.studies').toLowerCase()} {t('common.for')} {ingredient.name}
                 </p>
-                <a
-                  href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(ingredient.name)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
-                >
-                  {t('evidence.view.studies')}
-                  <ExternalLink className="h-4 w-4" />
-                </a>
+                {/* External link removed to protect source data */}
               </div>
             )}
           </div>

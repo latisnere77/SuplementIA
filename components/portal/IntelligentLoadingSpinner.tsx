@@ -9,8 +9,8 @@ interface IntelligentLoadingSpinnerProps {
 const LOADING_STAGES = [
   {
     icon: '🔍',
-    message: 'Buscando estudios científicos en PubMed',
-    detail: 'Conectando con la base de datos más grande de investigación médica...',
+    message: 'Buscando estudios científicos en bases de datos globales',
+    detail: 'Conectando con la fuente más grande de investigación médica...',
     duration: 0, // 0-8s (0-13%)
   },
   {
@@ -50,7 +50,7 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
     // This prevents the bar from getting stuck at 60-70% when response arrives
     const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      
+
       // Fast progress to 95% in 45 seconds, then slow crawl to 99%
       let newProgress;
       if (elapsed < 45000) {
@@ -61,7 +61,7 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
         const extraTime = elapsed - 45000;
         newProgress = 95 + Math.min((extraTime / 30000) * 4, 4); // Max 99%
       }
-      
+
       setProgress(Math.min(newProgress, 99)); // Cap at 99% until real completion
     }, 100);
 
@@ -138,18 +138,16 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
             {LOADING_STAGES.map((s, index) => (
               <div
                 key={index}
-                className={`flex flex-col items-center transition-all duration-300 ${
-                  index <= currentStage ? 'opacity-100' : 'opacity-30'
-                }`}
+                className={`flex flex-col items-center transition-all duration-300 ${index <= currentStage ? 'opacity-100' : 'opacity-30'
+                  }`}
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-300 ${
-                    index === currentStage
-                      ? 'bg-blue-500 text-white scale-110 shadow-lg'
-                      : index < currentStage
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-300 ${index === currentStage
+                    ? 'bg-blue-500 text-white scale-110 shadow-lg'
+                    : index < currentStage
                       ? 'bg-green-500 text-white'
                       : 'bg-gray-200 text-gray-400'
-                  }`}
+                    }`}
                 >
                   {index < currentStage ? '✓' : s.icon}
                 </div>
@@ -162,7 +160,7 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
             <div className="flex items-start gap-2 text-xs text-gray-500">
               <div className="mt-0.5">💡</div>
               <p>
-                Estamos analizando estudios científicos reales de PubMed.
+                Estamos analizando estudios científicos reales de fuentes globales.
                 Este proceso puede tomar 30-60 segundos para garantizar
                 información precisa y verificable.
               </p>
@@ -173,7 +171,7 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
         {/* Fun facts mientras esperan */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500 italic">
-            {currentStage === 0 && '¿Sabías que PubMed contiene más de 35 millones de estudios científicos?'}
+            {currentStage === 0 && '¿Sabías que nuestra base de datos contiene más de 35 millones de estudios científicos?'}
             {currentStage === 1 && '¿Sabías que los ensayos controlados aleatorios son el estándar de oro en investigación?'}
             {currentStage === 2 && '¿Sabías que validamos toda la información con fuentes científicas verificables?'}
             {currentStage === 3 && 'Cada recomendación está respaldada por evidencia científica real.'}
