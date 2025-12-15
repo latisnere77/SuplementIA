@@ -40,6 +40,7 @@ export type SupplementCategory =
   | 'herb'
   | 'fatty_acid'
   | 'protein'
+  | 'other'
   | 'general';
 
 export interface NormalizedQuery {
@@ -202,6 +203,23 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'ghk cu': { canonical: 'Copper Peptides', category: 'mineral' },
   'copper peptide': { canonical: 'Copper Peptides', category: 'mineral' },
 
+  // ========== COENZYME Q10 ==========
+  'q10': { canonical: 'Coenzyme Q10', category: 'other' },
+  'coq10': { canonical: 'Coenzyme Q10', category: 'other' },
+  'coenzyme q10': { canonical: 'Coenzyme Q10', category: 'other' },
+  'coenzima q10': { canonical: 'Coenzyme Q10', category: 'other' },
+  'ubiquinona': { canonical: 'Coenzyme Q10', category: 'other' },
+  'ubiquinone': { canonical: 'Coenzyme Q10', category: 'other' },
+  'ubidecarenona': { canonical: 'Coenzyme Q10', category: 'other' },
+  'ubidecarenone': { canonical: 'Coenzyme Q10', category: 'other' },
+
+  // ========== OTHER COMMON MISSING ==========
+  'resveratrol': { canonical: 'Resveratrol', category: 'other' },
+  'berberina': { canonical: 'Berberine', category: 'herb' },
+  'berberine': { canonical: 'Berberine', category: 'herb' },
+  'nmn': { canonical: 'Nicotinamide Mononucleotide', category: 'other' },
+  'nad': { canonical: 'NAD+', category: 'other' },
+  'nad+': { canonical: 'NAD+', category: 'other' },
 };
 
 /**
@@ -277,7 +295,7 @@ export function normalizeQuery(query: string): NormalizedQuery {
       'This function will be removed in v2.0.0.'
     );
   }
-  
+
   const lowercased = query.toLowerCase().trim();
 
   // Exact match in normalization map
@@ -370,7 +388,7 @@ function findFuzzyMatch(
 
     // Strategy 3: Substring matching (contains) - only for longer queries
     const isSubstring = query.length >= 5 && (
-      normalizedKey.includes(normalizedQuery) || 
+      normalizedKey.includes(normalizedQuery) ||
       normalizedQuery.includes(normalizedKey)
     );
 

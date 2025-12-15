@@ -8,6 +8,7 @@ import { randomUUID } from 'crypto';
 import { getMockRecommendation, MockRecommendation } from '@/lib/portal/mockData';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
+import { normalizeQuery } from '@/lib/portal/query-normalization/normalizer';
 import { createJob, storeJobResult } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
@@ -165,18 +166,23 @@ export async function POST(request: NextRequest) {
 
     const sanitizedCategory = sanitizeQuery(category);
 
+    // Normalize query to handle synonyms (e.g., Q10 -> Coenzyme Q10)
+    const normalized = normalizeQuery(sanitizedCategory);
+    const searchTerm = normalized.normalized;
+    const isExpanded = searchTerm.toLowerCase() !== sanitizedCategory.toLowerCase();
+
     // =================================================================
     // NEW: Hybrid Search First Strategy
     // =================================================================
     const weaviateClient = getWeaviateClient();
     if (weaviateClient) {
-      console.log(`[Hybrid Search] Attempting search for: "${sanitizedCategory}"`);
+      console.log(`[Hybrid Search] Attempting search for: "${searchTerm}"${isExpanded ? ` (expanded from "${sanitizedCategory}")` : ''}`);
       try {
         const result = await weaviateClient.graphql
           .get()
           .withClassName(WEAVIATE_CLASS_NAME)
           .withFields('title abstract ingredients conditions year _additional { score }')
-          .withHybrid({ query: sanitizedCategory, alpha: 0.75 })
+          .withHybrid({ query: searchTerm, alpha: 0.75 })
           .withLimit(8)
           .do();
 
@@ -184,7 +190,7 @@ export async function POST(request: NextRequest) {
 
         if (hits && hits.length > 0) {
           console.log(`[Hybrid Search] Found ${hits.length} hits. Returning generated recommendation.`);
-          const rec = transformHitsToRecommendation(hits, sanitizedCategory, quizId);
+          const rec = transformHitsToRecommendation(hits, searchTerm, quizId);
 
           // Update job store as completed
           storeJobResult(jobId, 'completed', { recommendation: rec });
