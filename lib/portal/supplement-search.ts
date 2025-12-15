@@ -37,7 +37,7 @@ export async function searchSupplement(query: string): Promise<SearchResult> {
   // Use legacy normalizer
   try {
     const normalized = normalizeQuery(trimmedQuery);
-    
+
     if (normalized.confidence > 0) {
       return {
         found: true,
@@ -57,12 +57,16 @@ export async function searchSupplement(query: string): Promise<SearchResult> {
     };
   }
 
-  // Not found
+  // Not found in local database?
+  // PERMISSIVE FALLBACK: Allow the query to proceed to the intelligent backend
+  // This enables "Global/Holistic" search for any ingredient (e.g. "Cobre", "Sábila")
+  // that might be known by the LLM/Weaviate but not in our static list.
   return {
-    found: false,
+    found: true,
     supplementName: trimmedQuery,
-    source: 'none',
-    error: 'Supplement not found',
+    normalizedName: trimmedQuery,
+    similarity: 0.5,
+    source: 'legacy',
   };
 }
 

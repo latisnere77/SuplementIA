@@ -13,16 +13,30 @@ export function getWeaviateClient(): WeaviateClient | null {
     const apiKey = process.env.WEAVIATE_API_KEY || '';
     const cohereKey = process.env.COHERE_API_KEY || '';
 
-    // Only initialize if we have the critical keys
-    if (host && apiKey && cohereKey) {
-        clientInstance = weaviate.client({
+    // Priority 1: Cloud/Env Config
+    if (host) {
+        const clientConfig: any = {
             scheme: scheme,
             host: host,
-            apiKey: { apiKey: apiKey },
-            headers: { 'X-Cohere-Api-Key': cohereKey },
-        });
+        };
+
+        if (apiKey) {
+            clientConfig.apiKey = { apiKey: apiKey };
+        }
+
+        if (cohereKey) {
+            clientConfig.headers = { 'X-Cohere-Api-Key': cohereKey };
+        }
+
+        clientInstance = weaviate.client(clientConfig);
         return clientInstance;
     }
 
-    return null;
+    // FALLBACK: Local Weaviate OSS (Docker)
+    console.log('⚠️ using LOCAL Weaviate (http://localhost:8080) for OSS search');
+    clientInstance = weaviate.client({
+        scheme: 'http',
+        host: 'localhost:8080',
+    });
+    return clientInstance;
 }

@@ -26,29 +26,10 @@ export async function GET(request: Request) {
 
   const { q, limit } = validation.data;
 
-  // Fallback to mock logic if Weaviate is not configured (e.g. locally without keys)
+  // Fallback if Weaviate client fails to initialize (should use Local/Cloud fallback in client)
   if (!client) {
-    console.warn("⚠️ Weaviate not configured. Returning mock data.");
-    const MOCK_DATA = [
-      {
-        title: '[MOCK] Copper Peptides for Skin',
-        abstract: 'Mock paper about copper peptides and collagen synthesis.',
-        ingredients: ['Copper Peptides'],
-        score: 0.99
-      },
-      {
-        title: '[MOCK] Vitamin D and Immunity',
-        abstract: 'Study on Vitamin D effects on immune system.',
-        ingredients: ['Vitamin D'],
-        score: 0.95
-      },
-    ];
-    // Simple filter for mock
-    const results = MOCK_DATA.filter(item =>
-      item.title.toLowerCase().includes(q.toLowerCase()) ||
-      item.ingredients.some(i => i.toLowerCase().includes(q.toLowerCase()))
-    );
-    return NextResponse.json(results);
+    console.error("❌ Weaviate client failed to initialize.");
+    return NextResponse.json({ error: 'Search service unavailable' }, { status: 503 });
   }
 
   try {

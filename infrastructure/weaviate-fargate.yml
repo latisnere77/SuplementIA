@@ -1,0 +1,195 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Values-aligned deployment of Weaviate OSS on AWS ECS Fargate.
+  Serverless container architecture with EFS persistence.
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Existing VPC ID to deploy into
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: List of Subnet IDs for the Task
+  AllowedCidr:
+    Type: String
+    Default: '0.0.0.0/0'
+    Description: CIDR block allowed to access Weaviate (restrict in prod!)
+
+Resources:
+  # --- ECS Cluster ---
+  WeaviateCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub ${AWS::StackName}-cluster
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+
+  # --- Security Groups ---
+  WeaviateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to Weaviate
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: !Ref AllowedCidr
+        - IpProtocol: tcp
+          FromPort: 50051
+          ToPort: 50051
+          CidrIp: !Ref AllowedCidr
+
+  # --- EFS for Persistence ---
+  WeaviateFileSystem:
+    Type: AWS::EFS::FileSystem
+    Properties:
+      PerformanceMode: generalPurpose
+      Encrypted: true
+      FileSystemTags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-data
+
+  WeaviateMountTarget1:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref WeaviateFileSystem
+      SubnetId: !Select [0, !Ref SubnetIds]
+      SecurityGroups:
+        - !Ref WeaviateSecurityGroup
+
+  WeaviateMountTarget2:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref WeaviateFileSystem
+      SubnetId: !Select [1, !Ref SubnetIds]
+      SecurityGroups:
+        - !Ref WeaviateSecurityGroup
+
+  WeaviateMountTarget3:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref WeaviateFileSystem
+      SubnetId: !Select [2, !Ref SubnetIds]
+      SecurityGroups:
+        - !Ref WeaviateSecurityGroup
+
+  # Self-referencing NFS rule for EFS
+  WeaviateNFSIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref WeaviateSecurityGroup
+      IpProtocol: tcp
+      FromPort: 2049
+      ToPort: 2049
+      SourceSecurityGroupId: !Ref WeaviateSecurityGroup
+
+  # --- Log Group ---
+  WeaviateLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /ecs/${AWS::StackName}
+      RetentionInDays: 30
+
+  # --- IAM Roles ---
+  WeaviateTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub weaviate-execution-role-${AWS::StackName}
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  # --- Task Definition ---
+  WeaviateTaskDef:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: weaviate-task
+      Cpu: '1024' # 1 vCPU
+      Memory: '2048' # 2 GB
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !GetAtt WeaviateTaskExecutionRole.Arn
+      Volumes:
+        - Name: weaviate-data
+          EFSVolumeConfiguration:
+            FilesystemId: !Ref WeaviateFileSystem
+            RootDirectory: "/"
+      ContainerDefinitions:
+        - Name: weaviate
+          Image: cr.weaviate.io/semitechnologies/weaviate:1.24.1
+          PortMappings:
+            - ContainerPort: 8080
+            - ContainerPort: 50051
+          Environment:
+            - Name: QUERY_DEFAULTS_LIMIT
+              Value: '25'
+            - Name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
+              Value: 'true'
+            - Name: PERSISTENCE_DATA_PATH
+              Value: '/var/lib/weaviate'
+            - Name: DEFAULT_VECTORIZER_MODULE
+              Value: 'text2vec-transformers'
+            - Name: ENABLE_MODULES
+              Value: 'text2vec-transformers'
+            - Name: CLUSTER_HOSTNAME
+              Value: 'node1'
+            - Name: TRANSFORMERS_INFERENCE_API
+              Value: 'http://localhost:9090'
+          MountPoints:
+            - SourceVolume: weaviate-data
+              ContainerPath: /var/lib/weaviate
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref WeaviateLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: weaviate
+        
+        # Sidecar for Vectorization (Transformer)
+        - Name: t2v-transformers
+          Image: cr.weaviate.io/semitechnologies/transformers-inference:sentence-transformers-all-MiniLM-L6-v2
+          Cpu: 512
+          Memory: 1024
+          # Override command to listen on port 9090 to avoid conflict with Weaviate (8080)
+          Command: 
+            - "uvicorn app:app --host 0.0.0.0 --port 9090"
+          Environment:
+            - Name: ENABLE_CUDA
+              Value: '0'
+
+  # --- Service ---
+  WeaviateService:
+    Type: AWS::ECS::Service
+    DependsOn: 
+      - WeaviateMountTarget1
+      - WeaviateMountTarget2
+      - WeaviateMountTarget3
+    Properties:
+      Cluster: !Ref WeaviateCluster
+      ServiceName: weaviate-service
+      TaskDefinition: !Ref WeaviateTaskDef
+      # LaunchType: FARGATE (Removed for Spot)
+      CapacityProviderStrategy:
+        - CapacityProvider: FARGATE_SPOT
+          Weight: 1
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !Ref SubnetIds
+          SecurityGroups:
+            - !Ref WeaviateSecurityGroup
+
+Outputs:
+  ServiceUrl:
+    Description: Access Weaviate via this Public IP (Temporary) or LB
+    Value: !Ref WeaviateCluster # Improving this requires ALB setup
