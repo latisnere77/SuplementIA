@@ -1,37 +1,100 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import weaviate from 'weaviate-ts-client';
 
-// This is a mock search implementation.
-// In a real application, this would be a call to a search service (e.g., Elasticsearch, Algolia, or a database).
-
-const MOCK_DATA = [
-  { id: '1', name: 'Copper Peptides', slug: 'copper-peptides' },
-  { id: '2', name: 'Vitamin C', slug: 'vitamin-c' },
-  { id: '3', name: 'Vitamin D', slug: 'vitamin-d' },
-  { id: '4', name: 'Omega-3', slug: 'omega-3' },
-  { id: '5', name: 'Magnesium', slug: 'magnesium' },
-  { id: '6', name: 'Creatine', slug: 'creatine' },
-];
-
+// Schema for the search request
 const QuerySchema = z.object({
   q: z.string().min(1),
+  limit: z.coerce.number().min(1).max(20).default(5),
 });
+
+// Environment variables
+const scheme = process.env.WEAVIATE_SCHEME || 'https';
+const host = process.env.WEAVIATE_HOST || '';
+const apiKey = process.env.WEAVIATE_API_KEY || '';
+const cohereKey = process.env.COHERE_API_KEY || '';
+
+// Initialize Weaviate Client
+// Note: In a real production app, this should be a singleton in a lib/ folder.
+const client = (host && apiKey && cohereKey)
+  ? weaviate.client({
+    scheme: scheme,
+    host: host,
+    apiKey: { apiKey: apiKey },
+    headers: { 'X-Cohere-Api-Key': cohereKey },
+  })
+  : null;
+
+const CLASS_NAME = 'SupplementPaper'; // Must match the schema created in the PoC
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q');
+  const rawQuery = searchParams.get('q');
+  const rawLimit = searchParams.get('limit');
 
-  const validation = QuerySchema.safeParse({ q: query });
+  const validation = QuerySchema.safeParse({ q: rawQuery, limit: rawLimit });
 
   if (!validation.success) {
-    return NextResponse.json({ error: 'Invalid query' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
   }
 
-  const searchTerm = validation.data.q.toLowerCase();
+  const { q, limit } = validation.data;
 
-  const results = MOCK_DATA.filter(item =>
-    item.name.toLowerCase().includes(searchTerm)
-  ).map(item => ({ ...item, score: Math.random() }));
+  // Fallback to mock logic if Weaviate is not configured (e.g. locally without keys)
+  if (!client) {
+    console.warn("⚠️ Weaviate not configured. Returning mock data.");
+    const MOCK_DATA = [
+      {
+        title: '[MOCK] Copper Peptides for Skin',
+        abstract: 'Mock paper about copper peptides and collagen synthesis.',
+        ingredients: ['Copper Peptides'],
+        score: 0.99
+      },
+      {
+        title: '[MOCK] Vitamin D and Immunity',
+        abstract: 'Study on Vitamin D effects on immune system.',
+        ingredients: ['Vitamin D'],
+        score: 0.95
+      },
+    ];
+    // Simple filter for mock
+    const results = MOCK_DATA.filter(item =>
+      item.title.toLowerCase().includes(q.toLowerCase()) ||
+      item.ingredients.some(i => i.toLowerCase().includes(q.toLowerCase()))
+    );
+    return NextResponse.json(results);
+  }
 
-  return NextResponse.json(results);
+  try {
+    // Execute Hybrid Search (Vector + BM25)
+    // Alpha 0.75 leans towards vector search (semantic) but keeps keyword precision from BM25
+    const result = await client.graphql
+      .get()
+      .withClassName(CLASS_NAME)
+      .withFields('title abstract ingredients conditions year _additional { score distance }')
+      .withHybrid({
+        query: q,
+        alpha: 0.75,
+      })
+      .withLimit(limit)
+      .do();
+
+    const hits = result.data.Get[CLASS_NAME];
+
+    // Transform Weaviate response to a simplified API response
+    const formattedResults = hits.map((hit: any) => ({
+      title: hit.title,
+      abstract: hit.abstract,
+      ingredients: hit.ingredients,
+      conditions: hit.conditions,
+      year: hit.year,
+      score: hit._additional?.score,
+    }));
+
+    return NextResponse.json(formattedResults);
+
+  } catch (error) {
+    console.error("❌ Hybrid Search Error:", error);
+    return NextResponse.json({ error: 'Internal Search Error' }, { status: 500 });
+  }
 }
