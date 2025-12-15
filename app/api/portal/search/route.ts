@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import weaviate from 'weaviate-ts-client';
+import { getWeaviateClient, WEAVIATE_CLASS_NAME } from '@/lib/weaviate-client';
 
 // Schema for the search request
 const QuerySchema = z.object({
@@ -8,24 +8,10 @@ const QuerySchema = z.object({
   limit: z.coerce.number().min(1).max(20).default(5),
 });
 
-// Environment variables
-const scheme = process.env.WEAVIATE_SCHEME || 'https';
-const host = process.env.WEAVIATE_HOST || '';
-const apiKey = process.env.WEAVIATE_API_KEY || '';
-const cohereKey = process.env.COHERE_API_KEY || '';
-
 // Initialize Weaviate Client
-// Note: In a real production app, this should be a singleton in a lib/ folder.
-const client = (host && apiKey && cohereKey)
-  ? weaviate.client({
-    scheme: scheme,
-    host: host,
-    apiKey: { apiKey: apiKey },
-    headers: { 'X-Cohere-Api-Key': cohereKey },
-  })
-  : null;
+const client = getWeaviateClient();
 
-const CLASS_NAME = 'SupplementPaper'; // Must match the schema created in the PoC
+const CLASS_NAME = WEAVIATE_CLASS_NAME;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
