@@ -790,7 +790,8 @@ function ResultsPageContent() {
 
           // Use quiz endpoint for all searches (ingredients and categories)
           // The quiz endpoint already handles enrichment with proper timeout handling
-          const response = await fetch('/api/portal/quiz', {
+          // Adding timestamp to force fresh fetch and avoid caching old B12 results
+          const response = await fetch(`/api/portal/quiz?t=${Date.now()}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
