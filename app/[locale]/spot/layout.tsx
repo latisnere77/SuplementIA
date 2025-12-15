@@ -1,14 +1,15 @@
-import type { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-    title: 'Admin Panel',
-    robots: 'noindex, nofollow',
-};
+import { SessionProvider } from 'next-auth/react';
 
 export default function SpotLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    return children;
+    return (
+        <SessionProvider>
+            {children}
+        </SessionProvider>
+    );
 }

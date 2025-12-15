@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 interface ServiceStatus {
     desired: number;
@@ -24,15 +25,14 @@ interface SeedingProgress {
 }
 
 export default function AdminControlPanel() {
-    const [status, setStatus] = useState<ServiceStatus | null>(null);
+    const { data: session, status: authStatus } = useSession();
+    const [serviceStatus, setServiceStatus] = useState<ServiceStatus | null>(null);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
-    const [authenticated, setAuthenticated] = useState(false);
-    const [apiKey, setApiKey] = useState('');
     const [seedingProgress, setSeedingProgress] = useState<SeedingProgress | null>(null);
 
     const fetchStatus = async () => {
-        if (!authenticated) return;
+        if (!session?.idToken) return;
 
         setLoading(true);
         try {
@@ -40,14 +40,14 @@ export default function AdminControlPanel() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
+                    'Authorization': `Bearer ${session.idToken}`
                 },
                 body: JSON.stringify({ action: 'status' })
             });
 
             const data = await response.json();
             if (data.success) {
-                setStatus(data.status);
+                setServiceStatus(data.status);
                 setMessage('');
             } else {
                 setMessage('Error: ' + (data.error || 'Unknown error'));
@@ -60,14 +60,14 @@ export default function AdminControlPanel() {
     };
 
     const fetchSeedingStatus = async () => {
-        if (!authenticated) return;
+        if (!session?.idToken) return;
 
         try {
             const response = await fetch('/api/admin/seed-weaviate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
+                    'Authorization': `Bearer ${session.idToken}`
                 },
                 body: JSON.stringify({ action: 'status' })
             });
@@ -81,37 +81,8 @@ export default function AdminControlPanel() {
         }
     };
 
-    const startSeeding = async () => {
-        try {
-            const response = await fetch('/api/admin/seed-weaviate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({ action: 'start' })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                setMessage('Seeding started!');
-                // Poll for progress
-                const pollInterval = setInterval(async () => {
-                    await fetchSeedingStatus();
-                    if (seedingProgress && !seedingProgress.isRunning) {
-                        clearInterval(pollInterval);
-                    }
-                }, 2000);
-            } else {
-                setMessage('Error: ' + (data.error || 'Unknown error'));
-            }
-        } catch (error) {
-            setMessage('Error starting seeding');
-        }
-    };
-
     const executeAction = async (action: 'start' | 'stop') => {
-        if (!authenticated) return;
+        if (!session?.idToken) return;
 
         setLoading(true);
         setMessage('');
@@ -120,7 +91,7 @@ export default function AdminControlPanel() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
+                    'Authorization': `Bearer ${session.idToken}`
                 },
                 body: JSON.stringify({ action })
             });
@@ -139,17 +110,38 @@ export default function AdminControlPanel() {
         }
     };
 
-    const handleAuth = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (apiKey) {
-            setAuthenticated(true);
-            fetchStatus();
-            fetchSeedingStatus();
+    const startSeeding = async () => {
+        if (!session?.idToken) return;
+
+        try {
+            const response = await fetch('/api/admin/seed-weaviate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.idToken}`
+                },
+                body: JSON.stringify({ action: 'start' })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setMessage('Seeding started!');
+                const pollInterval = setInterval(async () => {
+                    await fetchSeedingStatus();
+                    if (seedingProgress && !seedingProgress.isRunning) {
+                        clearInterval(pollInterval);
+                    }
+                }, 2000);
+            } else {
+                setMessage('Error: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            setMessage('Error starting seeding');
         }
     };
 
     useEffect(() => {
-        if (authenticated) {
+        if (session?.idToken) {
             fetchStatus();
             fetchSeedingStatus();
             const interval = setInterval(() => {
@@ -158,177 +150,165 @@ export default function AdminControlPanel() {
             }, 30000);
             return () => clearInterval(interval);
         }
-    }, [authenticated]);
+    }, [session]);
 
-    if (!authenticated) {
+    // Loading auth state
+    if (authStatus === 'loading') {
+        return (
+            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+            </div>
+        );
+    }
+
+    // Not authenticated - show login
+    if (!session) {
         return (
             <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-                <div className="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full">
+                <div className="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full text-center">
                     <h1 className="text-2xl font-bold text-white mb-6">Admin Access</h1>
-                    <form onSubmit={handleAuth}>
-                        <input
-                            type="password"
-                            placeholder="Enter API Key"
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
-                            className="w-full px-4 py-2 bg-gray-700 text-white rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
-                        >
-                            Access Panel
-                        </button>
-                    </form>
+                    <p className="text-gray-400 mb-6">
+                        Inicia sesión con tu cuenta autorizada para acceder al panel de administración.
+                    </p>
+                    <button
+                        onClick={() => signIn('cognito')}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                    >
+                        Iniciar Sesión con Cognito
+                    </button>
                 </div>
             </div>
         );
     }
 
-    const progressPercentage = seedingProgress
-        ? (seedingProgress.completed / seedingProgress.total) * 100
-        : 0;
-
+    // Authenticated - show admin panel
     return (
-        <div className="min-h-screen bg-gray-900 p-8">
+        <div className="min-h-screen bg-gray-900 p-4 md:p-8">
             <div className="max-w-4xl mx-auto">
-                <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
-                    <h1 className="text-3xl font-bold text-white mb-2">Weaviate Control Panel</h1>
-                    <p className="text-gray-400">Manage your AWS Weaviate instance</p>
+                {/* Header */}
+                <div className="flex justify-between items-center mb-8">
+                    <h1 className="text-3xl font-bold text-white">SuplementIA Admin</h1>
+                    <div className="flex items-center gap-4">
+                        <span className="text-gray-400 text-sm">{session.user?.email}</span>
+                        <button
+                            onClick={() => signOut()}
+                            className="text-gray-400 hover:text-white text-sm underline"
+                        >
+                            Cerrar Sesión
+                        </button>
+                    </div>
                 </div>
 
                 {/* Status Card */}
-                <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
+                <div className="bg-gray-800 rounded-lg p-6 mb-6">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold text-white">Service Status</h2>
+                        <h2 className="text-xl font-semibold text-white">Weaviate Service Status</h2>
                         <button
                             onClick={fetchStatus}
                             disabled={loading}
-                            className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded transition disabled:opacity-50"
+                            className="text-emerald-400 hover:text-emerald-300 text-sm"
                         >
-                            {loading ? '⟳' : '🔄'} Refresh
+                            {loading ? 'Refreshing...' : 'Refresh'}
                         </button>
                     </div>
 
-                    {status && (
-                        <div className="space-y-3">
-                            <div className="flex justify-between text-gray-300">
-                                <span>Desired Count:</span>
-                                <span className="font-mono">{status.desired}</span>
+                    {serviceStatus ? (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-gray-700 rounded p-4">
+                                <div className="text-gray-400 text-sm">Desired</div>
+                                <div className="text-2xl font-bold text-white">{serviceStatus.desired}</div>
                             </div>
-                            <div className="flex justify-between text-gray-300">
-                                <span>Running:</span>
-                                <span className={`font-mono ${status.running > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                    {status.running}
-                                </span>
-                            </div>
-                            <div className="flex justify-between text-gray-300">
-                                <span>Pending:</span>
-                                <span className="font-mono">{status.pending}</span>
-                            </div>
-                            {status.url && (
-                                <div className="mt-4 p-3 bg-gray-700 rounded">
-                                    <p className="text-sm text-gray-400 mb-1">Weaviate URL:</p>
-                                    <a
-                                        href={status.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-400 hover:text-blue-300 font-mono text-sm break-all"
-                                    >
-                                        {status.url}
-                                    </a>
+                            <div className="bg-gray-700 rounded p-4">
+                                <div className="text-gray-400 text-sm">Running</div>
+                                <div className={`text-2xl font-bold ${serviceStatus.running > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                    {serviceStatus.running}
                                 </div>
-                            )}
+                            </div>
+                            <div className="bg-gray-700 rounded p-4">
+                                <div className="text-gray-400 text-sm">Pending</div>
+                                <div className="text-2xl font-bold text-yellow-400">{serviceStatus.pending}</div>
+                            </div>
+                            <div className="bg-gray-700 rounded p-4">
+                                <div className="text-gray-400 text-sm">Public IP</div>
+                                <div className="text-sm font-mono text-white truncate">
+                                    {serviceStatus.publicIp || 'N/A'}
+                                </div>
+                            </div>
                         </div>
+                    ) : (
+                        <div className="text-gray-400">Loading status...</div>
                     )}
                 </div>
 
                 {/* Control Buttons */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                    <button
-                        onClick={() => executeAction('start')}
-                        disabled={loading || (status?.running ?? 0) > 0}
-                        className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg transition shadow-lg"
-                    >
-                        🚀 Start Service
-                    </button>
-                    <button
-                        onClick={() => executeAction('stop')}
-                        disabled={loading || (status?.desired ?? 0) === 0}
-                        className="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg transition shadow-lg"
-                    >
-                        🛑 Stop Service
-                    </button>
-                </div>
-
-                {/* Seeding Card */}
-                <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold text-white">Data Seeding</h2>
+                <div className="bg-gray-800 rounded-lg p-6 mb-6">
+                    <h2 className="text-xl font-semibold text-white mb-4">Service Control</h2>
+                    <div className="flex gap-4">
                         <button
-                            onClick={startSeeding}
-                            disabled={seedingProgress?.isRunning || (status?.running ?? 0) === 0}
-                            className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded transition"
+                            onClick={() => executeAction('start')}
+                            disabled={loading}
+                            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
                         >
-                            🌱 Start Seeding
+                            Start Service
+                        </button>
+                        <button
+                            onClick={() => executeAction('stop')}
+                            disabled={loading}
+                            className="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                        >
+                            Stop Service
                         </button>
                     </div>
-
-                    {seedingProgress?.isRunning && (
-                        <div className="mb-4">
-                            <div className="flex justify-between text-sm text-gray-400 mb-2">
-                                <span>Processing: {seedingProgress.currentMineral}</span>
-                                <span>{seedingProgress.completed} / {seedingProgress.total}</span>
-                            </div>
-                            <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
-                                <div
-                                    className="bg-purple-600 h-full transition-all duration-500"
-                                    style={{ width: `${progressPercentage}%` }}
-                                />
-                            </div>
+                    {message && (
+                        <div className={`mt-4 p-3 rounded ${message.includes('Error') ? 'bg-red-900/50 text-red-300' : 'bg-emerald-900/50 text-emerald-300'}`}>
+                            {message}
                         </div>
                     )}
+                </div>
 
-                    {/* History */}
-                    {seedingProgress && seedingProgress.history.length > 0 && (
+                {/* Seeding Section */}
+                <div className="bg-gray-800 rounded-lg p-6">
+                    <h2 className="text-xl font-semibold text-white mb-4">Data Seeding</h2>
+
+                    {seedingProgress?.isRunning ? (
+                        <div className="mb-4">
+                            <div className="flex justify-between text-sm text-gray-400 mb-2">
+                                <span>Seeding: {seedingProgress.currentMineral}</span>
+                                <span>{seedingProgress.completed}/{seedingProgress.total}</span>
+                            </div>
+                            <div className="w-full bg-gray-700 rounded-full h-2">
+                                <div
+                                    className="bg-emerald-500 h-2 rounded-full transition-all"
+                                    style={{ width: `${(seedingProgress.completed / seedingProgress.total) * 100}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={startSeeding}
+                            disabled={loading}
+                            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                        >
+                            Start Seeding (Minerals)
+                        </button>
+                    )}
+
+                    {/* Seeding History */}
+                    {seedingProgress?.history && seedingProgress.history.length > 0 && (
                         <div className="mt-4">
-                            <h3 className="text-sm font-bold text-gray-400 mb-2">Recent History</h3>
-                            <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {seedingProgress.history.map((entry, idx) => (
-                                    <div key={idx} className="flex justify-between items-center text-sm p-2 bg-gray-700 rounded">
+                            <h3 className="text-sm font-semibold text-gray-400 mb-2">Recent Activity</h3>
+                            <div className="space-y-2 max-h-40 overflow-y-auto">
+                                {seedingProgress.history.slice(0, 5).map((entry, i) => (
+                                    <div key={i} className="flex justify-between text-sm">
                                         <span className="text-gray-300">{entry.mineral}</span>
-                                        <div className="flex items-center gap-2">
-                                            {entry.count && <span className="text-gray-400">{entry.count} docs</span>}
-                                            <span className={entry.status === 'success' ? 'text-green-400' : 'text-red-400'}>
-                                                {entry.status === 'success' ? '✓' : '✗'}
-                                            </span>
-                                            <span className="text-gray-500 text-xs">
-                                                {new Date(entry.timestamp).toLocaleTimeString()}
-                                            </span>
-                                        </div>
+                                        <span className={entry.status === 'success' ? 'text-emerald-400' : 'text-red-400'}>
+                                            {entry.status === 'success' ? `✓ ${entry.count} indexed` : '✗ Failed'}
+                                        </span>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
-                </div>
-
-                {/* Message Display */}
-                {message && (
-                    <div className={`p-4 rounded-lg mb-6 ${message.includes('Error') ? 'bg-red-900/50 text-red-200' : 'bg-blue-900/50 text-blue-200'}`}>
-                        {message}
-                    </div>
-                )}
-
-                {/* Info Card */}
-                <div className="bg-gray-800 rounded-lg shadow-xl p-6">
-                    <h3 className="text-lg font-bold text-white mb-3">💰 Cost Information</h3>
-                    <ul className="text-gray-300 space-y-2 text-sm">
-                        <li>• <strong>Running 24/7:</strong> ~$30/month</li>
-                        <li>• <strong>Stopped (storage only):</strong> ~$1/month</li>
-                        <li>• <strong>Startup time:</strong> ~2-3 minutes</li>
-                        <li>• <strong>Data persistence:</strong> EFS keeps all data when stopped</li>
-                    </ul>
                 </div>
             </div>
         </div>
