@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Simple auth check
-function isAuthorized(request: NextRequest): boolean {
-    const authHeader = request.headers.get('authorization');
-    const adminKey = process.env.ADMIN_API_KEY || 'dev-key-change-me';
-    return authHeader === `Bearer ${adminKey}`;
-}
+import { verifyToken } from '@/lib/auth/verification';
 
 // In-memory progress tracking (in production, use Redis or DB)
 let seedingProgress = {
@@ -22,7 +16,9 @@ let seedingProgress = {
 };
 
 export async function POST(request: NextRequest) {
-    if (!isAuthorized(request)) {
+    const authResult = await verifyToken(request);
+
+    if (!authResult.valid) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

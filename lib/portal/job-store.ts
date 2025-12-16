@@ -44,7 +44,7 @@ function calculateExpirationTime(status: Job['status'], createdAt: number, compl
 export function isExpired(jobId: string): boolean {
   const job = jobStore.get(jobId);
   if (!job) return false;
-  
+
   return Date.now() > job.expiresAt;
 }
 
@@ -54,7 +54,7 @@ export function isExpired(jobId: string): boolean {
 export function getJobAge(jobId: string): number | undefined {
   const job = jobStore.get(jobId);
   if (!job) return undefined;
-  
+
   return Date.now() - job.createdAt;
 }
 
@@ -86,7 +86,7 @@ export function cleanupExpired(): number {
   if (removedCount > 0) {
     jobMetrics.recordCleanup(removedCount);
   }
-  
+
   // Update store size
   jobMetrics.updateStoreSize(jobStore.size);
 
@@ -149,7 +149,7 @@ export function enforceSizeLimit(): number {
   if (evictedCount > 0) {
     jobMetrics.recordEviction(evictedCount);
   }
-  
+
   // Update store size
   jobMetrics.updateStoreSize(jobStore.size);
 
@@ -175,7 +175,7 @@ export function storeJobResult(
   const existingJob = jobStore.get(jobId);
   const now = Date.now();
   const createdAt = existingJob?.createdAt || now;
-  
+
   jobStore.set(jobId, {
     status,
     recommendation: data?.recommendation,
@@ -186,14 +186,14 @@ export function storeJobResult(
     lastAccessedAt: now,
     retryCount: existingJob?.retryCount || 0,
   });
-  
+
   // Record job completion or failure
   if (status === 'completed') {
     jobMetrics.recordJobCompleted();
   } else if (status === 'failed') {
     jobMetrics.recordJobFailed();
   }
-  
+
   // Update store size
   jobMetrics.updateStoreSize(jobStore.size);
 }
@@ -208,10 +208,15 @@ export function createJob(jobId: string, retryCount: number = 0) {
     lastAccessedAt: now,
     retryCount,
   });
-  
+
   // Record job creation
   jobMetrics.recordJobCreated();
-  
+
+  // Enforce size limit after adding new job
+  if (jobStore.size > MAX_STORE_SIZE) {
+    enforceSizeLimit();
+  }
+
   // Update store size
   jobMetrics.updateStoreSize(jobStore.size);
 }
@@ -224,16 +229,16 @@ export function createRetryJob(previousJobId: string): { newJobId: string; retry
   const previousJob = jobStore.get(previousJobId);
   const previousRetryCount = previousJob?.retryCount || 0;
   const newRetryCount = previousRetryCount + 1;
-  
+
   // Generate new job ID
   const newJobId = `job_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-  
+
   // Clear previous job state (optional - could also keep for debugging)
   // For now, we'll keep the previous job to allow tracking the retry chain
-  
+
   // Create new job with incremented retry count
   createJob(newJobId, newRetryCount);
-  
+
   return { newJobId, retryCount: newRetryCount };
 }
 
@@ -243,7 +248,7 @@ export function createRetryJob(previousJobId: string): { newJobId: string; retry
 export function hasExceededRetryLimit(jobId: string, maxRetries: number = 5): boolean {
   const job = jobStore.get(jobId);
   if (!job) return false;
-  
+
   return (job.retryCount || 0) > maxRetries;
 }
 
@@ -253,7 +258,7 @@ export function markTimeout(jobId: string): void {
   if (!existingJob) {
     return; // Job doesn't exist, nothing to mark
   }
-  
+
   const now = Date.now();
   jobStore.set(jobId, {
     ...existingJob,
@@ -262,10 +267,10 @@ export function markTimeout(jobId: string): void {
     expiresAt: calculateExpirationTime('timeout', existingJob.createdAt, now),
     lastAccessedAt: now,
   });
-  
+
   // Record job timeout
   jobMetrics.recordJobTimedOut();
-  
+
   // Update store size
   jobMetrics.updateStoreSize(jobStore.size);
 }

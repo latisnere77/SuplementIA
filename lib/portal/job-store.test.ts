@@ -178,10 +178,10 @@ describe('Job Store - Lifecycle Management', () => {
       fc.assert(
         fc.property(fc.uuid(), (jobId) => {
           createJob(jobId);
-          
+
           // Small delay to ensure age > 0
           const age = getJobAge(jobId);
-          
+
           expect(age).toBeDefined();
           expect(typeof age).toBe('number');
           expect(age).toBeGreaterThanOrEqual(0);
@@ -217,19 +217,19 @@ describe('Job Store - Lifecycle Management', () => {
           const job1 = getJob(jobId);
           expect(job1).toBeDefined();
           if (!job1) return;
-          
+
           const firstAccess = job1.lastAccessedAt;
-          
+
           // Small delay
           const start = Date.now();
           while (Date.now() - start < 2) {
             // Busy wait for 2ms
           }
-          
+
           const job2 = getJob(jobId);
           expect(job2).toBeDefined();
           if (!job2) return;
-          
+
           // lastAccessedAt should be updated
           expect(job2.lastAccessedAt).toBeGreaterThanOrEqual(firstAccess);
         }),
@@ -259,72 +259,63 @@ describe('Job Store - Size Management and LRU Eviction', () => {
             // Clear store to start fresh
             clearStore();
 
-            // Create MAX_STORE_SIZE + excessJobs jobs
-            const totalJobs = MAX_STORE_SIZE + excessJobs;
+            // Create MAX_STORE_SIZE jobs first
+            const initialJobs = MAX_STORE_SIZE;
             const jobIds: string[] = [];
 
-            for (let i = 0; i < totalJobs; i++) {
+            for (let i = 0; i < initialJobs; i++) {
               const jobId = `job-${i}-${Date.now()}-${Math.random()}`;
               jobIds.push(jobId);
               createJob(jobId);
 
               // Add small delay to ensure different lastAccessedAt times
-              const start = Date.now();
-              while (Date.now() - start < 1) {
-                // Busy wait for 1ms
-              }
+              // Use minimal delay to speed up tests, rely on order of insertion/access
+              // fast-check runs many times, so we need to be efficient
+              // getOldestJob logic might handle same timestamps by insertion order if using Map iterator order
             }
 
-            // Verify we have more than MAX_STORE_SIZE jobs
-            expect(getStoreSize()).toBe(totalJobs);
-            expect(getStoreSize()).toBeGreaterThan(MAX_STORE_SIZE);
-
-            // Access some jobs in the middle to update their lastAccessedAt
-            // This ensures they won't be the oldest
-            const middleStart = Math.floor(totalJobs / 3);
-            const middleEnd = Math.floor((2 * totalJobs) / 3);
-            for (let i = middleStart; i < middleEnd; i++) {
-              getJob(jobIds[i]);
-              // Small delay
-              const start = Date.now();
-              while (Date.now() - start < 1) {
-                // Busy wait for 1ms
-              }
-            }
-
-            // Get the oldest job before eviction
-            const oldestBefore = getOldestJob();
-            expect(oldestBefore).toBeDefined();
-
-            // Enforce size limit
-            const evictedCount = enforceSizeLimit();
-
-            // Verify correct number of jobs were evicted
-            expect(evictedCount).toBe(excessJobs);
-
-            // Verify store size is now at or below MAX_STORE_SIZE
-            expect(getStoreSize()).toBeLessThanOrEqual(MAX_STORE_SIZE);
+            // Verify store is full
             expect(getStoreSize()).toBe(MAX_STORE_SIZE);
 
-            // Verify the oldest job was evicted
-            if (oldestBefore) {
-              const oldestAfter = getJob(oldestBefore.jobId);
-              expect(oldestAfter).toBeUndefined();
+            // Wait for time to pass to ensure accessibility is distinctly newer
+            const waitStart = Date.now();
+            while (Date.now() - waitStart < 2) { /* spin */ }
+
+            // Access some jobs in the beginning/middle to update their lastAccessedAt
+            // making them NOT the candidates for eviction
+            // We want to protect the first few jobs from eviction
+            const protectedCount = 10;
+            for (let i = 0; i < protectedCount; i++) {
+              getJob(jobIds[i]);
             }
 
-            // Verify that the jobs we accessed in the middle are still present
-            // (they should not be the oldest)
-            let middleJobsPresent = 0;
-            for (let i = middleStart; i < middleEnd; i++) {
-              const job = getJob(jobIds[i]);
-              if (job) {
-                middleJobsPresent++;
-              }
+            // Wait again before creating new jobs
+            const waitStart2 = Date.now();
+            while (Date.now() - waitStart2 < 2) { /* spin */ }
+
+            // Now create excessJobs
+            // These creations should trigger eviction of the oldest (which should be indices [protectedCount, protectedCount + excessJobs])
+            for (let i = 0; i < excessJobs; i++) {
+              const jobId = `excess-job-${i}-${Date.now()}-${Math.random()}`;
+              createJob(jobId);
             }
-            // At least some of the middle jobs should still be present
-            // (depending on how many were in that range vs excess jobs)
-            if (middleEnd - middleStart <= MAX_STORE_SIZE - excessJobs) {
-              expect(middleJobsPresent).toBeGreaterThan(0);
+
+            // Verify store size is maintained at MAX_STORE_SIZE
+            expect(getStoreSize()).toBe(MAX_STORE_SIZE);
+
+            // Verify the protected jobs (0..9) are still present
+            for (let i = 0; i < protectedCount; i++) {
+              expect(getJob(jobIds[i])).toBeDefined();
+            }
+
+            // Verify that some non-protected jobs were evicted
+            // Specifically, the jobs at indices [protectedCount, protectedCount + excessJobs - 1] should be gone
+            // assuming strict FIFO order for equal timestamps or creation order
+            // We check at least one to be safe
+            if (excessJobs > 0) {
+              // The job at index 'protectedCount' was the oldest non-accessed job
+              // so it should have been the first candidate for eviction
+              expect(getJob(jobIds[protectedCount])).toBeUndefined();
             }
           }
         ),
@@ -493,7 +484,7 @@ describe('Job Store - Timeout Handling', () => {
           fc.uuid(), // jobId
           (jobId) => {
             // Don't create the job
-            
+
             // Try to mark it as timeout
             markTimeout(jobId);
 
@@ -540,7 +531,7 @@ describe('Job Store - Timeout Handling', () => {
 
             // The cleanup function should not remove it yet
             const cleanedCount = cleanupExpired();
-            
+
             // The job should still exist
             const jobAfterCleanup = getJob(jobId);
             expect(jobAfterCleanup).toBeDefined();

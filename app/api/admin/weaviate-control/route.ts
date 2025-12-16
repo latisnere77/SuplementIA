@@ -1,32 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
+import { verifyToken } from '@/lib/auth/verification';
 
 const ADMIN_API_URL = process.env.WEAVIATE_ADMIN_API_URL || 'https://424nk9ljj7.execute-api.us-east-1.amazonaws.com/prod/admin';
-
-// Cognito JWT Verifier
-const verifier = CognitoJwtVerifier.create({
-    userPoolId: process.env.COGNITO_USER_POOL_ID || 'us-east-1_u4IwDoEbr',
-    tokenUse: 'id',
-    clientId: process.env.COGNITO_CLIENT_ID || '1l1o4bh4q3v1kkvjmupeek2dl8',
-});
-
-// Verify Cognito JWT
-async function verifyToken(request: NextRequest): Promise<{ valid: boolean; email?: string }> {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-        return { valid: false };
-    }
-
-    const token = authHeader.substring(7);
-
-    try {
-        const payload = await verifier.verify(token);
-        return { valid: true, email: payload.email as string };
-    } catch (error) {
-        console.error('JWT verification failed:', error);
-        return { valid: false };
-    }
-}
 
 export async function POST(request: NextRequest) {
     const authResult = await verifyToken(request);
@@ -69,6 +44,10 @@ export async function POST(request: NextRequest) {
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            console.error(`AWS API Gateway Error (${response.status}):`, JSON.stringify(data));
+        }
 
         return NextResponse.json(data, { status: response.status });
     } catch (error: any) {
