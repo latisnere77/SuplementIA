@@ -304,20 +304,39 @@ export async function POST(request: NextRequest) {
         const hits = result.data.Get[WEAVIATE_CLASS_NAME];
 
         if (hits && hits.length > 0) {
-          // STRICT FILTERING: Remove irrelevant hits (e.g. "Potassium" papers when searching "Creatine")
-          // We trust our SEED data which has the exact title/ingredient match.
+          // STRICT FILTERING V2:
+          // 1. Exclude "creatinine" when searching for "creatine" to avoid urine studies.
+          // 2. Handle English/Spanish variations (Creatine/Creatina)
           const lowerQuery = searchTerm.toLowerCase();
+          const queryRoot = lowerQuery.length > 5 ? lowerQuery.substring(0, 5) : lowerQuery; // "creat"
+
           const relevantHits = hits.filter((h: any) => {
             const title = (h.title || '').toLowerCase();
             const ing = (Array.isArray(h.ingredients) ? h.ingredients.join(' ') : (h.ingredients || '')).toLowerCase();
-            return title.includes(lowerQuery) || ing.includes(lowerQuery);
+            const abstract = (h.abstract || '').toLowerCase();
+
+            // CRITICAL EXCLUSIONS
+            if (lowerQuery.includes('creatine') && (title.includes('urine') || abstract.includes('urine') || ing.includes('creatinine'))) {
+              return false;
+            }
+            if (title.includes('case report') && !title.includes('supplement')) {
+              return false; // Exclude individual case reports unless about supplementation
+            }
+
+            // INCLUSION CRITERIA
+            // Match root word (e.g. "creat" matches "creatina" and "creatine")
+            return title.includes(queryRoot) || ing.includes(queryRoot);
           });
 
-          const finalHits = relevantHits.length > 0 ? relevantHits : hits; // Fallback if too strict, but prefer strict.
+          // Sort relevant hits by length of abstract (prefer detail) or score
+          relevantHits.sort((a: any, b: any) => (b.abstract?.length || 0) - (a.abstract?.length || 0));
 
-          console.log(`[Hybrid Search] Found ${hits.length} hits. Filtered to ${finalHits.length} relevant hits.`);
+          const finalHits = relevantHits.length > 0 ? relevantHits : [];
 
-          if (finalHits.length > 0) {
+          if (finalHits.length === 0) {
+            console.log('[Hybrid Search] No relevant hits after filtering. Falling back to empty/pubmed.');
+          } else {
+            console.log(`[Hybrid Search] Filtered down to ${finalHits.length} clean hits.`);
             const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
             storeJobResult(jobId, 'completed', { recommendation: rec });
             return NextResponse.json({
@@ -325,7 +344,7 @@ export async function POST(request: NextRequest) {
               quiz_id: quizId,
               recommendation: rec,
               jobId,
-              source: 'hybrid_search_v2_strict'
+              source: 'hybrid_search_v3_strict'
             });
           }
         }
