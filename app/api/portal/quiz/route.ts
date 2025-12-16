@@ -222,7 +222,7 @@ export async function POST(request: NextRequest) {
           .get()
           .withClassName(WEAVIATE_CLASS_NAME)
           .withFields('title abstract ingredients conditions year _additional { score }')
-          .withHybrid({ query: searchTerm, alpha: 0.75 })
+          .withHybrid({ query: searchTerm, alpha: 0.25 })
           .withLimit(8)
           .do();
 
