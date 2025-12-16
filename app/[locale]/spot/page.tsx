@@ -32,10 +32,16 @@ export default function AdminControlPanel() {
     const [seedingProgress, setSeedingProgress] = useState<SeedingProgress | null>(null);
 
     const fetchStatus = async () => {
-        if (!session?.idToken) return;
+        console.log('[fetchStatus] Session:', { exists: !!session, hasIdToken: !!session?.idToken });
+
+        if (!session?.idToken) {
+            console.warn('[fetchStatus] No idToken in session, skipping fetch');
+            return;
+        }
 
         setLoading(true);
         try {
+            console.log('[fetchStatus] Making request with token');
             const response = await fetch('/api/admin/weaviate-control', {
                 method: 'POST',
                 headers: {
@@ -45,7 +51,10 @@ export default function AdminControlPanel() {
                 body: JSON.stringify({ action: 'status' })
             });
 
+            console.log('[fetchStatus] Response status:', response.status);
             const data = await response.json();
+            console.log('[fetchStatus] Response data:', data);
+
             if (data.success) {
                 setServiceStatus(data.status);
                 setMessage('');
@@ -53,6 +62,7 @@ export default function AdminControlPanel() {
                 setMessage('Error: ' + (data.error || 'Unknown error'));
             }
         } catch (error) {
+            console.error('[fetchStatus] Request failed:', error);
             setMessage('Error fetching status');
         } finally {
             setLoading(false);

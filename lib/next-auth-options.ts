@@ -7,6 +7,50 @@ const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || '1l1o4bh4q3v1kkvjmupe
 const COGNITO_CLIENT_SECRET = process.env.COGNITO_CLIENT_SECRET || '';
 const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`;
 
+/**
+ * Refresh the access token using Cognito refresh token
+ */
+async function refreshAccessToken(token: any) {
+    try {
+        const url = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-amz-json-1.1',
+                'X-Amz-Target': 'AWSCognitoIdentityProviderService.InitiateAuth',
+            },
+            body: JSON.stringify({
+                AuthFlow: 'REFRESH_TOKEN_AUTH',
+                ClientId: COGNITO_CLIENT_ID,
+                AuthParameters: {
+                    REFRESH_TOKEN: token.refreshToken,
+                    SECRET_HASH: COGNITO_CLIENT_SECRET,
+                },
+            }),
+        });
+
+        const refreshedTokens = await response.json();
+
+        if (!response.ok) {
+            throw refreshedTokens;
+        }
+
+        return {
+            ...token,
+            accessToken: refreshedTokens.AuthenticationResult.AccessToken,
+            idToken: refreshedTokens.AuthenticationResult.IdToken,
+            accessTokenExpires: Date.now() + 60 * 60 * 1000, // 1 hour
+        };
+    } catch (error) {
+        console.error('Error refreshing access token:', error);
+        return {
+            ...token,
+            error: 'RefreshAccessTokenError',
+        };
+    }
+}
+
 export const authOptions: NextAuthOptions = {
     providers: [
         CognitoProvider({
@@ -16,18 +60,37 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        async jwt({ token, account }) {
-            // Persist the OAuth access_token to the token right after signin
-            if (account) {
-                token.accessToken = account.access_token;
-                token.idToken = account.id_token;
+        async jwt({ token, account, user }) {
+            // Initial sign in
+            if (account && user) {
+                return {
+                    accessToken: account.access_token,
+                    idToken: account.id_token,
+                    refreshToken: account.refresh_token,
+                    accessTokenExpires: account.expires_at ? account.expires_at * 1000 : Date.now() + 60 * 60 * 1000,
+                    user,
+                };
             }
-            return token;
+
+            // Return previous token if the access token has not expired yet
+            if (Date.now() < (token.accessTokenExpires as number)) {
+                return token;
+            }
+
+            // Access token has expired, try to update it
+            console.log('[NextAuth] Access token expired, refreshing...');
+            return refreshAccessToken(token);
         },
         async session({ session, token }) {
-            // Send properties to the client
+            if (token.error) {
+                // Force re-login if refresh failed
+                throw new Error('RefreshAccessTokenError');
+            }
+
             session.accessToken = token.accessToken as string;
             session.idToken = token.idToken as string;
+            session.user = token.user as any;
+
             return session;
         },
     },
@@ -37,7 +100,7 @@ export const authOptions: NextAuthOptions = {
     },
     session: {
         strategy: 'jwt',
-        maxAge: 24 * 60 * 60, // 24 hours
+        maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     secret: process.env.NEXTAUTH_SECRET,
 };
