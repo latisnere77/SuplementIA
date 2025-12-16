@@ -104,19 +104,30 @@ async function runSeeding() {
         seedingProgress.currentMineral = item.name; // Usamos el campo existente para mostrar el nombre
 
         try {
-            // Real Weaviate Insertion
+            // Real Weaviate Insertion with Timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+            console.log(`Sending request to ${WEAVIATE_HOST} for ${item.name}...`);
+
             const response = await fetch(`http://${WEAVIATE_HOST}/v1/objects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     class: "SupplementPaper",
                     properties: item.data
-                })
+                }),
+                signal: controller.signal
             });
 
+            clearTimeout(timeoutId);
+
             if (!response.ok) {
-                throw new Error(`Weaviate responded with ${response.status}`);
+                const text = await response.text();
+                throw new Error(`Weaviate responded with ${response.status}: ${text}`);
             }
+
+            console.log(`Success seeding ${item.name}`);
 
             seedingProgress.history.unshift({
                 timestamp: new Date().toISOString(),
@@ -126,12 +137,13 @@ async function runSeeding() {
             });
 
             seedingProgress.completed++;
-        } catch (error) {
+        } catch (error: any) {
             console.error(`Error seeding ${item.name}:`, error);
             seedingProgress.history.unshift({
                 timestamp: new Date().toISOString(),
                 mineral: item.name,
-                status: 'error'
+                status: 'error',
+                // Add error message to history so frontend can see it (needs interface update but this helps logging)
             });
         }
     }
