@@ -245,6 +245,12 @@ export async function POST(request: NextRequest) {
         }
       } catch (wsErr) {
         console.error('[Hybrid Search] Error:', wsErr);
+        return NextResponse.json({
+          success: false,
+          error: 'Weaviate Connection Failed',
+          details: wsErr instanceof Error ? wsErr.message : String(wsErr),
+          host: '98.93.21.159:8080' // Confim host used
+        }, { status: 500 });
       }
     }
     // =================================================================
