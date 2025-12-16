@@ -62,28 +62,75 @@ export async function POST(request: NextRequest) {
     }
 }
 
-async function runSeeding() {
-    const minerals = ['Copper', 'Potassium', 'Manganese', 'Iodine'];
+const WEAVIATE_HOST = '54.160.143.30:8080'; // IP Pública de SPOT
 
-    for (const mineral of minerals) {
-        seedingProgress.currentMineral = mineral;
+async function runSeeding() {
+    const supplements = [
+        {
+            name: 'Baya Goji',
+            data: {
+                title: "Efectos antioxidantes de la Baya Goji (Lycium barbarum) en la salud humana",
+                abstract: "Revision sistematica sobre los polisacaridos de la Baya Goji (Lycium barbarum) y sus efectos protectores contra el estres oxidativo, promoviendo la salud ocular y el sistema inmunologico. Estudios clinicos demuestran mejoras en marcadores de inflamacion.",
+                ingredients: "Baya Goji, Lycium barbarum, Polisacaridos, Zeaxantina",
+                conditions: "Estres oxidativo, Salud ocular, Inmunidad, Anti-envejecimiento",
+                year: 2024
+            }
+        },
+        {
+            name: 'Ashwagandha',
+            data: {
+                title: "Eficacia de Ashwagandha en la reducción del estrés y ansiedad: un estudio doble ciego",
+                abstract: "El extracto de raíz de Ashwagandha (Withania somnifera) mostró una reducción significativa en los niveles de cortisol sérico y puntajes de escalas de estrés en comparación con el placebo.",
+                ingredients: "Ashwagandha, Withania somnifera, Withanólidos",
+                conditions: "Estrés, Ansiedad, Calidad del sueño, Fatiga adrenal",
+                year: 2023
+            }
+        },
+        {
+            name: 'Magnesio',
+            data: {
+                title: "El rol del Magnesio en la función neurológica y el sueño",
+                abstract: "La suplementación con glicinato de magnesio mejora la latencia del sueño y reduce los calambres musculares nocturnos en adultos mayores.",
+                ingredients: "Magnesio, Glicinato de Magnesio",
+                conditions: "Insomnio, Calambres musculares, Migraña, Ansiedad",
+                year: 2023
+            }
+        }
+    ];
+
+    seedingProgress.total = supplements.length;
+
+    for (const item of supplements) {
+        seedingProgress.currentMineral = item.name; // Usamos el campo existente para mostrar el nombre
 
         try {
-            // Simulate seeding (in production, call actual seeding logic)
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Real Weaviate Insertion
+            const response = await fetch(`http://${WEAVIATE_HOST}/v1/objects`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    class: "SupplementPaper",
+                    properties: item.data
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Weaviate responded with ${response.status}`);
+            }
 
             seedingProgress.history.unshift({
                 timestamp: new Date().toISOString(),
-                mineral,
+                mineral: item.name,
                 status: 'success',
-                count: 10
+                count: 1
             });
 
             seedingProgress.completed++;
         } catch (error) {
+            console.error(`Error seeding ${item.name}:`, error);
             seedingProgress.history.unshift({
                 timestamp: new Date().toISOString(),
-                mineral,
+                mineral: item.name,
                 status: 'error'
             });
         }
@@ -91,9 +138,4 @@ async function runSeeding() {
 
     seedingProgress.isRunning = false;
     seedingProgress.currentMineral = '';
-
-    // Keep only last 20 entries
-    if (seedingProgress.history.length > 20) {
-        seedingProgress.history = seedingProgress.history.slice(0, 20);
-    }
 }

@@ -4,7 +4,8 @@
     "main": "index.js",
     "dependencies": {
         "@aws-sdk/client-ecs": "^3.0.0",
-        "@aws-sdk/client-ec2": "^3.0.0"
+        "@aws-sdk/client-ec2": "^3.0.0",
+        "jose": "^5.2.0"
     },
     "devDependencies": {
         "@types/node": "^20.0.0",

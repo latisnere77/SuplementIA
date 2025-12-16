@@ -36,6 +36,11 @@ export default function AdminControlPanel() {
 
         if (!session?.idToken) {
             console.warn('[fetchStatus] No idToken in session, skipping fetch');
+            if (session) {
+                // Session exists but has no token (stale cookie), force logout to fix
+                setMessage('Sesión antigua detectada. Por favor cierra sesión y vuelve a entrar.');
+                setServiceStatus(null);
+            }
             return;
         }
 
@@ -299,7 +304,7 @@ export default function AdminControlPanel() {
                             disabled={loading}
                             className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
                         >
-                            Start Seeding (Minerals)
+                            Start Seeding (Supplements)
                         </button>
                     )}
 
