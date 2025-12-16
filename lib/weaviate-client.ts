@@ -8,8 +8,8 @@ export const WEAVIATE_CLASS_NAME = 'SupplementPaper';
 export function getWeaviateClient(): WeaviateClient | null {
     if (clientInstance) return clientInstance;
 
-    const scheme = process.env.WEAVIATE_SCHEME || 'https';
-    const host = process.env.WEAVIATE_HOST || '';
+    const scheme = process.env.WEAVIATE_SCHEME || 'http';
+    const host = process.env.WEAVIATE_HOST || '98.93.21.159:8080';
     const apiKey = process.env.WEAVIATE_API_KEY || '';
     const cohereKey = process.env.COHERE_API_KEY || '';
 
