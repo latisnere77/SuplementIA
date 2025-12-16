@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth/verification';
 
-const WEAVIATE_HOST = process.env.WEAVIATE_HOST || '98.93.21.159:8080';
+const WEAVIATE_HOST = '98.93.21.159:8080'; // process.env.WEAVIATE_HOST override
 
 export async function GET(request: NextRequest) {
     // 1. Verificar Seguridad (Solo admins pueden ver esto)
