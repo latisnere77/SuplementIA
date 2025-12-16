@@ -69,11 +69,19 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
   const conditionsMap = new Map<string, number>();
 
   // Aggregate stats
+  // Aggregate stats
   hits.forEach(hit => {
-    hit.ingredients?.forEach((ing: string) => {
+    const rawIng = hit.ingredients;
+    const ingArray = Array.isArray(rawIng) ? rawIng : (typeof rawIng === 'string' ? rawIng.split(',').map((s: string) => s.trim()) : []);
+
+    ingArray.forEach((ing: string) => {
       ingredientsMap.set(ing, (ingredientsMap.get(ing) || 0) + 1);
     });
-    hit.conditions?.forEach((cond: string) => {
+
+    const rawCond = hit.conditions;
+    const condArray = Array.isArray(rawCond) ? rawCond : (typeof rawCond === 'string' ? rawCond.split(',').map((s: string) => s.trim()) : []);
+
+    condArray.forEach((cond: string) => {
       conditionsMap.set(cond, (conditionsMap.get(cond) || 0) + 1);
     });
   });
