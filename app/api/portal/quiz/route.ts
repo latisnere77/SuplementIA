@@ -74,7 +74,7 @@ async function enrichSupplement(supplementName: string, baseUrl: string): Promis
       },
       body: JSON.stringify({
         supplementName: supplementName,
-        maxStudies: 10, // Limit to 10 for speed
+        maxStudies: 5, // Limit to 5 for speed
         rctOnly: false,
       }),
       signal: AbortSignal.timeout(90000), // 90 second timeout for enrichment (Bedrock needs time)
@@ -360,6 +360,7 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
 }
 
 export async function POST(request: NextRequest) {
+  console.log("🚀🚀🚀 [QUIZ UPDATE] New deployment active! " + new Date().toISOString());
   const requestId = randomUUID();
   const jobId = request.headers.get('X-Job-ID') || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   let quizId = `quiz_${Date.now()}_${randomUUID().substring(0, 8)}`;
