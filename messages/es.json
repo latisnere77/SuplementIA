@@ -87,8 +87,10 @@
     "categories": "Categoría"
   },
   "results": {
-    "products": "Recomendaciones de Productos",
-    "products_desc": "Todas las opciones están respaldadas por la misma evidencia científica. Elige según tu presupuesto."
+    "products": {
+      "title": "Recomendaciones de Productos",
+      "desc": "Todas las opciones están respaldadas por la misma evidencia científica. Elige según tu presupuesto."
+    }
   },
   "product": {
     "premium": "Opción Premium",

@@ -70,7 +70,7 @@ export default function ProductRecommendationsGrid({
 
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('results.products')}</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('results.products.title')}</h2>
       <p className="text-gray-600 mb-6">
         {t('results.products.desc')}
       </p>
