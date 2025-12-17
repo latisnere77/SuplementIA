@@ -6,7 +6,7 @@ import { HttpRequest } from '@aws-sdk/protocol-http';
 
 // The new, secure API Gateway endpoint for vector search
 const VECTOR_SEARCH_API_URL = 'https://wn3ub0r41e.execute-api.us-east-1.amazonaws.com/search';
-const REGION = process.env.APP_REGION || 'us-east-1';
+const REGION = (process.env.APP_REGION || process.env.AWS_REGION || 'us-east-1').trim();
 
 export interface StudySearchRequest {
   supplementName: string;

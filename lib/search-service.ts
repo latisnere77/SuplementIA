@@ -8,8 +8,11 @@ const credentials = process.env.AWS_ROLE_ARN
     ? awsCredentialsProvider({ roleArn: process.env.AWS_ROLE_ARN.trim() })
     : undefined;
 
+const validatedRegion = "us-east-1";
+console.log(`[SearchService] Region validated hardcoded: ${validatedRegion}`);
+
 const lambda = new LambdaClient({
-    region: (process.env.AWS_REGION || "us-east-1").trim(),
+    region: validatedRegion,
     credentials
 });
 
