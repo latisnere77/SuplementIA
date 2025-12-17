@@ -1,9 +1,15 @@
 
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
+import { awsCredentialsProvider } from "@vercel/oidc-aws-credentials-provider";
+
+// Use OIDC if role role arn is provided (Vercel Production), otherwise default to standard chain (Local Dev)
+const credentials = process.env.AWS_ROLE_ARN
+    ? awsCredentialsProvider({ roleArn: process.env.AWS_ROLE_ARN })
+    : undefined;
 
 const lambda = new LambdaClient({
     region: process.env.AWS_REGION || "us-east-1",
-    // Credentials are automatically loaded from env vars in Vercel or ~/.aws/credentials locally
+    credentials
 });
 
 const FUNCTION_NAME = "production-search-api-lancedb";
