@@ -1,10 +1,28 @@
-.env.local
-.env.production.local
-.env.development.local
-.hypothesis
+# Vercel Ignore
+node_modules
 .next
-.swc
+.git
+.DS_Store
+.env
+.env.*
+
+# Python Venvs and Cache
+backend/venv
 .venv
 .venv-test
-node_modules
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Tests and Data
 test-data
+coverage
+.jest
+.gemini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

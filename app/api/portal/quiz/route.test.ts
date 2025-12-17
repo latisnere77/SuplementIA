@@ -4,6 +4,7 @@
 import { POST } from './route';
 import * as pubmedSearch from '@/lib/services/pubmed-search';
 import { NextRequest } from 'next/server';
+import { searchSupplements } from '@/lib/search-service';
 
 // Mock the pubmed-search service
 jest.mock('@/lib/services/pubmed-search');
@@ -14,10 +15,13 @@ jest.mock('@/lib/portal/supplements-database', () => ({
   ],
 }));
 
-
-
+// Mock the search service
+jest.mock('@/lib/search-service', () => ({
+  searchSupplements: jest.fn().mockResolvedValue([]),
+}));
 
 const mockedSearchPubMed = pubmedSearch.searchPubMed as jest.Mock;
+const mockedSearchSupplements = searchSupplements as jest.Mock;
 
 describe('/api/portal/quiz POST', () => {
   afterEach(() => {

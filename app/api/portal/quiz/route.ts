@@ -100,11 +100,18 @@ async function enrichSupplement(supplementName: string, baseUrl: string): Promis
  * Merge enriched data into recommendation structure
  */
 function mergeEnrichedData(recommendation: any, enrichedData: any): any {
-  if (!enrichedData?.evidence) {
+  // 1. Resolve evidence structure (handle both top-level and data-nested)
+  const evidence = enrichedData?.evidence || enrichedData?.data?.evidence;
+
+  if (!evidence) {
+    console.warn(`[MERGE_WARN] No evidence found in enrichment response for "${recommendation?.supplement?.name}"`, {
+      hasTopEvidence: !!enrichedData?.evidence,
+      hasDataEvidence: !!enrichedData?.data?.evidence,
+      topKeys: enrichedData ? Object.keys(enrichedData) : [],
+      dataKeys: enrichedData?.data ? Object.keys(enrichedData.data) : []
+    });
     return recommendation;
   }
-
-  const evidence = enrichedData.evidence;
 
   // Update worksFor with real conditions from enrichment
   if (evidence.worksFor && evidence.worksFor.length > 0) {
@@ -142,37 +149,73 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
     }));
   }
 
-  // **CRITICAL**: Copy studies.ranked data (this was the missing piece!)
-  if (evidence.studies) {
+  // Update products if present (NEW)
+  const enrichedProducts = enrichedData?.products || enrichedData?.data?.products;
+  if (enrichedProducts && enrichedProducts.length > 0) {
+    recommendation.products = enrichedProducts;
+  }
+
+  // **CRITICAL**: Resolve and Copy studies.ranked data
+  // Look in evidence.studies (some Lambdas might return it here)
+  // or enrichedData.data.studies (where enrich/route.ts puts it)
+  const studies = evidence.studies || enrichedData?.data?.studies || enrichedData?.studies;
+
+  if (studies) {
     if (!recommendation.evidence_summary) {
       recommendation.evidence_summary = {};
-    }
-    if (!recommendation.evidence_summary.studies) {
-      recommendation.evidence_summary.studies = {};
     }
 
     // Copy all studies data including ranked analysis
     recommendation.evidence_summary.studies = {
-      ...recommendation.evidence_summary.studies,
-      ...evidence.studies,
+      ...(recommendation.evidence_summary.studies || {}),
+      ...studies,
     };
 
-    console.log('[MERGE_DEBUG] Copied studies.ranked:', {
-      hasRanked: !!evidence.studies?.ranked,
-      positiveCount: evidence.studies?.ranked?.positive?.length || 0,
-      confidence: evidence.studies?.ranked?.metadata?.confidenceScore || 0
+    console.log('[MERGE_DEBUG] Successfully merged studies:', {
+      hasRanked: !!studies.ranked,
+      positiveCount: studies.ranked?.positive?.length || 0,
+      confidence: studies.ranked?.metadata?.confidenceScore || 0,
+      totalStudies: studies.total || 0
     });
 
-    // Update basedOn if available
+    // Update basedOn/totals
     if (evidence.basedOn) {
       recommendation.evidence_summary.totalStudies = evidence.basedOn.studiesCount || recommendation.evidence_summary.totalStudies;
       recommendation.evidence_summary.totalParticipants = evidence.basedOn.totalParticipants || recommendation.evidence_summary.totalParticipants;
+    } else if (studies.total) {
+      recommendation.evidence_summary.totalStudies = studies.total;
     }
+  }
+
+  // Update evidence_by_benefit if present (NEW)
+  if (Array.isArray(evidence.evidenceByBenefit)) {
+    recommendation.evidence_by_benefit = evidence.evidenceByBenefit.map((item: any) => ({
+      benefit: item.benefit || '',
+      evidence_level: item.evidenceLevel || 'Insuficiente',
+      studies_found: item.studiesFound || 0,
+      total_participants: item.totalParticipants || 0,
+      summary: item.summary || '',
+    }));
+  } else if (Array.isArray(enrichedData.data?.evidenceByBenefit)) {
+    // Handle alternative path
+    recommendation.evidence_by_benefit = enrichedData.data.evidenceByBenefit;
+  }
+
+  // Copy enrichment metadata (CRITICAL for frontend validation)
+  if (enrichedData.metadata) {
+    recommendation._enrichment_metadata = {
+      ...recommendation._enrichment_metadata,
+      ...enrichedData.metadata,
+      // Ensure hasRealData is explicitly true if we successfully merged
+      hasRealData: true,
+      fromEnrichmentApi: true,
+      lastEnrichedAt: new Date().toISOString()
+    };
   }
 
   // Mark as enriched
   recommendation.enriched = true;
-  recommendation.enrichmentSource = 'inline_auto';
+  recommendation.enrichmentSource = 'inline_auto_v2';
 
   return recommendation;
 }

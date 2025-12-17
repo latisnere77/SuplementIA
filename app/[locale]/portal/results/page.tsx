@@ -270,8 +270,9 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   };
 
   // Extract intelligent ranking from metadata
+  // Extract intelligent ranking from evidence_summary (primary) or metadata (legacy)
   const metadata = (recommendation as any)._enrichment_metadata || {};
-  const studies = metadata.studies || {
+  const studies = (evidenceSummary as any).studies || metadata.studies || {
     ranked: {
       positive: [],
       negative: [],
