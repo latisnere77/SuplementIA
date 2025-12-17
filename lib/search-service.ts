@@ -55,21 +55,30 @@ export async function searchSupplements(query: string, limit: number = 5): Promi
             ? JSON.parse(responsePayload.body)
             : responsePayload.body;
 
-        // The LanceDB lambda might return { matches: [...] } or just [...] or { study_count: ..., ... }
-        // Based on 'test-local.py' output in thought trace, it likely returns { matches: [...] }
-        const hits = body.matches || body.results || body;
+        // The LanceDB lambda might return { matches: [...] } or { supplement: {...} }
+        let hits: any[] = [];
 
-        if (!Array.isArray(hits)) {
-            console.warn("[SearchService] Unexpected response format:", body);
+        if (body.supplement) {
+            hits = [body.supplement];
+        } else if (Array.isArray(body.matches)) {
+            hits = body.matches;
+        } else if (Array.isArray(body.results)) {
+            hits = body.results;
+        } else if (Array.isArray(body)) {
+            hits = body;
+        }
+
+        if (!Array.isArray(hits) || hits.length === 0) {
+            console.warn("[SearchService] Unexpected or empty response format:", body);
             return [];
         }
 
         // Map to unified format
         return hits.map((hit: any) => ({
             title: hit.name || hit.title,
-            abstract: hit.metadata?.description || hit.abstract || "",
-            ingredients: hit.common_names || hit.ingredients || [],
-            score: hit.score || hit._distance ? (1 - (hit._distance || 0)) : 0, // conversion if needed
+            abstract: hit.metadata?.description || `Supplement found with ${hit.metadata?.study_count || 0} studies.`,
+            ingredients: hit.commonNames || hit.common_names || hit.ingredients || [],
+            score: hit.similarity ?? (hit.score || (hit._distance ? (1 - hit._distance) : 0)),
             study_count: hit.metadata?.study_count || 0,
             evidence_grade: hit.metadata?.evidence_grade || 'C'
         }));
