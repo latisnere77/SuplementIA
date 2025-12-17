@@ -27,6 +27,11 @@ const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
  * @returns true if enrichment is needed
  */
 function needsEnrichment(recommendation: any): boolean {
+  // ALWAYS enrich if studies.ranked is missing (for intelligent analysis)
+  if (!recommendation?.evidence_summary?.studies?.ranked) {
+    return true;
+  }
+
   const worksFor = recommendation?.supplement?.worksFor || [];
 
   // Check if worksFor is empty or only has placeholder "Bienestar General"
