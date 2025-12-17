@@ -336,9 +336,16 @@ export async function POST(request: NextRequest) {
           console.log('[Search] All LanceDB hits were filtered out as irrelevant.');
         }
       }
-    } catch (wsErr) {
+    } catch (wsErr: any) {
       console.error('[Hybrid Search] Error:', wsErr);
-      // Fallback to logic below
+      // DEBUG: Stop swallowing errors. Return them to UI.
+      return NextResponse.json({
+        success: false,
+        source: 'hybrid_search_debug_fail',
+        error: 'Hybrid Search Failed',
+        details: wsErr.message,
+        stack: wsErr.stack
+      }, { status: 500 });
     }
     // =================================================================
 
