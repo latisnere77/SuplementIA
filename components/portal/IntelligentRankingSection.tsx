@@ -40,6 +40,7 @@ interface RankedData {
 interface IntelligentRankingSectionProps {
   ranked: RankedData;
   supplementName: string;
+  allStudies?: any[];
 }
 
 const CONSENSUS_CONFIG = {
@@ -75,10 +76,12 @@ const CONSENSUS_CONFIG = {
   },
 };
 
-function StudyCard({ study, sentiment }: { study: Study; sentiment: 'positive' | 'negative' }) {
+function StudyCard({ study, sentiment }: { study: Study; sentiment: 'positive' | 'negative' | 'neutral' }) {
   const sentimentConfig = sentiment === 'positive'
     ? { icon: ThumbsUp, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' }
-    : { icon: ThumbsDown, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' };
+    : sentiment === 'negative'
+      ? { icon: ThumbsDown, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' }
+      : { icon: AlertCircle, color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200' };
 
   const Icon = sentimentConfig.icon;
 
@@ -136,8 +139,21 @@ function StudyCard({ study, sentiment }: { study: Study; sentiment: 'positive' |
   );
 }
 
-export default function IntelligentRankingSection({ ranked, supplementName }: IntelligentRankingSectionProps) {
+export default function IntelligentRankingSection({ ranked, supplementName, allStudies = [] }: IntelligentRankingSectionProps) {
   const consensusConfig = CONSENSUS_CONFIG[ranked.metadata.consensus];
+
+  // Calculate distinct neutral studies (those not in positive or negative lists)
+  const positiveIds = new Set(ranked.positive.map(s => s.pmid));
+  const negativeIds = new Set(ranked.negative.map(s => s.pmid));
+
+  const neutralStudies = allStudies.filter(s =>
+    !positiveIds.has(s.pmid) && !negativeIds.has(s.pmid)
+  ).map(s => ({
+    ...s,
+    // Add default neutral sentiment if missing or failed
+    sentiment: 'neutral' as const,
+    sentimentReason: s.sentimentReason || s.sentimentReasoning || 'Análisis no concluyente o fallido'
+  }));
 
   return (
     <div className="space-y-6">
@@ -210,6 +226,30 @@ export default function IntelligentRankingSection({ ranked, supplementName }: In
           </div>
         </div>
       </div>
+
+      {/* Neutral Studies Section */}
+      {neutralStudies.length > 0 && (
+        <div className="mt-8 border-t pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertCircle className="w-5 h-5 text-gray-600" />
+            <h3 className="text-lg font-bold text-gray-900">
+              Evidencia Neutral / No Clasificada ({neutralStudies.length})
+            </h3>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              {neutralStudies.slice(0, Math.ceil(neutralStudies.length / 2)).map((study) => (
+                <StudyCard key={study.pmid} study={study} sentiment="neutral" />
+              ))}
+            </div>
+            <div className="space-y-3">
+              {neutralStudies.slice(Math.ceil(neutralStudies.length / 2)).map((study) => (
+                <StudyCard key={study.pmid} study={study} sentiment="neutral" />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Info Footer */}
       <Card className="bg-blue-50 border-blue-200">

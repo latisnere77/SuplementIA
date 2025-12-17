@@ -504,6 +504,7 @@ export default function EvidenceAnalysisPanelNew({
           <IntelligentRankingSection
             ranked={evidenceSummary.studies.ranked}
             supplementName={supplementName || 'este suplemento'}
+            allStudies={evidenceSummary.studies.all || []}
           />
         </div>
       )}
