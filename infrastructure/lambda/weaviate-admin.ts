@@ -4,8 +4,8 @@ import { EC2Client, DescribeNetworkInterfacesCommand } from '@aws-sdk/client-ec2
 const CLUSTER = 'suplementia-weaviate-oss-prod-cluster';
 const SERVICE = 'weaviate-service';
 
-const ecsClient = new ECSClient({ region: process.env.AWS_REGION || 'us-east-1' });
-const ec2Client = new EC2Client({ region: process.env.AWS_REGION || 'us-east-1' });
+const ecsClient = new ECSClient({ region: (process.env.AWS_REGION || 'us-east-1').trim() });
+const ec2Client = new EC2Client({ region: (process.env.AWS_REGION || 'us-east-1').trim() });
 
 interface AdminEvent {
     body: string;
