@@ -86,6 +86,43 @@
     "no_results": "No se encontraron resultados. Intenta una búsqueda diferente.",
     "categories": "Categoría"
   },
+  "results": {
+    "products": "Recomendaciones de Productos",
+    "products_desc": "Todas las opciones están respaldadas por la misma evidencia científica. Elige según tu presupuesto."
+  },
+  "product": {
+    "premium": "Opción Premium",
+    "budget": "Opción Económica",
+    "value": "Opción de Valor",
+    "contains": "Contiene:",
+    "available": "Disponible en:",
+    "buy": {
+      "amazon": "Comprar en Amazon",
+      "ankonere": "Comprar en ANKONERE"
+    },
+    "per": {
+      "month": "por mes"
+    }
+  },
+  "share": {
+    "title": "Comparte Tu Recomendación",
+    "subtitle": "Ayuda a otros a descubrir soluciones basadas en evidencia",
+    "referral": {
+      "rewards": "Recompensas por Referidos",
+      "desc": "Gana 500 puntos ($5) cuando un amigo se suscriba a Pro. ¡Ellos obtienen 1 mes gratis!"
+    },
+    "link": {
+      "label": "Tu enlace de referido:"
+    },
+    "copied": "¡Copiado!"
+  },
+  "common": {
+    "option": "Opción",
+    "loading": "Cargando...",
+    "error": "Error",
+    "back": "Volver",
+    "close": "Cerrar"
+  },
   "faq": {
     "title": "Preguntas Frecuentes",
     "subtitle": "Todo lo que necesitas saber sobre SuplementAI",
