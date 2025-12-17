@@ -288,10 +288,10 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
       }
     },
     evidence_summary: {
-      totalStudies: totalStudies * 10 + 5, // Proyectar corpus total
-      totalParticipants: totalStudies * 500,
-      efficacyPercentage: 85,
-      researchSpanYears: 15,
+      totalStudies: totalStudies, // Real count from search hits (enrichment will update with PubMed data)
+      totalParticipants: 0, // Will be populated by enrichment with real data
+      efficacyPercentage: 0, // Will be calculated by enrichment
+      researchSpanYears: 0, // Will be calculated by enrichment
       ingredients: topIngredients,
     },
     ingredients: topIngredients.map(ing => ({
