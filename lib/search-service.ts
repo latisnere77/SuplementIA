@@ -76,8 +76,15 @@ export async function searchSupplements(query: string, limit: number = 5): Promi
 
     if (!Array.isArray(hits) || hits.length === 0) {
         console.warn("[SearchService] Unexpected or empty response format:", body);
-        // Don't throw for empty results, just return empty.
-        return [];
+        // DEBUG: Return raw body to UI to diagnose Vercel Environment issue
+        return [{
+            title: "DEBUG_MODE_ACTIVE",
+            abstract: `RAW BODY: ${JSON.stringify(body).slice(0, 500)}`,
+            ingredients: ["Debug"],
+            score: 1,
+            study_count: 999,
+            evidence_grade: "A"
+        }];
     }
 
     // Map to unified format
