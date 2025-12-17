@@ -871,32 +871,43 @@ def get_pubmed_count_cached(query: str) -> int:
             # Cache table might not exist yet or other error - continue to PubMed
             print(f"[PUBMED CACHE MISS] Cache read error: {e}")
 
-        # Cache miss - query PubMed
-        print(f"[PUBMED CACHE MISS] Querying PubMed API for: {query}")
+        # Cache miss - query PubMed via Proxy Lambda (to bypass VPC restrictions)
+        print(f"[PUBMED CACHE MISS] Invoking Proxy Lambda for: {query}")
 
         pubmed_query = build_optimized_pubmed_query(query)
-        pubmed_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+        
+        lambda_client = boto3.client('lambda', region_name='us-east-1')
+        
+        try:
+            # Invoke Proxy Lambda
+            invoke_response = lambda_client.invoke(
+                FunctionName='production-pubmed-proxy',
+                InvocationType='RequestResponse',
+                Payload=json.dumps({'query': pubmed_query})
+            )
+            
+            # Parse Lambda response
+            payload = json.loads(invoke_response['Payload'].read())
+            
+            # Helper to extract body if it's APIGateway-style or direct
+            if 'body' in payload and isinstance(payload['body'], str):
+                 body = json.loads(payload['body'])
+            else:
+                 body = payload
+            
+            if not body.get('success', False):
+                 raise Exception(body.get('error', 'Unknown proxy error'))
+                 
+            count = body.get('count', 0)
+            print(f"[PUBMED PROXY] Returned count: {count}")
 
-        params = {
-            'db': 'pubmed',
-            'term': pubmed_query,
-            'retmode': 'json',
-            'retmax': 0  # Only get count
-        }
-
-        pubmed_api_key = os.environ.get('PUBMED_API_KEY', '')
-        if pubmed_api_key:
-            params['api_key'] = pubmed_api_key
-
-        response = requests.get(pubmed_url, params=params, timeout=15)
-        response.raise_for_status()
-
-        data = response.json()
-        count = int(data.get('esearchresult', {}).get('count', 0))
+        except Exception as e:
+            print(f"[PUBMED PROXY ERROR] {str(e)}")
+            raise
 
         # Store in cache with 30-day TTL
-        ttl = int(time.time()) + (30 * 24 * 60 * 60)  # 30 days
         try:
+            ttl = int(time.time()) + (30 * 24 * 60 * 60)  # 30 days
             table.put_item(
                 Item={
                     'query': cache_key,
@@ -909,13 +920,9 @@ def get_pubmed_count_cached(query: str) -> int:
             print(f"[PUBMED CACHE WRITE] Cached {query}: {count} studies")
         except ClientError as e:
             print(f"[PUBMED CACHE WRITE ERROR] {e}")
-            # Continue even if cache write fails
 
         return count
 
-    except requests.Timeout:
-        print(f"[PUBMED TIMEOUT] Query timed out for: {query}")
-        raise
     except Exception as e:
         print(f"[PUBMED ERROR] {str(e)}")
         raise
