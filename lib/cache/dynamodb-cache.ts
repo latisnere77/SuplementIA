@@ -14,7 +14,7 @@ import { generateSupplementPK, calculateTTL, type CacheItem } from '../../infras
 // ====================================
 
 const dynamoClient = new DynamoDBClient({
-  region: process.env.AWS_REGION || 'us-east-1',
+  region: (process.env.AWS_REGION || 'us-east-1').trim(),
 });
 
 const docClient = DynamoDBDocumentClient.from(dynamoClient, {
@@ -36,10 +36,10 @@ export class DynamoDBCache {
    */
   async get(query: string): Promise<CacheItem | null> {
     const startTime = Date.now();
-    
+
     try {
       const pk = generateSupplementPK(query);
-      
+
       const result = await docClient.send(new GetCommand({
         TableName: TABLE_NAME,
         Key: {
@@ -47,26 +47,26 @@ export class DynamoDBCache {
           SK: 'QUERY',
         },
       }));
-      
+
       const latency = Date.now() - startTime;
-      
+
       if (!result.Item) {
         console.log(`[DynamoDB Cache] MISS - Query: ${query}, Latency: ${latency}ms`);
         return null;
       }
-      
+
       // Update access metadata
       await this.updateAccessMetadata(pk);
-      
+
       console.log(`[DynamoDB Cache] HIT - Query: ${query}, Latency: ${latency}ms`);
       return result.Item as CacheItem;
-      
+
     } catch (error) {
       console.error('[DynamoDB Cache] Error getting item:', error);
       return null;
     }
   }
-  
+
   /**
    * Set supplement in cache
    */
@@ -74,7 +74,7 @@ export class DynamoDBCache {
     try {
       const pk = generateSupplementPK(query);
       const now = Date.now();
-      
+
       const item: CacheItem = {
         PK: pk,
         SK: 'QUERY',
@@ -82,27 +82,27 @@ export class DynamoDBCache {
         cachedAt: now,
         ttl: calculateTTL(7), // 7 days
       };
-      
+
       await docClient.send(new PutCommand({
         TableName: TABLE_NAME,
         Item: item,
       }));
-      
+
       console.log(`[DynamoDB Cache] SET - Query: ${query}`);
-      
+
     } catch (error) {
       console.error('[DynamoDB Cache] Error setting item:', error);
       throw error;
     }
   }
-  
+
   /**
    * Delete supplement from cache
    */
   async delete(query: string): Promise<void> {
     try {
       const pk = generateSupplementPK(query);
-      
+
       await docClient.send(new DeleteCommand({
         TableName: TABLE_NAME,
         Key: {
@@ -110,15 +110,15 @@ export class DynamoDBCache {
           SK: 'QUERY',
         },
       }));
-      
+
       console.log(`[DynamoDB Cache] DELETE - Query: ${query}`);
-      
+
     } catch (error) {
       console.error('[DynamoDB Cache] Error deleting item:', error);
       throw error;
     }
   }
-  
+
   /**
    * Get popular supplements (by search count)
    */
@@ -134,15 +134,15 @@ export class DynamoDBCache {
         ScanIndexForward: false, // Descending order
         Limit: limit,
       }));
-      
+
       return (result.Items || []) as CacheItem[];
-      
+
     } catch (error) {
       console.error('[DynamoDB Cache] Error getting popular items:', error);
       return [];
     }
   }
-  
+
   /**
    * Update access metadata (search count, last accessed)
    */
@@ -166,7 +166,7 @@ export class DynamoDBCache {
       console.error('[DynamoDB Cache] Error updating metadata:', error);
     }
   }
-  
+
   /**
    * Get cache statistics
    */

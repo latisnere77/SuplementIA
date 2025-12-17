@@ -62,7 +62,7 @@ export interface StudyAnalysis {
 // ====================================
 
 const bedrockClient = new BedrockRuntimeClient({
-  region: process.env.AWS_REGION || 'us-east-1',
+  region: (process.env.AWS_REGION || 'us-east-1').trim(),
 });
 
 // Use cross-region inference profile for better availability
