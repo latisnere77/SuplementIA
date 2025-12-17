@@ -466,6 +466,14 @@ export async function POST(request: NextRequest) {
 
     } catch (apiError: any) {
       console.error('[CRITICAL] Backend API Connection Error:', apiError);
+
+      // DIAGNOSTIC LOGGING
+      if (apiError.name === 'CredentialsError' || apiError.message.includes('credentials')) {
+        console.error('[DIAGNOSTIC] AWS Credentials likely missing or invalid in Vercel Environment.');
+        console.error(`[DIAGNOSTIC] AWS_REGION: ${process.env.AWS_REGION}`);
+        console.error(`[DIAGNOSTIC] AWS_ACCESS_KEY_ID Present: ${!!process.env.AWS_ACCESS_KEY_ID}`);
+      }
+
       // NO FALLBACK TO MOCK. Return 500.
       return NextResponse.json({
         success: false,
