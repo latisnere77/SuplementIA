@@ -60,18 +60,18 @@ export async function POST(request: NextRequest) {
   try {
     const body: EnrichRequest = await request.json();
     supplementName = body.supplementName || 'unknown';
-    
+
     const jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     console.log(`🔖 [Job ${jobId}] Enrich endpoint - Supplement: "${supplementName}"`);
 
     // 1. RATE LIMITING
-    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || 
-                     request.headers.get('x-real-ip') || 
-                     'unknown';
-    
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      'unknown';
+
     const rateLimit = globalRateLimiter.check(clientIp);
-    
+
     if (!rateLimit.allowed) {
       console.warn(
         JSON.stringify({
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
           timestamp: new Date().toISOString(),
         })
       );
-      
+
       return NextResponse.json(
         {
           success: false,
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     if (!forceRefresh) {
       const cacheKey = `enrich:${supplementName.toLowerCase()}:${category || 'general'}`;
       const cached = enrichmentCache.get(cacheKey);
-      
+
       if (cached) {
         console.log(
           JSON.stringify({
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
             timestamp: new Date().toISOString(),
           })
         );
-        
+
         return NextResponse.json({
           ...cached,
           metadata: {
@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
       'nac': 'N-acetylcysteine',
       'coq10': 'coenzyme q10',
       '5-htp': '5-hydroxytryptophan',
-      
+
       // Common supplements that don't need translation (performance optimization)
       'rhodiola': 'rhodiola',
       'rhodiola rosea': 'rhodiola rosea',
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
       'panax ginseng': 'ginseng', // Normalizar a término más común
       'berberine': 'berberine',
       'berberina': 'berberine',
-      
+
       // Common Spanish→English translations (high-traffic terms)
       'menta': 'peppermint',
       'jengibre': 'ginger',
@@ -301,7 +301,7 @@ export async function POST(request: NextRequest) {
           // Check if LLM actually provided a different term (not just echoing back)
           const expandedTerm = expansion.alternatives[0];
           const isDifferent = expandedTerm.toLowerCase() !== supplementName.toLowerCase();
-          
+
           if (isDifferent) {
             // LLM provided a translation/expansion
             searchTerm = expandedTerm;
@@ -378,7 +378,7 @@ export async function POST(request: NextRequest) {
             timestamp: new Date().toISOString(),
           })
         );
-        
+
         // Log warning if this is a Spanish term that failed to translate
         if (/[áéíóúñ]/.test(supplementName) || supplementName.endsWith('ina') || supplementName.endsWith('ino')) {
           console.warn(
@@ -457,7 +457,7 @@ export async function POST(request: NextRequest) {
         const response = await timeoutManager.executeWithBudget(
           () => fetch(studiesApiUrl, {
             method: 'POST',
-            headers: { 
+            headers: {
               'Content-Type': 'application/json',
               'X-Request-ID': correlationId,
               'X-Job-ID': jobId,
@@ -650,12 +650,12 @@ export async function POST(request: NextRequest) {
         // Generate intelligent search variations using LLM (with timeout)
         const variationStartTime = Date.now();
         const VARIATION_TIMEOUT = 10000; // 10 seconds max for variation generation
-        
+
         let variations: string[] = [];
         try {
           variations = await Promise.race([
             generateSearchVariations(searchTerm),
-            new Promise<string[]>((_, reject) => 
+            new Promise<string[]>((_, reject) =>
               setTimeout(() => reject(new Error('Variation generation timeout')), VARIATION_TIMEOUT)
             ),
           ]) as string[];
@@ -681,7 +681,7 @@ export async function POST(request: NextRequest) {
             `${searchTerm} extract`,
           ].slice(0, 3); // Limit to 3 basic variations
         }
-        
+
         const variationDuration = Date.now() - variationStartTime;
         console.log(
           JSON.stringify({
@@ -699,7 +699,7 @@ export async function POST(request: NextRequest) {
 
         // Limit to first 3 variations to avoid timeout (try most likely ones first)
         const variationsToTry = variations.slice(0, 3);
-        
+
         // Try variations in parallel (faster than sequential)
         const relaxedFilters = {
           rctOnly: false,
@@ -726,7 +726,7 @@ export async function POST(request: NextRequest) {
 
             const result = await fetchStudies(variation, relaxedFilters, 100 + i);
             const variationStudies = result.data.success ? result.data.data?.studies || [] : [];
-            
+
             return {
               variation,
               studies: variationStudies,
@@ -756,7 +756,7 @@ export async function POST(request: NextRequest) {
         const VARIATION_SEARCH_TIMEOUT = 30000; // 30 seconds max for all variation searches
         const variationResults = await Promise.race([
           Promise.all(variationPromises),
-          new Promise<Array<{ variation: string; studies: any[]; success: boolean }>>((resolve) => 
+          new Promise<Array<{ variation: string; studies: any[]; success: boolean }>>((resolve) =>
             setTimeout(() => resolve([]), VARIATION_SEARCH_TIMEOUT)
           ),
         ]);
@@ -766,7 +766,7 @@ export async function POST(request: NextRequest) {
         if (successfulResult) {
           studies = successfulResult.studies;
           searchTerm = successfulResult.variation;
-          
+
           console.log(
             JSON.stringify({
               event: 'STUDIES_FETCH_VARIATION_SUCCESS',
@@ -866,12 +866,14 @@ export async function POST(request: NextRequest) {
     // Determine if we used a variation
     const baseTerm = expansionMetadata?.expanded || supplementName;
     const usedVariationForLogging = searchTerm !== supplementName && searchTerm !== baseTerm;
-    
-    
+
+    // Extract ranking data from studiesData if available
+    // studiesData comes from the studies-fetcher lambda response
+    const rankedData = studiesData?.data?.ranked || null;
 
     // STEP 2: Pass real studies to content-enricher
     const enrichStartTime = Date.now();
-    
+
     console.log(
       JSON.stringify({
         event: 'ENRICHMENT_START',
@@ -942,10 +944,6 @@ export async function POST(request: NextRequest) {
     const finalBaseTerm = expansionMetadata?.expanded || supplementName;
     const usedVariation = searchTerm !== supplementName && searchTerm !== finalBaseTerm;
 
-    // Extract ranking data from studiesData if available
-    // studiesData comes from the studies-fetcher lambda response
-    const rankedData = studiesData?.data?.ranked || null;
-    
     // Build response
     const response = {
       ...enrichData,
@@ -982,7 +980,7 @@ export async function POST(request: NextRequest) {
     // Cache enrichment result
     const cacheKey = `enrich:${supplementName.toLowerCase()}:${category || 'general'}`;
     enrichmentCache.set(cacheKey, response);
-    
+
     console.log(
       JSON.stringify({
         event: 'ENRICHMENT_CACHED',
@@ -992,7 +990,7 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
       })
     );
-    
+
     return NextResponse.json(response);
   } catch (error: any) {
     const duration = Date.now() - startTime;
