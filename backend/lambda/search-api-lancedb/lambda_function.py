@@ -921,38 +921,44 @@ def get_pubmed_count_cached(query: str) -> int:
         raise
 
 
-def translate_to_english_if_needed(query: str) -> str:
+# In-memory cache for normalizations (warm container optimization)
+normalization_cache = {}
+
+def normalize_query_intelligent(query: str) -> str:
     """
-    Translate non-English queries to English using Claude for PubMed search
+    Intelligently normalize search query to English canonical form using Claude.
+    Handles translation, synonyms, and even symptom-to-supplement mapping.
+    
+    This is critical for "Discovery" phase: ensuring we search PubMed for the correct English term.
 
     Args:
-        query: User query (potentially in Spanish or other languages)
+        query: Raw user query (e.g. "Creatina", "para dormir", "vitamina d3")
 
     Returns:
-        English translation or original query if already in English
+        Canonical English name (e.g. "Creatine", "Melatonin", "Vitamin D3")
     """
-    global bedrock_runtime
+    global bedrock_runtime, normalization_cache
+
+    query_lower = query.lower().strip()
+    
+    # Check cache first
+    if query_lower in normalization_cache:
+        print(f"[NORMALIZE] Cache hit: {query} -> {normalization_cache[query_lower]}")
+        return normalization_cache[query_lower]
 
     try:
-        # Quick heuristic: if query contains common Spanish/Portuguese supplement terms, translate
-        spanish_indicators = ['peptidos', 'bioactivos', 'suplemento', 'vitamina', 'proteina', 'aminoacidos']
-        needs_translation = any(word in query.lower() for word in spanish_indicators)
+        print(f"[NORMALIZE] Normalizing: {query}")
 
-        if not needs_translation:
-            return query
-
-        print(f"[TRANSLATE] Detected non-English query: {query}")
-
-        prompt = f"""Translate this supplement search query to English. Return ONLY the English translation, nothing else.
+        prompt = f"""Normalize this search query to the standard English scientific or common supplement name.
+Rules:
+1. Translate to English if in another language (e.g. "Creatina" -> "Creatine").
+2. Return the primary active ingredient if it's a brand or complex term.
+3. If it's a symptom/goal (e.g. "para dormir"), return the most evidence-backed supplement for it (e.g. "Melatonin").
+4. Return ONLY the term, nothing else.
 
 Query: "{query}"
 
-Examples:
-- "peptidos bioactivos" → "bioactive peptides"
-- "vitamina D" → "vitamin D"
-- "omega 3" → "omega 3"
-
-Translation:"""
+Normalization:"""
 
         body = json.dumps({
             "anthropic_version": "bedrock-2023-05-31",
@@ -966,19 +972,26 @@ Translation:"""
             ]
         })
 
+        if bedrock_runtime is None:
+             # Initialize if not already (though usually initialize() is called before)
+             bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1', config=bedrock_config)
+
         response = bedrock_runtime.invoke_model(
             modelId='anthropic.claude-3-haiku-20240307-v1:0',
             body=body
         )
 
         response_body = json.loads(response['body'].read())
-        translation = response_body['content'][0]['text'].strip().strip('"')
+        normalized = response_body['content'][0]['text'].strip().strip('"').strip('.')
 
-        print(f"[TRANSLATE] {query} → {translation}")
-        return translation
+        # Cache result
+        normalization_cache[query_lower] = normalized
+        print(f"[NORMALIZE] {query} -> {normalized}")
+        
+        return normalized
 
     except Exception as e:
-        print(f"[TRANSLATE] Error: {str(e)}, using original query")
+        print(f"[NORMALIZE] Error: {str(e)}, using original query")
         return query
 
 
@@ -987,15 +1000,9 @@ def build_optimized_pubmed_query(query: str) -> str:
     Build optimized PubMed query for faster searches
 
     Strategy:
-    - Translate non-English queries to English first (PubMed is primarily English)
+    - [UPDATED] Use intelligent normalization (Claude) instead of heuristic translation
     - Use Title/Abstract filter for focused searches
     - Simplify complex queries
-    - Remove redundant supplement keywords
-
-    Examples:
-    - "Pterostilbene" → "Pterostilbene[Title/Abstract]"
-    - "Nicotinamide Riboside" → "Nicotinamide Riboside[Title/Abstract]"
-    - "peptidos bioactivos" → "bioactive peptides[Title/Abstract]"
 
     Args:
         query: Raw user query (any language)
@@ -1003,8 +1010,8 @@ def build_optimized_pubmed_query(query: str) -> str:
     Returns:
         Optimized PubMed query string in English
     """
-    # Step 1: Translate to English if needed
-    english_query = translate_to_english_if_needed(query)
+    # Step 1: Intelligent Normalization (Creatina -> Creatine)
+    english_query = normalize_query_intelligent(query)
 
     # Step 2: Remove common supplement suffixes to avoid redundancy
     clean_query = english_query.replace(" supplement", "").replace(" supplementation", "").strip()

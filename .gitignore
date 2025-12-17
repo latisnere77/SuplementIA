@@ -13,6 +13,7 @@ __pycache__/
 
 # Backend (separate Lambda deploys)
 backend/
+!backend/lambda/search-api-lancedb/
 
 # Testing
 coverage/

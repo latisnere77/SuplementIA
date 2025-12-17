@@ -11,7 +11,8 @@ import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
-import { getWeaviateClient, WEAVIATE_CLASS_NAME } from '@/lib/weaviate-client';
+
+
 import { searchSupplements } from '@/lib/search-service';
 
 export const dynamic = 'force-dynamic';
@@ -288,71 +289,56 @@ export async function POST(request: NextRequest) {
     }
 
     // =================================================================
-    // NEW: Hybrid Search First Strategy
+    // NEW: Hybrid Search First Strategy (LanceDB Serverless)
     // =================================================================
-    const weaviateClient = getWeaviateClient();
-    if (weaviateClient) {
+    try {
       console.log(`[Hybrid Search] Attempting search for: "${searchTerm}" ${expansionNote}`);
-      try {
-        const result = await weaviateClient.graphql
-          .get()
-          .withClassName(WEAVIATE_CLASS_NAME)
-        // LANCE DB RESTORATION
-        // Use the Serverless Lambda Search
-        console.log(`[Search] Querying LanceDB via Lambda for: "${searchTerm}"`);
-        const hits = await searchSupplements(searchTerm); // Uses production-search-api-lancedb
+      console.log(`[Search] Querying LanceDB via Lambda for: "${searchTerm}"`);
 
-        if (hits && hits.length > 0) {
-          // STRICT FILTERING V2 (Anti-Urine / Anti-Noise)
-          // 1. Exclude "creatinine" when searching for "creatine"
-          // 2. Handle English/Spanish variations logic preserved from Weaviate impl
-          const lowerQuery = searchTerm.toLowerCase();
-          const queryRoot = lowerQuery.length > 5 ? lowerQuery.substring(0, 5) : lowerQuery; // "creat"
+      const hits = await searchSupplements(searchTerm); // Uses production-search-api-lancedb
 
-          const relevantHits = hits.filter((h: any) => {
-            const title = (h.title || '').toLowerCase();
-            const ing = (Array.isArray(h.ingredients) ? h.ingredients.join(' ') : (h.ingredients || '')).toLowerCase();
-            const abstract = (h.abstract || '').toLowerCase();
+      if (hits && hits.length > 0) {
+        // STRICT FILTERING V2 (Anti-Urine / Anti-Noise)
+        const lowerQuery = searchTerm.toLowerCase();
+        const queryRoot = lowerQuery.length > 5 ? lowerQuery.substring(0, 5) : lowerQuery; // "creat"
 
-            // CRITICAL EXCLUSIONS
-            if (lowerQuery.includes('creatine') && (title.includes('urine') || abstract.includes('urine') || ing.includes('creatinine'))) {
-              return false;
-            }
-            if (title.includes('case report') && !title.includes('supplement')) {
-              return false;
-            }
+        const relevantHits = hits.filter((h: any) => {
+          const title = (h.title || '').toLowerCase();
+          const ing = (Array.isArray(h.ingredients) ? h.ingredients.join(' ') : (h.ingredients || '')).toLowerCase();
+          const abstract = (h.abstract || '').toLowerCase();
 
-            // INCLUSION CRITERIA
-            // LanceDB is semantic, so hits should be relevant, but we enforce keyword alignment for precision
-            return title.includes(queryRoot) || ing.includes(queryRoot) || (h.score && h.score > 0.6); // relaxed for semantic match if score high
-          });
-
-          const finalHits = relevantHits.length > 0 ? relevantHits : [];
-
-          if (finalHits.length > 0) {
-            console.log(`[Search] LanceDB returned ${hits.length} hits, filtered to ${finalHits.length}.`);
-            const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
-            storeJobResult(jobId, 'completed', { recommendation: rec });
-            return NextResponse.json({
-              success: true,
-              quiz_id: quizId,
-              recommendation: rec,
-              jobId,
-              source: 'lancedb_lambda_serverless'
-            });
-          } else {
-            console.log('[Search] All LanceDB hits were filtered out as irrelevant.');
+          // CRITICAL EXCLUSIONS
+          if (lowerQuery.includes('creatine') && (title.includes('urine') || abstract.includes('urine') || ing.includes('creatinine'))) {
+            return false;
           }
+          if (title.includes('case report') && !title.includes('supplement')) {
+            return false;
+          }
+
+          // INCLUSION CRITERIA
+          return title.includes(queryRoot) || ing.includes(queryRoot) || (h.score && h.score > 0.6);
+        });
+
+        const finalHits = relevantHits.length > 0 ? relevantHits : [];
+
+        if (finalHits.length > 0) {
+          console.log(`[Search] LanceDB returned ${hits.length} hits, filtered to ${finalHits.length}.`);
+          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
+          storeJobResult(jobId, 'completed', { recommendation: rec });
+          return NextResponse.json({
+            success: true,
+            quiz_id: quizId,
+            recommendation: rec,
+            jobId,
+            source: 'lancedb_lambda_serverless'
+          });
+        } else {
+          console.log('[Search] All LanceDB hits were filtered out as irrelevant.');
         }
-      } catch (wsErr) {
-        console.error('[Hybrid Search] Error:', wsErr);
-        return NextResponse.json({
-          success: false,
-          error: 'Weaviate Connection Failed',
-          details: wsErr instanceof Error ? wsErr.message : String(wsErr),
-          host: '98.93.21.159:8080' // Confim host used
-        }, { status: 500 });
       }
+    } catch (wsErr) {
+      console.error('[Hybrid Search] Error:', wsErr);
+      // Fallback to logic below
     }
     // =================================================================
 
