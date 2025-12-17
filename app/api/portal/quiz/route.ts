@@ -132,6 +132,28 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
     }));
   }
 
+  // **CRITICAL**: Copy studies.ranked data (this was the missing piece!)
+  if (evidence.studies) {
+    if (!recommendation.evidence_summary) {
+      recommendation.evidence_summary = {};
+    }
+    if (!recommendation.evidence_summary.studies) {
+      recommendation.evidence_summary.studies = {};
+    }
+
+    // Copy all studies data including ranked analysis
+    recommendation.evidence_summary.studies = {
+      ...recommendation.evidence_summary.studies,
+      ...evidence.studies,
+    };
+
+    // Update basedOn if available
+    if (evidence.basedOn) {
+      recommendation.evidence_summary.totalStudies = evidence.basedOn.studiesCount || recommendation.evidence_summary.totalStudies;
+      recommendation.evidence_summary.totalParticipants = evidence.basedOn.totalParticipants || recommendation.evidence_summary.totalParticipants;
+    }
+  }
+
   // Mark as enriched
   recommendation.enriched = true;
   recommendation.enrichmentSource = 'inline_auto';
