@@ -42,7 +42,7 @@ export async function rankAndBalanceStudies(
   const {
     topPositive = 5,
     topNegative = 5,
-    minConfidence = 0.5,
+    minConfidence = 0.1,
   } = options;
 
   console.log(JSON.stringify({

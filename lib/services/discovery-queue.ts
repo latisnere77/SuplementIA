@@ -21,7 +21,7 @@ import {
 } from '../../infrastructure/discovery-queue-schema';
 
 const client = new DynamoDBClient({
-  region: process.env.AWS_REGION || 'us-east-1',
+  region: (process.env.AWS_REGION || 'us-east-1').trim(),
 });
 
 const docClient = DynamoDBDocumentClient.from(client);
@@ -41,7 +41,7 @@ export async function enqueueDiscovery(
   normalizedQuery: string
 ): Promise<DiscoveryQueueItem> {
   const now = Date.now();
-  
+
   // Generate a deterministic ID based on normalized query (without timestamp/random)
   // This allows us to detect duplicates
   const normalized = normalizedQuery.toLowerCase().replace(/[^a-z0-9]/g, '');
