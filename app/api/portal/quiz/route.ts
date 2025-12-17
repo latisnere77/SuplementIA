@@ -28,7 +28,12 @@ const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
  */
 function needsEnrichment(recommendation: any): boolean {
   // ALWAYS enrich if studies.ranked is missing (for intelligent analysis)
-  if (!recommendation?.evidence_summary?.studies?.ranked) {
+  const hasRanked = !!recommendation?.evidence_summary?.studies?.ranked;
+  const grade = recommendation?.supplement?.evidenceGrade || recommendation?.evidence_summary?.evidenceGrade;
+  console.log(`🔍 [NEEDS_ENRICH] hasRanked=${hasRanked} grade=${grade} supplement=${recommendation?.supplement?.name || 'unknown'}`);
+
+  if (!hasRanked) {
+    console.log(`✅ [NEEDS_ENRICH] YES - no ranked data`);
     return true;
   }
 
@@ -59,7 +64,7 @@ function needsEnrichment(recommendation: any): boolean {
  */
 async function enrichSupplement(supplementName: string, baseUrl: string): Promise<any | null> {
   const enrichStart = Date.now();
-  console.log(`[Inline Enrichment] Starting enrichment for: "${supplementName}"`);
+  console.log(`🔥🔥🔥 [ENRICH_CALLED] supplement="${supplementName}" time=${new Date().toISOString()}`);
 
   try {
     const enrichResponse = await fetch(`${baseUrl}/api/portal/enrich`, {
