@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
 
     // 2. CHECK CACHE (unless forceRefresh)
     if (!forceRefresh) {
-      const cacheKey = `enrich:${supplementName.toLowerCase()}:${category || 'general'}`;
+      const cacheKey = `enrich:v2:${supplementName.toLowerCase()}:${category || 'general'}`;
       const cached = enrichmentCache.get(cacheKey);
 
       if (cached) {
