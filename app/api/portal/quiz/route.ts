@@ -147,6 +147,12 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
       ...evidence.studies,
     };
 
+    console.log('[MERGE_DEBUG] Copied studies.ranked:', {
+      hasRanked: !!evidence.studies?.ranked,
+      positiveCount: evidence.studies?.ranked?.positive?.length || 0,
+      confidence: evidence.studies?.ranked?.metadata?.confidenceScore || 0
+    });
+
     // Update basedOn if available
     if (evidence.basedOn) {
       recommendation.evidence_summary.totalStudies = evidence.basedOn.studiesCount || recommendation.evidence_summary.totalStudies;
