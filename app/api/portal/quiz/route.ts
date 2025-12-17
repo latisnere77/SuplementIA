@@ -67,7 +67,7 @@ async function enrichSupplement(supplementName: string, baseUrl: string): Promis
         maxStudies: 10, // Limit to 10 for speed
         rctOnly: false,
       }),
-      signal: AbortSignal.timeout(60000), // 60 second timeout for enrichment
+      signal: AbortSignal.timeout(90000), // 90 second timeout for enrichment (Bedrock needs time)
     });
 
     if (!enrichResponse.ok) {

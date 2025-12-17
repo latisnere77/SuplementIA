@@ -6,20 +6,6 @@
   "regions": [
     "iad1"
   ],
-  "functions": {
-    "app/api/portal/enrich/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/portal/enrich-async/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/portal/quiz/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/portal/enrichment-status/[id]/route.ts": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "STUDIES_API_URL": "https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search",
     "ENRICHER_API_URL": "https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/",
