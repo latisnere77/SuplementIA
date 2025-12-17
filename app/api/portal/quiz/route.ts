@@ -23,6 +23,123 @@ export const maxDuration = 180; // 3 minutes to allow for complex supplements wi
 const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
 
 /**
+ * Detect if recommendation has poor/placeholder metadata that needs enrichment
+ * @returns true if enrichment is needed
+ */
+function needsEnrichment(recommendation: any): boolean {
+  const worksFor = recommendation?.supplement?.worksFor || [];
+
+  // Check if worksFor is empty or only has placeholder "Bienestar General"
+  if (worksFor.length === 0) return true;
+  if (worksFor.length === 1 && worksFor[0]?.condition === "Bienestar General") return true;
+
+  // Check if evidence grade is poor (C or lower)
+  const evidenceGrade = recommendation?.supplement?.evidenceGrade || recommendation?.evidence_summary?.evidenceGrade;
+  if (evidenceGrade === 'C' || evidenceGrade === 'D') return true;
+
+  // Check if description is generic placeholder
+  const description = recommendation?.supplement?.description || '';
+  if (description.includes('Suplemento analizado basado en') && description.includes('estudios científicos recuperados')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Call the enrichment API synchronously to get detailed supplement data
+ * @param supplementName - Name of the supplement to enrich
+ * @param baseUrl - Base URL for API calls
+ * @returns Enriched recommendation data or null if failed
+ */
+async function enrichSupplement(supplementName: string, baseUrl: string): Promise<any | null> {
+  const enrichStart = Date.now();
+  console.log(`[Inline Enrichment] Starting enrichment for: "${supplementName}"`);
+
+  try {
+    const enrichResponse = await fetch(`${baseUrl}/api/portal/enrich`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        supplementName: supplementName,
+        maxStudies: 10, // Limit to 10 for speed
+        rctOnly: false,
+      }),
+      signal: AbortSignal.timeout(60000), // 60 second timeout for enrichment
+    });
+
+    if (!enrichResponse.ok) {
+      console.error(`[Inline Enrichment] API returned ${enrichResponse.status}`);
+      return null;
+    }
+
+    const enrichData = await enrichResponse.json();
+    const elapsed = Date.now() - enrichStart;
+    console.log(`[Inline Enrichment] Completed in ${elapsed}ms`);
+
+    return enrichData;
+  } catch (error: any) {
+    console.error(`[Inline Enrichment] Error:`, error.message);
+    return null;
+  }
+}
+
+/**
+ * Merge enriched data into recommendation structure
+ */
+function mergeEnrichedData(recommendation: any, enrichedData: any): any {
+  if (!enrichedData?.evidence) {
+    return recommendation;
+  }
+
+  const evidence = enrichedData.evidence;
+
+  // Update worksFor with real conditions from enrichment
+  if (evidence.worksFor && evidence.worksFor.length > 0) {
+    recommendation.supplement.worksFor = evidence.worksFor.map((item: any) => ({
+      condition: item.condition || item.name,
+      grade: item.evidenceGrade || item.grade || 'B',
+      evidenceGrade: item.evidenceGrade || item.grade || 'B',
+      studyCount: item.studyCount || 1,
+      notes: item.summary || item.notes || '',
+      magnitude: item.magnitude || 'Moderada',
+      confidence: item.confidence || 75,
+    }));
+  }
+
+  // Update description
+  if (evidence.description) {
+    recommendation.supplement.description = evidence.description;
+  }
+
+  // Update dosage
+  if (evidence.dosage) {
+    recommendation.supplement.dosage = {
+      standard: evidence.dosage.standard || evidence.dosage.recommendedDose || recommendation.supplement.dosage.standard,
+      effectiveDose: evidence.dosage.effectiveDose || recommendation.supplement.dosage.effectiveDose,
+      notes: evidence.dosage.notes || recommendation.supplement.dosage.notes,
+    };
+  }
+
+  // Update side effects
+  if (evidence.sideEffects && evidence.sideEffects.length > 0) {
+    recommendation.supplement.sideEffects = evidence.sideEffects.map((se: any) => ({
+      name: se.name || se.effect,
+      frequency: se.frequency || 'Raro',
+      notes: se.notes || '',
+    }));
+  }
+
+  // Mark as enriched
+  recommendation.enriched = true;
+  recommendation.enrichmentSource = 'inline_auto';
+
+  return recommendation;
+}
+
+/**
  * Get the base URL for internal API calls
  * Auto-detects production URL from Vercel environment
  */
@@ -323,14 +440,28 @@ export async function POST(request: NextRequest) {
 
         if (finalHits.length > 0) {
           console.log(`[Search] LanceDB returned ${hits.length} hits, filtered to ${finalHits.length}.`);
-          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
+          let rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
+
+          // INLINE AUTO-ENRICHMENT: Check if metadata is poor and enrich if needed
+          if (needsEnrichment(rec)) {
+            console.log(`[Inline Enrichment] Poor metadata detected for "${searchTerm}", triggering enrichment...`);
+            const enrichedData = await enrichSupplement(searchTerm, getBaseUrl());
+
+            if (enrichedData) {
+              rec = mergeEnrichedData(rec, enrichedData);
+              console.log(`[Inline Enrichment] Successfully enriched "${searchTerm}"`);
+            } else {
+              console.log(`[Inline Enrichment] Enrichment failed, returning basic data for "${searchTerm}"`);
+            }
+          }
+
           storeJobResult(jobId, 'completed', { recommendation: rec });
           return NextResponse.json({
             success: true,
             quiz_id: quizId,
             recommendation: rec,
             jobId,
-            source: 'lancedb_lambda_serverless'
+            source: rec.enriched ? 'lancedb_lambda_enriched' : 'lancedb_lambda_serverless'
           });
         } else {
           console.log('[Search] All LanceDB hits were filtered out as irrelevant.');
