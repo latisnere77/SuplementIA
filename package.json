@@ -20,6 +20,7 @@
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.936.0",
     "@aws-sdk/client-dynamodb": "^3.936.0",
+    "@aws-sdk/client-lambda": "^3.953.0",
     "@aws-sdk/credential-provider-node": "^3.946.0",
     "@aws-sdk/lib-dynamodb": "^3.932.0",
     "@aws-sdk/protocol-http": "^3.370.0",
@@ -66,7 +67,6 @@
     "@aws-sdk/client-ec2": "^3.952.0",
     "@aws-sdk/client-ecs": "^3.952.0",
     "@aws-sdk/client-efs": "^3.952.0",
-    "@aws-sdk/client-lambda": "^3.952.0",
     "@aws-sdk/client-xray": "^3.936.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",

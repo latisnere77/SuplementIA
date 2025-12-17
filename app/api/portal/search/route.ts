@@ -1,17 +1,13 @@
+
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getWeaviateClient, WEAVIATE_CLASS_NAME } from '@/lib/weaviate-client';
+import { searchSupplements } from '@/lib/search-service';
 
 // Schema for the search request
 const QuerySchema = z.object({
   q: z.string().min(1),
   limit: z.coerce.number().min(1).max(20).default(5),
 });
-
-// Initialize Weaviate Client
-const client = getWeaviateClient();
-
-const CLASS_NAME = WEAVIATE_CLASS_NAME;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -26,42 +22,15 @@ export async function GET(request: Request) {
 
   const { q, limit } = validation.data;
 
-  // Fallback if Weaviate client fails to initialize (should use Local/Cloud fallback in client)
-  if (!client) {
-    console.error("❌ Weaviate client failed to initialize.");
-    return NextResponse.json({ error: 'Search service unavailable' }, { status: 503 });
-  }
-
   try {
-    // Execute Hybrid Search (Vector + BM25)
-    // Alpha 0.75 leans towards vector search (semantic) but keeps keyword precision from BM25
-    const result = await client.graphql
-      .get()
-      .withClassName(CLASS_NAME)
-      .withFields('title abstract ingredients conditions year _additional { score distance }')
-      .withHybrid({
-        query: q,
-        alpha: 0.75,
-      })
-      .withLimit(limit)
-      .do();
-
-    const hits = result.data.Get[CLASS_NAME];
-
-    // Transform Weaviate response to a simplified API response
-    const formattedResults = hits.map((hit: any) => ({
-      title: hit.title,
-      abstract: hit.abstract,
-      ingredients: hit.ingredients,
-      conditions: hit.conditions,
-      year: hit.year,
-      score: hit._additional?.score,
-    }));
+    // Execute Search via Serverless Lambda (LanceDB)
+    console.log(`[Search-API] Searching for "${q}" via Lambda`);
+    const formattedResults = await searchSupplements(q, limit);
 
     return NextResponse.json(formattedResults);
 
   } catch (error) {
-    console.error("❌ Hybrid Search Error:", error);
+    console.error("❌ Search Error:", error);
     return NextResponse.json({ error: 'Internal Search Error' }, { status: 500 });
   }
 }

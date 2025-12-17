@@ -12,6 +12,7 @@ import { createJob, storeJobResult } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
 import { getWeaviateClient, WEAVIATE_CLASS_NAME } from '@/lib/weaviate-client';
+import { searchSupplements } from '@/lib/search-service';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -296,17 +297,15 @@ export async function POST(request: NextRequest) {
         const result = await weaviateClient.graphql
           .get()
           .withClassName(WEAVIATE_CLASS_NAME)
-          .withFields('title abstract ingredients conditions year _additional { score }')
-          .withHybrid({ query: searchTerm, alpha: 0.25 })
-          .withLimit(8)
-          .do();
-
-        const hits = result.data.Get[WEAVIATE_CLASS_NAME];
+        // LANCE DB RESTORATION
+        // Use the Serverless Lambda Search
+        console.log(`[Search] Querying LanceDB via Lambda for: "${searchTerm}"`);
+        const hits = await searchSupplements(searchTerm); // Uses production-search-api-lancedb
 
         if (hits && hits.length > 0) {
-          // STRICT FILTERING V2:
-          // 1. Exclude "creatinine" when searching for "creatine" to avoid urine studies.
-          // 2. Handle English/Spanish variations (Creatine/Creatina)
+          // STRICT FILTERING V2 (Anti-Urine / Anti-Noise)
+          // 1. Exclude "creatinine" when searching for "creatine"
+          // 2. Handle English/Spanish variations logic preserved from Weaviate impl
           const lowerQuery = searchTerm.toLowerCase();
           const queryRoot = lowerQuery.length > 5 ? lowerQuery.substring(0, 5) : lowerQuery; // "creat"
 
@@ -320,23 +319,18 @@ export async function POST(request: NextRequest) {
               return false;
             }
             if (title.includes('case report') && !title.includes('supplement')) {
-              return false; // Exclude individual case reports unless about supplementation
+              return false;
             }
 
             // INCLUSION CRITERIA
-            // Match root word (e.g. "creat" matches "creatina" and "creatine")
-            return title.includes(queryRoot) || ing.includes(queryRoot);
+            // LanceDB is semantic, so hits should be relevant, but we enforce keyword alignment for precision
+            return title.includes(queryRoot) || ing.includes(queryRoot) || (h.score && h.score > 0.6); // relaxed for semantic match if score high
           });
-
-          // Sort relevant hits by length of abstract (prefer detail) or score
-          relevantHits.sort((a: any, b: any) => (b.abstract?.length || 0) - (a.abstract?.length || 0));
 
           const finalHits = relevantHits.length > 0 ? relevantHits : [];
 
-          if (finalHits.length === 0) {
-            console.log('[Hybrid Search] No relevant hits after filtering. Falling back to empty/pubmed.');
-          } else {
-            console.log(`[Hybrid Search] Filtered down to ${finalHits.length} clean hits.`);
+          if (finalHits.length > 0) {
+            console.log(`[Search] LanceDB returned ${hits.length} hits, filtered to ${finalHits.length}.`);
             const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
             storeJobResult(jobId, 'completed', { recommendation: rec });
             return NextResponse.json({
@@ -344,8 +338,10 @@ export async function POST(request: NextRequest) {
               quiz_id: quizId,
               recommendation: rec,
               jobId,
-              source: 'hybrid_search_v3_strict'
+              source: 'lancedb_lambda_serverless'
             });
+          } else {
+            console.log('[Search] All LanceDB hits were filtered out as irrelevant.');
           }
         }
       } catch (wsErr) {
