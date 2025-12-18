@@ -921,7 +921,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           supplementId: supplementName,
           category: category || 'general',
-          forceRefresh: forceRefresh || false,
+          forceRefresh: true, // TEMPORARY: Force refresh to bypass corrupted cache (revert after cache cleared)
           studies, // CRITICAL: Pass real PubMed studies to Claude
           ranking: rankedData, // NEW: Pass ranking to save in cache
           jobId,
