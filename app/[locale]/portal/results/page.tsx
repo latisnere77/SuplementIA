@@ -195,10 +195,10 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   // Defensive: Ensure ingredients array exists
   const ingredients = Array.isArray(evidenceSummary.ingredients) ? evidenceSummary.ingredients : [];
 
-  // Determine overall grade: Prioritize top-level overallGrade, then first ingredient
-  const overallGrade = recommendation.supplement?.overallGrade ||
-    (recommendation as any).evidence_summary?.overallGrade ||
-    (ingredients.length > 0 ? ingredients[0].grade : 'C');
+  // Determine overall grade from ingredients
+  const overallGrade = ingredients.length > 0
+    ? ingredients[0].grade
+    : ('C' as any);
 
   // Transform dosage
   const transformedDosage = typeof supplement.dosage === 'object' && supplement.dosage !== null ? {
@@ -397,28 +397,14 @@ interface Recommendation {
   recommendation_id: string;
   quiz_id: string;
   category: string;
-  supplement?: {
-    name: string;
-    description: string;
-    overallGrade?: GradeType;
-    worksFor?: any[];
-    doesntWorkFor?: any[];
-    limitedEvidence?: any[];
-    sideEffects?: any[];
-    dosage?: any;
-    contraindications?: string[];
-    mechanisms?: any[];
-  };
   evidence_summary: {
     totalStudies: number;
     totalParticipants: number;
     efficacyPercentage: number;
     researchSpanYears: number;
-    overallGrade?: GradeType;
-    qualityBadges?: any;
     ingredients: Array<{
       name: string;
-      grade: 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
+      grade: 'A' | 'B' | 'C';
       studyCount: number;
       rctCount: number;
     }>;
@@ -1291,15 +1277,11 @@ function ResultsPageContent() {
 
             // Display study data if available
             if (hasRealStudyData) {
-              const studyLabel = t('results.studies');
-              const participantsLabel = t('results.participants');
-              const andText = t('portal.search.analyzing').toLowerCase().includes('analizando') ? 'y' : 'and';
-
               return (
                 <p className="text-gray-600" data-testid="study-data-summary">
-                  {t('results.based.on')} {totalStudies.toLocaleString()} {studyLabel}
+                  {t('results.based.on')} {totalStudies.toLocaleString()} {t('results.studies')}
                   {totalParticipants > 0 && (
-                    <> {andText} {totalParticipants.toLocaleString()} {participantsLabel}</>
+                    <> {totalParticipants.toLocaleString()} {t('results.participants')}</>
                   )}
                 </p>
               );
