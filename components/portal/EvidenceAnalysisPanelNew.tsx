@@ -476,7 +476,7 @@ export default function EvidenceAnalysisPanelNew({
                     )}
 
                     <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>{ingredient.studyCount} estudios</span>
+                      <span>{ingredient.studyCount} estudio{ingredient.studyCount !== 1 ? 's' : ''}</span>
                       {ingredient.rctCount > 0 && (
                         <span className="text-green-600 font-medium">
                           {ingredient.rctCount} RCTs
