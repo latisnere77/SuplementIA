@@ -107,7 +107,11 @@ export default function ProductRecommendationsGrid({
               {/* Price */}
               <div className="mb-4">
                 <div className="text-3xl font-bold text-gray-900">
-                  {product.currency} {product.price}
+                  {product.price > 0 ? (
+                    `${product.currency} ${product.price.toLocaleString()}`
+                  ) : (
+                    t('product.price.consult' as any)
+                  )}
                 </div>
                 <div className="text-sm text-gray-600">{t('product.per.month')}</div>
               </div>

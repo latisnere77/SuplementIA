@@ -207,51 +207,10 @@ export async function POST(request: NextRequest) {
       'coq10': 'coenzyme q10',
       '5-htp': '5-hydroxytryptophan',
 
-      // Common supplements that don't need translation (performance optimization)
-      'rhodiola': 'rhodiola',
-      'rhodiola rosea': 'rhodiola rosea',
-      'ashwagandha': 'ashwagandha',
-      'ginseng': 'ginseng',
-      'panax ginseng': 'ginseng', // Normalizar a término más común
-      'berberine': 'berberine',
-      'berberina': 'berberine',
-
-      // Common Spanish→English translations (high-traffic terms)
-      'menta': 'peppermint',
-      'jengibre': 'ginger',
-      'curcuma': 'turmeric',
-      'cúrcuma': 'turmeric',
-      'magnesio': 'magnesium',
-      'calcio': 'calcium',
-      'hierro': 'iron',
-      'colageno': 'collagen',
-      'colágeno': 'collagen',
-      'melatonina': 'melatonin',
-      'valeriana': 'valerian',
-      'manzanilla': 'chamomile',
-      'lavanda': 'lavender',
-      'condroitina': 'chondroitin',
-      'glucosamina': 'glucosamine',
-      'astragalo': 'astragalus',
-      'astrágalo': 'astragalus',
-      'biotina': 'biotin',
-      'niacina': 'niacin',
-      'lisina': 'lysine',
-      'probioticos': 'probiotics',
-      'probióticos': 'probiotics',
-      'vitamina c': 'vitamin c',
-      'vitamina d': 'vitamin d',
-      'omega 3': 'omega 3',
-      'aceite de pescado': 'fish oil',
-      'hongos': 'mushrooms',
-      'melena de leon': 'lions mane',
-      'melena de león': 'lions mane',
-      'reishi': 'reishi',
-      'citrato de magnesio': 'magnesium citrate',
-      'glicinato de magnesio': 'magnesium glycinate',
-
-      // Note: The LLM now handles ALL Spanish→English translations intelligently
-      // We removed hardcoded translations to allow the system to scale automatically
+      // Note: ALL other Spanish→English translations and supplement expansions 
+      // are now handled intelligently by the LLM in abbreviation-expander.ts.
+      // This includes terms like "astrágalo", "cúrcuma", "magnesio", etc.,
+      // allowing for more precise scientific nomenclature in PubMed searches.
     };
 
     // First check common abbreviations map

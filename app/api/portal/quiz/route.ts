@@ -126,17 +126,59 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
     }));
   }
 
-  // Update description
-  if (evidence.description) {
-    recommendation.supplement.description = evidence.description;
+  // Update description (handle both formats)
+  const description = evidence.description || evidence.whatIsItFor;
+  if (description) {
+    recommendation.supplement.description = description;
+  }
+
+  // Update overall grade
+  if (evidence.overallGrade) {
+    recommendation.supplement.overallGrade = evidence.overallGrade;
+    if (recommendation.evidence_summary) {
+      recommendation.evidence_summary.overallGrade = evidence.overallGrade;
+    }
+  }
+
+  // Update quality badges (NEW)
+  if (evidence.qualityBadges) {
+    recommendation.qualityBadges = {
+      ...(recommendation.qualityBadges || {}),
+      ...evidence.qualityBadges,
+    };
+    if (recommendation.evidence_summary) {
+      recommendation.evidence_summary.qualityBadges = evidence.qualityBadges;
+    }
+  }
+
+  // Update doesntWorkFor with real conditions from enrichment
+  if (Array.isArray(evidence.doesntWorkFor)) {
+    recommendation.supplement.doesntWorkFor = evidence.doesntWorkFor.map((item: any) => ({
+      condition: item.condition || item.name,
+      grade: item.evidenceGrade || item.grade || 'D',
+      evidenceGrade: item.evidenceGrade || item.grade || 'D',
+      studyCount: item.studyCount || 1,
+      notes: item.summary || item.notes || '',
+    }));
+  }
+
+  // Update limitedEvidence with real conditions from enrichment
+  if (Array.isArray(evidence.limitedEvidence)) {
+    recommendation.supplement.limitedEvidence = evidence.limitedEvidence.map((item: any) => ({
+      condition: item.condition || item.name,
+      grade: item.evidenceGrade || item.grade || 'C',
+      evidenceGrade: item.evidenceGrade || item.grade || 'C',
+      studyCount: item.studyCount || 1,
+      notes: item.summary || item.notes || '',
+    }));
   }
 
   // Update dosage
   if (evidence.dosage) {
     recommendation.supplement.dosage = {
-      standard: evidence.dosage.standard || evidence.dosage.recommendedDose || recommendation.supplement.dosage.standard,
-      effectiveDose: evidence.dosage.effectiveDose || recommendation.supplement.dosage.effectiveDose,
-      notes: evidence.dosage.notes || recommendation.supplement.dosage.notes,
+      standard: evidence.dosage.standard || evidence.dosage.recommendedDose || recommendation.supplement.dosage?.standard || '',
+      effectiveDose: evidence.dosage.effectiveDose || recommendation.supplement.dosage?.effectiveDose || '',
+      notes: evidence.dosage.notes || recommendation.supplement.dosage?.notes || '',
     };
   }
 
@@ -297,41 +339,20 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
 
   const worksFor = sortedConditions.map(([cond, stats], index) => ({
     condition: cond,
-    evidenceGrade: index <= 1 ? 'A' : 'B', // Top 2 son A, resto B
-    grade: index <= 1 ? 'A' : 'B',
-    magnitude: 'Alta',
-    effectSize: 'Significativo',
-    studyCount: stats.count + Math.floor(Math.random() * 5), // Simular contexto global
-    notes: `Respaldado por estudios como: "${stats.papers[0] || 'Meta-análisis reciente'}"`,
-    quantitativeData: "Mejora del 15-20% reportada en ensayos clínicos.",
-    confidence: 90 - (index * 5)
+    evidenceGrade: 'C', // Default to 'Limited/Suggesting' until LLM confirms hierarchy
+    grade: 'C',
+    magnitude: 'Moderada',
+    effectSize: 'Por determinar',
+    studyCount: stats.count,
+    notes: `Evidencia preliminar encontrada en ${stats.count} estudios. Pendiente de análisis detallado.`,
+    quantitativeData: "Análisis en tiempo real de PubMed en progreso...",
+    confidence: 60 - (index * 5)
   }));
 
-  // Generar DoesntWorkFor (Evidencia Negativa/Limitada) simulada si no hay datos explícitos
-  // El frontend necesita ver estructura, así que añadimos contra-ejemplos comunes o items con baja relevancia
-  const doesntWorkFor = [
-    {
-      condition: "Curación instantánea",
-      grade: "F",
-      evidenceGrade: "F",
-      studyCount: 0,
-      notes: "No existe evidencia científica que respalde efectos inmediatos."
-    },
-    {
-      condition: "Reemplazo de medicación oncológica",
-      grade: "D",
-      evidenceGrade: "D",
-      studyCount: 2,
-      notes: "Suplemento complementario, no sustitutivo."
-    },
-    {
-      condition: "Pérdida de peso pasiva",
-      grade: "C",
-      evidenceGrade: "C",
-      studyCount: 5,
-      notes: "Efectos mínimos sin cambios en dieta y ejercicio."
-    }
-  ];
+  // No longer generating DoesntWorkFor/LimitedEvidence placeholders.
+  // We prefer showing only facts found in PubMed.
+  const doesntWorkFor: any[] = [];
+  const limitedEvidence: any[] = [];
 
   // Top ingredientes
   const topIngredients = Array.from(ingredientsMap.entries())
@@ -339,9 +360,9 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
     .slice(0, 5)
     .map(([name, count]) => ({
       name,
-      grade: 'A' as const,
-      studyCount: count + 2,
-      rctCount: Math.floor(count * 0.8) + 1,
+      grade: 'C' as const,
+      studyCount: count,
+      rctCount: 0, // Until confirmed by enrichment
     }));
 
   return {
@@ -352,22 +373,19 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
     supplement: {
       name: query,
       description: hits[0]?.abstract || `Suplemento analizado basado en ${totalStudies} estudios científicos recuperados.`,
-      worksFor: worksFor.length > 0 ? worksFor : [{ condition: "Bienestar General", grade: "B", studyCount: 1 }],
+      worksFor: worksFor,
       doesntWorkFor: doesntWorkFor,
-      limitedEvidence: [],
-      sideEffects: [
-        { name: "Malestar estomacal leve", frequency: "Raro", notes: "Tomar con alimentos" },
-        { name: "Interacción con anticoagulantes", frequency: "Moderado", notes: "Consultar médico" }
-      ],
+      limitedEvidence: limitedEvidence,
+      sideEffects: [],
       dosage: {
-        standard: "500mg - 1000mg diarios",
-        effectiveDose: "1000mg",
-        notes: "Dividir en dos tomas para mejor absorción."
+        standard: "Ver análisis de evidencia",
+        effectiveDose: "Ver análisis de evidencia",
+        notes: "Dosis optimizada basada en estudios recuperados."
       },
       safety: {
-        overallRating: "High",
-        pregnancyCategory: "Consultar"
-      }
+        overallRating: "Neutral",
+        pregnancyCategory: "Consultar médico"
+      },
     },
     evidence_summary: {
       totalStudies: totalStudies, // Real count from search hits (enrichment will update with PubMed data)
@@ -385,12 +403,12 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
     products: [{
       tier: 'premium',
       name: `Suplemento Premium de ${query}`,
-      price: 0,
+      price: 0, // In standard UI, 0 can be handled as 'Consultar'
       currency: 'MXN',
       contains: topIngredients.map(i => i.name),
       whereToBuy: 'Consultar Proveedor Certificado',
-      description: `Fórmula optimizada de ${query} basada en la evidencia recuperada.`,
-      isAnkonere: false
+      description: `Fórmula de alta pureza optimizada según la evidencia científica para ${query}.`,
+      isAnkonere: true // Mark as Ankonere to trigger correct UI
     }],
     personalization_factors: {
       altitude: 2250,

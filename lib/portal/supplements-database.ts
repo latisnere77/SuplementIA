@@ -59,6 +59,14 @@ export const SUPPLEMENTS_DATABASE: SupplementEntry[] = [
     healthConditions: ['inflamación', 'articulaciones', 'digestión'],
     language: 'es',
   },
+  {
+    id: 'astragalus-es',
+    name: 'Astrágalo',
+    aliases: ['astragalo', 'astragalus', 'astragalus membranaceus', 'huang qi'],
+    category: 'herb',
+    healthConditions: ['inmunidad', 'corazón', 'riñón', 'longevidad', 'adaptógeno'],
+    language: 'es',
+  },
 
   // ===== HIERBAS PARA EL SUEÑO (Español) =====
   {

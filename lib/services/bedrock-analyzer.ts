@@ -205,18 +205,19 @@ CRITICAL INSTRUCTIONS:
 7. Note any important interactions or contraindications
 
 GRADING CRITERIA:
-- Grade A: Multiple high-quality RCTs + meta-analyses, large/consistent effect sizes
-- Grade B: Several RCTs, mostly consistent results, moderate effects
-- Grade C: Limited RCTs, mixed results, or small effects
-- Grade D: Only observational studies or very weak evidence
-- Grade F: No credible evidence OR proven ineffective
+- Grade A: Strong Clinical Evidence (Meta-analysis, Systematic Reviews, or Large RCTs with consistent, high-reliability results).
+- Grade B: Moderate Clinical Evidence (Small RCTs or studies with some methodological limitations. Good evidence, but not definitive).
+- Grade C: Limited Clinical Evidence (Observational studies, cohort, or case-control studies. Suggests association, but does not prove causality).
+- Grade D: Weak Evidence (Case series, studies without a control group, or very small sample sizes. Generates hypotheses, not clinical recommendations).
+- Grade E: Preclinical Evidence (Evidence from animal models, in vitro studies, or laboratory mechanisms only. Not yet validated in humans).
+- Grade F: Anecdotal/Opinion (Expert opinion, isolated case reports, or traditional/empirical use without scientific backing).
 
 STUDIES TO ANALYZE:
 ${studiesText}
 
 Provide your analysis in this EXPANDED JSON format with ALL fields populated:
 {
-  "overallGrade": "A" | "B" | "C" | "D" | "F",
+  "overallGrade": "A" | "B" | "C" | "D" | "E" | "F",
   "whatIsItFor": "2-3 sentences explaining primary purpose, mechanisms of action, and what makes this supplement notable. Be specific and informative.",
   
   "worksFor": [
