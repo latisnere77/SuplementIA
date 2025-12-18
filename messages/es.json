@@ -104,6 +104,9 @@
     },
     "per": {
       "month": "por mes"
+    },
+    "price": {
+      "consult": "Consultar"
     }
   },
   "share": {

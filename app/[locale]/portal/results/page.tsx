@@ -290,7 +290,9 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
 
   const result = {
     overallGrade,
-    whatIsItFor: supplement.description || `Suplemento: ${recommendation.category}`,
+    whatIsItFor: (supplement.description && !supplement.description.includes('Supplement found with'))
+      ? supplement.description
+      : (supplement.whatIsIt || `Suplemento: ${recommendation.category}`),
     evidenceByBenefit, // Add the new transformed data
     worksFor,
     doesntWorkFor, // ✅ NOW POPULATED with real data

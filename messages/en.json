@@ -105,6 +105,9 @@
     "per": {
       "month": "per month"
     },
+    "price": {
+      "consult": "Consult"
+    },
     "premium_badge": "Premium ANKONERE Formula"
   },
   "share": {
