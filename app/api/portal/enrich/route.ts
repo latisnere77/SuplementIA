@@ -23,7 +23,7 @@ function generateUUID(): string {
 }
 
 // Configure max duration for this route (Bedrock needs time)
-export const maxDuration = 100; // 100 seconds (reduced from 120 for safety)
+export const maxDuration = 180; // 180 seconds (increased for Bedrock + studies fetcher)
 export const dynamic = 'force-dynamic'; // Disable static optimization
 export const runtime = 'nodejs'; // Use Node.js runtime instead of Edge to avoid TDZ issues
 
