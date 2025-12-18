@@ -4,10 +4,10 @@
  */
 
 export const TIMEOUTS = {
-  TOTAL_REQUEST: 95000,    // 95s (5s buffer for Vercel 100s limit)
+  TOTAL_REQUEST: 170000,    // 170s (10s buffer for Vercel 180s limit)
   TRANSLATION: 5000,       // 5s
   STUDIES_FETCH: 20000,    // 20s
-  ENRICHMENT: 40000,       // 40s
+  ENRICHMENT: 60000,       // 60s (increased from 40s to account for Bedrock latency)
 } as const;
 
 export class TimeoutManager {
