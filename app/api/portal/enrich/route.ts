@@ -970,10 +970,25 @@ export async function POST(request: NextRequest) {
     const usedVariation = searchTerm !== supplementName && searchTerm !== finalBaseTerm;
 
     // Build response
+    // Transform Lambda response to include 'supplement' wrapper for frontend compatibility
     const response = {
       ...enrichData,
       data: {
         ...enrichData.data,
+        // Wrap enriched content fields in 'supplement' object for frontend compatibility
+        supplement: {
+          name: supplementName,
+          whatIsIt: enrichData.data.whatIsIt,
+          primaryUses: enrichData.data.primaryUses,
+          worksFor: enrichData.data.worksFor,
+          doesntWorkFor: enrichData.data.doesntWorkFor,
+          limitedEvidence: enrichData.data.limitedEvidence,
+          dosage: enrichData.data.dosage,
+          safety: enrichData.data.safety,
+          mechanisms: enrichData.data.mechanisms,
+          sideEffects: enrichData.data.safety?.sideEffects,
+          keyStudies: enrichData.data.keyStudies,
+        },
         // Add studies object with ranking (NEW)
         studies: {
           ranked: rankedData,
