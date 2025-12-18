@@ -20,6 +20,24 @@ export async function saveToCacheAsync(
   metadata?: any
 ): Promise<void> {
   try {
+    // ✅ VALIDACIÓN: Detectar ranking vacío ANTES de guardar
+    if (metadata?.studies?.ranked) {
+      const { positive = [], negative = [] } = metadata.studies.ranked;
+
+      // Rechazar si ambos arrays están vacíos
+      if (positive.length === 0 && negative.length === 0) {
+        console.warn(
+          JSON.stringify({
+            operation: 'CacheSaveRejected',
+            supplementId,
+            reason: 'empty_ranking_arrays',
+            timestamp: new Date().toISOString(),
+          })
+        );
+        return; // ❌ NO GUARDAR
+      }
+    }
+
     const ttl = Math.floor(Date.now() / 1000) + (CACHE_TTL_DAYS * 24 * 60 * 60);
 
     console.log(
