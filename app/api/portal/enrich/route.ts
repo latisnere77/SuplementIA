@@ -153,6 +153,16 @@ export async function POST(request: NextRequest) {
       'glucosamine',    // 26K+ studies
       'condroitina',    // Spanish for chondroitin
       'glucosamina',    // Spanish for glucosamine
+      'creatine',       // 30K+ studies
+      'creatina',
+      'zinc',
+      'turmeric',
+      'curcuma',
+      'cúrcuma',
+      'ashwagandha',
+      'rhodiola',
+      'melatonin',
+      'melatonina',
     ];
     const isPopular = popularSupplements.some(s => supplementName.toLowerCase().includes(s));
     const optimizedMaxStudies = isPopular ? 5 : (body.maxStudies || 10);
@@ -207,10 +217,49 @@ export async function POST(request: NextRequest) {
       'coq10': 'coenzyme q10',
       '5-htp': '5-hydroxytryptophan',
 
-      // Note: ALL other Spanish→English translations and supplement expansions 
-      // are now handled intelligently by the LLM in abbreviation-expander.ts.
-      // This includes terms like "astrágalo", "cúrcuma", "magnesio", etc.,
-      // allowing for more precise scientific nomenclature in PubMed searches.
+      // Common supplements that don't need translation (performance optimization)
+      'rhodiola': 'rhodiola',
+      'rhodiola rosea': 'rhodiola rosea',
+      'ashwagandha': 'ashwagandha',
+      'ginseng': 'ginseng',
+      'panax ginseng': 'ginseng', // Normalizar a término más común
+      'berberine': 'berberine',
+      'berberina': 'berberine',
+
+      // Common Spanish→English translations (high-traffic terms)
+      // Restored for performance stability on critical paths
+      'menta': 'peppermint',
+      'jengibre': 'ginger',
+      'curcuma': 'turmeric',
+      'cúrcuma': 'turmeric',
+      'magnesio': 'magnesium',
+      'calcio': 'calcium',
+      'hierro': 'iron',
+      'colageno': 'collagen',
+      'colágeno': 'collagen',
+      'melatonina': 'melatonin',
+      'valeriana': 'valerian',
+      'manzanilla': 'chamomile',
+      'lavanda': 'lavender',
+      'condroitina': 'chondroitin',
+      'glucosamina': 'glucosamine',
+      'astragalo': 'astragalus',
+      'astrágalo': 'astragalus',
+      'biotina': 'biotin',
+      'niacina': 'niacin',
+      'lisina': 'lysine',
+      'probioticos': 'probiotics',
+      'probióticos': 'probiotics',
+      'vitamina c': 'vitamin c',
+      'vitamina d': 'vitamin d',
+      'omega 3': 'omega 3',
+      'aceite de pescado': 'fish oil',
+      'hongos': 'mushrooms',
+      'melena de leon': 'lions mane',
+      'melena de león': 'lions mane',
+      'reishi': 'reishi',
+      'citrato de magnesio': 'magnesium citrate',
+      'glicinato de magnesio': 'magnesium glycinate',
     };
 
     // First check common abbreviations map
