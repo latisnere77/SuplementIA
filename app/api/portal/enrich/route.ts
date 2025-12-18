@@ -971,23 +971,25 @@ export async function POST(request: NextRequest) {
 
     // Build response
     // Transform Lambda response to include 'supplement' wrapper for frontend compatibility
+    const lambdaContent = enrichData.data || enrichData; // Handle both structures
+
     const response = {
       ...enrichData,
       data: {
-        ...enrichData.data,
+        ...lambdaContent,
         // Wrap enriched content fields in 'supplement' object for frontend compatibility
         supplement: {
           name: supplementName,
-          whatIsIt: enrichData.data.whatIsIt,
-          primaryUses: enrichData.data.primaryUses,
-          worksFor: enrichData.data.worksFor,
-          doesntWorkFor: enrichData.data.doesntWorkFor,
-          limitedEvidence: enrichData.data.limitedEvidence,
-          dosage: enrichData.data.dosage,
-          safety: enrichData.data.safety,
-          mechanisms: enrichData.data.mechanisms,
-          sideEffects: enrichData.data.safety?.sideEffects,
-          keyStudies: enrichData.data.keyStudies,
+          whatIsIt: lambdaContent.whatIsIt,
+          primaryUses: lambdaContent.primaryUses,
+          worksFor: lambdaContent.worksFor,
+          doesntWorkFor: lambdaContent.doesntWorkFor,
+          limitedEvidence: lambdaContent.limitedEvidence,
+          dosage: lambdaContent.dosage,
+          safety: lambdaContent.safety,
+          mechanisms: lambdaContent.mechanisms,
+          sideEffects: lambdaContent.safety?.sideEffects,
+          keyStudies: lambdaContent.keyStudies,
         },
         // Add studies object with ranking (NEW)
         studies: {
