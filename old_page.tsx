@@ -120,7 +120,7 @@ function isValidCache(cachedRecommendation: any): boolean {
  */
 function transformRecommendationToEvidence(recommendation: Recommendation): any {
   // Extract supplement data from recommendation (defensive)
-  const supplement = recommendation.supplement || {};
+  const supplement = (recommendation as any).supplement || {};
   const evidenceSummary = recommendation.evidence_summary || {};
 
   // DEBUG: Log transformation input
@@ -271,7 +271,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
 
   // Extract intelligent ranking from metadata
   // Extract intelligent ranking from evidence_summary (primary) or metadata (legacy)
-  const metadata = recommendation._enrichment_metadata || {};
+  const metadata = (recommendation as any)._enrichment_metadata || {};
   const studies = (evidenceSummary as any).studies || metadata.studies || {
     ranked: {
       positive: [],
@@ -290,9 +290,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
 
   const result = {
     overallGrade,
-    whatIsItFor: (supplement.description && !supplement.description.includes('Supplement found with'))
-      ? supplement.description
-      : (supplement.whatIsIt || `Suplemento: ${recommendation.category}`),
+    whatIsItFor: supplement.description || `Suplemento: ${recommendation.category}`,
     evidenceByBenefit, // Add the new transformed data
     worksFor,
     doesntWorkFor, // ✅ NOW POPULATED with real data
@@ -342,7 +340,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
  * Focuses on quantitative data and precise measurements
  */
 function transformToExamineFormat(recommendation: Recommendation): any {
-  const supplement = recommendation.supplement || {};
+  const supplement = (recommendation as any).supplement || {};
 
   return {
     overview: {
@@ -397,46 +395,6 @@ interface Recommendation {
   recommendation_id: string;
   quiz_id: string;
   category: string;
-  // ✅ AGREGAR: Campo que el backend SÍ envía
-  supplement?: {
-    name: string;
-    description?: string;
-    whatIsIt?: string;
-    worksFor?: Array<{
-      condition: string;
-      evidenceGrade?: string;
-      grade?: string;
-      notes?: string;
-      effectSize?: string;
-      magnitude?: string;
-      studyCount?: number;
-      metaAnalysis?: boolean;
-    }>;
-    doesntWorkFor?: Array<{
-      condition: string;
-      evidenceGrade?: string;
-      grade?: string;
-      notes?: string;
-      effectSize?: string;
-      studyCount?: number;
-    }>;
-    limitedEvidence?: Array<{
-      condition: string;
-      evidenceGrade?: string;
-      grade?: string;
-      notes?: string;
-      studyCount?: number;
-    }>;
-    sideEffects?: any[];
-    dosage?: {
-      effectiveDose?: string;
-      optimalDose?: string;
-      standard?: string;
-      timing?: string;
-      notes?: string;
-    };
-    safety?: any;
-  };
   evidence_summary: {
     totalStudies: number;
     totalParticipants: number;
@@ -448,19 +406,6 @@ interface Recommendation {
       studyCount: number;
       rctCount: number;
     }>;
-    // ✅ AGREGAR: Campo de estudios rankeados
-    studies?: {
-      ranked?: {
-        positive: any[];
-        negative: any[];
-        metadata?: {
-          consensus?: string;
-          totalPositive?: number;
-          totalNegative?: number;
-          confidenceScore?: number;
-        };
-      };
-    };
   };
   ingredients: Array<{
     name: string;
@@ -494,11 +439,6 @@ interface Recommendation {
     total_participants: number;
     summary: string;
   }>;
-  // ✅ AGREGAR: Metadata de enriquecimiento
-  _enrichment_metadata?: {
-    hasRealData?: boolean;
-    studiesUsed?: number;
-  };
 }
 
 function ResultsPageContent() {
@@ -682,7 +622,7 @@ function ResultsPageContent() {
     }
 
     // Check if this is mock/generated data with no real studies
-    const metadata = recommendation._enrichment_metadata || {};
+    const metadata = (recommendation as any)._enrichment_metadata || {};
     const totalStudies = recommendation.evidence_summary?.totalStudies || 0;
     const metadataStudiesUsed = metadata.studiesUsed || 0;
 
@@ -702,7 +642,7 @@ function ResultsPageContent() {
     const transformed = transformRecommendationToEvidence(recommendation);
 
     // Log section availability
-    const supplement = recommendation.supplement || {};
+    const supplement = (recommendation as any).supplement || {};
     console.log('[Recommendation Sections]', {
       category: recommendation.category,
       hasWorksFor: Array.isArray(transformed.worksFor) && transformed.worksFor.length > 0,
@@ -1314,7 +1254,7 @@ function ResultsPageContent() {
             const totalStudies = recommendation?.evidence_summary?.totalStudies || 0;
             const totalParticipants = recommendation?.evidence_summary?.totalParticipants || 0;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const metadata = recommendation._enrichment_metadata || {};
+            const metadata = (recommendation as any)?._enrichment_metadata || {};
             const studiesUsed = metadata.studiesUsed || 0;
 
             // Log study data availability
@@ -1453,9 +1393,9 @@ function ResultsPageContent() {
         {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
         {(() => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const metadata = recommendation._enrichment_metadata || {};
+          const metadata = (recommendation as any)?._enrichment_metadata || {};
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const supplement = recommendation.supplement || {};
+          const supplement = (recommendation as any)?.supplement || {};
           const totalStudies = recommendation?.evidence_summary?.totalStudies || 0;
           const metadataStudiesUsed = metadata.studiesUsed || 0;
 
