@@ -264,7 +264,8 @@ function detectClimate(location: string): string {
  * Helper: Transform Weaviate hits to structured Recommendation object
  */
 function transformHitsToRecommendation(hits: any[], query: string, quizId: string): any {
-  const totalStudies = hits.length;
+  // Use reported total if available (from LanceDB metadata)
+  const totalStudies = hits.length === 1 ? (hits[0].study_count || hits.length) : hits.length;
   const ingredientsMap = new Map<string, number>();
 
   // Analizar condiciones y asignarles "fuerza" basada en frecuencia

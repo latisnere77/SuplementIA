@@ -232,6 +232,23 @@ export async function POST(request: NextRequest) {
       'lavanda': 'lavender',
       'condroitina': 'chondroitin',
       'glucosamina': 'glucosamine',
+      'astragalo': 'astragalus',
+      'astrágalo': 'astragalus',
+      'biotina': 'biotin',
+      'niacina': 'niacin',
+      'lisina': 'lysine',
+      'probioticos': 'probiotics',
+      'probióticos': 'probiotics',
+      'vitamina c': 'vitamin c',
+      'vitamina d': 'vitamin d',
+      'omega 3': 'omega 3',
+      'aceite de pescado': 'fish oil',
+      'hongos': 'mushrooms',
+      'melena de leon': 'lions mane',
+      'melena de león': 'lions mane',
+      'reishi': 'reishi',
+      'citrato de magnesio': 'magnesium citrate',
+      'glicinato de magnesio': 'magnesium glycinate',
 
       // Note: The LLM now handles ALL Spanish→English translations intelligently
       // We removed hardcoded translations to allow the system to scale automatically
