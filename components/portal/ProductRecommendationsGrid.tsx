@@ -152,7 +152,7 @@ export default function ProductRecommendationsGrid({
                 <div className="mt-3 text-center">
                   <span className="inline-flex items-center gap-1 text-xs font-medium text-purple-700 bg-purple-100 px-2 py-1 rounded">
                     <Star className="h-3 w-3" />
-                    {t('product.premium.badge')}
+                    {t('product.badges.premium.ankonere')}
                   </span>
                 </div>
               )}

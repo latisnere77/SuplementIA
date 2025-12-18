@@ -108,7 +108,11 @@
     "price": {
       "consult": "Consultar"
     },
-    "premium_badge": "Fórmula Premium ANKONERE"
+    "badges": {
+      "premium": {
+        "ankonere": "Fórmula Premium ANKONERE"
+      }
+    }
   },
   "share": {
     "title": "Comparte Tu Recomendación",

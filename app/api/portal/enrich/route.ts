@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       'melatonina',
     ];
     const isPopular = popularSupplements.some(s => supplementName.toLowerCase().includes(s));
-    const optimizedMaxStudies = isPopular ? 5 : (body.maxStudies || 10);
+    const optimizedMaxStudies = isPopular ? 10 : (body.maxStudies || 10);
 
     console.log(
       JSON.stringify({
