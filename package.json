@@ -14,7 +14,7 @@
     "validate": "npm run type-check && npm run build && npm test -- --passWithNoTests",
     "predeploy": "npm run validate",
     "deploy": "git push origin main",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "migrate": "tsx infrastructure/migrations/run-migrations.ts"
   },
   "dependencies": {
