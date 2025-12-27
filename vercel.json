@@ -9,8 +9,8 @@
   "env": {
     "STUDIES_API_URL": "https://pl3wb2enqwsfevm5k2lmlrv3em0jipsy.lambda-url.us-east-1.on.aws/",
     "ENRICHER_API_URL": "https://55noz2p7ypqcatwf2o2kjnw7dq0eeqge.lambda-url.us-east-1.on.aws/",
-    "SEARCH_API_URL": "https://production-search-api-lancedb.lambda-url.us-east-1.on.aws/",
-    "NEXT_PUBLIC_SEARCH_API_URL": "https://production-search-api-lancedb.lambda-url.us-east-1.on.aws/",
+    "SEARCH_API_URL": "https://ogmnjgz664uws4h4t522agsmj40gbpyr.lambda-url.us-east-1.on.aws/",
+    "NEXT_PUBLIC_SEARCH_API_URL": "https://ogmnjgz664uws4h4t522agsmj40gbpyr.lambda-url.us-east-1.on.aws/",
     "NEXT_PUBLIC_USE_INTELLIGENT_SEARCH": "true",
     "NEXT_PUBLIC_ENABLE_VECTOR_SEARCH": "true",
     "PORTAL_API_URL": "DISABLED"
