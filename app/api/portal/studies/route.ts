@@ -1,134 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { SignatureV4 } from '@aws-sdk/signature-v4';
-import { Sha256 } from '@aws-crypto/sha256-js';
-import { defaultProvider } from '@aws-sdk/credential-provider-node';
-import { HttpRequest } from '@aws-sdk/protocol-http';
+/**
+ * Studies API Route - Uses Lambda Function URL for vector search
+ * Account: 643942183354 (SuplementAI)
+ *
+ * This endpoint searches for supplement studies using LanceDB vector search.
+ * The Lambda Function URL has AuthType: NONE, so no AWS signature is needed.
+ */
 
-// The new, secure API Gateway endpoint for vector search
-const VECTOR_SEARCH_API_URL = 'https://wn3ub0r41e.execute-api.us-east-1.amazonaws.com/search';
-const REGION = (process.env.APP_REGION || process.env.AWS_REGION || 'us-east-1').trim();
+import { NextRequest, NextResponse } from 'next/server';
+
+// Lambda Function URL for search (AuthType: NONE - no credentials needed)
+const VECTOR_SEARCH_API_URL = process.env.SEARCH_API_URL ||
+  'https://ogmnjgz664uws4h4t522agsmj40gbpyr.lambda-url.us-east-1.on.aws/';
 
 export interface StudySearchRequest {
   supplementName: string;
   maxResults?: number;
-}
-
-// Utility function to sign and fetch
-async function signAndFetch(url: string, body: object) {
-  // Manually construct and SANITIZE credentials to fix Vercel environment variable issues.
-  // Vercel can inject various whitespace characters into env vars, which corrupts the AWS signature.
-  const credentials = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID?.replace(/\s/g, '') || '',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY?.replace(/\s/g, '') || '',
-    sessionToken: process.env.AWS_SESSION_TOKEN?.replace(/\s/g, ''),
-  };
-
-  // If any essential credential is missing, throw a clear error.
-  if (!credentials.accessKeyId || !credentials.secretAccessKey) {
-    throw new Error('AWS credentials are not properly configured in the environment.');
-  }
-
-  const sigv4 = new SignatureV4({
-    credentials,
-    region: REGION,
-    service: 'execute-api',
-    sha256: Sha256,
-  });
-
-  const urlObject = new URL(url);
-
-  const request = new HttpRequest({
-    hostname: urlObject.hostname,
-    path: urlObject.pathname,
-    method: 'POST',
-    protocol: 'https',
-    headers: {
-      'Content-Type': 'application/json',
-      host: urlObject.hostname,
-    },
-    body: JSON.stringify(body),
-  });
-
-  const signedRequest = await sigv4.sign(request);
-
-  // **DEBUGGING ADICIONAL:** Log the full Authorization header before making the fetch call.
-  console.log('DEBUG: AWS Signed Headers (before fetch):', JSON.stringify(signedRequest.headers, null, 2));
-  console.log('DEBUG: Sanitized Access Key ID (first 5 chars): ', credentials.accessKeyId.substring(0, 5));
-
-  // Correctly construct the Headers object for fetch
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(signedRequest.headers)) {
-    if (value) {
-      headers.append(key, value.toString());
-    }
-  }
-
-  // Use the signed request headers and body for the fetch call
-  return fetch(url, {
-    method: signedRequest.method,
-    headers: headers,
-    body: signedRequest.body,
-  });
-}
-
-// Utility function to sign and fetch with POST method and query parameters
-async function signAndFetchPost(url: string) {
-  // Manually construct and SANITIZE credentials to fix Vercel environment variable issues.
-  const credentials = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID?.replace(/\s/g, '') || '',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY?.replace(/\s/g, '') || '',
-    sessionToken: process.env.AWS_SESSION_TOKEN?.replace(/\s/g, ''),
-  };
-
-  if (!credentials.accessKeyId || !credentials.secretAccessKey) {
-    throw new Error('AWS credentials are not properly configured in the environment.');
-  }
-
-  const sigv4 = new SignatureV4({
-    credentials,
-    region: REGION,
-    service: 'execute-api',
-    sha256: Sha256,
-  });
-
-  const urlObject = new URL(url);
-
-  // Convert URLSearchParams to a plain object for the query property
-  const query: Record<string, string> = {};
-  urlObject.searchParams.forEach((value, key) => {
-    query[key] = value;
-  });
-
-  const request = new HttpRequest({
-    hostname: urlObject.hostname,
-    path: urlObject.pathname,
-    query: query,
-    method: 'POST',
-    protocol: 'https',
-    headers: {
-      host: urlObject.hostname,
-    },
-    body: '', // Explicit empty body for POST
-  });
-
-  const signedRequest = await sigv4.sign(request);
-
-  console.log('DEBUG: POST request to:', url);
-  console.log('DEBUG: Query Params:', JSON.stringify(query));
-
-  // Construct the Headers object for fetch
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(signedRequest.headers)) {
-    if (value) {
-      headers.append(key, value.toString());
-    }
-  }
-
-  return fetch(url, {
-    method: 'POST',
-    headers: headers,
-    body: '', // Ensure fetch also sends empty body if implicit
-  });
 }
 
 export async function POST(request: NextRequest) {
@@ -136,24 +22,37 @@ export async function POST(request: NextRequest) {
     const body: StudySearchRequest = await request.json();
 
     if (!body.supplementName) {
-      return NextResponse.json({ success: false, error: 'supplementName is required' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'supplementName is required' },
+        { status: 400 }
+      );
     }
 
-    // Build URL with query parameters - the Lambda expects ?q=supplement_name in a POST request
+    // Build URL with query parameters
     const searchUrl = `${VECTOR_SEARCH_API_URL}?q=${encodeURIComponent(body.supplementName)}&top_k=${body.maxResults || 10}`;
 
-    // Use POST method with query parameters (API Gateway route is POST /search)
-    const response = await signAndFetchPost(searchUrl);
+    console.log(`[Studies API] Searching for: ${body.supplementName}`);
+
+    // Simple fetch - no AWS signature needed for Function URL with AuthType: NONE
+    const response = await fetch(searchUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (!response.ok) {
       const error = await response.text();
       console.error('Vector Search API error:', error);
-      return NextResponse.json({ success: false, error: 'Failed to fetch studies from vector search' }, { status: response.status });
+      return NextResponse.json(
+        { success: false, error: 'Failed to fetch studies from vector search' },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();
 
-    // Determine where the array of studies is located locally
+    // Determine where the array of studies is located
     let studiesList = [];
     if (Array.isArray(data)) {
       studiesList = data;
@@ -193,11 +92,14 @@ export async function POST(request: NextRequest) {
       }, { status: 502 });
     }
 
-    // Adapt the response if necessary to match the old format expected by the frontend
+    // Adapt the response to match the format expected by the frontend
     return NextResponse.json({ success: true, studies: studiesList });
 
   } catch (error: any) {
     console.error('Studies route error:', error);
-    return NextResponse.json({ success: false, error: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

@@ -1,6 +1,8 @@
 /**
  * Studies Fetcher Lambda Handler
  * Fetches real scientific studies from PubMed with intelligent ranking
+ *
+ * Supports both API Gateway and Lambda Function URL invocations
  */
 
 import * as AWSXRay from 'aws-xray-sdk-core';
@@ -20,31 +22,69 @@ if (config.xrayEnabled) {
 }
 
 /**
+ * Get HTTP method from event (supports both API Gateway and Function URL formats)
+ */
+function getHttpMethod(event: any): string {
+  // API Gateway format
+  if (event.httpMethod) {
+    return event.httpMethod;
+  }
+  // Lambda Function URL format
+  if (event.requestContext?.http?.method) {
+    return event.requestContext.http.method;
+  }
+  // Fallback
+  return 'UNKNOWN';
+}
+
+/**
+ * Get request body from event (supports both API Gateway and Function URL formats)
+ */
+function getRequestBody(event: any): string | null {
+  // Both formats use event.body, but Function URLs may have it base64 encoded
+  if (!event.body) {
+    return null;
+  }
+
+  // Check if body is base64 encoded (Function URL with binary content)
+  if (event.isBase64Encoded) {
+    return Buffer.from(event.body, 'base64').toString('utf-8');
+  }
+
+  return event.body;
+}
+
+/**
  * Lambda handler for fetching studies
  */
 export async function handler(
-  event: APIGatewayProxyEvent,
+  event: APIGatewayProxyEvent | any,
   context: Context
 ): Promise<APIGatewayProxyResult> {
   const segment = config.xrayEnabled ? AWSXRay.getSegment() : null;
   const subsegment = segment?.addNewSubsegment?.('studies-fetcher');
 
   const startTime = Date.now();
-  const correlationId = event.headers?.['X-Request-ID'] || 
-                       event.headers?.['x-request-id'] || 
+  const correlationId = event.headers?.['X-Request-ID'] ||
+                       event.headers?.['x-request-id'] ||
                        context.awsRequestId;
+
+  // Get HTTP method (works with both API Gateway and Function URL)
+  const httpMethod = getHttpMethod(event);
 
   try {
     // Add X-Ray annotations
     if (subsegment) {
       subsegment.addAnnotation('module', 'studies-fetcher');
       subsegment.addAnnotation('requestId', context.awsRequestId);
-      subsegment.addAnnotation('httpMethod', event.httpMethod);
+      if (httpMethod && httpMethod !== 'UNKNOWN') {
+        subsegment.addAnnotation('httpMethod', httpMethod);
+      }
       subsegment.addAnnotation('correlationId', correlationId);
     }
 
     // Handle OPTIONS (CORS preflight)
-    if (event.httpMethod === 'OPTIONS') {
+    if (httpMethod === 'OPTIONS') {
       return {
         statusCode: 200,
         headers: CORS_HEADERS,
@@ -53,12 +93,19 @@ export async function handler(
     }
 
     // Only POST is supported
-    if (event.httpMethod !== 'POST') {
-      return createErrorResponse(405, 'Method not allowed. Use POST.');
+    if (httpMethod !== 'POST') {
+      console.log(JSON.stringify({
+        event: 'METHOD_NOT_ALLOWED',
+        httpMethod,
+        eventKeys: Object.keys(event),
+        requestContext: event.requestContext ? Object.keys(event.requestContext) : null,
+        timestamp: new Date().toISOString(),
+      }));
+      return createErrorResponse(405, `Method not allowed. Use POST. Received: ${httpMethod}`);
     }
 
-    // Parse and validate request
-    const request = parseRequest(event);
+    // Parse and validate request (with Function URL support)
+    const request = parseRequest(event, httpMethod);
 
     if (subsegment) {
       subsegment.addAnnotation('module', 'studies-fetcher');
@@ -425,17 +472,26 @@ export async function handler(
 }
 
 /**
- * Parse and validate request body
+ * Parse and validate request body (supports both API Gateway and Function URL)
  */
-function parseRequest(event: APIGatewayProxyEvent): StudySearchRequest {
-  if (!event.body) {
+function parseRequest(event: any, _httpMethod?: string): StudySearchRequest {
+  // Get body using helper function that handles base64 encoding
+  const rawBody = getRequestBody(event);
+
+  if (!rawBody) {
     throw Object.assign(new Error('Request body is required'), { statusCode: 400 });
   }
 
   let body: any;
   try {
-    body = JSON.parse(event.body);
+    body = JSON.parse(rawBody);
   } catch (error) {
+    console.log(JSON.stringify({
+      event: 'JSON_PARSE_ERROR',
+      rawBody: rawBody?.substring(0, 200),
+      error: (error as Error).message,
+      timestamp: new Date().toISOString(),
+    }));
     throw Object.assign(new Error('Invalid JSON in request body'), { statusCode: 400 });
   }
 

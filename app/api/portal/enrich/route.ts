@@ -29,11 +29,11 @@ export const runtime = 'nodejs'; // Use Node.js runtime instead of Edge to avoid
 
 // Lambda endpoints - using getters to avoid TDZ issues with process.env in Edge Runtime
 function getStudiesApiUrl(): string {
-  return process.env.STUDIES_API_URL || 'https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search';
+  return process.env.STUDIES_API_URL || 'https://pl3wb2enqwsfevm5k2lmlrv3em0jipsy.lambda-url.us-east-1.on.aws/';
 }
 
 function getEnricherApiUrl(): string {
-  return process.env.ENRICHER_API_URL || 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
+  return process.env.ENRICHER_API_URL || 'https://55noz2p7ypqcatwf2o2kjnw7dq0eeqge.lambda-url.us-east-1.on.aws/';
 }
 
 export interface EnrichRequest {
