@@ -164,6 +164,19 @@ export async function generateEnrichedContent(
   const sanitizeJSON = (str: string): string => {
     let cleaned = str;
 
+    // Stage 0: Fix Unicode typographic characters that break JSON
+    // Curly/smart quotes → straight quotes
+    cleaned = cleaned.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"'); // " " „ ‟ ″ ‶ → "
+    cleaned = cleaned.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'"); // ' ' ‚ ‛ ′ ‵ → '
+    // Em/en dashes → regular hyphen
+    cleaned = cleaned.replace(/[\u2013\u2014\u2015]/g, '-'); // – — ― → -
+    // Ellipsis → three dots
+    cleaned = cleaned.replace(/\u2026/g, '...'); // … → ...
+    // Non-breaking space → regular space
+    cleaned = cleaned.replace(/\u00A0/g, ' ');
+    // Zero-width characters → remove
+    cleaned = cleaned.replace(/[\u200B\u200C\u200D\uFEFF]/g, '');
+
     // Stage 1: Remove control characters (except tabs, newlines in strings)
     cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (match) => {
       if (match === '\t' || match === '\n' || match === '\r') {
@@ -241,18 +254,24 @@ export async function generateEnrichedContent(
     const lastBrace = text.lastIndexOf('}');
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
       const extracted = text.substring(firstBrace, lastBrace + 1);
+      const sanitizedExtracted = sanitizeJSON(extracted);
       try {
-        return JSON.parse(sanitizeJSON(extracted));
+        return JSON.parse(sanitizedExtracted);
       } catch (error3: any) {
         console.warn(`Strategy 3 failed (extraction): ${error3.message}`);
 
         // Get error position for debugging
         const errorPos = parseInt(error3.message.match(/\d+/)?.[0] || '0');
-        const snippet = extracted.substring(
-          Math.max(0, errorPos - 100),
-          Math.min(extracted.length, errorPos + 100)
+        const snippet = sanitizedExtracted.substring(
+          Math.max(0, errorPos - 50),
+          Math.min(sanitizedExtracted.length, errorPos + 50)
         );
-        console.error(`JSON error context: ...${snippet}...`);
+        // Log character codes around error position for debugging Unicode issues
+        const charCodes = sanitizedExtracted.substring(
+          Math.max(0, errorPos - 5),
+          Math.min(sanitizedExtracted.length, errorPos + 5)
+        ).split('').map(c => c.charCodeAt(0));
+        console.error(`JSON error at pos ${errorPos}: ...${snippet}... | CharCodes: [${charCodes.join(', ')}]`);
       }
     }
 
