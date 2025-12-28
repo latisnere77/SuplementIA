@@ -260,6 +260,13 @@ export async function POST(request: NextRequest) {
       'reishi': 'reishi',
       'citrato de magnesio': 'magnesium citrate',
       'glicinato de magnesio': 'magnesium glycinate',
+      // Carnitine variants
+      'carnitina': 'l-carnitine',
+      'l-carnitina': 'l-carnitine',
+      'levocarnitina': 'l-carnitine',
+      'acetil carnitina': 'acetyl-l-carnitine',
+      'acetil l carnitina': 'acetyl-l-carnitine',
+      'acetil-l-carnitina': 'acetyl-l-carnitine',
     };
 
     // First check common abbreviations map

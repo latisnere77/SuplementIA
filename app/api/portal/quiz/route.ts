@@ -100,18 +100,27 @@ async function enrichSupplement(supplementName: string, baseUrl: string): Promis
  * Merge enriched data into recommendation structure
  */
 function mergeEnrichedData(recommendation: any, enrichedData: any): any {
-  // 1. Resolve evidence structure (handle both top-level and data-nested)
-  const evidence = enrichedData?.evidence || enrichedData?.data?.evidence;
+  // 1. Resolve evidence structure (handle multiple possible paths from enrich endpoint)
+  // The enrich endpoint returns data in: enrichedData.data.supplement OR enrichedData.data directly
+  const evidence = enrichedData?.evidence ||
+                   enrichedData?.data?.evidence ||
+                   enrichedData?.data?.supplement ||  // NEW: enrich endpoint returns supplement
+                   enrichedData?.data ||              // NEW: data might BE the evidence
+                   enrichedData?.supplement;          // NEW: fallback
 
   if (!evidence) {
     console.warn(`[MERGE_WARN] No evidence found in enrichment response for "${recommendation?.supplement?.name}"`, {
       hasTopEvidence: !!enrichedData?.evidence,
       hasDataEvidence: !!enrichedData?.data?.evidence,
+      hasDataSupplement: !!enrichedData?.data?.supplement,
+      hasData: !!enrichedData?.data,
       topKeys: enrichedData ? Object.keys(enrichedData) : [],
       dataKeys: enrichedData?.data ? Object.keys(enrichedData.data) : []
     });
     return recommendation;
   }
+
+  console.log(`[MERGE_DEBUG] Found evidence via path. worksFor: ${evidence.worksFor?.length || 0}, doesntWorkFor: ${evidence.doesntWorkFor?.length || 0}`);
 
   // Update worksFor with real conditions from enrichment
   if (evidence.worksFor && evidence.worksFor.length > 0) {
