@@ -791,10 +791,17 @@ function ResultsPageContent() {
           const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           console.log(`🔖 Job ID: ${jobId} - Query: "${normalizedQuery}" → "${category}"`);
 
-          // Use quiz endpoint for all searches (ingredients and categories)
-          // The quiz endpoint already handles enrichment with proper timeout handling
-          // Adding timestamp to force fresh fetch and avoid caching old B12 results
-          const response = await fetch(`/api/portal/quiz?t=${Date.now()}`, {
+          // Use Lambda quiz-orchestrator for all searches (ingredients and categories)
+          // This bypasses the Amplify 30s SSR timeout limit by calling Lambda directly
+          // The Lambda has 300s timeout and handles search + enrichment
+          const quizApiUrl = process.env.NEXT_PUBLIC_QUIZ_API_URL || '/api/portal/quiz';
+          const apiUrl = quizApiUrl.startsWith('http')
+            ? quizApiUrl
+            : `${quizApiUrl}?t=${Date.now()}`;
+
+          console.log(`🚀 Calling quiz API: ${apiUrl}`);
+
+          const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
