@@ -1,0 +1,30 @@
+# Lefthook configuration for Suplementia
+# https://github.com/evilmartians/lefthook
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,jsx,ts,tsx}"
+      run: ./node_modules/.bin/eslint {staged_files} --max-warnings 0
+      stage_fixed: true
+
+    type-check:
+      glob: "*.{ts,tsx}"
+      run: npm run type-check
+
+    lambda-content-enricher:
+      root: "backend/lambda/content-enricher"
+      glob: "*.ts"
+      run: npm run build
+
+    lambda-studies-fetcher:
+      root: "backend/lambda/studies-fetcher"
+      glob: "*.ts"
+      run: npm run build
+
+pre-push:
+  parallel: false
+  commands:
+    validate:
+      run: npm run validate

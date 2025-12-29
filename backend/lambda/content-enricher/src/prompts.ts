@@ -19,18 +19,37 @@ CONTEXTO:
 INSTRUCCIONES CRÍTICAS - LEE CUIDADOSAMENTE:
 1. Basate SOLO en evidencia científica publicada (estudios RCT, meta-análisis, revisiones sistemáticas)
 2. SÉ EXTREMADAMENTE DETALLADO - Incluye NÚMEROS EXACTOS, PORCENTAJES, TAMAÑOS DE EFECTO
-3. Para CADA "worksFor", incluye:
+3. 🚨 PROHIBIDO INVENTAR DATOS FARMACOCINÉTICOS:
+   - NO inventes porcentajes de absorción (ej: "aumenta absorción 30%") sin citar PMID específico
+   - NO inventes claims sobre biodisponibilidad sin estudio publicado
+   - NO inventes timing óptimo sin evidencia clínica
+   - Si no hay datos, escribe "Sin datos farmacocinéticos específicos publicados"
+
+4. 🔬 MECANISMOS - SOLO EVIDENCIA ESTABLECIDA:
+   - Solo incluye mecanismos documentados en literatura científica
+   - Indica evidenceLevel honestamente (strong = consenso científico, moderate = evidencia parcial, weak = preliminar)
+   - NO inventes vías moleculares o receptores hipotéticos
+   - Máximo 3 mecanismos, priorizando los mejor establecidos
+
+5. 🛒 GUÍA DE COMPRA - BASADA EN FUENTES CONFIABLES:
+   - Usa información de ConsumerLab, Examine.com, y estudios publicados
+   - Para hongos: distinguir cuerpo fructífero vs micelio (cuerpo fructífero tiene 3-5x más beta-glucanos según Journal of Fungi 2020)
+   - Para extractos: indicar estandarización basada en estudios clínicos reales
+   - avoidFlags: solo alertas documentadas (ej: micelio en grano = principalmente almidón según mycologist Jeff Chilton)
+   - NO inventes porcentajes de estandarización sin fuente
+
+6. Para CADA "worksFor", incluye:
    - Effect size EXACTO (ej: "Aumenta fuerza muscular 8-15%", "Reduce cortisol 27.9%")
    - Metodología del estudio (ej: "Meta-análisis de 150+ RCTs", "Estudio doble-ciego con 500 participantes")
    - Número de participantes TOTAL
    - Magnitud del efecto: Small, Moderate, Large, o Very Large
-4. NO inventes datos, estudios o referencias
-5. Usa terminología clara pero ESPECÍFICA (incluye números y estadísticas)
-6. Prioriza meta-análisis y RCTs sobre estudios observacionales
-7. Sé conservador pero COMPLETO - mejor subestimar que exagerar, pero incluye TODOS los detalles disponibles
-8. Incluye detalles prácticos ESPECÍFICOS: dosis exactas con rangos, timing preciso, duración mínima
-9. Menciona efectos secundarios con FRECUENCIA (ej: "10-15% de usuarios", "Raro <1%")
-10. {studiesInstruction}
+7. NO inventes datos, estudios o referencias
+8. Usa terminología clara pero ESPECÍFICA (incluye números y estadísticas)
+9. Prioriza meta-análisis y RCTs sobre estudios observacionales
+10. Sé conservador pero COMPLETO - mejor subestimar que exagerar, pero incluye TODOS los detalles disponibles
+11. Incluye detalles prácticos ESPECÍFICOS: dosis exactas con rangos, duración mínima
+12. Menciona efectos secundarios con FRECUENCIA (ej: "10-15% de usuarios", "Raro <1%")
+13. {studiesInstruction}
 
 🎯 REGLAS DE CANTIDAD (OBLIGATORIO - NO NEGOCIABLE):
 ⚠️ DEBES incluir EXACTAMENTE este número de items:
@@ -63,12 +82,33 @@ ESTRUCTURA REQUERIDA (Responde ÚNICAMENTE con JSON válido, sin markdown):
 
   "mechanisms": [
     {
-      "name": "Nombre ESPECÍFICO del mecanismo (ej: Modulación de receptores GABA-A, Inhibición de 5-alfa-reductasa)",
-      "description": "Explicación DETALLADA de CÓMO funciona este mecanismo a nivel molecular/celular. Incluye receptores específicos, enzimas, vías de señalización. Mínimo 2-3 oraciones técnicas pero claras.",
-      "evidenceLevel": "strong|moderate|weak|preliminary",
-      "studyCount": número_estimado_de_estudios_que_respaldan_este_mecanismo
+      "name": "Nombre ESPECÍFICO del mecanismo ESTABLECIDO (ej: Estimulación de NGF, Modulación de receptores GABA-A)",
+      "description": "Explicación de CÓMO funciona basada en ESTUDIOS PUBLICADOS. Incluye receptores, enzimas o vías específicas SOLO si están documentadas. NO inventes mecanismos hipotéticos.",
+      "evidenceLevel": "strong|moderate|weak",
+      "target": "Receptor/enzima/vía específica (ej: Factor de Crecimiento Nervioso, receptores NMDA, eje HPA)"
     }
   ],
+
+  "buyingGuidance": {
+    "preferredForm": "Forma preferida según evidencia (ej: Extracto de cuerpo fructífero, Monohidrato, Citrato). SOLO formas con respaldo en estudios clínicos.",
+    "keyCompounds": [
+      {
+        "name": "Compuesto activo principal (ej: Hericenones, Withanólidos, Creatina)",
+        "source": "De dónde proviene (ej: cuerpo fructífero, raíz, síntesis)",
+        "lookFor": "Qué buscar en etiqueta (ej: >30% beta-glucanos, 5% withanólidos)"
+      }
+    ],
+    "avoidFlags": [
+      "Señal de alerta 1 basada en evidencia (ej: 'Productos de micelio en grano - contienen principalmente almidón')",
+      "Señal de alerta 2 (ej: 'Sin pruebas de terceros para metales pesados')"
+    ],
+    "qualityIndicators": [
+      "Indicador de calidad verificable (ej: 'Certificación orgánica USDA')",
+      "Indicador 2 (ej: 'Pruebas de laboratorio de terceros disponibles')",
+      "Indicador 3 (ej: 'Estandarizado a X% de compuesto activo')"
+    ],
+    "notes": "Contexto adicional SOLO si está basado en evidencia publicada. NO inventes claims de absorción o biodisponibilidad."
+  },
 
   "worksFor": [
     {
@@ -112,12 +152,12 @@ ESTRUCTURA REQUERIDA (Responde ÚNICAMENTE con JSON válido, sin markdown):
     "effectiveDose": "Dosis MÍNIMA efectiva documentada (ej: 300mg/día para efectos ansiolíticos)",
     "optimalDose": "Dosis ÓPTIMA según meta-análisis (ej: 500mg/día mostró mejores resultados)",
     "maxSafeDose": "Dosis máxima segura documentada (ej: Hasta 1200mg/día sin efectos adversos significativos)",
-    "timing": "CUÁNDO tomar para mejor eficacia con RAZÓN (ej: Mañana con el desayuno para mejor absorción, Noche antes de dormir para aprovechar pico de cortisol, Timing no crítico según estudios)",
+    "timing": "CUÁNDO tomar según estudios clínicos publicados. Si NO hay evidencia de timing específico, escribe 'Sin preferencia de horario según estudios clínicos'. NO inventes claims de absorción.",
     "duration": "Duración ESPECÍFICA para ver efectos según estudios (ej: Efectos iniciales en 2-4 semanas, efectos completos en 8-12 semanas, uso continuo seguro hasta 6 meses documentado)",
     "forms": [
       {
         "form": "Nombre EXACTO de la forma (ej: KSM-66®, Sensoril®, Extracto acuoso 10:1, Monohidrato micronizado)",
-        "description": "Por qué esta forma es relevante con DATOS (ej: Estandarizado al 5% withanólidos, usado en 78% de estudios clínicos, biodisponibilidad 40% mayor)",
+        "description": "Por qué esta forma es relevante (ej: Estandarizado al 5% withanólidos, usado en mayoría de estudios clínicos). NO inventes porcentajes de biodisponibilidad sin citar estudio.",
         "recommended": true|false,
         "studyCount": número_de_estudios_con_esta_forma
       }
@@ -125,7 +165,7 @@ ESTRUCTURA REQUERIDA (Responde ÚNICAMENTE con JSON válido, sin markdown):
     "stacksWith": [
       "Nombre de suplemento con sinergia DOCUMENTADA (incluye breve razón, ej: L-Teanina - potencia efectos calmantes sin sedación)"
     ],
-    "notes": "Consideraciones IMPORTANTES sobre dosificación (ej: Tomar con grasas aumenta absorción 30%, dividir dosis mejora tolerancia, ciclado no necesario según evidencia)"
+    "notes": "SOLO información verificable de estudios clínicos. NO inventes porcentajes de absorción ni claims farmacocinéticos sin PMID. Si no hay datos específicos, escribe 'Seguir indicaciones del fabricante'."
   },
 
   "safety": {
@@ -370,6 +410,7 @@ export function buildEnrichmentPrompt(
 /**
  * Validate enriched content structure
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function validateEnrichedContent(data: any): {
   valid: boolean;
   errors: string[];
@@ -384,6 +425,7 @@ export function validateEnrichedContent(data: any): {
     'worksFor',
     'dosage',
     'safety',
+    'buyingGuidance',
   ];
 
   for (const field of requiredFields) {
@@ -419,6 +461,33 @@ export function validateEnrichedContent(data: any): {
   if (data.safety) {
     if (!('overallRating' in data.safety)) {
       errors.push('safety.overallRating is required');
+    }
+  }
+
+  // Validate mechanisms structure
+  if (data.mechanisms && Array.isArray(data.mechanisms)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data.mechanisms.forEach((mech: any, idx: number) => {
+      if (!mech.name || !mech.evidenceLevel) {
+        errors.push(`mechanisms[${idx}] must have name and evidenceLevel`);
+      }
+      // Validate evidenceLevel is one of allowed values
+      if (mech.evidenceLevel && !['strong', 'moderate', 'weak'].includes(mech.evidenceLevel)) {
+        errors.push(`mechanisms[${idx}].evidenceLevel must be strong, moderate, or weak`);
+      }
+    });
+  }
+
+  // Validate buyingGuidance structure
+  if (data.buyingGuidance) {
+    if (!data.buyingGuidance.preferredForm) {
+      errors.push('buyingGuidance.preferredForm is required');
+    }
+    if (!Array.isArray(data.buyingGuidance.keyCompounds)) {
+      errors.push('buyingGuidance.keyCompounds must be an array');
+    }
+    if (!Array.isArray(data.buyingGuidance.qualityIndicators)) {
+      errors.push('buyingGuidance.qualityIndicators must be an array');
     }
   }
 

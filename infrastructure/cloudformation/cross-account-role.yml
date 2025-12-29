@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Cross-Account Role for Claude Code to access SuplementAI resources'
+
+Parameters:
+  SourceAccountId:
+    Type: String
+    Default: '239378269775'
+    Description: AWS Account ID that will assume this role
+
+Resources:
+  ClaudeCodeCrossAccountRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: suplementai-claude-code-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${SourceAccountId}:user/latisnere'
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                'sts:ExternalId': 'suplementai-claude-code-access'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+      MaxSessionDuration: 3600
+      Tags:
+        - Key: Purpose
+          Value: claude-code-access
+        - Key: CreatedBy
+          Value: claude-code
+
+Outputs:
+  RoleArn:
+    Description: ARN of the role to assume
+    Value: !GetAtt ClaudeCodeCrossAccountRole.Arn
+    Export:
+      Name: suplementai-claude-code-role-arn
+
+  RoleName:
+    Description: Name of the role
+    Value: !Ref ClaudeCodeCrossAccountRole
+
+  ExternalId:
+    Description: External ID for security
+    Value: suplementai-claude-code-access
