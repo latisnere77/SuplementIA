@@ -10,7 +10,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Shield, Beaker, Users, Calendar, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { Shield, Beaker, Users, Calendar, ExternalLink, ChevronDown, ChevronUp, Brain, ShoppingCart, CheckCircle, AlertTriangle, FlaskConical } from 'lucide-react';
 import SupplementGrade, { SupplementGradeBadge } from './SupplementGrade';
 import EvidenceOverview from './EvidenceOverview';
 import type { GradeType } from '@/types/supplement-grade';
@@ -97,7 +97,21 @@ interface EvidenceSummaryNew {
     name: string;
     description: string;
     evidenceLevel: 'strong' | 'moderate' | 'weak';
+    target?: string;
   }>;
+
+  // NEW: Buying guidance - what to look for when purchasing
+  buyingGuidance?: {
+    preferredForm: string;
+    keyCompounds: Array<{
+      name: string;
+      source: string;
+      lookFor: string;
+    }>;
+    avoidFlags: string[];
+    qualityIndicators: string[];
+    notes?: string;
+  };
 
   // NEW: Intelligent ranking from studies-fetcher
   studies?: {
@@ -471,50 +485,95 @@ export default function EvidenceAnalysisPanelNew({
         </div>
       )}
 
-      {/* Ingredientes (Opcional - colapsable) */}
-      {evidenceSummary.ingredients?.length > 0 && (
+      {/* Qué Buscar al Comprar - Buying Guidance */}
+      {evidenceSummary.buyingGuidance && (
         <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Ingredientes Clave
-          </h2>
+          <div className="flex items-center gap-3 mb-6">
+            <ShoppingCart className="w-7 h-7 text-purple-600" />
+            <h2 className="text-2xl font-bold text-gray-900">
+              Qué Buscar al Comprar
+            </h2>
+          </div>
 
-          <div className="space-y-4">
-            {evidenceSummary.ingredients.map((ingredient) => (
-              <div
-                key={ingredient.name}
-                className="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2 flex-wrap">
-                      <h4 className="text-lg font-semibold text-gray-900">
-                        {ingredient.name}
-                      </h4>
-                      <SupplementGradeBadge grade={ingredient.grade} size="md" />
-                    </div>
+          <div className="space-y-6">
+            {/* Preferred Form */}
+            {evidenceSummary.buyingGuidance.preferredForm && (
+              <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Forma Preferida
+                </h4>
+                <p className="text-purple-800">{evidenceSummary.buyingGuidance.preferredForm}</p>
+              </div>
+            )}
 
-                    {ingredient.description && (
-                      <p className="text-sm text-gray-600 mb-2 break-words">
-                        {ingredient.description}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>{ingredient.studyCount} estudio{ingredient.studyCount !== 1 ? 's' : ''}</span>
-                      {ingredient.rctCount > 0 && (
-                        <span className="text-green-600 font-medium">
-                          {ingredient.rctCount} RCTs
-                        </span>
+            {/* Key Compounds */}
+            {evidenceSummary.buyingGuidance.keyCompounds?.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <FlaskConical className="w-5 h-5 text-blue-600" />
+                  Compuestos Activos a Buscar
+                </h4>
+                <div className="grid gap-3">
+                  {evidenceSummary.buyingGuidance.keyCompounds.map((compound, idx) => (
+                    <div key={idx} className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="font-medium text-blue-900">{compound.name}</div>
+                      {compound.source && (
+                        <div className="text-sm text-blue-700">Fuente: {compound.source}</div>
+                      )}
+                      {compound.lookFor && (
+                        <div className="text-sm text-blue-800 mt-1">
+                          <span className="font-medium">Buscar:</span> {compound.lookFor}
+                        </div>
                       )}
                     </div>
-                  </div>
-
-                  {/* Toggle button removed as it only showed external link */}
+                  ))}
                 </div>
-
-                {/* Expanded content removed */}
               </div>
-            ))}
+            )}
+
+            {/* Quality Indicators */}
+            {evidenceSummary.buyingGuidance.qualityIndicators?.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  Indicadores de Calidad
+                </h4>
+                <ul className="space-y-2">
+                  {evidenceSummary.buyingGuidance.qualityIndicators.map((indicator, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-green-800 bg-green-50 p-2 rounded-lg border border-green-200">
+                      <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <span>{indicator}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Avoid Flags */}
+            {evidenceSummary.buyingGuidance.avoidFlags?.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-amber-600" />
+                  Señales de Alerta (Evitar)
+                </h4>
+                <ul className="space-y-2">
+                  {evidenceSummary.buyingGuidance.avoidFlags.map((flag, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                      <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <span>{flag}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Notes */}
+            {evidenceSummary.buyingGuidance.notes && (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+                <span className="font-medium">Nota:</span> {evidenceSummary.buyingGuidance.notes}
+              </div>
+            )}
           </div>
         </div>
       )}
