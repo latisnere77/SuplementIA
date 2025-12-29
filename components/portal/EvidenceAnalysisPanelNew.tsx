@@ -254,28 +254,37 @@ export default function EvidenceAnalysisPanelNew({
       {evidenceSummary.dosage && (
         <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Dosificación Recomendada
+            Dosificación según Estudios Clínicos
           </h2>
           <div className="space-y-4">
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-blue-900 mb-2">
-                Dosis Efectiva
-              </h4>
-              <p className="text-lg text-blue-800">
-                {evidenceSummary.dosage.effectiveDose}
-              </p>
-            </div>
+            {/* Only show effective dose if it has actual content */}
+            {evidenceSummary.dosage.effectiveDose && !evidenceSummary.dosage.effectiveDose.toLowerCase().includes('no disponible') && (
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-blue-900 mb-2">
+                  Dosis Efectiva (mínima documentada)
+                </h4>
+                <p className="text-lg text-blue-800">
+                  {evidenceSummary.dosage.effectiveDose}
+                </p>
+              </div>
+            )}
 
-            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-green-900 mb-2">
-                Dosis Común
-              </h4>
-              <p className="text-lg text-green-800">
-                {evidenceSummary.dosage.commonDose}
-              </p>
-            </div>
+            {/* Only show common dose if it has actual content */}
+            {evidenceSummary.dosage.commonDose && !evidenceSummary.dosage.commonDose.toLowerCase().includes('no disponible') && (
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-green-900 mb-2">
+                  Rango de Dosis en Estudios
+                </h4>
+                <p className="text-lg text-green-800">
+                  {evidenceSummary.dosage.commonDose}
+                </p>
+              </div>
+            )}
 
-            {evidenceSummary.dosage.timing && (
+            {/* Only show timing if it has useful info (not vague phrases) */}
+            {evidenceSummary.dosage.timing &&
+             !evidenceSummary.dosage.timing.toLowerCase().includes('según indicaciones') &&
+             !evidenceSummary.dosage.timing.toLowerCase().includes('sin preferencia') && (
               <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
                 <h4 className="text-sm font-semibold text-purple-900 mb-2">
                   Momento de Toma
@@ -286,13 +295,21 @@ export default function EvidenceAnalysisPanelNew({
               </div>
             )}
 
-            {evidenceSummary.dosage.notes && (
-              <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
-                <p className="text-sm text-gray-700">
-                  <strong>Nota:</strong> {evidenceSummary.dosage.notes}
+            {/* Only show notes if they have useful content (not placeholders) */}
+            {evidenceSummary.dosage.notes &&
+             !evidenceSummary.dosage.notes.toLowerCase().includes('seguir indicaciones') &&
+             evidenceSummary.dosage.notes.length > 20 && (
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
+                  <strong>📋 Consideraciones:</strong> {evidenceSummary.dosage.notes}
                 </p>
               </div>
             )}
+
+            {/* Disclaimer */}
+            <p className="text-xs text-gray-500 mt-4">
+              * Dosis basadas en estudios clínicos publicados. Consulta con un profesional de salud antes de suplementar.
+            </p>
           </div>
         </div>
       )}
