@@ -186,11 +186,7 @@ export default function EvidenceAnalysisPanelNew({
 
           {/* Evidence Overview - Objective research data */}
           <EvidenceOverview
-            totalPositive={evidenceSummary.studies?.ranked?.metadata?.totalPositive || 0}
-            totalNegative={evidenceSummary.studies?.ranked?.metadata?.totalNegative || 0}
-            totalNeutral={evidenceSummary.studies?.ranked?.metadata?.totalNeutral || 0}
             totalStudies={evidenceSummary.studies?.total || 0}
-            researchSpanYears={evidenceSummary.researchSpanYears}
             topConditions={
               // Get top conditions from worksFor
               evidenceSummary.worksFor?.slice(0, 3).map((w) => w.condition) || []
@@ -198,10 +194,10 @@ export default function EvidenceAnalysisPanelNew({
             supplementName={supplementName}
           />
 
-          {/* Para qué sirve (LO MÁS IMPORTANTE) */}
+          {/* ¿Qué es? - Descripción del ingrediente */}
           <div className="bg-white rounded-xl p-6 border-2 border-gray-200">
             <h3 className="text-lg font-bold text-gray-900 mb-3">
-              ¿Para qué sirve?
+              ¿Qué es?
             </h3>
             <p className="text-xl text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
               {evidenceSummary.whatIsItFor}

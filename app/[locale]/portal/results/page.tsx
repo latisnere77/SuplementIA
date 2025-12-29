@@ -296,9 +296,11 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
 
   const result = {
     overallGrade,
-    whatIsItFor: (supplement.description && !supplement.description.includes('Supplement found with'))
-      ? supplement.description
-      : (supplement.whatIsIt || `Suplemento: ${recommendation.category}`),
+    // Prioritize whatIsIt (rich description) over description (often generic)
+    whatIsItFor: supplement.whatIsIt
+      || (supplement.description && !supplement.description.includes('Suplemento analizado') && !supplement.description.includes('Supplement found with')
+          ? supplement.description
+          : `Suplemento: ${recommendation.category}`),
     evidenceByBenefit, // Add the new transformed data
     worksFor,
     doesntWorkFor, // ✅ NOW POPULATED with real data
