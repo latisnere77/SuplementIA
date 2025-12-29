@@ -10,8 +10,17 @@ import { render, screen, waitFor } from '@testing-library/react';
 import ResultsPage from '../page';
 import {
   createRecommendation,
-  createMockFetchResponse,
+  setupCachedRecommendation,
 } from './factories/recommendation.factory';
+
+// Suppress console.log to prevent memory issues during tests
+const originalLog = console.log;
+beforeAll(() => {
+  console.log = jest.fn();
+});
+afterAll(() => {
+  console.log = originalLog;
+});
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -30,8 +39,9 @@ jest.mock('@/components/portal/IntelligentLoadingSpinner', () => {
 
 jest.mock('@/components/portal/ErrorState', () => {
   return {
-    ErrorState: function MockErrorState() {
-      return <div data-testid="error-state">Error</div>;
+    ErrorState: function MockErrorState({ error }: { error: string | { message?: string } }) {
+      const message = typeof error === 'string' ? error : error?.message || 'Error';
+      return <div data-testid="error-state">{message}</div>;
     },
   };
 });
@@ -147,9 +157,8 @@ describe('Property Test: Valid Data Display', () => {
       studiesUsed: 25,
     });
 
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      createMockFetchResponse(mockRecommendation)
-    );
+    // Set up cache for shared link flow
+    setupCachedRecommendation('ashwagandha-rec', mockRecommendation);
 
     render(<ResultsPage />);
 
@@ -180,9 +189,8 @@ describe('Property Test: Valid Data Display', () => {
       researchSpanYears: 20,
     });
 
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      createMockFetchResponse(mockRecommendation)
-    );
+    // Set up cache for shared link flow
+    setupCachedRecommendation('omega3-rec', mockRecommendation);
 
     render(<ResultsPage />);
 
@@ -213,9 +221,8 @@ describe('Property Test: Valid Data Display', () => {
       researchSpanYears: 1,
     });
 
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      createMockFetchResponse(minimalRecommendation)
-    );
+    // Set up cache for shared link flow
+    setupCachedRecommendation('minimal-rec', minimalRecommendation);
 
     render(<ResultsPage />);
 
@@ -245,9 +252,8 @@ describe('Property Test: Valid Data Display', () => {
       researchSpanYears: 20,
     });
 
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      createMockFetchResponse(vitaminRecommendation)
-    );
+    // Set up cache for shared link flow
+    setupCachedRecommendation('vitamin-rec', vitaminRecommendation);
 
     render(<ResultsPage />);
 

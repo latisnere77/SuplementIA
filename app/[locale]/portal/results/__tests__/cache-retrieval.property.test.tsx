@@ -16,6 +16,15 @@ import {
   setupCachedRecommendation,
 } from './factories/recommendation.factory';
 
+// Suppress console.log to prevent memory issues during tests
+const originalLog = console.log;
+beforeAll(() => {
+  console.log = jest.fn();
+});
+afterAll(() => {
+  console.log = originalLog;
+});
+
 // ===========================================
 // MOCKS
 // ===========================================
@@ -37,8 +46,9 @@ jest.mock('@/components/portal/IntelligentLoadingSpinner', () => {
 
 jest.mock('@/components/portal/ErrorState', () => {
   return {
-    ErrorState: function MockErrorState() {
-      return <div data-testid="error-state">Error</div>;
+    ErrorState: function MockErrorState({ error }: { error: string | { message?: string } }) {
+      const message = typeof error === 'string' ? error : error?.message || 'Error';
+      return <div data-testid="error-state">{message}</div>;
     },
   };
 });
@@ -280,7 +290,7 @@ describe('Property Test: Cache Retrieval', () => {
 
     // Setup search params with query (search flow)
     const mockSearchParams = new URLSearchParams();
-    mockSearchParams.set('query', 'ashwagandha');
+    mockSearchParams.set('q', 'ashwagandha');
     useSearchParams.mockReturnValue(mockSearchParams);
 
     const searchRecommendation = createRecommendation({

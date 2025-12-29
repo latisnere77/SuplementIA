@@ -456,6 +456,9 @@ interface Recommendation {
 function ResultsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  // Use ref to keep router stable across renders (prevents infinite loops in useEffect)
+  const routerRef = useRef(router);
+  routerRef.current = router;
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [conditionResult, setConditionResult] = useState<PubMedQueryResult | null>(null);
   const [searchType, setSearchType] = useState<'ingredient' | 'condition' | null>(null);
@@ -710,6 +713,7 @@ function ResultsPageContent() {
               console.log('[Cache Retrieval] ✅ Valid cache found for shared link');
               setError(null);
               setRecommendation(recommendation);
+              setSearchType('ingredient'); // Set searchType so evidence panel renders
               setIsLoading(false);
               return;
             }
@@ -719,7 +723,7 @@ function ResultsPageContent() {
           console.log('[Cache Retrieval] Cache miss for shared link - redirecting to homepage');
           setError('Esta recomendación ya no está disponible. Por favor, genera una nueva búsqueda.');
           setIsLoading(false);
-          setTimeout(() => router.push('/portal'), 2000);
+          setTimeout(() => routerRef.current.push('/portal'), 2000);
         } catch (error) {
           console.error('[Cache Retrieval] Error:', error);
           setError('Error al cargar la recomendación. Por favor, genera una nueva búsqueda.');
@@ -1144,7 +1148,8 @@ function ResultsPageContent() {
     return () => {
       isMounted = false;
     };
-  }, [query, jobId, router, submittedBenefitQuery]);
+  // Note: routerRef is used instead of router to prevent infinite re-renders
+  }, [query, jobId, submittedBenefitQuery]);
 
   const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; directLink?: string; affiliateLink?: string }) => {
     if (isFreeUser && product.tier !== 'budget') {

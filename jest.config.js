@@ -16,6 +16,8 @@ const customJestConfig = {
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
     '<rootDir>/_archived/',
+    '/__tests__/factories/',
+    '/__tests__/setup/',
   ],
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
