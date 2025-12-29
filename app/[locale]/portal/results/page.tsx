@@ -272,7 +272,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   // Extract intelligent ranking from metadata
   // Extract intelligent ranking from evidence_summary (primary) or metadata (legacy)
   const metadata = (recommendation as any)._enrichment_metadata || {};
-  const studies = (evidenceSummary as any).studies || metadata.studies || {
+  const baseStudies = (evidenceSummary as any).studies || metadata.studies || {
     ranked: {
       positive: [],
       negative: [],
@@ -286,6 +286,12 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     },
     all: [],
     total: 0,
+  };
+
+  // Ensure total is populated from evidence_summary if not in studies
+  const studies = {
+    ...baseStudies,
+    total: baseStudies.total || evidenceSummary.totalStudies || 0,
   };
 
   const result = {
@@ -324,6 +330,8 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     })) : [],
     // NEW: Include intelligent ranking
     studies,
+    // Research span for evidence overview
+    researchSpanYears: evidenceSummary.researchSpanYears || 0,
   };
 
   // DEBUG: Log final result summary

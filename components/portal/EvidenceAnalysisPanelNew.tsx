@@ -12,6 +12,7 @@
 import { useState } from 'react';
 import { Shield, Beaker, Users, Calendar, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import SupplementGrade, { SupplementGradeBadge } from './SupplementGrade';
+import EvidenceOverview from './EvidenceOverview';
 import type { GradeType } from '@/types/supplement-grade';
 import WorksForSection, { type WorksForItem } from './WorksForSection';
 import IntelligentRankingSection from './IntelligentRankingSection';
@@ -114,6 +115,9 @@ interface EvidenceSummaryNew {
     all?: any[];
     total?: number;
   };
+
+  // Research span in years
+  researchSpanYears?: number;
 }
 
 interface EvidenceAnalysisPanelNewProps {
@@ -180,11 +184,18 @@ export default function EvidenceAnalysisPanelNew({
             </h1>
           )}
 
-          {/* Calificación Principal */}
-          <SupplementGrade
-            grade={evidenceSummary.overallGrade}
+          {/* Evidence Overview - Objective research data */}
+          <EvidenceOverview
+            totalPositive={evidenceSummary.studies?.ranked?.metadata?.totalPositive || 0}
+            totalNegative={evidenceSummary.studies?.ranked?.metadata?.totalNegative || 0}
+            totalNeutral={evidenceSummary.studies?.ranked?.metadata?.totalNeutral || 0}
+            totalStudies={evidenceSummary.studies?.total || 0}
+            researchSpanYears={evidenceSummary.researchSpanYears}
+            topConditions={
+              // Get top conditions from worksFor
+              evidenceSummary.worksFor?.slice(0, 3).map((w) => w.condition) || []
+            }
             supplementName={supplementName}
-            size="lg"
           />
 
           {/* Para qué sirve (LO MÁS IMPORTANTE) */}
