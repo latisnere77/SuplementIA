@@ -1,13 +1,17 @@
 /**
  * Property Test: Valid data displays recommendation
  * Validates: Requirements 1.1, 1.2, 2.1
- * 
+ *
  * Property 1: When the API returns valid recommendation data,
  * the component should display the recommendation and NOT show error state
  */
 
 import { render, screen, waitFor } from '@testing-library/react';
 import ResultsPage from '../page';
+import {
+  createRecommendation,
+  createMockFetchResponse,
+} from './factories/recommendation.factory';
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -134,27 +138,17 @@ describe('Property Test: Valid Data Display', () => {
     mockSearchParams.set('supplement', 'ashwagandha');
     useSearchParams.mockReturnValue(mockSearchParams);
 
-    const mockRecommendation = {
-      recommendation_id: 'ashwagandha-rec',
-      quiz_id: 'quiz-ash',
+    const mockRecommendation = createRecommendation({
+      id: 'ashwagandha-rec',
+      quizId: 'quiz-ash',
       category: 'Adaptogen',
-      evidence_summary: {
-        totalStudies: 50,
-        totalParticipants: 2000,
-        efficacyPercentage: 80,
-        researchSpanYears: 10,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
+      supplementName: 'Ashwagandha',
+      totalStudies: 50,
+      studiesUsed: 25,
+    });
 
     (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: mockRecommendation })
-      })
+      createMockFetchResponse(mockRecommendation)
     );
 
     render(<ResultsPage />);
@@ -175,27 +169,19 @@ describe('Property Test: Valid Data Display', () => {
     mockSearchParams.set('supplement', 'omega-3');
     useSearchParams.mockReturnValue(mockSearchParams);
 
-    const mockRecommendation = {
-      recommendation_id: 'omega3-rec',
-      quiz_id: 'quiz-omega',
+    const mockRecommendation = createRecommendation({
+      id: 'omega3-rec',
+      quizId: 'quiz-omega',
       category: 'Fatty Acid',
-      evidence_summary: {
-        totalStudies: 100,
-        totalParticipants: 5000,
-        efficacyPercentage: 85,
-        researchSpanYears: 20,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
+      supplementName: 'Omega-3',
+      totalStudies: 100,
+      studiesUsed: 50,
+      totalParticipants: 5000,
+      researchSpanYears: 20,
+    });
 
     (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: mockRecommendation })
-      })
+      createMockFetchResponse(mockRecommendation)
     );
 
     render(<ResultsPage />);
@@ -215,27 +201,20 @@ describe('Property Test: Valid Data Display', () => {
     mockSearchParams.set('supplement', 'test-supplement');
     useSearchParams.mockReturnValue(mockSearchParams);
 
-    const minimalRecommendation = {
-      recommendation_id: 'minimal-rec',
-      quiz_id: 'quiz-min',
+    const minimalRecommendation = createRecommendation({
+      id: 'minimal-rec',
+      quizId: 'quiz-min',
       category: 'Test',
-      evidence_summary: {
-        totalStudies: 1,
-        totalParticipants: 10,
-        efficacyPercentage: 50,
-        researchSpanYears: 1,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
+      supplementName: 'Test Supplement',
+      totalStudies: 1,
+      studiesUsed: 1,
+      totalParticipants: 10,
+      efficacyPercentage: 50,
+      researchSpanYears: 1,
+    });
 
     (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: minimalRecommendation })
-      })
+      createMockFetchResponse(minimalRecommendation)
     );
 
     render(<ResultsPage />);
@@ -254,27 +233,20 @@ describe('Property Test: Valid Data Display', () => {
     mockSearchParams.set('supplement', 'vitamin-d');
     useSearchParams.mockReturnValue(mockSearchParams);
 
-    const vitaminRecommendation = {
-      recommendation_id: 'vitamin-rec',
-      quiz_id: 'quiz-vitamin',
+    const vitaminRecommendation = createRecommendation({
+      id: 'vitamin-rec',
+      quizId: 'quiz-vitamin',
       category: 'Vitamin',
-      evidence_summary: {
-        totalStudies: 200,
-        totalParticipants: 10000,
-        efficacyPercentage: 90,
-        researchSpanYears: 20,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
+      supplementName: 'Vitamin D',
+      totalStudies: 200,
+      studiesUsed: 100,
+      totalParticipants: 10000,
+      efficacyPercentage: 90,
+      researchSpanYears: 20,
+    });
 
     (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: vitaminRecommendation })
-      })
+      createMockFetchResponse(vitaminRecommendation)
     );
 
     render(<ResultsPage />);

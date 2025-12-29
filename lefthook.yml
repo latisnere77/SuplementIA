@@ -1,5 +1,12 @@
 # Lefthook configuration for Suplementia
 # https://github.com/evilmartians/lefthook
+#
+# Strategy:
+# - pre-commit: Fast checks on staged files (lint, type-check, lambda builds)
+# - pre-push: Build verification only (type-check + build)
+# - CI/CD: Full test suite runs on GitHub Actions
+#
+# This prevents slow local pushes while ensuring code quality through CI/CD.
 
 pre-commit:
   parallel: true
@@ -24,7 +31,15 @@ pre-commit:
       run: npm run build
 
 pre-push:
-  parallel: false
+  parallel: true
   commands:
-    validate:
-      run: npm run validate
+    type-check:
+      run: npm run type-check
+
+    build:
+      run: npm run build
+
+    # Lambda tests (fast, isolated)
+    lambda-tests:
+      root: "backend/lambda/content-enricher"
+      run: npm test

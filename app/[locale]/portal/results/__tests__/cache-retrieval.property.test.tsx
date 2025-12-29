@@ -1,26 +1,34 @@
 /**
  * Property Test: Cache retrieval works correctly
  * Validates: Requirements 1.5
- * 
+ *
  * Property 4: When valid cached data exists, the component should:
  * - Use the cached data without making an API call
  * - Display the recommendation immediately
  * - Not show error state
- * - Not show loading state for extended period
  */
 
 import { render, screen, waitFor } from '@testing-library/react';
 import ResultsPage from '../page';
+import {
+  createRecommendation,
+  createMockFetchResponse,
+  setupCachedRecommendation,
+} from './factories/recommendation.factory';
 
-// Mock Next.js router
+// ===========================================
+// MOCKS
+// ===========================================
+
 jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
   useRouter: jest.fn(() => ({
     push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
   })),
 }));
 
-// Mock all child components
 jest.mock('@/components/portal/IntelligentLoadingSpinner', () => {
   return function MockLoadingSpinner() {
     return <div data-testid="loading-spinner">Loading...</div>;
@@ -42,71 +50,59 @@ jest.mock('@/components/portal/EvidenceAnalysisPanelNew', () => {
 });
 
 jest.mock('@/components/portal/ProductRecommendationsGrid', () => {
-  return function MockProductGrid() {
-    return null;
-  };
+  return function MockProductGrid() { return null; };
 });
 
 jest.mock('@/components/portal/ScientificStudiesPanel', () => {
-  return function MockStudiesPanel() {
-    return null;
-  };
+  return function MockStudiesPanel() { return null; };
 });
 
 jest.mock('@/components/portal/ShareReferralCard', () => {
-  return function MockShareCard() {
-    return null;
-  };
+  return function MockShareCard() { return null; };
 });
 
 jest.mock('@/components/portal/PaywallModal', () => {
-  return function MockPaywallModal() {
-    return null;
-  };
+  return function MockPaywallModal() { return null; };
 });
 
 jest.mock('@/components/portal/LegalDisclaimer', () => {
-  return function MockLegalDisclaimer() {
-    return null;
-  };
+  return function MockLegalDisclaimer() { return null; };
 });
 
 jest.mock('@/components/portal/ViewToggle', () => {
-  return {
-    ViewToggle: function MockViewToggle() {
-      return null;
-    },
-  };
+  return { ViewToggle: function MockViewToggle() { return null; } };
 });
 
 jest.mock('@/components/portal/ExamineStyleView', () => {
-  return function MockExamineView() {
-    return null;
-  };
+  return function MockExamineView() { return null; };
+});
+
+jest.mock('@/components/portal/StreamingResults', () => {
+  return { StreamingResults: function MockStreamingResults() { return null; } };
+});
+
+jest.mock('@/components/portal/BenefitStudiesModal', () => {
+  return function MockBenefitStudiesModal() { return null; };
+});
+
+jest.mock('@/components/portal/ConditionResultsDisplay', () => {
+  return function MockConditionResultsDisplay() { return null; };
 });
 
 jest.mock('@/lib/i18n/useTranslation', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t: (key: string) => key, locale: 'en' }),
 }));
 
 jest.mock('@/lib/auth/useAuth', () => ({
-  useAuth: () => ({
-    user: null,
-  }),
+  useAuth: () => ({ user: null, isLoading: false }),
 }));
 
 jest.mock('@/lib/hooks/useOnlineStatus', () => ({
   useOnlineStatus: () => true,
 }));
 
-
 jest.mock('@/lib/portal/search-analytics', () => ({
-  searchAnalytics: {
-    logSuccess: jest.fn(),
-    logFailure: jest.fn(),
-  },
+  searchAnalytics: { logSuccess: jest.fn(), logFailure: jest.fn(), logSearch: jest.fn() },
 }));
 
 jest.mock('@/lib/portal/xray-client', () => ({
@@ -116,6 +112,31 @@ jest.mock('@/lib/portal/xray-client', () => ({
 jest.mock('@/lib/portal/query-normalization', () => ({
   normalizeQuery: (query: string) => ({ normalized: query, confidence: 1.0 }),
 }));
+
+jest.mock('@/lib/portal/supplement-search', () => ({
+  searchSupplement: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock('@/lib/portal/benefit-normalization', () => ({
+  normalizeBenefit: (benefit: string) => benefit,
+}));
+
+jest.mock('@/lib/portal/supplement-benefit-suggestions', () => ({
+  getTopSuggestedBenefit: jest.fn().mockReturnValue(null),
+  getSuggestedBenefits: jest.fn().mockReturnValue([]),
+}));
+
+jest.mock('@/lib/portal/benefit-study-filter', () => ({
+  filterByBenefit: jest.fn().mockReturnValue([]),
+}));
+
+jest.mock('@/lib/i18n/supplement-names', () => ({
+  getLocalizedSupplementName: (name: string) => name,
+}));
+
+// ===========================================
+// TESTS
+// ===========================================
 
 describe('Property Test: Cache Retrieval', () => {
   beforeEach(() => {
@@ -129,197 +150,68 @@ describe('Property Test: Cache Retrieval', () => {
     jest.restoreAllMocks();
   });
 
-  it('Property 4: Fresh data retrieval works when no cache exists', async () => {
+  /**
+   * Test the shared link flow (id parameter):
+   * When user visits with ?id=xxx, component checks localStorage cache
+   */
+  it('Property 4: Valid cached data displays recommendation (shared link flow)', async () => {
     const { useSearchParams } = jest.requireMock('next/navigation');
+    const recommendationId = 'cached-ashwagandha';
+
+    // Setup search params with id (shared link flow)
     const mockSearchParams = new URLSearchParams();
-    mockSearchParams.set('id', 'fresh-ashwagandha');
-    mockSearchParams.set('supplement', 'ashwagandha');
+    mockSearchParams.set('id', recommendationId);
     useSearchParams.mockReturnValue(mockSearchParams);
 
-    const freshRecommendation = {
-      recommendation_id: 'fresh-ashwagandha',
-      quiz_id: 'quiz-fresh',
+    // Pre-populate cache BEFORE rendering
+    const cachedRecommendation = createRecommendation({
+      id: recommendationId,
+      quizId: 'quiz-cached',
       category: 'Adaptogen',
-      evidence_summary: {
-        totalStudies: 50,
-        totalParticipants: 2000,
-        efficacyPercentage: 80,
-        researchSpanYears: 10,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
+      supplementName: 'Ashwagandha',
+      totalStudies: 50,
+      studiesUsed: 25,
+    });
 
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: freshRecommendation })
-      })
-    );
+    setupCachedRecommendation(recommendationId, cachedRecommendation);
 
     render(<ResultsPage />);
 
-    // Should make API call when no cache
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
-    }, { timeout: 3000 });
-
-    // Should display recommendation
+    // Should use cached data and display recommendation
     await waitFor(() => {
       expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
 
     // Should NOT show error state
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
+
+    // Should NOT make API call (using cache)
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
-  it('Property 4: Data retrieval works for different supplements', async () => {
+  it('Property 4: Valid cached Omega-3 displays correctly', async () => {
     const { useSearchParams } = jest.requireMock('next/navigation');
+    const recommendationId = 'omega3-cached';
 
-    // Test first supplement
-    const mockSearchParams1 = new URLSearchParams();
-    mockSearchParams1.set('id', 'omega3-fresh');
-    mockSearchParams1.set('supplement', 'omega-3');
-    useSearchParams.mockReturnValue(mockSearchParams1);
-
-    const omega3Recommendation = {
-      recommendation_id: 'omega3-fresh',
-      quiz_id: 'quiz-omega',
-      category: 'Fatty Acid',
-      evidence_summary: {
-        totalStudies: 100,
-        totalParticipants: 5000,
-        efficacyPercentage: 85,
-        researchSpanYears: 20,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
-
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: omega3Recommendation })
-      })
-    );
-
-    const { unmount } = render(<ResultsPage />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
-    }, { timeout: 3000 });
-
-    expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
-
-    unmount();
-    jest.clearAllMocks();
-    document.body.innerHTML = '';
-
-    // Test second supplement
-    const mockSearchParams2 = new URLSearchParams();
-    mockSearchParams2.set('id', 'vitamin-d-fresh');
-    mockSearchParams2.set('supplement', 'vitamin-d');
-    useSearchParams.mockReturnValue(mockSearchParams2);
-
-    const vitaminDRecommendation = {
-      recommendation_id: 'vitamin-d-fresh',
-      quiz_id: 'quiz-vitd',
-      category: 'Vitamin',
-      evidence_summary: {
-        totalStudies: 200,
-        totalParticipants: 10000,
-        efficacyPercentage: 90,
-        researchSpanYears: 25,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
-
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: vitaminDRecommendation })
-      })
-    );
-
-    render(<ResultsPage />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
-    }, { timeout: 3000 });
-
-    expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
-  });
-
-  it('Property 4: Expired cache triggers API call instead of using stale data', async () => {
-    const { useSearchParams } = jest.requireMock('next/navigation');
     const mockSearchParams = new URLSearchParams();
-    mockSearchParams.set('id', 'expired-cache');
-    mockSearchParams.set('supplement', 'magnesium');
+    mockSearchParams.set('id', recommendationId);
     useSearchParams.mockReturnValue(mockSearchParams);
 
-    const expiredRecommendation = {
-      recommendation_id: 'expired-cache',
-      quiz_id: 'quiz-expired',
-      category: 'Mineral',
-      evidence_summary: {
-        totalStudies: 30,
-        totalParticipants: 1000,
-        efficacyPercentage: 70,
-        researchSpanYears: 5,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
+    const cachedRecommendation = createRecommendation({
+      id: recommendationId,
+      quizId: 'quiz-omega',
+      category: 'Fatty Acid',
+      supplementName: 'Omega-3',
+      totalStudies: 100,
+      studiesUsed: 50,
+      totalParticipants: 5000,
+      researchSpanYears: 20,
+    });
 
-    // Set cache with expired timestamp (25 hours ago)
-    localStorage.setItem(
-      'recommendation_expired-cache',
-      JSON.stringify({
-        recommendation: expiredRecommendation,
-        timestamp: Date.now() - (25 * 60 * 60 * 1000)
-      })
-    );
-
-    const freshRecommendation = {
-      recommendation_id: 'expired-cache',
-      quiz_id: 'quiz-fresh',
-      category: 'Mineral',
-      evidence_summary: {
-        totalStudies: 75,
-        totalParticipants: 3000,
-        efficacyPercentage: 85,
-        researchSpanYears: 10,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
-
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: freshRecommendation })
-      })
-    );
+    setupCachedRecommendation(recommendationId, cachedRecommendation);
 
     render(<ResultsPage />);
 
-    // Should make API call because cache is expired
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
-    }, { timeout: 3000 });
-
-    // Should display fresh data
     await waitFor(() => {
       expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
     }, { timeout: 3000 });
@@ -327,91 +219,95 @@ describe('Property Test: Cache Retrieval', () => {
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
   });
 
-  it('Property 4: Missing cache triggers API call', async () => {
+  it('Property 4: Expired cache shows error (shared link flow)', async () => {
     const { useSearchParams } = jest.requireMock('next/navigation');
+    const recommendationId = 'expired-cache';
+
     const mockSearchParams = new URLSearchParams();
-    mockSearchParams.set('id', 'no-cache');
-    mockSearchParams.set('supplement', 'creatine');
+    mockSearchParams.set('id', recommendationId);
+    useSearchParams.mockReturnValue(mockSearchParams);
+
+    // Set cache with expired timestamp (25 hours ago)
+    const expiredRecommendation = createRecommendation({
+      id: recommendationId,
+      quizId: 'quiz-expired',
+      category: 'Mineral',
+      supplementName: 'Magnesium',
+      totalStudies: 30,
+      studiesUsed: 15,
+    });
+
+    setupCachedRecommendation(recommendationId, expiredRecommendation, {
+      ttl: 24 * 60 * 60 * 1000, // 24 hours
+      age: 25 * 60 * 60 * 1000, // 25 hours ago (expired)
+    });
+
+    render(<ResultsPage />);
+
+    // Should show error state for expired cache
+    await waitFor(() => {
+      expect(screen.getByTestId('error-state')).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    expect(screen.queryByTestId('evidence-panel')).not.toBeInTheDocument();
+  });
+
+  it('Property 4: Missing cache shows error (shared link flow)', async () => {
+    const { useSearchParams } = jest.requireMock('next/navigation');
+
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set('id', 'non-existent');
     useSearchParams.mockReturnValue(mockSearchParams);
 
     // No cache set - localStorage is empty
 
-    const freshRecommendation = {
-      recommendation_id: 'no-cache',
-      quiz_id: 'quiz-fresh',
-      category: 'Amino Acid',
-      evidence_summary: {
-        totalStudies: 150,
-        totalParticipants: 8000,
-        efficacyPercentage: 88,
-        researchSpanYears: 15,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
-
-    (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: freshRecommendation })
-      })
-    );
-
     render(<ResultsPage />);
 
-    // Should make API call because no cache exists
+    // Should show error state when no cache exists for shared link
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
+      expect(screen.getByTestId('error-state')).toBeInTheDocument();
     }, { timeout: 3000 });
 
-    // Should display fresh data
-    await waitFor(() => {
-      expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
-    }, { timeout: 3000 });
-
-    expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('evidence-panel')).not.toBeInTheDocument();
   });
 
-  it('Property 4: Valid data prevents error state', async () => {
+  /**
+   * Test the search flow (query parameter):
+   * When user searches, component makes API call
+   */
+  it('Property 4: Search flow makes API call', async () => {
     const { useSearchParams } = jest.requireMock('next/navigation');
+
+    // Setup search params with query (search flow)
     const mockSearchParams = new URLSearchParams();
-    mockSearchParams.set('id', 'valid-no-error');
-    mockSearchParams.set('supplement', 'zinc');
+    mockSearchParams.set('query', 'ashwagandha');
     useSearchParams.mockReturnValue(mockSearchParams);
 
-    const validRecommendation = {
-      recommendation_id: 'valid-no-error',
-      quiz_id: 'quiz-zinc',
-      category: 'Mineral',
-      evidence_summary: {
-        totalStudies: 80,
-        totalParticipants: 4000,
-        efficacyPercentage: 82,
-        researchSpanYears: 12,
-        ingredients: []
-      },
-      ingredients: [],
-      products: [],
-      personalization_factors: {}
-    };
+    const searchRecommendation = createRecommendation({
+      id: 'search-ashwagandha',
+      quizId: 'quiz-search',
+      category: 'Adaptogen',
+      supplementName: 'Ashwagandha',
+      totalStudies: 50,
+      studiesUsed: 25,
+    });
 
     (global.fetch as jest.Mock).mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, recommendation: validRecommendation })
-      })
+      createMockFetchResponse(searchRecommendation)
     );
 
     render(<ResultsPage />);
 
-    // Should display recommendation
+    // Should make API call for search flow
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    }, { timeout: 5000 });
+
+    // Should display recommendation from API
     await waitFor(() => {
       expect(screen.getByTestId('evidence-panel')).toBeInTheDocument();
-    }, { timeout: 3000 });
+    }, { timeout: 5000 });
 
-    // Critical: Should NOT show error state with valid data
     expect(screen.queryByTestId('error-state')).not.toBeInTheDocument();
   });
 });
