@@ -7,8 +7,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-// This is a client component that requires search params
-// No need for dynamic export - client components are dynamic by default
+// Force dynamic rendering for AWS Amplify - prevent static generation and CloudFront caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 import { useEffect, useState, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
