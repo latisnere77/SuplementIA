@@ -29,22 +29,32 @@ export interface AbbreviationExpansion {
 // BEDROCK CLIENT
 // ====================================
 
-// Flag to track if Bedrock is available (credentials configured)
-let bedrockAvailable = false;
-let bedrockClient: BedrockRuntimeClient | null = null;
-
-try {
-  bedrockClient = new BedrockRuntimeClient({
-    region: (process.env.AWS_REGION || 'us-east-1').trim(),
-  });
-  bedrockAvailable = true;
-} catch (error) {
-  console.warn('[BEDROCK] Bedrock client initialization failed - LLM expansion disabled:', error instanceof Error ? error.message : 'Unknown error');
-  bedrockClient = null;
-}
-
 // Use Haiku for fast, cheap abbreviation expansion
 const MODEL_ID = 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
+
+// Lazy-initialize Bedrock client to avoid credentials errors at module load time
+let bedrockClient: BedrockRuntimeClient | null = null;
+let bedrockInitAttempted = false;
+
+function getBedrockClient(): BedrockRuntimeClient | null {
+  if (bedrockInitAttempted) {
+    return bedrockClient;
+  }
+
+  bedrockInitAttempted = true;
+
+  try {
+    bedrockClient = new BedrockRuntimeClient({
+      region: (process.env.AWS_REGION || 'us-east-1').trim(),
+    });
+    console.log('[BEDROCK] Bedrock client initialized successfully');
+    return bedrockClient;
+  } catch (error) {
+    console.warn('[BEDROCK] Bedrock client initialization failed - LLM expansion disabled:', error instanceof Error ? error.message : 'Unknown error');
+    bedrockClient = null;
+    return null;
+  }
+}
 
 // ====================================
 // ABBREVIATION DETECTION
@@ -208,8 +218,9 @@ function translateSpanishProgrammatically(term: string): string | null {
  * - Scientific name suggestions
  */
 async function expandWithLLM(term: string): Promise<string[]> {
-  // Check if Bedrock client is available (credentials configured)
-  if (!bedrockAvailable || !bedrockClient) {
+  // Lazy-load Bedrock client and check if available
+  const client = getBedrockClient();
+  if (!client) {
     console.log(`[ABBREVIATION] Bedrock not available - skipping LLM expansion for "${term}"`);
     return [];
   }
@@ -296,7 +307,7 @@ IMPORTANT GUIDELINES:
       }),
     });
 
-    const response = await bedrockClient!.send(command);
+    const response = await client.send(command);
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
 
@@ -592,8 +603,9 @@ export async function expandAbbreviation(
 export async function generateSearchVariations(term: string): Promise<string[]> {
   const trimmed = term.trim();
 
-  // Check if Bedrock client is available (credentials configured)
-  if (!bedrockAvailable || !bedrockClient) {
+  // Lazy-load Bedrock client and check if available
+  const client = getBedrockClient();
+  if (!client) {
     console.log(`[SEARCH_VARIATIONS] Bedrock not available - skipping variations for "${trimmed}"`);
     return [];
   }
@@ -643,7 +655,7 @@ Generate variations for: "${trimmed}"`;
       }),
     });
 
-    const response = await bedrockClient!.send(command);
+    const response = await client.send(command);
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
 
