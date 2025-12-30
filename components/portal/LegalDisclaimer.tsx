@@ -32,7 +32,7 @@ export default function LegalDisclaimer() {
                 </p>
                 <button
                   onClick={() => setIsExpanded(true)}
-                  className="flex-shrink-0 text-xs text-yellow-700 hover:text-yellow-900 font-semibold underline whitespace-nowrap"
+                  className="flex-shrink-0 text-xs text-yellow-700 hover:text-yellow-900 font-semibold underline whitespace-nowrap min-h-[44px] min-w-[44px] px-2 py-3 flex items-center justify-center"
                 >
                   Leer más
                 </button>

@@ -107,7 +107,7 @@ export default function ShareReferralCard({
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={handleWhatsApp}
-            className="flex items-center justify-center gap-2 p-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all hover:scale-105 shadow-md"
+            className="flex items-center justify-center gap-2 p-4 min-h-[44px] bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all hover:scale-105 shadow-md"
           >
             <MessageCircle className="h-5 w-5" />
             <span className="text-sm">WhatsApp</span>
@@ -115,7 +115,7 @@ export default function ShareReferralCard({
 
           <button
             onClick={handleTwitter}
-            className="flex items-center justify-center gap-2 p-4 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-medium transition-all hover:scale-105 shadow-md"
+            className="flex items-center justify-center gap-2 p-4 min-h-[44px] bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-medium transition-all hover:scale-105 shadow-md"
           >
             <Twitter className="h-5 w-5" />
             <span className="text-sm">Twitter</span>

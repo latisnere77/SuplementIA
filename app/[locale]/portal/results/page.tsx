@@ -1267,7 +1267,7 @@ function ResultsPageContent() {
         <div className="mb-8">
           <button
             onClick={() => router.push('/portal')}
-            className="text-blue-600 hover:text-blue-700 font-medium mb-4"
+            className="text-blue-600 hover:text-blue-700 font-medium mb-4 min-h-[44px] px-4 py-3 inline-flex items-center"
           >
             {t('results.back')}
           </button>
@@ -1495,7 +1495,7 @@ function ResultsPageContent() {
                 />
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
+                  className="bg-blue-600 text-white font-semibold px-6 py-3 min-h-[44px] rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
                 >
                   Buscar
                 </button>

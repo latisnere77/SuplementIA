@@ -38,7 +38,7 @@ export default function PortalHeader() {
             {/* Logo */}
             <button
               onClick={() => router.push('/portal')}
-              className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+              className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent min-h-[44px] py-2 flex items-center"
             >
               SuplementAI
             </button>
