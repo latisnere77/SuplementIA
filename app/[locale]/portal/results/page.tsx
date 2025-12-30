@@ -141,6 +141,25 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     ingredientsCount: evidenceSummary.ingredients?.length || 0,
   });
 
+  // 🔍🔍🔍 CRITICAL DEBUG: Check studies.ranked data
+  const evidenceSummaryAny = evidenceSummary as any;
+  console.log('🔍🔍🔍 [FRONTEND_STUDIES_CHECK] evidenceSummary.studies:', {
+    hasStudies: !!evidenceSummaryAny.studies,
+    studiesKeys: evidenceSummaryAny.studies ? Object.keys(evidenceSummaryAny.studies) : [],
+    hasRanked: !!evidenceSummaryAny.studies?.ranked,
+    rankedKeys: evidenceSummaryAny.studies?.ranked ? Object.keys(evidenceSummaryAny.studies.ranked) : [],
+    fullStudiesObject: evidenceSummaryAny.studies
+  });
+
+  // 🔍 Also check metadata path (legacy)
+  const enrichmentMetadata = (recommendation as any)._enrichment_metadata || {};
+  console.log('🔍 [FRONTEND_METADATA_CHECK] _enrichment_metadata:', {
+    hasMetadata: !!enrichmentMetadata,
+    metadataKeys: enrichmentMetadata ? Object.keys(enrichmentMetadata) : [],
+    hasMetadataStudies: !!enrichmentMetadata.studies,
+    metadataStudiesKeys: enrichmentMetadata.studies ? Object.keys(enrichmentMetadata.studies) : []
+  });
+
   // ✅ USE STRUCTURED DATA - No string parsing needed!
   const worksFor = Array.isArray(supplement.worksFor) ? supplement.worksFor.map((item: any) => ({
     condition: item.condition || item.use || item.benefit || '',
