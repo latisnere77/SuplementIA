@@ -27,13 +27,19 @@ const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
  * @returns true if enrichment is needed
  */
 function needsEnrichment(recommendation: any): boolean {
-  // ALWAYS enrich if studies.ranked is missing (for intelligent analysis)
-  const hasRanked = !!recommendation?.evidence_summary?.studies?.ranked;
+  // ALWAYS enrich if studies.ranked is missing or invalid (for intelligent analysis)
+  // FIX: Check for VALID ranking data, not just if the object exists
+  const ranked = recommendation?.evidence_summary?.studies?.ranked;
+  const hasValidRanking = ranked && (
+    (ranked.metadata?.confidenceScore > 0) ||
+    (ranked.positive?.length > 0) ||
+    (ranked.negative?.length > 0)
+  );
   const grade = recommendation?.supplement?.evidenceGrade || recommendation?.evidence_summary?.evidenceGrade;
-  console.log(`🔍 [NEEDS_ENRICH] hasRanked=${hasRanked} grade=${grade} supplement=${recommendation?.supplement?.name || 'unknown'}`);
+  console.log(`🔍 [NEEDS_ENRICH] hasValidRanking=${hasValidRanking} grade=${grade} supplement=${recommendation?.supplement?.name || 'unknown'}`);
 
-  if (!hasRanked) {
-    console.log(`✅ [NEEDS_ENRICH] YES - no ranked data`);
+  if (!hasValidRanking) {
+    console.log(`✅ [NEEDS_ENRICH] YES - no valid ranked data`);
     return true;
   }
 
@@ -590,7 +596,13 @@ export async function POST(request: NextRequest) {
           // INLINE AUTO-ENRICHMENT: Check if metadata is poor and enrich if needed
           if (needsEnrichment(rec)) {
             // Check if we specifically need ranking data (to force cache bypass)
-            const needsRanking = !rec?.evidence_summary?.studies?.ranked;
+            // FIX: Check for VALID ranking data, not just if the object exists
+            const ranked = rec?.evidence_summary?.studies?.ranked;
+            const needsRanking = !ranked || (
+              !ranked.metadata?.confidenceScore &&
+              !ranked.positive?.length &&
+              !ranked.negative?.length
+            );
             console.log(`[Inline Enrichment] Poor metadata detected for "${searchTerm}", triggering enrichment... needsRanking=${needsRanking}`);
             const enrichedData = await enrichSupplement(searchTerm, getBaseUrl(), needsRanking);
 
