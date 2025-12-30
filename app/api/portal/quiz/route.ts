@@ -125,11 +125,13 @@ async function enrichSupplement(supplementName: string, baseUrl: string, forceRe
  * @param jobId - The job ID to update when enrichment completes
  * @param supplementName - The supplement name to enrich
  * @param forceRefresh - Force bypass of enrichment cache
+ * @param ranking - Optional ranking data from LanceDB to preserve in enrichment
  */
 async function invokeLambdaEnrichmentAsync(
   jobId: string,
   supplementName: string,
-  forceRefresh: boolean = false
+  forceRefresh: boolean = false,
+  ranking?: any
 ): Promise<void> {
   try {
     const payload = {
@@ -139,6 +141,7 @@ async function invokeLambdaEnrichmentAsync(
         category: 'general',
         forceRefresh,
         jobId, // Pass jobId so Lambda can update the job store
+        ranking, // Pass ranking data to preserve in enrichment response
         maxStudies: 5,
         rctOnly: false,
       }),
@@ -667,7 +670,9 @@ export async function POST(request: NextRequest) {
             // Lambda will run independently and update DynamoDB when complete
             // Client will poll /api/portal/status/{jobId} to get the final result
             // FIX: Use cache-friendly enrichment (forceRefresh=false) to enable sub-second responses for cached supplements
-            await invokeLambdaEnrichmentAsync(jobId, searchTerm, false);
+            // FIX: Pass ranking data from LanceDB so it's preserved in enrichment response
+            const rankingData = rec?.evidence_summary?.studies?.ranked;
+            await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData);
 
             // Return immediately with processing status
             return NextResponse.json({
