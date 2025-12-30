@@ -453,7 +453,7 @@ export default function PortalPage() {
       </div>
 
       {/* Popular Searches */}
-      <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
+      <div className="container mx-auto px-4 md:px-6 py-6 sm:py-8 md:py-10 lg:py-12">
         <motion.div
           initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
           whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
@@ -489,7 +489,7 @@ export default function PortalPage() {
       </div>
 
       {/* Health Categories Grid */}
-      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16">
+      <div className="container mx-auto px-4 md:px-6 py-8 sm:py-10 md:py-12 lg:py-14 xl:py-16">
         <motion.div
           initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
           whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
@@ -546,7 +546,7 @@ export default function PortalPage() {
       </div>
 
       {/* Value Propositions */}
-      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16">
+      <div className="container mx-auto px-4 md:px-6 py-8 sm:py-10 md:py-12 lg:py-14 xl:py-16">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
@@ -585,7 +585,7 @@ export default function PortalPage() {
       </div>
 
       {/* FAQ Section */}
-      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16">
+      <div className="container mx-auto px-4 md:px-6 py-8 sm:py-10 md:py-12 lg:py-14 xl:py-16">
         <motion.div
           initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
           whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
@@ -598,7 +598,7 @@ export default function PortalPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16">
+      <div className="container mx-auto px-4 md:px-6 py-8 sm:py-10 md:py-12 lg:py-14 xl:py-16">
         <motion.div
           initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
           whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
