@@ -594,6 +594,13 @@ export async function POST(request: NextRequest) {
           let rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
 
           // INLINE AUTO-ENRICHMENT: Check if metadata is poor and enrich if needed
+          // 🔍🔍🔍 DEBUG: Log what LanceDB returned
+          console.log(`🔍🔍🔍 [LANCEDB_DATA] supplement="${searchTerm}" hasEvidenceSummary=${!!rec?.evidence_summary} hasStudies=${!!rec?.evidence_summary?.studies} hasRanked=${!!rec?.evidence_summary?.studies?.ranked}`);
+          if (rec?.evidence_summary?.studies?.ranked) {
+            const r = rec.evidence_summary.studies.ranked;
+            console.log(`🔍 [LANCEDB_RANKED] keys=${JSON.stringify(Object.keys(r))} hasMetadata=${!!r.metadata} confidence=${r.metadata?.confidenceScore || 0} positive=${r.positive?.length || 0} negative=${r.negative?.length || 0}`);
+          }
+
           if (needsEnrichment(rec)) {
             // Check if we specifically need ranking data (to force cache bypass)
             // FIX: Check for VALID ranking data, not just if the object exists
@@ -603,15 +610,24 @@ export async function POST(request: NextRequest) {
               !ranked.positive?.length &&
               !ranked.negative?.length
             );
-            console.log(`[Inline Enrichment] Poor metadata detected for "${searchTerm}", triggering enrichment... needsRanking=${needsRanking}`);
+            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=${needsRanking}`);
             const enrichedData = await enrichSupplement(searchTerm, getBaseUrl(), needsRanking);
 
             if (enrichedData) {
               rec = mergeEnrichedData(rec, enrichedData);
-              console.log(`[Inline Enrichment] Successfully enriched "${searchTerm}"`);
+              console.log(`✅✅✅ [ENRICHMENT_SUCCESS] supplement="${searchTerm}"`);
+              // 🔍 DEBUG: Check what we got after merge
+              const finalRanked = rec?.evidence_summary?.studies?.ranked;
+              if (finalRanked) {
+                console.log(`✅ [FINAL_RANKED] hasMetadata=${!!finalRanked.metadata} confidence=${finalRanked.metadata?.confidenceScore || 0} positive=${finalRanked.positive?.length || 0} negative=${finalRanked.negative?.length || 0}`);
+              } else {
+                console.log(`⚠️⚠️⚠️ [NO_RANKED_AFTER_MERGE] Ranking data was NOT added by merge!`);
+              }
             } else {
-              console.log(`[Inline Enrichment] Enrichment failed, returning basic data for "${searchTerm}"`);
+              console.log(`❌❌❌ [ENRICHMENT_FAILED] Enrichment returned null for "${searchTerm}"`);
             }
+          } else {
+            console.log(`⏭️ [SKIP_ENRICHMENT] supplement="${searchTerm}" already has good metadata`);
           }
 
           storeJobResult(jobId, 'completed', { recommendation: rec });
