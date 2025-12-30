@@ -70,12 +70,12 @@ export default function ProductRecommendationsGrid({
 
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('results.products.title')}</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">{t('results.products.title')}</h2>
+      <p className="text-sm md:text-base text-gray-600 mb-6">
         {t('results.products.desc')}
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
         {products.map((product) => {
           const config = TIER_CONFIG[product.tier];
           const isHighlighted = product.tier === 'premium';
@@ -99,6 +99,7 @@ export default function ProductRecommendationsGrid({
               {/* Tier Label */}
               <div className="mb-4">
                 <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-1">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {t(`product.${product.tier}` as any)} {t('common.option')}
                 </h3>
                 <h4 className="text-xl font-bold text-gray-900">{product.name}</h4>
@@ -110,6 +111,7 @@ export default function ProductRecommendationsGrid({
                   {product.price > 0 ? (
                     `${product.currency} ${product.price.toLocaleString()}`
                   ) : (
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     t('product.price.consult' as any)
                   )}
                 </div>

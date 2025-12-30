@@ -71,7 +71,7 @@ export function ErrorState({
                     <AlertCircle className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-yellow-900 mb-3">
+                <h3 className="text-xl sm:text-2xl font-bold text-yellow-900 mb-3">
                   🔬 Sin Evidencia Científica Disponible
                 </h3>
                 <p className="text-base text-yellow-800 max-w-xl mx-auto leading-relaxed">
@@ -215,7 +215,7 @@ export function ErrorState({
             {/* Error Icon & Message */}
             <div className="text-center">
               <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
-              <h3 className="text-xl font-semibold text-red-900 mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-red-900 mb-2">
                 {errorType === 'network_error' ? 'Error de Conexión' : 'Error del Sistema'}
               </h3>
               <p className="text-sm text-red-700 whitespace-pre-line">

@@ -9,12 +9,12 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  CheckCircle, 
-  AlertCircle, 
-  Loader2, 
-  Search, 
-  FileText, 
+import {
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Search,
+  FileText,
   Sparkles,
   Clock,
   TrendingUp
@@ -23,10 +23,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { useReducedMotion } from '@/lib/hooks/useReducedMotion';
 
 interface StreamingResultsProps {
   supplementName: string;
-  onComplete?: (data: any) => void;
+  onComplete?: (data: unknown) => void;
   onError?: (error: string) => void;
 }
 
@@ -36,7 +37,7 @@ interface StageInfo {
   stage: Stage;
   message: string;
   progress: number;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
 }
 
@@ -88,12 +89,13 @@ const STAGES: Record<Stage, StageInfo> = {
 export function StreamingResults({ supplementName, onComplete, onError }: StreamingResultsProps) {
   const [stage, setStage] = useState<Stage>('idle');
   const [progress, setProgress] = useState(0);
-  const [expansion, setExpansion] = useState<any>(null);
+  const [expansion, setExpansion] = useState<{ alternatives: string[] } | null>(null);
   const [studiesCount, setStudiesCount] = useState(0);
-  const [content, setContent] = useState<any>(null);
+  const [content, setContent] = useState<{ whatIsIt?: string; primaryUses?: string[]; dosage?: { standard: string; duration?: string; timing?: string } } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [startTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
 
   // Update elapsed time every second
   useEffect(() => {
@@ -139,7 +141,7 @@ export function StreamingResults({ supplementName, onComplete, onError }: Stream
       });
 
       eventSource.addEventListener('complete', (e: MessageEvent) => {
-        const data = JSON.parse(e.data);
+        const _data = JSON.parse(e.data);
         setStage('complete');
         setProgress(100);
         eventSource.close();
@@ -224,9 +226,10 @@ export function StreamingResults({ supplementName, onComplete, onError }: Stream
       <AnimatePresence>
         {expansion && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            exit={prefersReducedMotion ? {} : { opacity: 0, y: -20 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
           >
             <Card>
               <CardHeader>
@@ -253,8 +256,9 @@ export function StreamingResults({ supplementName, onComplete, onError }: Stream
       <AnimatePresence>
         {studiesCount > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
           >
             <Card>
               <CardContent className="pt-6">
@@ -276,8 +280,9 @@ export function StreamingResults({ supplementName, onComplete, onError }: Stream
       <AnimatePresence>
         {content && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
             className="space-y-4"
           >
             {/* Name & Description */}
@@ -304,9 +309,9 @@ export function StreamingResults({ supplementName, onComplete, onError }: Stream
                     {content.primaryUses.map((use: string, i: number) => (
                       <motion.li
                         key={i}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
+                        initial={prefersReducedMotion ? {} : { opacity: 0, x: -20 }}
+                        animate={prefersReducedMotion ? {} : { opacity: 1, x: 0 }}
+                        transition={prefersReducedMotion ? { duration: 0 } : { delay: i * 0.1, duration: 0.3 }}
                         className="flex items-start gap-2"
                       >
                         <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />

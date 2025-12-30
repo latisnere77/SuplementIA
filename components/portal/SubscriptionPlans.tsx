@@ -32,7 +32,7 @@ export default function SubscriptionPlans() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [_selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -74,8 +74,8 @@ export default function SubscriptionPlans() {
       if (data.success && data.checkout_url) {
         window.location.href = data.checkout_url;
       }
-    } catch (error: any) {
-      alert(`Error: ${error.message}`);
+    } catch (error) {
+      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -99,7 +99,7 @@ export default function SubscriptionPlans() {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
         {plans.map((plan) => {
           const Icon = getPlanIcon(plan.id);
           const color = getPlanColor(plan.id);

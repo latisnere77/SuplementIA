@@ -4,6 +4,7 @@
  * Force redeploy: 2025-12-14T08:00:00Z
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 // This is a client component that requires search params
@@ -19,7 +20,7 @@ import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
 import IntelligentLoadingSpinner from '@/components/portal/IntelligentLoadingSpinner';
 
 import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
-import { StreamingResults } from '@/components/portal/StreamingResults';
+import { StreamingResults as _StreamingResults } from '@/components/portal/StreamingResults';
 import ExamineStyleView from '@/components/portal/ExamineStyleView';
 import { ViewToggle, type ViewMode } from '@/components/portal/ViewToggle';
 import { ErrorState } from '@/components/portal/ErrorState';
@@ -27,8 +28,8 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { searchAnalytics } from '@/lib/portal/search-analytics';
 import { traceSearch } from '@/lib/portal/xray-client';
-import { normalizeQuery } from '@/lib/portal/query-normalization';
-import { searchSupplement } from '@/lib/portal/supplement-search';
+import { normalizeQuery as _normalizeQuery } from '@/lib/portal/query-normalization';
+import { searchSupplement as _searchSupplement } from '@/lib/portal/supplement-search';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 import { normalizeBenefit } from '@/lib/portal/benefit-normalization';
 import { getTopSuggestedBenefit, getSuggestedBenefits } from '@/lib/portal/supplement-benefit-suggestions';
@@ -36,7 +37,7 @@ import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
 import BenefitStudiesModal from '@/components/portal/BenefitStudiesModal';
 import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
 import type { GradeType } from '@/types/supplement-grade';
-import type { PubMedQueryResult, SupplementEvidence } from '@/lib/services/pubmed-search';
+import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } from '@/lib/services/pubmed-search';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
 
 // ====================================
@@ -484,7 +485,7 @@ function ResultsPageContent() {
   const isOnline = useOnlineStatus();
   const [showPaywall, setShowPaywall] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
-  const [isLoadingSubscription, setIsLoadingSubscription] = useState(true);
+  const [_isLoadingSubscription, setIsLoadingSubscription] = useState(true);
   const [transformedEvidence, setTransformedEvidence] = useState<any>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('standard');
   const [examineContent, setExamineContent] = useState<any>(null);
@@ -657,7 +658,7 @@ function ResultsPageContent() {
     const transformed = transformRecommendationToEvidence(recommendation);
 
     // Log section availability
-    const supplement = (recommendation as any).supplement || {};
+    const _supplement = (recommendation as any).supplement || {};
     console.log('[Recommendation Sections]', {
       category: recommendation.category,
       hasWorksFor: Array.isArray(transformed.worksFor) && transformed.worksFor.length > 0,
@@ -794,7 +795,7 @@ function ResultsPageContent() {
 
           // If not a category, treat as ingredient search
           // Ingredients are typically: single words, compound words, or scientific names
-          const isIngredientSearch = !matchedCategory;
+          const _isIngredientSearch = !matchedCategory;
 
           // The quiz endpoint handles all normalization and enrichment.
           // We send the raw user query directly to it.
@@ -1270,7 +1271,7 @@ function ResultsPageContent() {
           >
             {t('results.back')}
           </button>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             {t('results.title')} {localizedSupplementName}
           </h1>
           {(() => {
@@ -1360,7 +1361,7 @@ function ResultsPageContent() {
           })()}
 
           <p className="text-xs text-gray-500 mb-3">
-            💡 O escribe tu propio beneficio: "crecimiento de cabello", "piel hidratada", "cansancio", "memoria"
+            💡 O escribe tu propio beneficio: &ldquo;crecimiento de cabello&rdquo;, &ldquo;piel hidratada&rdquo;, &ldquo;cansancio&rdquo;, &ldquo;memoria&rdquo;
           </p>
           <form
             onSubmit={(e) => {
@@ -1440,7 +1441,7 @@ function ResultsPageContent() {
                 <div className="text-yellow-600 mt-0.5">⚠️</div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-yellow-900 mb-1">
-                    No se encontraron estudios científicos para "{localizedSupplementName}"
+                    No se encontraron estudios científicos para &ldquo;{localizedSupplementName}&rdquo;
                   </h3>
                   <p className="text-yellow-800 text-sm mb-2">
                     No encontramos estudios científicos publicados sobre este suplemento. La información mostrada es de carácter general y no está respaldada por evidencia científica específica.

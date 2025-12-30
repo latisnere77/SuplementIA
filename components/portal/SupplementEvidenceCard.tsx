@@ -2,7 +2,7 @@
 
 /**
  * SupplementEvidenceCard Component
- * 
+ *
  * Displays a single supplement's evidence level for a specific health condition.
  * It features a prominent evidence grade, a color-coded indicator, and a brief summary.
  */
@@ -10,6 +10,7 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { EvidenceGrade } from '@/lib/knowledge-base';
+import { useReducedMotion } from '@/lib/hooks/useReducedMotion';
 
 interface SupplementEvidenceCardProps {
   supplement: {
@@ -32,11 +33,12 @@ const gradeColorMap: Record<EvidenceGrade, { bg: string; text: string; ring: str
 export const SupplementEvidenceCard: React.FC<SupplementEvidenceCardProps> = ({ supplement, categorySlug }) => {
   const { name, evidenceGrade, summary, slug } = supplement;
   const colors = gradeColorMap[evidenceGrade];
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <motion.div
-      whileHover={{ scale: 1.03 }}
-      transition={{ type: 'spring', stiffness: 300 }}
+      whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 300 }}
     >
       <Link href={`/portal/supplement/${slug}?benefit=${categorySlug}`} passHref>
         <div className="flex items-start p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer h-full">

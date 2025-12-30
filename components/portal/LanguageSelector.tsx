@@ -23,10 +23,10 @@ export default function LanguageSelector() {
     <div className="relative">
       <button
         onClick={handleLanguageChange}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors shadow-sm"
+        className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors shadow-sm"
         title={locale === 'en' ? 'Cambiar a Español' : 'Switch to English'}
       >
-        <Globe className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+        <Globe className="h-5 w-5 text-gray-600 dark:text-gray-400" />
         <span className="font-medium text-gray-700 dark:text-gray-300 uppercase">{locale === 'en' ? 'EN' : 'ES'}</span>
       </button>
     </div>

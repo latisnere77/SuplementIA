@@ -11,6 +11,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useReducedMotion } from '@/lib/hooks/useReducedMotion'
 
 interface ExpandableSectionProps {
   title: string
@@ -38,6 +39,7 @@ export function ExpandableSection({
   onToggle,
 }: ExpandableSectionProps) {
   const [internalIsExpanded, setInternalIsExpanded] = React.useState(defaultExpanded)
+  const prefersReducedMotion = useReducedMotion()
 
   // Use controlled state if provided, otherwise use internal state
   const isExpanded = controlledIsExpanded !== undefined ? controlledIsExpanded : internalIsExpanded
@@ -92,10 +94,10 @@ export function ExpandableSection({
         {isExpanded && (
           <motion.div
             id={`expandable-content-${title}`}
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{
+            initial={prefersReducedMotion ? {} : { height: 0, opacity: 0 }}
+            animate={prefersReducedMotion ? {} : { height: 'auto', opacity: 1 }}
+            exit={prefersReducedMotion ? {} : { height: 0, opacity: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : {
               height: { duration: 0.3, ease: 'easeInOut' },
               opacity: { duration: 0.2, ease: 'easeInOut' }
             }}

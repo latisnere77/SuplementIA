@@ -126,25 +126,25 @@ export default function ShareReferralCard({
         <div className="grid grid-cols-3 gap-2">
           <button
             onClick={handleFacebook}
-            className="flex items-center justify-center gap-2 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all hover:scale-105"
+            className="flex items-center justify-center gap-2 p-3 min-h-[44px] bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all hover:scale-105"
           >
-            <Facebook className="h-4 w-4" />
+            <Facebook className="h-5 w-5" />
             <span className="text-xs">Facebook</span>
           </button>
 
           <button
             onClick={handleLinkedIn}
-            className="flex items-center justify-center gap-2 p-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-medium transition-all hover:scale-105"
+            className="flex items-center justify-center gap-2 p-3 min-h-[44px] bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-medium transition-all hover:scale-105"
           >
-            <Linkedin className="h-4 w-4" />
+            <Linkedin className="h-5 w-5" />
             <span className="text-xs">LinkedIn</span>
           </button>
 
           <button
             onClick={handleEmail}
-            className="flex items-center justify-center gap-2 p-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-all hover:scale-105"
+            className="flex items-center justify-center gap-2 p-3 min-h-[44px] bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-all hover:scale-105"
           >
-            <Mail className="h-4 w-4" />
+            <Mail className="h-5 w-5" />
             <span className="text-xs">Email</span>
           </button>
         </div>
@@ -162,9 +162,9 @@ export default function ShareReferralCard({
           />
           <button
             onClick={handleCopy}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-3 min-h-[44px] min-w-[44px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
           >
-            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
           </button>
         </div>
       </div>

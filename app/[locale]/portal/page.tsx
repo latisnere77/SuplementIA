@@ -8,7 +8,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Milestone, Sparkles, User, Venus, Mars } from 'lucide-react';
+import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Milestone, Sparkles, Venus, Mars } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,7 @@ import { validateSupplementQuery } from '@/lib/portal/query-validator';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
 import FAQSection from '@/components/portal/FAQSection';
 import { getAllCategories } from '@/lib/knowledge-base'; // Importar la fuente de la verdad
+import { useReducedMotion } from '@/lib/hooks/useReducedMotion';
 
 // Mapeo de slugs a iconos para mantener la consistencia visual
 const categoryIcons: { [key: string]: React.ElementType } = {
@@ -45,6 +46,7 @@ export default function PortalPage() {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   // Hook de autocomplete con debouncing
   const { suggestions, isLoading: isLoadingSuggestions } = useAutocomplete(searchQuery, {
@@ -76,7 +78,9 @@ export default function PortalPage() {
   // ¡Ahora las categorías se cargan dinámicamente!
   const categories = getAllCategories().map(category => ({
     ...category,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     name: t(`portal.categories.${category.slug}.name` as any, { defaultMessage: category.name }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     description: t(`portal.categories.${category.slug}.desc` as any, { defaultMessage: category.description }),
     icon: categoryIcons[category.slug] || BookOpen, // Usar icono mapeado o uno por defecto
     color: {
@@ -116,17 +120,23 @@ export default function PortalPage() {
   const valueProps = [
     {
       icon: Search,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       title: t('portal.value.realtime.title' as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       description: t('portal.value.realtime.desc' as any),
     },
     {
       icon: BookOpen,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       title: t('portal.value.evidence.title' as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       description: t('portal.value.evidence.desc' as any),
     },
     {
       icon: Globe,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       title: t('portal.value.latam.title' as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       description: t('portal.value.latam.desc' as any),
     },
   ];
@@ -190,33 +200,33 @@ export default function PortalPage() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Hero Section */}
-      <div className="relative min-h-[80vh] w-full flex items-center justify-center overflow-x-hidden bg-white dark:bg-gray-950">
+      <div className="relative min-h-[70vh] md:min-h-[80vh] w-full flex items-center justify-center overflow-x-hidden bg-white dark:bg-gray-950">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/50 dark:from-primary/10 dark:via-transparent dark:to-accent/10 blur-3xl" />
 
-        {/* Floating Shapes */}
+        {/* Floating Shapes - Hidden on mobile, visible on tablet+ */}
         <motion.div
-          initial={{ opacity: 0, y: -150, rotate: -15 }}
-          animate={{ opacity: 1, y: 0, rotate: 12 }}
-          transition={{ duration: 2.4, ease: [0.23, 0.86, 0.39, 0.96] }}
-          className="absolute left-[-5%] top-[20%] w-[500px] h-[120px]"
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: -150, rotate: -15 }}
+          animate={prefersReducedMotion ? {} : { opacity: 1, y: 0, rotate: 12 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 2.4, ease: [0.23, 0.86, 0.39, 0.96] }}
+          className="hidden lg:block absolute left-[-5%] top-[20%] w-[500px] h-[120px]"
         >
           <motion.div
-            animate={{ y: [0, 15, 0] }}
-            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+            animate={prefersReducedMotion ? {} : { y: [0, 15, 0] }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 12, repeat: Infinity, ease: 'easeInOut' }}
             className="w-full h-full rounded-full bg-gradient-to-r from-primary/15 to-transparent backdrop-blur-[2px] border-2 border-primary/20"
           />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: -150, rotate: 15 }}
-          animate={{ opacity: 1, y: 0, rotate: -15 }}
-          transition={{ duration: 2.4, delay: 0.5, ease: [0.23, 0.86, 0.39, 0.96] }}
-          className="absolute right-[0%] top-[75%] w-[400px] h-[100px]"
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: -150, rotate: 15 }}
+          animate={prefersReducedMotion ? {} : { opacity: 1, y: 0, rotate: -15 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 2.4, delay: 0.5, ease: [0.23, 0.86, 0.39, 0.96] }}
+          className="hidden lg:block absolute right-[0%] top-[75%] w-[400px] h-[100px]"
         >
           <motion.div
-            animate={{ y: [0, 15, 0] }}
-            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+            animate={prefersReducedMotion ? {} : { y: [0, 15, 0] }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 12, repeat: Infinity, ease: 'easeInOut' }}
             className="w-full h-full rounded-full bg-gradient-to-r from-accent/15 to-transparent backdrop-blur-[2px] border-2 border-accent/20"
           />
         </motion.div>
@@ -226,11 +236,11 @@ export default function PortalPage() {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             {/* Title */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5 }}
+              initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
+              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, delay: 0.5 }}
             >
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-b from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300">
                   {t('portal.title')}
                 </span>
@@ -243,19 +253,19 @@ export default function PortalPage() {
 
             {/* Description */}
             <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.7 }}
-              className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
+              initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
+              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, delay: 0.7 }}
+              className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4"
             >
               {t('portal.subtitle')}
             </motion.p>
 
             {/* Search Bar with Autocomplete - Combobox con Enter funcional */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.9 }}
+              initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
+              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, delay: 0.9 }}
               className="relative max-w-2xl mx-auto"
             >
               <form
@@ -443,26 +453,26 @@ export default function PortalPage() {
       </div>
 
       {/* Popular Searches */}
-      <div className="container mx-auto px-4 md:px-6 py-12">
+      <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+          whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           className="max-w-4xl mx-auto"
         >
-          <h2 className="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg md:text-xl font-semibold mb-4 text-center text-gray-900 dark:text-gray-100">
             {t('portal.popular.searches')}
           </h2>
           <div className="flex flex-wrap justify-center gap-3">
             {popularSearches.map((search, index) => (
               <motion.button
                 key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.9 }}
+                whileInView={prefersReducedMotion ? {} : { opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: index * 0.1 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
                 onClick={() => handlePopularSearch(search.term)}
                 className="group px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all shadow-sm"
               >
@@ -479,34 +489,34 @@ export default function PortalPage() {
       </div>
 
       {/* Health Categories Grid */}
-      <div className="container mx-auto px-4 md:px-6 py-16">
+      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+          whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+          className="text-center mb-8 md:mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-gray-900 dark:text-gray-100">
             {t('portal.browse.categories')}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-lg">
+          <p className="text-gray-600 dark:text-gray-300 text-base md:text-lg px-4">
             {language === 'es'
               ? 'Encuentra información específica para tus necesidades de salud'
               : 'Find specific information for your health needs'}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
           {categories.map((category, index) => {
             const Icon = category.icon;
             return (
               <motion.div
                 key={category.slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+                whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
                   className="group h-full hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800"
@@ -522,6 +532,7 @@ export default function PortalPage() {
                   <CardContent>
                     <div className="flex items-center text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
                       <span className="text-sm font-medium">
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {t('portal.browse.view_more' as any, { defaultMessage: language === 'es' ? 'Ver más' : 'Learn more' })}
                       </span>
                       <ChevronRight className="h-4 w-4 ml-1" />
@@ -535,30 +546,30 @@ export default function PortalPage() {
       </div>
 
       {/* Value Propositions */}
-      <div className="container mx-auto px-4 md:px-6 py-16">
+      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16">
         <div className="max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+            whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+            className="text-center mb-8 md:mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
               {language === 'es' ? '¿Por Qué Confiar en Nosotros?' : 'Why Trust Us?'}
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {valueProps.map((prop, index) => {
               const Icon = prop.icon;
               return (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+                  whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.2 }}
                   className="text-center"
                 >
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
@@ -574,12 +585,12 @@ export default function PortalPage() {
       </div>
 
       {/* FAQ Section */}
-      <div className="container mx-auto px-4 md:px-6 py-16">
+      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+          whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           className="max-w-4xl mx-auto"
         >
           <FAQSection />
@@ -587,20 +598,20 @@ export default function PortalPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="container mx-auto px-4 md:px-6 py-16">
+      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+          whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto text-center bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-12 border border-primary/20"
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+          className="max-w-4xl mx-auto text-center bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-6 md:p-12 border border-primary/20"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-gray-900 dark:text-gray-100">
             {language === 'es'
               ? 'Comienza tu Viaje hacia una Mejor Salud'
               : 'Start Your Journey to Better Health'}
           </h2>
-          <p className="text-lg text-gray-700 dark:text-gray-200 mb-8">
+          <p className="text-base md:text-lg text-gray-700 dark:text-gray-200 mb-6 md:mb-8">
             {language === 'es'
               ? 'Únete a miles de personas que ya confían en nuestra información'
               : 'Join thousands of people who already trust our information'}

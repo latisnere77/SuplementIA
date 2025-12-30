@@ -10,6 +10,7 @@
 import * as React from 'react'
 import { motion, type MotionProps } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useReducedMotion } from '@/lib/hooks/useReducedMotion'
 
 interface GradientTextProps extends Omit<React.HTMLAttributes<HTMLElement>, keyof MotionProps> {
   className?: string
@@ -18,15 +19,19 @@ interface GradientTextProps extends Omit<React.HTMLAttributes<HTMLElement>, keyo
   animate?: boolean
 }
 
-export function GradientText({ 
-  className, 
-  children, 
+export function GradientText({
+  className,
+  children,
   as: Component = 'span',
   animate = true,
-  ...props 
+  ...props
 }: GradientTextProps) {
-  const MotionComponent = motion.create(Component as any)
-  
+  const MotionComponent = motion.create(Component as React.ElementType)
+  const prefersReducedMotion = useReducedMotion()
+
+  // Disable animations if user prefers reduced motion
+  const shouldAnimate = animate && !prefersReducedMotion
+
   return (
     <>
       {/* Gradient animation keyframes */}
@@ -78,8 +83,8 @@ export function GradientText({
         {...props}
       >
         {children}
-        
-        {animate && (
+
+        {shouldAnimate && (
           <span className="pointer-events-none absolute inset-0 mix-blend-lighten dark:mix-blend-darken">
             <span className="pointer-events-none absolute -top-1/2 h-[30vw] w-[30vw] animate-[gradient-border_6s_ease-in-out_infinite,gradient-1_12s_ease-in-out_infinite_alternate] bg-[hsl(var(--color-1))] mix-blend-overlay blur-[1rem]" />
             <span className="pointer-events-none absolute right-0 top-0 h-[30vw] w-[30vw] animate-[gradient-border_6s_ease-in-out_infinite,gradient-2_12s_ease-in-out_infinite_alternate] bg-[hsl(var(--color-2))] mix-blend-overlay blur-[1rem]" />

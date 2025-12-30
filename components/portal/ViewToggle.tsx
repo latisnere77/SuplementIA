@@ -19,7 +19,7 @@ export function ViewToggle({ mode, onChange }: ViewToggleProps) {
         type="button"
         onClick={() => onChange('standard')}
         className={`
-          px-4 py-2 rounded-md text-sm font-medium transition-all duration-200
+          px-4 py-3 rounded-md text-sm font-medium transition-all duration-200 min-h-[44px]
           ${mode === 'standard'
             ? 'bg-white text-gray-900 shadow-sm'
             : 'text-gray-600 hover:text-gray-900'
@@ -32,7 +32,7 @@ export function ViewToggle({ mode, onChange }: ViewToggleProps) {
         type="button"
         onClick={() => onChange('examine')}
         className={`
-          px-4 py-2 rounded-md text-sm font-medium transition-all duration-200
+          px-4 py-3 rounded-md text-sm font-medium transition-all duration-200 min-h-[44px]
           ${mode === 'examine'
             ? 'bg-white text-gray-900 shadow-sm'
             : 'text-gray-600 hover:text-gray-900'
