@@ -34,9 +34,11 @@ const REGION = 'us-east-1';
 export const MAX_STORE_SIZE = 1000;
 
 // Initialize DynamoDB client
+// In serverless environments (Amplify), credentials come from the execution role
 const dynamoClient = new DynamoDBClient({
   region: REGION,
   maxAttempts: 3, // Retry failed requests
+  // Credentials will be automatically loaded from the execution environment
 });
 
 const docClient = DynamoDBDocumentClient.from(dynamoClient, {
