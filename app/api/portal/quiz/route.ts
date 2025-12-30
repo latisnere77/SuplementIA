@@ -8,7 +8,7 @@ import { randomUUID } from 'crypto';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
-import { createJob, storeJobResult } from '@/lib/portal/job-store';
+import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
 
@@ -654,27 +654,27 @@ export async function POST(request: NextRequest) {
               !ranked.positive?.length &&
               !ranked.negative?.length
             );
-            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=${needsRanking} jobId=${jobId}`);
+            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_SYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=${needsRanking} jobId=${jobId}`);
 
             // Create job in DynamoDB with processing status
             await createJob(jobId);
 
-            // ASYNC ENRICHMENT: Launch enrichment in background and return immediately
-            // The job status will be updated when enrichment completes (40-50 seconds)
-            // Client will poll /api/portal/status/{jobId} to get the final result
-            enrichSupplementAsync(jobId, rec, searchTerm, getBaseUrl(), needsRanking).catch(err => {
-              console.error(`[ASYNC_ENRICH_UNHANDLED_ERROR] jobId=${jobId}`, err);
-            });
+            // SYNCHRONOUS ENRICHMENT: Wait for enrichment to complete before returning
+            // This may take 40-50 seconds but ensures ranking data is included
+            await enrichSupplementAsync(jobId, rec, searchTerm, getBaseUrl(), needsRanking);
 
-            // Return immediately with processing status
+            // Get the updated recommendation from DynamoDB
+            const job = await getJob(jobId);
+            const finalRecommendation = job?.recommendation || rec;
+
+            // Return with completed status and enriched data
             return NextResponse.json({
               success: true,
               quiz_id: quizId,
               jobId,
-              status: 'processing',
-              message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
-              recommendation: rec, // Return initial recommendation for immediate display
-              source: 'lancedb_enriching_async'
+              status: 'completed',
+              recommendation: finalRecommendation,
+              source: 'lancedb_enriching_sync'
             });
           } else {
             console.log(`⏭️ [SKIP_ENRICHMENT] supplement="${searchTerm}" already has good metadata`);
