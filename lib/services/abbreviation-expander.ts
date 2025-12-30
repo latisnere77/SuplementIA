@@ -8,10 +8,10 @@
  * - "NAC" → ["N-acetylcysteine", "N-acetyl-L-cysteine"]
  */
 
-import {
-  BedrockRuntimeClient,
-  InvokeModelCommand,
-} from '@aws-sdk/client-bedrock-runtime';
+// Dynamic import to avoid loading AWS SDK when credentials are not available
+// This prevents CredentialsProviderError during module load in Amplify environment
+type BedrockRuntimeClient = any;
+type InvokeModelCommand = any;
 
 // ====================================
 // TYPES
@@ -33,10 +33,10 @@ export interface AbbreviationExpansion {
 const MODEL_ID = 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
 
 // Lazy-initialize Bedrock client to avoid credentials errors at module load time
-let bedrockClient: BedrockRuntimeClient | null = null;
+let bedrockClient: any | null = null;
 let bedrockInitAttempted = false;
 
-function getBedrockClient(): BedrockRuntimeClient | null {
+async function getBedrockClient(): Promise<any | null> {
   if (bedrockInitAttempted) {
     return bedrockClient;
   }
@@ -44,6 +44,9 @@ function getBedrockClient(): BedrockRuntimeClient | null {
   bedrockInitAttempted = true;
 
   try {
+    // Dynamic import to avoid loading AWS SDK at module load time
+    const { BedrockRuntimeClient } = await import('@aws-sdk/client-bedrock-runtime');
+
     bedrockClient = new BedrockRuntimeClient({
       region: (process.env.AWS_REGION || 'us-east-1').trim(),
     });
@@ -219,11 +222,14 @@ function translateSpanishProgrammatically(term: string): string | null {
  */
 async function expandWithLLM(term: string): Promise<string[]> {
   // Lazy-load Bedrock client and check if available
-  const client = getBedrockClient();
+  const client = await getBedrockClient();
   if (!client) {
     console.log(`[ABBREVIATION] Bedrock not available - skipping LLM expansion for "${term}"`);
     return [];
   }
+
+  // Dynamic import of InvokeModelCommand
+  const { InvokeModelCommand } = await import('@aws-sdk/client-bedrock-runtime');
 
   console.log(`[ABBREVIATION] Expanding "${term}" with Claude Haiku...`);
 
@@ -604,11 +610,14 @@ export async function generateSearchVariations(term: string): Promise<string[]> 
   const trimmed = term.trim();
 
   // Lazy-load Bedrock client and check if available
-  const client = getBedrockClient();
+  const client = await getBedrockClient();
   if (!client) {
     console.log(`[SEARCH_VARIATIONS] Bedrock not available - skipping variations for "${trimmed}"`);
     return [];
   }
+
+  // Dynamic import of InvokeModelCommand
+  const { InvokeModelCommand } = await import('@aws-sdk/client-bedrock-runtime');
 
   console.log(
     JSON.stringify({
