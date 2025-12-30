@@ -221,6 +221,12 @@ function translateSpanishProgrammatically(term: string): string | null {
  * - Scientific name suggestions
  */
 async function expandWithLLM(term: string): Promise<string[]> {
+  // Check if LLM expansion is disabled via environment variable
+  if (process.env.DISABLE_LLM_EXPANSION === 'true') {
+    console.log(`[ABBREVIATION] LLM expansion disabled via DISABLE_LLM_EXPANSION - skipping for "${term}"`);
+    return [];
+  }
+
   // Lazy-load Bedrock client and check if available
   const client = await getBedrockClient();
   if (!client) {
@@ -608,6 +614,12 @@ export async function expandAbbreviation(
  */
 export async function generateSearchVariations(term: string): Promise<string[]> {
   const trimmed = term.trim();
+
+  // Check if LLM expansion is disabled via environment variable
+  if (process.env.DISABLE_LLM_EXPANSION === 'true') {
+    console.log(`[SEARCH_VARIATIONS] LLM expansion disabled via DISABLE_LLM_EXPANSION - skipping for "${trimmed}"`);
+    return [];
+  }
 
   // Lazy-load Bedrock client and check if available
   const client = await getBedrockClient();
