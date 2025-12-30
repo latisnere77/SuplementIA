@@ -47,7 +47,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <h1 className="text-4xl font-bold text-gray-900 mb-2">{category.name}</h1>
       <p className="text-lg text-gray-600 mb-8">{category.description}</p>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
         {sortedSupplements.map(supplement => (
           <SupplementEvidenceCard 
             key={supplement.slug} 

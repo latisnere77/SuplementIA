@@ -7,7 +7,7 @@
 import React from 'react';
 import type { PubMedQueryResult } from '@/lib/services/pubmed-search';
 import { SupplementEvidenceCard } from './SupplementEvidenceCard';
-import type { SupplementEvidence } from '@/lib/knowledge-base'; // Use the new unified type
+import type { SupplementEvidence as _SupplementEvidence } from '@/lib/knowledge-base'; // Use the new unified type
 
 interface ConditionResultsDisplayProps {
   result: PubMedQueryResult;
@@ -15,6 +15,7 @@ interface ConditionResultsDisplayProps {
 
 interface GradeSectionProps {
   title: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supplements: any[]; // Loosening type here to accommodate old structure temporarily
   borderColor: string;
   categorySlug: string;
@@ -30,7 +31,7 @@ const GradeSection: React.FC<GradeSectionProps> = ({ title, supplements, borderC
       <h3 className={`text-xl font-semibold text-gray-800 mb-4 border-b-2 ${borderColor} pb-2`}>
         {title}
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {supplements.map((supplement) => (
           <SupplementEvidenceCard 
             key={supplement.supplementName} 

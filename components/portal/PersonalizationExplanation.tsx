@@ -97,7 +97,7 @@ export default function PersonalizationExplanation({
         {t('results.personalization.desc')}
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
         {FACTOR_CARDS.map((card) => {
           const Icon = card.icon;
           let description = '';
@@ -132,6 +132,7 @@ export default function PersonalizationExplanation({
               <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${card.color} mb-4`}>
                 <Icon className="h-6 w-6 text-white" />
               </div>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <h3 className="text-lg font-semibold text-gray-900 mb-2">{t(`personalization.${card.id}` as any)}</h3>
               <p className="text-sm text-gray-700 mb-3">{description}</p>
               <div className="text-xs font-medium text-gray-600 bg-white/50 rounded px-2 py-1 inline-block">
