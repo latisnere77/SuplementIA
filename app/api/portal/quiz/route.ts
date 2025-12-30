@@ -11,9 +11,12 @@ import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
-
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 
 import { searchSupplements } from '@/lib/search-service';
+
+// Initialize Lambda client for async enrichment
+const lambdaClient = new LambdaClient({ region: process.env.AWS_REGION || 'us-east-1' });
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -117,45 +120,46 @@ async function enrichSupplement(supplementName: string, baseUrl: string, forceRe
 }
 
 /**
- * Asynchronously enrich a supplement and update the job when complete
- * This allows the API to return immediately while enrichment happens in the background
+ * Invoke content-enricher Lambda asynchronously (fire-and-forget)
+ * The Lambda will enrich the supplement and update the DynamoDB job store when complete
  * @param jobId - The job ID to update when enrichment completes
- * @param recommendation - The initial recommendation to enrich
- * @param supplementName - Name of the supplement to enrich
- * @param baseUrl - Base URL for API calls
+ * @param supplementName - The supplement name to enrich
  * @param forceRefresh - Force bypass of enrichment cache
  */
-async function enrichSupplementAsync(
+async function invokeLambdaEnrichmentAsync(
   jobId: string,
-  recommendation: any,
   supplementName: string,
-  baseUrl: string,
   forceRefresh: boolean = false
 ): Promise<void> {
   try {
-    console.log(`🚀 [ASYNC_ENRICH_START] jobId=${jobId} supplement="${supplementName}" forceRefresh=${forceRefresh}`);
+    const payload = {
+      httpMethod: 'POST',
+      body: JSON.stringify({
+        supplementId: supplementName,
+        category: 'general',
+        forceRefresh,
+        jobId, // Pass jobId so Lambda can update the job store
+        maxStudies: 5,
+        rctOnly: false,
+      }),
+    };
 
-    // Perform enrichment (this may take 40+ seconds)
-    const enrichedData = await enrichSupplement(supplementName, baseUrl, forceRefresh);
+    // Invoke Lambda asynchronously (InvocationType: 'Event')
+    // This returns immediately without waiting for Lambda to complete
+    await lambdaClient.send(
+      new InvokeCommand({
+        FunctionName: process.env.ENRICHER_LAMBDA || 'production-content-enricher',
+        InvocationType: 'Event', // Async invocation - fire and forget
+        Payload: Buffer.from(JSON.stringify(payload)),
+      })
+    );
 
-    if (enrichedData) {
-      // Merge enriched data into recommendation
-      const enrichedRec = mergeEnrichedData(recommendation, enrichedData);
-      console.log(`✅ [ASYNC_ENRICH_SUCCESS] jobId=${jobId} supplement="${supplementName}"`);
-
-      // Update job with completed status and enriched data
-      await storeJobResult(jobId, 'completed', { recommendation: enrichedRec });
-    } else {
-      console.log(`❌ [ASYNC_ENRICH_FAILED] jobId=${jobId} supplement="${supplementName}" - enrichment returned null`);
-      // Still store the original recommendation, just mark it as complete
-      await storeJobResult(jobId, 'completed', { recommendation });
-    }
+    console.log(`🚀 [LAMBDA_INVOKED] jobId=${jobId} supplement="${supplementName}" forceRefresh=${forceRefresh} invocationType=Event`);
   } catch (error: any) {
-    console.error(`❌ [ASYNC_ENRICH_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
-    // Store the original recommendation with failed status
+    console.error(`❌ [LAMBDA_INVOKE_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
+    // Mark job as failed if we can't even invoke the Lambda
     await storeJobResult(jobId, 'failed', {
-      recommendation,
-      error: `Enrichment failed: ${error.message}`
+      error: `Failed to invoke enrichment Lambda: ${error.message}`
     });
   }
 }
@@ -654,28 +658,29 @@ export async function POST(request: NextRequest) {
               !ranked.positive?.length &&
               !ranked.negative?.length
             );
-            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_SYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=false jobId=${jobId}`);
+            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=false jobId=${jobId}`);
 
             // Create job in DynamoDB with processing status
             await createJob(jobId);
 
-            // SYNCHRONOUS ENRICHMENT: Wait for enrichment to complete before returning
+            // Store initial recommendation in job
+            await storeJobResult(jobId, 'processing', { recommendation: rec });
+
+            // ASYNC ENRICHMENT: Invoke Lambda asynchronously (fire-and-forget)
+            // Lambda will run independently and update DynamoDB when complete
+            // Client will poll /api/portal/status/{jobId} to get the final result
             // FIX: Use cache-friendly enrichment (forceRefresh=false) to enable sub-second responses for cached supplements
-            // First request may be slow (cache miss + Bedrock call), but subsequent requests will be fast (<1s cache hit)
-            await enrichSupplementAsync(jobId, rec, searchTerm, getBaseUrl(), false);
+            await invokeLambdaEnrichmentAsync(jobId, searchTerm, false);
 
-            // Get the updated recommendation from DynamoDB
-            const job = await getJob(jobId);
-            const finalRecommendation = job?.recommendation || rec;
-
-            // Return with completed status and enriched data
+            // Return immediately with processing status
             return NextResponse.json({
               success: true,
               quiz_id: quizId,
               jobId,
-              status: 'completed',
-              recommendation: finalRecommendation,
-              source: 'lancedb_enriching_sync'
+              status: 'processing',
+              message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
+              recommendation: rec, // Return initial recommendation for immediate display
+              source: 'lancedb_enriching_async'
             });
           } else {
             console.log(`⏭️ [SKIP_ENRICHMENT] supplement="${searchTerm}" already has good metadata`);

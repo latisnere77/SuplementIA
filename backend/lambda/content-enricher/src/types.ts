@@ -26,6 +26,9 @@ export interface EnrichmentRequest {
   ranking?: any; // NEW: Intelligent ranking from studies-fetcher
   contentType?: 'standard' | 'examine-style'; // NEW: Content format type
   benefitQuery?: string; // NEW: Optional benefit-specific query (e.g., "hair growth") - for now just accepted, future: focused analysis
+  jobId?: string; // NEW: Job ID for async enrichment with DynamoDB job store
+  maxStudies?: number; // NEW: Limit number of studies to fetch
+  rctOnly?: boolean; // NEW: Only fetch RCT studies
 }
 
 export interface EnrichedContent {

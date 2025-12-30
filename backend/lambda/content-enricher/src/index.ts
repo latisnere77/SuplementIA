@@ -12,6 +12,7 @@ import { generateEnrichedContent } from './bedrock';
 import { generateEnrichedContentWithToolUse } from './bedrockConverse';
 import { getFromCache, saveToCacheAsync } from './cache';
 import { EnrichmentRequest, EnrichmentResponse } from './types';
+import { updateJobWithResult } from './job-store';
 
 // Feature flag to enable Tool Use API (will be controlled via environment variable)
 const USE_TOOL_API = process.env.USE_TOOL_API === 'true';
@@ -63,7 +64,7 @@ export async function handler(
       return createErrorResponse(400, 'Missing request body or query parameters', requestId);
     }
 
-    const { supplementId, category, forceRefresh, studies, ranking, contentType = 'standard', benefitQuery } = request;
+    const { supplementId, category, forceRefresh, studies, ranking, contentType = 'standard', benefitQuery, jobId } = request;
 
     // Validate supplementId
     if (!supplementId || supplementId.trim().length === 0) {
@@ -153,6 +154,13 @@ export async function handler(
             correlationId,
           },
         };
+
+        // Update job store if jobId provided (cache hit path)
+        if (jobId) {
+          await updateJobWithResult(jobId, 'completed', {
+            recommendation: response,
+          });
+        }
 
         if (subsegment) {
           subsegment.addAnnotation('success', true);
@@ -324,6 +332,13 @@ export async function handler(
       },
     };
 
+    // Update job store if jobId provided (async enrichment)
+    if (jobId) {
+      await updateJobWithResult(jobId, 'completed', {
+        recommendation: response, // Store the full enrichment response
+      });
+    }
+
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
@@ -331,6 +346,18 @@ export async function handler(
     };
   } catch (error: any) {
     const duration = Date.now() - startTime;
+
+    // Extract jobId from request for error handling
+    let jobId: string | undefined;
+    try {
+      if (event.body) {
+        const parsedBody = JSON.parse(event.body);
+        jobId = parsedBody.jobId;
+      }
+    } catch {
+      // Ignore parsing errors
+    }
+
     // Log error
     console.error(
       JSON.stringify({
@@ -338,12 +365,20 @@ export async function handler(
         requestId,
         correlationId,
         supplementId: (event as any).body ? JSON.parse((event as any).body)?.supplementId : 'unknown',
+        jobId,
         error: error.message,
         stack: error.stack,
         duration,
         timestamp: new Date().toISOString(),
       })
     );
+
+    // Update job store with failed status if jobId provided
+    if (jobId) {
+      await updateJobWithResult(jobId, 'failed', {
+        error: `Enrichment failed: ${error.message}`,
+      });
+    }
 
     // Add error to X-Ray
     if (subsegment) {
