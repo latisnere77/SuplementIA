@@ -646,7 +646,7 @@ export async function POST(request: NextRequest) {
           }
 
           if (needsEnrichment(rec)) {
-            // Check if we specifically need ranking data (to force cache bypass)
+            // Check if we specifically need ranking data (for logging only)
             // FIX: Check for VALID ranking data, not just if the object exists
             const ranked = rec?.evidence_summary?.studies?.ranked;
             const needsRanking = !ranked || (
@@ -654,14 +654,15 @@ export async function POST(request: NextRequest) {
               !ranked.positive?.length &&
               !ranked.negative?.length
             );
-            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_SYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=${needsRanking} jobId=${jobId}`);
+            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_SYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=false jobId=${jobId}`);
 
             // Create job in DynamoDB with processing status
             await createJob(jobId);
 
             // SYNCHRONOUS ENRICHMENT: Wait for enrichment to complete before returning
-            // This may take 40-50 seconds but ensures ranking data is included
-            await enrichSupplementAsync(jobId, rec, searchTerm, getBaseUrl(), needsRanking);
+            // FIX: Use cache-friendly enrichment (forceRefresh=false) to enable sub-second responses for cached supplements
+            // First request may be slow (cache miss + Bedrock call), but subsequent requests will be fast (<1s cache hit)
+            await enrichSupplementAsync(jobId, rec, searchTerm, getBaseUrl(), false);
 
             // Get the updated recommendation from DynamoDB
             const job = await getJob(jobId);
