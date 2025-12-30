@@ -1,12 +1,12 @@
 import createMiddleware from 'next-intl/middleware';
 
 // Optimized middleware for Amplify/CloudFront deployment
-// Removed Vercel-specific geo-detection to improve performance
+// Using 'always' prefix to eliminate redirect delays via consistent routing
 const intlMiddleware = createMiddleware({
   locales: ['en', 'es'],
   defaultLocale: 'en',
   localeDetection: true,
-  localePrefix: 'as-needed'
+  localePrefix: 'always'
 });
 
 export default intlMiddleware;
