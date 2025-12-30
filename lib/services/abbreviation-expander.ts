@@ -29,9 +29,19 @@ export interface AbbreviationExpansion {
 // BEDROCK CLIENT
 // ====================================
 
-const bedrockClient = new BedrockRuntimeClient({
-  region: (process.env.AWS_REGION || 'us-east-1').trim(),
-});
+// Flag to track if Bedrock is available (credentials configured)
+let bedrockAvailable = false;
+let bedrockClient: BedrockRuntimeClient | null = null;
+
+try {
+  bedrockClient = new BedrockRuntimeClient({
+    region: (process.env.AWS_REGION || 'us-east-1').trim(),
+  });
+  bedrockAvailable = true;
+} catch (error) {
+  console.warn('[BEDROCK] Bedrock client initialization failed - LLM expansion disabled:', error instanceof Error ? error.message : 'Unknown error');
+  bedrockClient = null;
+}
 
 // Use Haiku for fast, cheap abbreviation expansion
 const MODEL_ID = 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
@@ -198,6 +208,12 @@ function translateSpanishProgrammatically(term: string): string | null {
  * - Scientific name suggestions
  */
 async function expandWithLLM(term: string): Promise<string[]> {
+  // Check if Bedrock client is available (credentials configured)
+  if (!bedrockAvailable || !bedrockClient) {
+    console.log(`[ABBREVIATION] Bedrock not available - skipping LLM expansion for "${term}"`);
+    return [];
+  }
+
   console.log(`[ABBREVIATION] Expanding "${term}" with Claude Haiku...`);
 
   // SYSTEM PROMPT with Prompt Caching (>2048 tokens for cache eligibility)
@@ -280,7 +296,7 @@ IMPORTANT GUIDELINES:
       }),
     });
 
-    const response = await bedrockClient.send(command);
+    const response = await bedrockClient!.send(command);
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
 
@@ -576,6 +592,12 @@ export async function expandAbbreviation(
 export async function generateSearchVariations(term: string): Promise<string[]> {
   const trimmed = term.trim();
 
+  // Check if Bedrock client is available (credentials configured)
+  if (!bedrockAvailable || !bedrockClient) {
+    console.log(`[SEARCH_VARIATIONS] Bedrock not available - skipping variations for "${trimmed}"`);
+    return [];
+  }
+
   console.log(
     JSON.stringify({
       event: 'SEARCH_VARIATIONS_GENERATION_START',
@@ -621,7 +643,7 @@ Generate variations for: "${trimmed}"`;
       }),
     });
 
-    const response = await bedrockClient.send(command);
+    const response = await bedrockClient!.send(command);
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     const content = responseBody.content[0].text;
 
