@@ -125,9 +125,9 @@ export default function SubscriptionPlans() {
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                 )}
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                 <div className="mb-4">
-                  <span className="text-4xl font-bold text-gray-900">
+                  <span className="text-3xl sm:text-4xl font-bold text-gray-900">
                     ${plan.price}
                   </span>
                   <span className="text-gray-600">/{plan.interval === 'month' ? 'mo' : 'yr'}</span>

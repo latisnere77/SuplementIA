@@ -7,7 +7,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen, Users, TrendingUp, Calendar, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookOpen, Users, TrendingUp, Calendar, ExternalLink as _ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { IngredientBadges } from './IngredientBadges';
 
@@ -41,7 +41,7 @@ const GRADE_COLORS = {
   C: 'bg-yellow-100 text-yellow-800 border-yellow-300',
 };
 
-const GRADE_LABELS = {
+const _GRADE_LABELS = {
   A: 'Strong Evidence (RCTs)',
   B: 'Moderate Evidence',
   C: 'Emerging Evidence',
@@ -56,7 +56,7 @@ export default function EvidenceAnalysisPanel({
 
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('results.evidence.summary')}</h2>
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">{t('results.evidence.summary')}</h2>
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -65,7 +65,7 @@ export default function EvidenceAnalysisPanel({
             <BookOpen className="h-5 w-5 text-blue-600" />
             <span className="text-sm font-medium text-blue-600">{t('evidence.studies')}</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{evidenceSummary.totalStudies.toLocaleString()}</div>
+          <div className="text-xl sm:text-2xl font-bold text-gray-900">{evidenceSummary.totalStudies.toLocaleString()}</div>
         </div>
 
         <div className="bg-green-50 rounded-lg p-4 border border-green-200">
@@ -73,7 +73,7 @@ export default function EvidenceAnalysisPanel({
             <Users className="h-5 w-5 text-green-600" />
             <span className="text-sm font-medium text-green-600">{t('evidence.participants')}</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-xl sm:text-2xl font-bold text-gray-900">
             {evidenceSummary.totalParticipants.toLocaleString()}
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function EvidenceAnalysisPanel({
             <TrendingUp className="h-5 w-5 text-purple-600" />
             <span className="text-sm font-medium text-purple-600">{t('evidence.efficacy')}</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{evidenceSummary.efficacyPercentage}%</div>
+          <div className="text-xl sm:text-2xl font-bold text-gray-900">{evidenceSummary.efficacyPercentage}%</div>
         </div>
 
         <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
@@ -91,7 +91,7 @@ export default function EvidenceAnalysisPanel({
             <Calendar className="h-5 w-5 text-orange-600" />
             <span className="text-sm font-medium text-orange-600">{t('evidence.research.span')}</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{evidenceSummary.researchSpanYears} {t('evidence.years')}</div>
+          <div className="text-xl sm:text-2xl font-bold text-gray-900">{evidenceSummary.researchSpanYears} {t('evidence.years')}</div>
         </div>
       </div>
 
@@ -127,6 +127,7 @@ export default function EvidenceAnalysisPanel({
                     size="sm"
                   />
                 </div>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <p className="text-sm text-gray-600 mb-2">{t(`evidence.grade.${ingredient.grade.toLowerCase()}` as any)}</p>
                 <div className="flex items-center gap-4 text-sm text-gray-600">
                   <span>{ingredient.studyCount} {t('evidence.studies').toLowerCase()}</span>

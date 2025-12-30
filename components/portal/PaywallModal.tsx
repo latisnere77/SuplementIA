@@ -74,7 +74,7 @@ export default function PaywallModal({ isOpen, onClose, onSubscribe }: PaywallMo
           >
             <X className="h-6 w-6" />
           </button>
-          <h2 className="text-3xl font-bold text-white mb-2">Unlock Pro Features</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">Unlock Pro Features</h2>
           <p className="text-blue-100">Get personalized, evidence-based recommendations</p>
         </div>
 

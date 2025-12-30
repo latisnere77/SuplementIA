@@ -107,7 +107,7 @@ export default function ProductRecommendationsGrid({
 
               {/* Price */}
               <div className="mb-4">
-                <div className="text-3xl font-bold text-gray-900">
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {product.price > 0 ? (
                     `${product.currency} ${product.price.toLocaleString()}`
                   ) : (
