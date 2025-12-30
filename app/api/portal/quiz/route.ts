@@ -147,6 +147,17 @@ async function invokeLambdaEnrichmentAsync(
       }),
     };
 
+    // DEBUG: Log the exact payload being sent to Lambda
+    console.log(`📦📦📦 [PAYLOAD_DEBUG] Sending to enrichment Lambda:`, JSON.stringify({
+      hasRanking: !!ranking,
+      rankingPositive: ranking?.positive?.length || 0,
+      rankingNegative: ranking?.negative?.length || 0,
+      rankingConfidence: ranking?.metadata?.confidenceScore || 0,
+      supplementId: supplementName,
+      forceRefresh,
+      fullRanking: ranking ? JSON.stringify(ranking).substring(0, 200) : 'null',
+    }));
+
     // Invoke Lambda asynchronously (InvocationType: 'Event')
     // This returns immediately without waiting for Lambda to complete
     await lambdaClient.send(
@@ -157,7 +168,7 @@ async function invokeLambdaEnrichmentAsync(
       })
     );
 
-    console.log(`🚀 [LAMBDA_INVOKED] jobId=${jobId} supplement="${supplementName}" forceRefresh=${forceRefresh} invocationType=Event`);
+    console.log(`🚀 [LAMBDA_INVOKED] jobId=${jobId} supplement="${supplementName}" forceRefresh=${forceRefresh} hasRanking=${!!ranking} invocationType=Event`);
   } catch (error: any) {
     console.error(`❌ [LAMBDA_INVOKE_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
     // Mark job as failed if we can't even invoke the Lambda
