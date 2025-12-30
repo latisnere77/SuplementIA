@@ -663,9 +663,6 @@ export async function POST(request: NextRequest) {
             // Create job in DynamoDB with processing status
             await createJob(jobId);
 
-            // Store initial recommendation in job
-            await storeJobResult(jobId, 'processing', { recommendation: rec });
-
             // ASYNC ENRICHMENT: Invoke Lambda asynchronously (fire-and-forget)
             // Lambda will run independently and update DynamoDB when complete
             // Client will poll /api/portal/status/{jobId} to get the final result
