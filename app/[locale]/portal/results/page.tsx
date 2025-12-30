@@ -1318,103 +1318,6 @@ function ResultsPageContent() {
           })()}
         </div>
 
-        {/* Benefit Search Box */}
-        <div className="mb-8 bg-white p-6 rounded-xl border-2 border-gray-200 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Buscar por Beneficio Específico</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            ¿Te interesa saber si este suplemento sirve para algo en particular? Escribe en español, buscamos en la literatura científica en inglés.
-          </p>
-
-          {/* Auto-suggested benefits for this supplement */}
-          {(() => {
-            const suggestions = getSuggestedBenefits(recommendation?.category || '');
-            if (suggestions.length > 0) {
-              return (
-                <div className="mb-4">
-                  <p className="text-xs font-medium text-blue-700 mb-2">
-                    🎯 Beneficios más investigados para {localizedSupplementName}:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {suggestions.map((suggestion, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => {
-                          // Open modal with benefit-specific studies
-                          setSelectedBenefit({
-                            en: suggestion.benefit,
-                            es: suggestion.benefitEs,
-                          });
-                          setIsBenefitModalOpen(true);
-                        }}
-                        className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-full text-xs font-medium text-blue-700 transition-colors"
-                        title={suggestion.reason}
-                      >
-                        {suggestion.benefitEs}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-            return null;
-          })()}
-
-          <p className="text-xs text-gray-500 mb-3">
-            💡 O escribe tu propio beneficio: &ldquo;crecimiento de cabello&rdquo;, &ldquo;piel hidratada&rdquo;, &ldquo;cansancio&rdquo;, &ldquo;memoria&rdquo;
-          </p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-
-              // Validate input
-              if (!benefitQuery.trim()) {
-                return;
-              }
-
-              // Normalize benefit query from Spanish to English
-              const normalized = normalizeBenefit(benefitQuery);
-
-              console.log('[Benefit Form Submit] Normalizing benefit:', {
-                original: benefitQuery,
-                normalized: normalized.normalized,
-                confidence: normalized.confidence,
-                category: normalized.category,
-              });
-
-              // Use normalized English term if confidence is high enough
-              const finalBenefit = normalized.confidence >= 0.7
-                ? normalized.normalized
-                : benefitQuery;
-
-              // Open modal with benefit-specific studies (same as pre-loaded buttons)
-              setSelectedBenefit({
-                en: finalBenefit,
-                es: benefitQuery, // Keep original Spanish text for display
-              });
-              setIsBenefitModalOpen(true);
-
-              // Clear input after opening modal
-              setBenefitQuery('');
-            }}
-            className="flex flex-col sm:flex-row gap-3"
-          >
-            <input
-              type="text"
-              value={benefitQuery}
-              onChange={(e) => setBenefitQuery(e.target.value)}
-              placeholder="ej: crecimiento de cabello, piel hidratada..."
-              className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
-            >
-              Buscar
-            </button>
-          </form>
-        </div>
-
         {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
         {(() => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1501,6 +1404,104 @@ function ResultsPageContent() {
                 autoLoad={false}
               />
             </div>
+
+            {/* Benefit Search Box - Moved here after Scientific Studies */}
+            <div className="mb-8 bg-white p-6 rounded-xl border-2 border-gray-200 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-800 mb-3">Buscar por Beneficio Específico</h2>
+              <p className="text-sm text-gray-600 mb-4">
+                ¿Te interesa saber si este suplemento sirve para algo en particular? Escribe en español, buscamos en la literatura científica en inglés.
+              </p>
+
+              {/* Auto-suggested benefits for this supplement */}
+              {(() => {
+                const suggestions = getSuggestedBenefits(recommendation?.category || '');
+                if (suggestions.length > 0) {
+                  return (
+                    <div className="mb-4">
+                      <p className="text-xs font-medium text-blue-700 mb-2">
+                        🎯 Beneficios más investigados para {localizedSupplementName}:
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {suggestions.map((suggestion, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              // Open modal with benefit-specific studies
+                              setSelectedBenefit({
+                                en: suggestion.benefit,
+                                es: suggestion.benefitEs,
+                              });
+                              setIsBenefitModalOpen(true);
+                            }}
+                            className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-full text-xs font-medium text-blue-700 transition-colors"
+                            title={suggestion.reason}
+                          >
+                            {suggestion.benefitEs}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
+              <p className="text-xs text-gray-500 mb-3">
+                💡 O escribe tu propio beneficio: &ldquo;crecimiento de cabello&rdquo;, &ldquo;piel hidratada&rdquo;, &ldquo;cansancio&rdquo;, &ldquo;memoria&rdquo;
+              </p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+
+                  // Validate input
+                  if (!benefitQuery.trim()) {
+                    return;
+                  }
+
+                  // Normalize benefit query from Spanish to English
+                  const normalized = normalizeBenefit(benefitQuery);
+
+                  console.log('[Benefit Form Submit] Normalizing benefit:', {
+                    original: benefitQuery,
+                    normalized: normalized.normalized,
+                    confidence: normalized.confidence,
+                    category: normalized.category,
+                  });
+
+                  // Use normalized English term if confidence is high enough
+                  const finalBenefit = normalized.confidence >= 0.7
+                    ? normalized.normalized
+                    : benefitQuery;
+
+                  // Open modal with benefit-specific studies (same as pre-loaded buttons)
+                  setSelectedBenefit({
+                    en: finalBenefit,
+                    es: benefitQuery, // Keep original Spanish text for display
+                  });
+                  setIsBenefitModalOpen(true);
+
+                  // Clear input after opening modal
+                  setBenefitQuery('');
+                }}
+                className="flex flex-col sm:flex-row gap-3"
+              >
+                <input
+                  type="text"
+                  value={benefitQuery}
+                  onChange={(e) => setBenefitQuery(e.target.value)}
+                  placeholder="ej: crecimiento de cabello, piel hidratada..."
+                  className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
+                >
+                  Buscar
+                </button>
+              </form>
+            </div>
+
             <div className="mb-8">
               <ProductRecommendationsGrid products={recommendation.products} onBuyClick={handleBuyClick} />
             </div>

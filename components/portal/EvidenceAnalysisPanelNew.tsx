@@ -579,7 +579,11 @@ export default function EvidenceAnalysisPanelNew({
       )}
 
       {/* INTELLIGENT RANKING SECTION */}
-      {evidenceSummary.studies?.ranked && (
+      {/* Only show when we have actual ranked studies with meaningful data */}
+      {evidenceSummary.studies?.ranked &&
+       (evidenceSummary.studies.ranked.metadata?.confidenceScore > 0 ||
+        evidenceSummary.studies.ranked.positive?.length > 0 ||
+        evidenceSummary.studies.ranked.negative?.length > 0) && (
         <div className="mt-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Análisis Inteligente de Evidencia

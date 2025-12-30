@@ -4,8 +4,8 @@ Description: Studies Fetcher Lambda - Fetch real scientific studies from PubMed
 
 Globals:
   Function:
-    Timeout: 30
-    MemorySize: 512
+    Timeout: 60
+    MemorySize: 1024
     Runtime: nodejs20.x
     Architectures:
       - arm64
@@ -65,6 +65,9 @@ Resources:
           DEFAULT_MAX_RESULTS: !Ref DefaultMaxResults
           DEFAULT_YEAR_FROM: !Ref DefaultYearFrom
           LOG_LEVEL: info
+          # Intelligent ranking feature flags (enabled by default)
+          USE_INTELLIGENT_SEARCH: 'true'
+          USE_INTELLIGENT_RANKING: 'true'
       Events:
         SearchStudies:
           Type: Api
@@ -86,6 +89,13 @@ Resources:
                 - xray:PutTraceSegments
                 - xray:PutTelemetryRecords
               Resource: '*'
+            # Bedrock permissions for intelligent ranking (Claude Haiku for sentiment analysis)
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource:
+                - !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/anthropic.claude-3-haiku-20240307-v1:0
+                - !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/anthropic.claude-3-5-haiku-*
       Tags:
         Project: Suplementia
         Module: StudiesFetcher
@@ -165,7 +175,7 @@ Resources:
       Statistic: Average
       Period: 300
       EvaluationPeriods: 2
-      Threshold: 25000  # 25 seconds (timeout is 30s)
+      Threshold: 55000  # 55 seconds (timeout is 60s)
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
         - Name: FunctionName

@@ -448,11 +448,19 @@ export async function POST(request: NextRequest) {
     const studiesCacheKey = `studies:${searchTerm.toLowerCase()}:${JSON.stringify({ rctOnly, yearFrom, yearTo })}`;
     let studies: any[] = [];
     let studiesFromCache = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let cachedRankedData: any = null; // NEW: Track ranked data from cache
 
     if (!forceRefresh) {
-      const cachedStudies = studiesCache.get(studiesCacheKey);
-      if (cachedStudies) {
-        studies = cachedStudies;
+      const cachedData = studiesCache.get(studiesCacheKey);
+      if (cachedData) {
+        // Support both old format (array) and new format (object with studies + ranked)
+        if (Array.isArray(cachedData)) {
+          studies = cachedData;
+        } else {
+          studies = cachedData.studies || [];
+          cachedRankedData = cachedData.ranked || null;
+        }
         studiesFromCache = true;
         console.log(
           JSON.stringify({
@@ -461,6 +469,7 @@ export async function POST(request: NextRequest) {
             correlationId,
             searchTerm,
             studiesCount: studies.length,
+            hasRankedData: !!cachedRankedData,
             timestamp: new Date().toISOString(),
           })
         );
@@ -880,9 +889,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Cache studies for future requests
+    // Determine if we used a variation
+    const baseTerm = expansionMetadata?.expanded || supplementName;
+    const _usedVariationForLogging = searchTerm !== supplementName && searchTerm !== baseTerm;
+
+    // Extract ranking data from studiesData if available, or use cached ranking
+    // studiesData comes from the studies-fetcher lambda response
+    const rankedData = studiesData?.data?.ranked || cachedRankedData || null;
+
+    // Cache studies AND ranking data for future requests
     if (!studiesFromCache && studies.length > 0) {
-      studiesCache.set(studiesCacheKey, studies);
+      // NEW: Save both studies and ranked data in cache
+      studiesCache.set(studiesCacheKey, {
+        studies,
+        ranked: rankedData,
+      });
       console.log(
         JSON.stringify({
           event: 'STUDIES_CACHED',
@@ -890,18 +911,11 @@ export async function POST(request: NextRequest) {
           correlationId,
           searchTerm,
           studiesCount: studies.length,
+          hasRankedData: !!rankedData,
           timestamp: new Date().toISOString(),
         })
       );
     }
-
-    // Determine if we used a variation
-    const baseTerm = expansionMetadata?.expanded || supplementName;
-    const usedVariationForLogging = searchTerm !== supplementName && searchTerm !== baseTerm;
-
-    // Extract ranking data from studiesData if available
-    // studiesData comes from the studies-fetcher lambda response
-    const rankedData = studiesData?.data?.ranked || null;
 
     // STEP 2: Pass real studies to content-enricher
     const enrichStartTime = Date.now();

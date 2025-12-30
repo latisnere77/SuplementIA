@@ -12,9 +12,9 @@ import { config, CORS_HEADERS } from './config';
 import type { StudySearchRequest, StudiesResponse } from './types';
 import { translateToEnglish } from './translator';
 
-// Feature flags
-const USE_INTELLIGENT_SEARCH = process.env.USE_INTELLIGENT_SEARCH === 'true';
-const USE_INTELLIGENT_RANKING = process.env.USE_INTELLIGENT_RANKING === 'true';
+// Feature flags (enabled by default, can be disabled with 'false')
+const USE_INTELLIGENT_SEARCH = process.env.USE_INTELLIGENT_SEARCH !== 'false';
+const USE_INTELLIGENT_RANKING = process.env.USE_INTELLIGENT_RANKING !== 'false';
 
 // Wrap AWS SDK if X-Ray is enabled
 if (config.xrayEnabled) {
