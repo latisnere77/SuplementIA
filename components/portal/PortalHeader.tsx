@@ -47,13 +47,13 @@ export default function PortalHeader() {
             <nav className="hidden md:flex items-center gap-6">
               <button
                 onClick={() => router.push('/portal')}
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors min-h-[44px] px-2 py-3"
               >
                 Search
               </button>
               <button
                 onClick={() => router.push('/portal/subscription')}
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors min-h-[44px] px-2 py-3"
               >
                 Plans
               </button>
@@ -99,7 +99,7 @@ export default function PortalHeader() {
               ) : (
                 <button
                   onClick={() => setShowAuthModal(true)}
-                  className="hidden md:block px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all"
+                  className="hidden md:block px-4 py-3 min-h-[44px] bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all"
                 >
                   Sign In
                 </button>
