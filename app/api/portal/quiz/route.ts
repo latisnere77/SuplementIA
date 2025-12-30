@@ -89,7 +89,19 @@ async function enrichSupplement(supplementName: string, baseUrl: string, forceRe
 
     const enrichData = await enrichResponse.json();
     const elapsed = Date.now() - enrichStart;
-    console.log(`[Inline Enrichment] Completed in ${elapsed}ms`);
+    console.log(`✅ [ENRICH_RESPONSE] Completed in ${elapsed}ms`);
+    console.log(`🔍 [ENRICH_RESPONSE] Response keys:`, Object.keys(enrichData || {}));
+    console.log(`🔍 [ENRICH_RESPONSE] Has data.studies:`, !!enrichData?.data?.studies);
+    console.log(`🔍 [ENRICH_RESPONSE] Has data.studies.ranked:`, !!enrichData?.data?.studies?.ranked);
+    if (enrichData?.data?.studies?.ranked) {
+      console.log(`🔍 [ENRICH_RESPONSE] Ranked data found:`, {
+        confidence: enrichData.data.studies.ranked.metadata?.confidenceScore,
+        consensus: enrichData.data.studies.ranked.metadata?.consensus,
+        positiveCount: enrichData.data.studies.ranked.positive?.length || 0,
+        negativeCount: enrichData.data.studies.ranked.negative?.length || 0,
+        mixedCount: enrichData.data.studies.ranked.mixed?.length || 0
+      });
+    }
 
     return enrichData;
   } catch (error: any) {
@@ -102,6 +114,10 @@ async function enrichSupplement(supplementName: string, baseUrl: string, forceRe
  * Merge enriched data into recommendation structure
  */
 function mergeEnrichedData(recommendation: any, enrichedData: any): any {
+  console.log(`🔍🔍🔍 [MERGE_START] Starting merge for "${recommendation?.supplement?.name}"`);
+  console.log(`🔍 [MERGE_INPUT] enrichedData keys:`, Object.keys(enrichedData || {}));
+  console.log(`🔍 [MERGE_INPUT] enrichedData.data keys:`, Object.keys(enrichedData?.data || {}));
+
   // 1. Resolve evidence structure (handle multiple possible paths from enrich endpoint)
   // The enrich endpoint returns data in: enrichedData.data.supplement OR enrichedData.data directly
   const evidence = enrichedData?.evidence ||
@@ -211,7 +227,21 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
   // **CRITICAL**: Resolve and Copy studies.ranked data
   // Look in evidence.studies (some Lambdas might return it here)
   // or enrichedData.data.studies (where enrich/route.ts puts it)
+  console.log(`🔍 [STUDIES_SEARCH] Looking for studies in:`, {
+    hasEvidenceStudies: !!evidence.studies,
+    hasDataStudies: !!enrichedData?.data?.studies,
+    hasEnrichedStudies: !!enrichedData?.studies,
+    evidenceKeys: evidence ? Object.keys(evidence) : []
+  });
+
   const studies = evidence.studies || enrichedData?.data?.studies || enrichedData?.studies;
+
+  console.log(`🔍 [STUDIES_FOUND] studies resolved:`, {
+    found: !!studies,
+    studiesKeys: studies ? Object.keys(studies) : [],
+    hasRanked: !!studies?.ranked,
+    rankedKeys: studies?.ranked ? Object.keys(studies.ranked) : []
+  });
 
   if (studies) {
     if (!recommendation.evidence_summary) {
@@ -224,11 +254,12 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
       ...studies,
     };
 
-    console.log('[MERGE_DEBUG] Successfully merged studies:', {
+    console.log('✅✅✅ [MERGE_DEBUG] Successfully merged studies:', {
       hasRanked: !!studies.ranked,
       positiveCount: studies.ranked?.positive?.length || 0,
       confidence: studies.ranked?.metadata?.confidenceScore || 0,
-      totalStudies: studies.total || 0
+      totalStudies: studies.total || 0,
+      finalHasRanked: !!recommendation.evidence_summary.studies.ranked
     });
 
     // Update basedOn/totals
@@ -238,6 +269,8 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
     } else if (studies.total) {
       recommendation.evidence_summary.totalStudies = studies.total;
     }
+  } else {
+    console.log('⚠️⚠️⚠️ [MERGE_DEBUG] NO STUDIES DATA FOUND in enrichment response!');
   }
 
   // Update evidence_by_benefit if present (NEW)
@@ -436,7 +469,7 @@ export async function POST(request: NextRequest) {
   console.log("🚀🚀🚀 [QUIZ UPDATE] New deployment active! " + new Date().toISOString());
   const requestId = randomUUID();
   const jobId = request.headers.get('X-Job-ID') || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  let quizId = `quiz_${Date.now()}_${randomUUID().substring(0, 8)}`;
+  const quizId = `quiz_${Date.now()}_${randomUUID().substring(0, 8)}`;
 
   try {
     const body = await request.json();
