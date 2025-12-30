@@ -1040,8 +1040,8 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // Cache enrichment result
-    const cacheKey = `enrich:${supplementName.toLowerCase()}:${category || 'general'}`;
+    // Cache enrichment result (v4 prefix for consistency with read)
+    const cacheKey = `enrich:v4:${supplementName.toLowerCase()}:${category || 'general'}`;
     enrichmentCache.set(cacheKey, response);
 
     console.log(

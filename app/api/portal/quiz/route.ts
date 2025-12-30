@@ -60,11 +60,12 @@ function needsEnrichment(recommendation: any): boolean {
  * Call the enrichment API synchronously to get detailed supplement data
  * @param supplementName - Name of the supplement to enrich
  * @param baseUrl - Base URL for API calls
+ * @param forceRefresh - Force bypass of enrichment cache (useful when ranking data is missing)
  * @returns Enriched recommendation data or null if failed
  */
-async function enrichSupplement(supplementName: string, baseUrl: string): Promise<any | null> {
+async function enrichSupplement(supplementName: string, baseUrl: string, forceRefresh: boolean = false): Promise<any | null> {
   const enrichStart = Date.now();
-  console.log(`🔥🔥🔥 [ENRICH_CALLED] supplement="${supplementName}" time=${new Date().toISOString()}`);
+  console.log(`🔥🔥🔥 [ENRICH_CALLED] supplement="${supplementName}" forceRefresh=${forceRefresh} time=${new Date().toISOString()}`);
 
   try {
     const enrichResponse = await fetch(`${baseUrl}/api/portal/enrich`, {
@@ -76,6 +77,7 @@ async function enrichSupplement(supplementName: string, baseUrl: string): Promis
         supplementName: supplementName,
         maxStudies: 5, // Limit to 5 for speed
         rctOnly: false,
+        forceRefresh: forceRefresh, // Bypass enrichment cache when ranking is missing
       }),
       signal: AbortSignal.timeout(180000), // 180 second timeout for enrichment (Bedrock + Lambda cold start)
     });
@@ -554,8 +556,10 @@ export async function POST(request: NextRequest) {
 
           // INLINE AUTO-ENRICHMENT: Check if metadata is poor and enrich if needed
           if (needsEnrichment(rec)) {
-            console.log(`[Inline Enrichment] Poor metadata detected for "${searchTerm}", triggering enrichment...`);
-            const enrichedData = await enrichSupplement(searchTerm, getBaseUrl());
+            // Check if we specifically need ranking data (to force cache bypass)
+            const needsRanking = !rec?.evidence_summary?.studies?.ranked;
+            console.log(`[Inline Enrichment] Poor metadata detected for "${searchTerm}", triggering enrichment... needsRanking=${needsRanking}`);
+            const enrichedData = await enrichSupplement(searchTerm, getBaseUrl(), needsRanking);
 
             if (enrichedData) {
               rec = mergeEnrichedData(rec, enrichedData);
