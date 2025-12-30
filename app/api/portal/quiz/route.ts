@@ -144,16 +144,16 @@ async function enrichSupplementAsync(
       console.log(`✅ [ASYNC_ENRICH_SUCCESS] jobId=${jobId} supplement="${supplementName}"`);
 
       // Update job with completed status and enriched data
-      storeJobResult(jobId, 'completed', { recommendation: enrichedRec });
+      await storeJobResult(jobId, 'completed', { recommendation: enrichedRec });
     } else {
       console.log(`❌ [ASYNC_ENRICH_FAILED] jobId=${jobId} supplement="${supplementName}" - enrichment returned null`);
       // Still store the original recommendation, just mark it as complete
-      storeJobResult(jobId, 'completed', { recommendation });
+      await storeJobResult(jobId, 'completed', { recommendation });
     }
   } catch (error: any) {
     console.error(`❌ [ASYNC_ENRICH_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
     // Store the original recommendation with failed status
-    storeJobResult(jobId, 'failed', {
+    await storeJobResult(jobId, 'failed', {
       recommendation,
       error: `Enrichment failed: ${error.message}`
     });
@@ -635,7 +635,7 @@ export async function POST(request: NextRequest) {
 
         if (finalHits.length > 0) {
           console.log(`[Search] LanceDB returned ${hits.length} hits, filtered to ${finalHits.length}.`);
-          let rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
+          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
 
           // INLINE AUTO-ENRICHMENT: Check if metadata is poor and enrich if needed
           // 🔍🔍🔍 DEBUG: Log what LanceDB returned
@@ -655,6 +655,9 @@ export async function POST(request: NextRequest) {
               !ranked.negative?.length
             );
             console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=${needsRanking} jobId=${jobId}`);
+
+            // Create job in DynamoDB with processing status
+            await createJob(jobId);
 
             // ASYNC ENRICHMENT: Launch enrichment in background and return immediately
             // The job status will be updated when enrichment completes (40-50 seconds)
@@ -677,7 +680,7 @@ export async function POST(request: NextRequest) {
             console.log(`⏭️ [SKIP_ENRICHMENT] supplement="${searchTerm}" already has good metadata`);
 
             // No enrichment needed, return immediately
-            storeJobResult(jobId, 'completed', { recommendation: rec });
+            await storeJobResult(jobId, 'completed', { recommendation: rec });
             return NextResponse.json({
               success: true,
               quiz_id: quizId,
@@ -810,7 +813,7 @@ export async function POST(request: NextRequest) {
         if (!responseData.recommendation.recommendation_id) {
           responseData.recommendation.recommendation_id = jobId;
         }
-        storeJobResult(jobId, 'completed', { recommendation: responseData.recommendation });
+        await storeJobResult(jobId, 'completed', { recommendation: responseData.recommendation });
         return NextResponse.json({
           success: true,
           jobId,

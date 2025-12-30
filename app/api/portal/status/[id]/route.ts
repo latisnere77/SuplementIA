@@ -52,10 +52,10 @@ export async function GET(
     }
 
     // Clean up expired jobs periodically
-    cleanupExpired();
+    await cleanupExpired();
 
-    // Get job from local store
-    const job = getJob(jobId);
+    // Get job from DynamoDB
+    const job = await getJob(jobId);
 
     if (!job) {
       portalLogger.logError(

@@ -42,11 +42,11 @@ export async function GET(
   });
   
   // Check if job exists in store BEFORE cleanup
-  const job = getJob(jobId);
-  
+  const job = await getJob(jobId);
+
   // Check if job has expired (whether in store or not)
-  if (job && isExpired(jobId)) {
-    const jobAge = getJobAge(jobId);
+  if (job && await isExpired(jobId)) {
+    const jobAge = await getJobAge(jobId);
     
     logJobExpired(
       jobId,
@@ -97,8 +97,8 @@ export async function GET(
   }
   
   // Clean up expired jobs and enforce size limit (after handling current request)
-  const cleanedCount = cleanupExpired();
-  const evictedCount = enforceSizeLimit();
+  const cleanedCount = await cleanupExpired();
+  const evictedCount = await enforceSizeLimit();
   
   if (cleanedCount > 0 || evictedCount > 0) {
     logStoreMaintenance(cleanedCount, evictedCount, { correlationId });

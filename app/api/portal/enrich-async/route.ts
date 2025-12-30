@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     
     if (isRetry) {
       // Check if previous job exceeded retry limit (max 5 retries)
-      if (hasExceededRetryLimit(previousJobId, 5)) {
+      if (await hasExceededRetryLimit(previousJobId, 5)) {
         console.warn(
           JSON.stringify({
             event: 'RETRY_LIMIT_EXCEEDED',
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       }
       
       // Create new job for retry with incremented retry count
-      const retryResult = createRetryJob(previousJobId);
+      const retryResult = await createRetryJob(previousJobId);
       jobId = retryResult.newJobId;
       retryCount = retryResult.retryCount;
       
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     } else {
       // New request - generate job ID and create job
       jobId = request.headers.get('X-Job-ID') || body.jobId || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      createJob(jobId);
+      await createJob(jobId);
     }
 
     console.log(`🚀 [Job ${jobId}] Starting async enrichment for: "${supplementName}" (Retry: ${isRetry}, Count: ${retryCount})`);
@@ -130,19 +130,18 @@ export async function POST(request: NextRequest) {
         // Update job with recommendation data
         const { storeJobResult } = await import('@/lib/portal/job-store');
         if (data.recommendation) {
-          storeJobResult(jobId, 'completed', { recommendation: data.recommendation });
+          await storeJobResult(jobId, 'completed', { recommendation: data.recommendation });
         }
       } else {
         console.error(`❌ [Job ${jobId}] Background enrichment failed: ${response.status}`);
         const { storeJobResult } = await import('@/lib/portal/job-store');
-        storeJobResult(jobId, 'failed', { error: `Enrichment failed with status ${response.status}` });
+        await storeJobResult(jobId, 'failed', { error: `Enrichment failed with status ${response.status}` });
       }
-    }).catch((error) => {
+    }).catch(async (error) => {
       console.error(`❌ [Job ${jobId}] Background enrichment error:`, error);
       // Update job status to failed
-      import('@/lib/portal/job-store').then(({ storeJobResult }) => {
-        storeJobResult(jobId, 'failed', { error: error.message });
-      });
+      const { storeJobResult } = await import('@/lib/portal/job-store');
+      await storeJobResult(jobId, 'failed', { error: error.message });
     });
 
     // Don't await - let it run in background

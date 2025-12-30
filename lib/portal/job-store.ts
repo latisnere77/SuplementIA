@@ -1,8 +1,10 @@
 /**
  * Job Store for Async Enrichment
- * In-memory storage for job status (will be replaced with Redis/DB in production)
+ * DynamoDB-based storage for job status across serverless instances
  */
 
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, GetCommand, DeleteCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { jobMetrics } from './job-metrics';
 
 export interface Job {
@@ -18,17 +20,31 @@ export interface Job {
 
 // Expiration times in milliseconds
 const EXPIRATION_TIMES = {
-  processing: 2 * 60 * 1000,  // 2 minutes
-  completed: 5 * 60 * 1000,   // 5 minutes
-  failed: 2 * 60 * 1000,      // 2 minutes
-  timeout: 2 * 60 * 1000,     // 2 minutes
+  processing: 5 * 60 * 1000,  // 5 minutes (increased for Lambda enrichment time)
+  completed: 10 * 60 * 1000,  // 10 minutes
+  failed: 5 * 60 * 1000,      // 5 minutes
+  timeout: 5 * 60 * 1000,     // 5 minutes
 };
 
-// Maximum number of jobs to keep in store
+// DynamoDB configuration
+const TABLE_NAME = 'suplementai-async-jobs';
+const REGION = 'us-east-1';
+
+// Maximum number of jobs to keep in store (for cleanup operations)
 export const MAX_STORE_SIZE = 1000;
 
-// In-memory job storage
-const jobStore = new Map<string, Job>();
+// Initialize DynamoDB client
+const dynamoClient = new DynamoDBClient({
+  region: REGION,
+  maxAttempts: 3, // Retry failed requests
+});
+
+const docClient = DynamoDBDocumentClient.from(dynamoClient, {
+  marshallOptions: {
+    removeUndefinedValues: true, // Remove undefined values
+    convertEmptyValues: false,   // Don't convert empty strings to null
+  },
+});
 
 /**
  * Calculate expiration time based on job status
@@ -39,10 +55,18 @@ function calculateExpirationTime(status: Job['status'], createdAt: number, compl
 }
 
 /**
+ * Calculate TTL for DynamoDB (in seconds since epoch)
+ * DynamoDB TTL expects seconds, not milliseconds
+ */
+function calculateTTL(expiresAt: number): number {
+  return Math.floor(expiresAt / 1000);
+}
+
+/**
  * Check if a job has exceeded its expiration time
  */
-export function isExpired(jobId: string): boolean {
-  const job = jobStore.get(jobId);
+export async function isExpired(jobId: string): Promise<boolean> {
+  const job = await getJob(jobId);
   if (!job) return false;
 
   return Date.now() > job.expiresAt;
@@ -51,20 +75,39 @@ export function isExpired(jobId: string): boolean {
 /**
  * Get the age of a job in milliseconds
  */
-export function getJobAge(jobId: string): number | undefined {
-  const job = jobStore.get(jobId);
+export async function getJobAge(jobId: string): Promise<number | undefined> {
+  const job = await getJob(jobId);
   if (!job) return undefined;
 
   return Date.now() - job.createdAt;
 }
 
-// Clean up old jobs on-demand (called during GET requests)
-export function cleanupOldJobs() {
+/**
+ * Clean up old jobs (called periodically)
+ * Scans for expired jobs and deletes them
+ */
+export async function cleanupOldJobs(): Promise<void> {
   const oneHourAgo = Date.now() - 60 * 60 * 1000;
-  for (const [jobId, job] of jobStore.entries()) {
-    if (job.createdAt < oneHourAgo) {
-      jobStore.delete(jobId);
+
+  try {
+    const response = await docClient.send(new ScanCommand({
+      TableName: TABLE_NAME,
+      FilterExpression: 'createdAt < :oneHourAgo',
+      ExpressionAttributeValues: {
+        ':oneHourAgo': oneHourAgo,
+      },
+    }));
+
+    if (response.Items) {
+      for (const item of response.Items) {
+        await docClient.send(new DeleteCommand({
+          TableName: TABLE_NAME,
+          Key: { jobId: item.jobId },
+        }));
+      }
     }
+  } catch (error) {
+    console.error('[JobStore] Error cleaning up old jobs:', error);
   }
 }
 
@@ -72,172 +115,242 @@ export function cleanupOldJobs() {
  * Clean up expired jobs from the store
  * Returns the number of jobs removed for metrics
  */
-export function cleanupExpired(): number {
-  let removedCount = 0;
-
-  for (const [jobId] of jobStore.entries()) {
-    if (isExpired(jobId)) {
-      jobStore.delete(jobId);
-      removedCount++;
-    }
-  }
-
-  // Record cleanup operation
-  if (removedCount > 0) {
-    jobMetrics.recordCleanup(removedCount);
-  }
-
-  // Update store size
-  jobMetrics.updateStoreSize(jobStore.size);
-
-  return removedCount;
+export async function cleanupExpired(): Promise<number> {
+  // DynamoDB TTL will automatically delete expired items
+  // This function is kept for API compatibility but doesn't need to do anything
+  // TTL cleanup happens automatically within 48 hours of expiration
+  return 0;
 }
 
 /**
  * Get the current size of the job store
+ * Note: This is an expensive operation in DynamoDB, use sparingly
  */
-export function getStoreSize(): number {
-  return jobStore.size;
+export async function getStoreSize(): Promise<number> {
+  try {
+    const response = await docClient.send(new ScanCommand({
+      TableName: TABLE_NAME,
+      Select: 'COUNT',
+    }));
+    return response.Count || 0;
+  } catch (error) {
+    console.error('[JobStore] Error getting store size:', error);
+    return 0;
+  }
 }
 
 /**
  * Clear all jobs from the store (for testing purposes)
+ * WARNING: This is a dangerous operation and should only be used in testing
  */
-export function clearStore(): void {
-  jobStore.clear();
+export async function clearStore(): Promise<void> {
+  console.warn('[JobStore] clearStore called - scanning all items for deletion');
+
+  try {
+    const response = await docClient.send(new ScanCommand({
+      TableName: TABLE_NAME,
+    }));
+
+    if (response.Items) {
+      for (const item of response.Items) {
+        await docClient.send(new DeleteCommand({
+          TableName: TABLE_NAME,
+          Key: { jobId: item.jobId },
+        }));
+      }
+    }
+  } catch (error) {
+    console.error('[JobStore] Error clearing store:', error);
+  }
 }
 
 /**
  * Get the oldest (least recently accessed) job from the store
  */
-export function getOldestJob(): { jobId: string; job: Job } | undefined {
-  let oldestJobId: string | undefined;
-  let oldestJob: Job | undefined;
-  let oldestAccessTime = Infinity;
+export async function getOldestJob(): Promise<{ jobId: string; job: Job } | undefined> {
+  try {
+    const response = await docClient.send(new ScanCommand({
+      TableName: TABLE_NAME,
+    }));
 
-  for (const [jobId, job] of jobStore.entries()) {
-    if (job.lastAccessedAt < oldestAccessTime) {
-      oldestAccessTime = job.lastAccessedAt;
-      oldestJobId = jobId;
-      oldestJob = job;
+    if (!response.Items || response.Items.length === 0) {
+      return undefined;
     }
-  }
 
-  if (oldestJobId && oldestJob) {
-    return { jobId: oldestJobId, job: oldestJob };
-  }
+    let oldestItem = response.Items[0];
+    let oldestAccessTime = oldestItem.lastAccessedAt;
 
-  return undefined;
+    for (const item of response.Items) {
+      if (item.lastAccessedAt < oldestAccessTime) {
+        oldestAccessTime = item.lastAccessedAt;
+        oldestItem = item;
+      }
+    }
+
+    return {
+      jobId: oldestItem.jobId,
+      job: oldestItem as Job,
+    };
+  } catch (error) {
+    console.error('[JobStore] Error getting oldest job:', error);
+    return undefined;
+  }
 }
 
 /**
  * Enforce store size limit by removing oldest jobs when size exceeds MAX_STORE_SIZE
  * Returns the number of jobs evicted
  */
-export function enforceSizeLimit(): number {
+export async function enforceSizeLimit(): Promise<number> {
   let evictedCount = 0;
 
-  while (jobStore.size > MAX_STORE_SIZE) {
-    const oldest = getOldestJob();
-    if (!oldest) break;
+  try {
+    const size = await getStoreSize();
 
-    jobStore.delete(oldest.jobId);
-    evictedCount++;
+    while (size > MAX_STORE_SIZE) {
+      const oldest = await getOldestJob();
+      if (!oldest) break;
+
+      await docClient.send(new DeleteCommand({
+        TableName: TABLE_NAME,
+        Key: { jobId: oldest.jobId },
+      }));
+
+      evictedCount++;
+    }
+
+    // Record eviction operations
+    if (evictedCount > 0) {
+      jobMetrics.recordEviction(evictedCount);
+    }
+  } catch (error) {
+    console.error('[JobStore] Error enforcing size limit:', error);
   }
-
-  // Record eviction operations
-  if (evictedCount > 0) {
-    jobMetrics.recordEviction(evictedCount);
-  }
-
-  // Update store size
-  jobMetrics.updateStoreSize(jobStore.size);
 
   return evictedCount;
 }
 
-// Get job from store
-export function getJob(jobId: string): Job | undefined {
-  const job = jobStore.get(jobId);
-  if (job) {
-    // Update last accessed time for LRU tracking
-    job.lastAccessedAt = Date.now();
+/**
+ * Get job from DynamoDB
+ */
+export async function getJob(jobId: string): Promise<Job | undefined> {
+  try {
+    const response = await docClient.send(new GetCommand({
+      TableName: TABLE_NAME,
+      Key: { jobId },
+    }));
+
+    if (!response.Item) {
+      return undefined;
+    }
+
+    // Update last accessed time
+    const now = Date.now();
+    await docClient.send(new PutCommand({
+      TableName: TABLE_NAME,
+      Item: {
+        ...response.Item,
+        lastAccessedAt: now,
+      },
+    }));
+
+    return response.Item as Job;
+  } catch (error) {
+    console.error('[JobStore] Error getting job:', error);
+    return undefined;
   }
-  return job;
 }
 
-// Store job result
-export function storeJobResult(
+/**
+ * Store job result in DynamoDB
+ */
+export async function storeJobResult(
   jobId: string,
   status: 'completed' | 'failed',
   data?: { recommendation?: unknown; error?: string }
-) {
-  const existingJob = jobStore.get(jobId);
-  const now = Date.now();
-  const createdAt = existingJob?.createdAt || now;
+): Promise<void> {
+  try {
+    // Get existing job to preserve createdAt
+    const existingJob = await getJob(jobId);
+    const now = Date.now();
+    const createdAt = existingJob?.createdAt || now;
+    const expiresAt = calculateExpirationTime(status, createdAt, now);
 
-  jobStore.set(jobId, {
-    status,
-    recommendation: data?.recommendation,
-    error: data?.error,
-    createdAt,
-    expiresAt: calculateExpirationTime(status, createdAt, now),
-    completedAt: now,
-    lastAccessedAt: now,
-    retryCount: existingJob?.retryCount || 0,
-  });
+    const job: Job & { jobId: string; ttl: number } = {
+      jobId,
+      status,
+      recommendation: data?.recommendation,
+      error: data?.error,
+      createdAt,
+      expiresAt,
+      completedAt: now,
+      lastAccessedAt: now,
+      retryCount: existingJob?.retryCount || 0,
+      ttl: calculateTTL(expiresAt), // TTL for auto-cleanup
+    };
 
-  // Record job completion or failure
-  if (status === 'completed') {
-    jobMetrics.recordJobCompleted();
-  } else if (status === 'failed') {
-    jobMetrics.recordJobFailed();
+    await docClient.send(new PutCommand({
+      TableName: TABLE_NAME,
+      Item: job,
+    }));
+
+    // Record job completion or failure
+    if (status === 'completed') {
+      jobMetrics.recordJobCompleted();
+    } else if (status === 'failed') {
+      jobMetrics.recordJobFailed();
+    }
+  } catch (error) {
+    console.error('[JobStore] Error storing job result:', error);
+    throw error;
   }
-
-  // Update store size
-  jobMetrics.updateStoreSize(jobStore.size);
 }
 
-// Create job
-export function createJob(jobId: string, retryCount: number = 0) {
-  const now = Date.now();
-  jobStore.set(jobId, {
-    status: 'processing',
-    createdAt: now,
-    expiresAt: calculateExpirationTime('processing', now),
-    lastAccessedAt: now,
-    retryCount,
-  });
+/**
+ * Create job in DynamoDB
+ */
+export async function createJob(jobId: string, retryCount: number = 0): Promise<void> {
+  try {
+    const now = Date.now();
+    const expiresAt = calculateExpirationTime('processing', now);
 
-  // Record job creation
-  jobMetrics.recordJobCreated();
+    const job: Job & { jobId: string; ttl: number } = {
+      jobId,
+      status: 'processing',
+      createdAt: now,
+      expiresAt,
+      lastAccessedAt: now,
+      retryCount,
+      ttl: calculateTTL(expiresAt), // TTL for auto-cleanup
+    };
 
-  // Enforce size limit after adding new job
-  if (jobStore.size > MAX_STORE_SIZE) {
-    enforceSizeLimit();
+    await docClient.send(new PutCommand({
+      TableName: TABLE_NAME,
+      Item: job,
+    }));
+
+    // Record job creation
+    jobMetrics.recordJobCreated();
+  } catch (error) {
+    console.error('[JobStore] Error creating job:', error);
+    throw error;
   }
-
-  // Update store size
-  jobMetrics.updateStoreSize(jobStore.size);
 }
 
 /**
  * Create a new job for a retry attempt
  * Generates a new job ID and increments retry count
  */
-export function createRetryJob(previousJobId: string): { newJobId: string; retryCount: number } {
-  const previousJob = jobStore.get(previousJobId);
+export async function createRetryJob(previousJobId: string): Promise<{ newJobId: string; retryCount: number }> {
+  const previousJob = await getJob(previousJobId);
   const previousRetryCount = previousJob?.retryCount || 0;
   const newRetryCount = previousRetryCount + 1;
 
   // Generate new job ID
   const newJobId = `job_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
-  // Clear previous job state (optional - could also keep for debugging)
-  // For now, we'll keep the previous job to allow tracking the retry chain
-
   // Create new job with incremented retry count
-  createJob(newJobId, newRetryCount);
+  await createJob(newJobId, newRetryCount);
 
   return { newJobId, retryCount: newRetryCount };
 }
@@ -245,32 +358,43 @@ export function createRetryJob(previousJobId: string): { newJobId: string; retry
 /**
  * Check if a job has exceeded the retry limit
  */
-export function hasExceededRetryLimit(jobId: string, maxRetries: number = 5): boolean {
-  const job = jobStore.get(jobId);
+export async function hasExceededRetryLimit(jobId: string, maxRetries: number = 5): Promise<boolean> {
+  const job = await getJob(jobId);
   if (!job) return false;
 
   return (job.retryCount || 0) > maxRetries;
 }
 
-// Mark job as timed out
-export function markTimeout(jobId: string): void {
-  const existingJob = jobStore.get(jobId);
-  if (!existingJob) {
-    return; // Job doesn't exist, nothing to mark
+/**
+ * Mark job as timed out
+ */
+export async function markTimeout(jobId: string): Promise<void> {
+  try {
+    const existingJob = await getJob(jobId);
+    if (!existingJob) {
+      return; // Job doesn't exist, nothing to mark
+    }
+
+    const now = Date.now();
+    const expiresAt = calculateExpirationTime('timeout', existingJob.createdAt, now);
+
+    await docClient.send(new PutCommand({
+      TableName: TABLE_NAME,
+      Item: {
+        jobId,
+        ...existingJob,
+        status: 'timeout',
+        completedAt: now,
+        expiresAt,
+        lastAccessedAt: now,
+        ttl: calculateTTL(expiresAt),
+      },
+    }));
+
+    // Record job timeout
+    jobMetrics.recordJobTimedOut();
+  } catch (error) {
+    console.error('[JobStore] Error marking timeout:', error);
+    throw error;
   }
-
-  const now = Date.now();
-  jobStore.set(jobId, {
-    ...existingJob,
-    status: 'timeout',
-    completedAt: now,
-    expiresAt: calculateExpirationTime('timeout', existingJob.createdAt, now),
-    lastAccessedAt: now,
-  });
-
-  // Record job timeout
-  jobMetrics.recordJobTimedOut();
-
-  // Update store size
-  jobMetrics.updateStoreSize(jobStore.size);
 }
