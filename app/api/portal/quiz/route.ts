@@ -193,7 +193,7 @@ async function invokeStudiesFetcher(
       httpMethod: 'POST',
       body: JSON.stringify({
         supplementName,
-        maxResults: 200, // Get more studies for better ranking
+        maxResults: 100, // Maximum allowed by studies-fetcher Lambda
         benefitQuery, // Pass benefit query if available
         filters: {
           rctOnly: false,
