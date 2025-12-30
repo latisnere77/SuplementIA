@@ -81,15 +81,22 @@ export async function GET(
     }
 
     // Return job status
-    const response = {
+    const response: any = {
       success: true,
       status: job.status,
       requestId,
-      ...(job.recommendation && { recommendation: job.recommendation }),
-      ...(job.error && { error: job.error }),
-      ...(job.completedAt && { completedAt: job.completedAt }),
       createdAt: job.createdAt,
     };
+
+    if (job.recommendation) {
+      response.recommendation = job.recommendation;
+    }
+    if (job.error) {
+      response.error = job.error;
+    }
+    if (job.completedAt) {
+      response.completedAt = job.completedAt;
+    }
 
     portalLogger.logSuccess({
       requestId,
