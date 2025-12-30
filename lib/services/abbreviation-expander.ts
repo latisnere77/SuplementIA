@@ -221,6 +221,12 @@ function translateSpanishProgrammatically(term: string): string | null {
  * - Scientific name suggestions
  */
 async function expandWithLLM(term: string): Promise<string[]> {
+  // TEMPORARILY DISABLED: LLM expansion causes credentials errors in Amplify environment
+  // TODO: Re-enable once AWS credentials are properly configured in Amplify
+  console.log(`[ABBREVIATION] LLM expansion temporarily disabled - skipping for "${term}"`);
+  return [];
+
+  /* COMMENTED OUT - Re-enable when credentials are available
   // Check if LLM expansion is disabled via environment variable
   if (process.env.DISABLE_LLM_EXPANSION === 'true') {
     console.log(`[ABBREVIATION] LLM expansion disabled via DISABLE_LLM_EXPANSION - skipping for "${term}"`);
@@ -238,6 +244,7 @@ async function expandWithLLM(term: string): Promise<string[]> {
   const { InvokeModelCommand } = await import('@aws-sdk/client-bedrock-runtime');
 
   console.log(`[ABBREVIATION] Expanding "${term}" with Claude Haiku...`);
+  */
 
   // SYSTEM PROMPT with Prompt Caching (>2048 tokens for cache eligibility)
   // This prompt is cached for 5 minutes, reducing latency from 2-5s to 200-500ms
@@ -615,6 +622,12 @@ export async function expandAbbreviation(
 export async function generateSearchVariations(term: string): Promise<string[]> {
   const trimmed = term.trim();
 
+  // TEMPORARILY DISABLED: LLM expansion causes credentials errors in Amplify environment
+  // TODO: Re-enable once AWS credentials are properly configured in Amplify
+  console.log(`[SEARCH_VARIATIONS] LLM expansion temporarily disabled - skipping for "${trimmed}"`);
+  return [];
+
+  /* COMMENTED OUT - Re-enable when credentials are available
   // Check if LLM expansion is disabled via environment variable
   if (process.env.DISABLE_LLM_EXPANSION === 'true') {
     console.log(`[SEARCH_VARIATIONS] LLM expansion disabled via DISABLE_LLM_EXPANSION - skipping for "${trimmed}"`);
@@ -638,6 +651,7 @@ export async function generateSearchVariations(term: string): Promise<string[]> 
       timestamp: new Date().toISOString(),
     })
   );
+  */
 
   const prompt = `You are a PubMed search expert. A user searched for "${trimmed}" but found no studies.
 
