@@ -117,6 +117,50 @@ async function enrichSupplement(supplementName: string, baseUrl: string, forceRe
 }
 
 /**
+ * Asynchronously enrich a supplement and update the job when complete
+ * This allows the API to return immediately while enrichment happens in the background
+ * @param jobId - The job ID to update when enrichment completes
+ * @param recommendation - The initial recommendation to enrich
+ * @param supplementName - Name of the supplement to enrich
+ * @param baseUrl - Base URL for API calls
+ * @param forceRefresh - Force bypass of enrichment cache
+ */
+async function enrichSupplementAsync(
+  jobId: string,
+  recommendation: any,
+  supplementName: string,
+  baseUrl: string,
+  forceRefresh: boolean = false
+): Promise<void> {
+  try {
+    console.log(`🚀 [ASYNC_ENRICH_START] jobId=${jobId} supplement="${supplementName}" forceRefresh=${forceRefresh}`);
+
+    // Perform enrichment (this may take 40+ seconds)
+    const enrichedData = await enrichSupplement(supplementName, baseUrl, forceRefresh);
+
+    if (enrichedData) {
+      // Merge enriched data into recommendation
+      const enrichedRec = mergeEnrichedData(recommendation, enrichedData);
+      console.log(`✅ [ASYNC_ENRICH_SUCCESS] jobId=${jobId} supplement="${supplementName}"`);
+
+      // Update job with completed status and enriched data
+      storeJobResult(jobId, 'completed', { recommendation: enrichedRec });
+    } else {
+      console.log(`❌ [ASYNC_ENRICH_FAILED] jobId=${jobId} supplement="${supplementName}" - enrichment returned null`);
+      // Still store the original recommendation, just mark it as complete
+      storeJobResult(jobId, 'completed', { recommendation });
+    }
+  } catch (error: any) {
+    console.error(`❌ [ASYNC_ENRICH_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
+    // Store the original recommendation with failed status
+    storeJobResult(jobId, 'failed', {
+      recommendation,
+      error: `Enrichment failed: ${error.message}`
+    });
+  }
+}
+
+/**
  * Merge enriched data into recommendation structure
  */
 function mergeEnrichedData(recommendation: any, enrichedData: any): any {
@@ -610,34 +654,39 @@ export async function POST(request: NextRequest) {
               !ranked.positive?.length &&
               !ranked.negative?.length
             );
-            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=${needsRanking}`);
-            const enrichedData = await enrichSupplement(searchTerm, getBaseUrl(), needsRanking);
+            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=${needsRanking} jobId=${jobId}`);
 
-            if (enrichedData) {
-              rec = mergeEnrichedData(rec, enrichedData);
-              console.log(`✅✅✅ [ENRICHMENT_SUCCESS] supplement="${searchTerm}"`);
-              // 🔍 DEBUG: Check what we got after merge
-              const finalRanked = rec?.evidence_summary?.studies?.ranked;
-              if (finalRanked) {
-                console.log(`✅ [FINAL_RANKED] hasMetadata=${!!finalRanked.metadata} confidence=${finalRanked.metadata?.confidenceScore || 0} positive=${finalRanked.positive?.length || 0} negative=${finalRanked.negative?.length || 0}`);
-              } else {
-                console.log(`⚠️⚠️⚠️ [NO_RANKED_AFTER_MERGE] Ranking data was NOT added by merge!`);
-              }
-            } else {
-              console.log(`❌❌❌ [ENRICHMENT_FAILED] Enrichment returned null for "${searchTerm}"`);
-            }
+            // ASYNC ENRICHMENT: Launch enrichment in background and return immediately
+            // The job status will be updated when enrichment completes (40-50 seconds)
+            // Client will poll /api/portal/status/{jobId} to get the final result
+            enrichSupplementAsync(jobId, rec, searchTerm, getBaseUrl(), needsRanking).catch(err => {
+              console.error(`[ASYNC_ENRICH_UNHANDLED_ERROR] jobId=${jobId}`, err);
+            });
+
+            // Return immediately with processing status
+            return NextResponse.json({
+              success: true,
+              quiz_id: quizId,
+              jobId,
+              status: 'processing',
+              message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
+              recommendation: rec, // Return initial recommendation for immediate display
+              source: 'lancedb_enriching_async'
+            });
           } else {
             console.log(`⏭️ [SKIP_ENRICHMENT] supplement="${searchTerm}" already has good metadata`);
-          }
 
-          storeJobResult(jobId, 'completed', { recommendation: rec });
-          return NextResponse.json({
-            success: true,
-            quiz_id: quizId,
-            recommendation: rec,
-            jobId,
-            source: rec.enriched ? 'lancedb_lambda_enriched' : 'lancedb_lambda_serverless'
-          });
+            // No enrichment needed, return immediately
+            storeJobResult(jobId, 'completed', { recommendation: rec });
+            return NextResponse.json({
+              success: true,
+              quiz_id: quizId,
+              recommendation: rec,
+              jobId,
+              status: 'completed',
+              source: rec.enriched ? 'lancedb_lambda_enriched' : 'lancedb_lambda_serverless'
+            });
+          }
         } else {
           console.log('[Search] All LanceDB hits were filtered out as irrelevant.');
         }
