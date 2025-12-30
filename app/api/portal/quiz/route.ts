@@ -168,6 +168,67 @@ async function invokeLambdaEnrichmentAsync(
 }
 
 /**
+ * Invoke studies-fetcher Lambda to get ranked studies
+ * @param supplementName - The supplement name to search
+ * @param benefitQuery - Optional benefit query for focused search
+ * @returns Ranking data with positive/negative studies
+ */
+async function invokeStudiesFetcher(
+  supplementName: string,
+  benefitQuery?: string
+): Promise<any> {
+  try {
+    const payload = {
+      httpMethod: 'POST',
+      body: JSON.stringify({
+        supplementName,
+        maxResults: 200, // Get more studies for better ranking
+        benefitQuery, // Pass benefit query if available
+        filters: {
+          rctOnly: false,
+          humanStudiesOnly: true,
+        },
+      }),
+    };
+
+    console.log(`🔬 [STUDIES_FETCHER] Calling for "${supplementName}"...`);
+
+    const response = await lambdaClient.send(
+      new InvokeCommand({
+        FunctionName: process.env.STUDIES_FETCHER_LAMBDA || 'production-studies-fetcher',
+        InvocationType: 'RequestResponse', // Synchronous call - wait for response
+        Payload: Buffer.from(JSON.stringify(payload)),
+      })
+    );
+
+    if (!response.Payload) {
+      console.error(`❌ [STUDIES_FETCHER] No payload returned`);
+      return null;
+    }
+
+    const result = JSON.parse(Buffer.from(response.Payload).toString());
+    const parsedBody = JSON.parse(result.body);
+
+    if (!parsedBody.success) {
+      console.error(`❌ [STUDIES_FETCHER] Failed:`, parsedBody.error);
+      return null;
+    }
+
+    const ranking = parsedBody.data?.ranked;
+    if (ranking) {
+      console.log(`✅ [STUDIES_FETCHER] Got ranking: positive=${ranking.positive?.length || 0} negative=${ranking.negative?.length || 0} confidence=${ranking.metadata?.confidenceScore || 0}`);
+    } else {
+      console.log(`⚠️ [STUDIES_FETCHER] No ranking data in response`);
+    }
+
+    return ranking;
+  } catch (error: any) {
+    console.error(`❌ [STUDIES_FETCHER] Error:`, error.message);
+    return null; // Non-fatal - enrichment can proceed without ranking
+  }
+}
+
+/**
  * Merge enriched data into recommendation structure
  */
 function mergeEnrichedData(recommendation: any, enrichedData: any): any {
@@ -653,25 +714,25 @@ export async function POST(request: NextRequest) {
           }
 
           if (needsEnrichment(rec)) {
-            // Check if we specifically need ranking data (for logging only)
-            // FIX: Check for VALID ranking data, not just if the object exists
-            const ranked = rec?.evidence_summary?.studies?.ranked;
-            const needsRanking = !ranked || (
-              !ranked.metadata?.confidenceScore &&
-              !ranked.positive?.length &&
-              !ranked.negative?.length
-            );
-            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" needsRanking=${needsRanking} willForceRefresh=false jobId=${jobId}`);
+            console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" jobId=${jobId}`);
 
             // Create job in DynamoDB with processing status
             await createJob(jobId);
 
-            // ASYNC ENRICHMENT: Invoke Lambda asynchronously (fire-and-forget)
-            // Lambda will run independently and update DynamoDB when complete
-            // Client will poll /api/portal/status/{jobId} to get the final result
-            // FIX: Use cache-friendly enrichment (forceRefresh=false) to enable sub-second responses for cached supplements
-            // FIX: Pass ranking data from LanceDB so it's preserved in enrichment response
-            const rankingData = rec?.evidence_summary?.studies?.ranked;
+            // STEP 1: Call studies-fetcher Lambda to get intelligent ranking
+            // This generates 5 positive + 5 negative studies with confidence scores
+            console.log(`🔬 [STUDIES_RANKING] Fetching ranked studies for "${searchTerm}"...`);
+            const rankingData = await invokeStudiesFetcher(searchTerm);
+
+            if (rankingData) {
+              console.log(`✅ [STUDIES_RANKING] Got ranking data: positive=${rankingData.positive?.length || 0} negative=${rankingData.negative?.length || 0}`);
+            } else {
+              console.log(`⚠️ [STUDIES_RANKING] No ranking data - enrichment will proceed without it`);
+            }
+
+            // STEP 2: ASYNC ENRICHMENT with ranking data
+            // Lambda will enrich content AND preserve the ranking we just generated
+            // The enrichment Lambda will save both to cache for future requests
             await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData);
 
             // Return immediately with processing status
