@@ -184,21 +184,37 @@ async function invokeLambdaEnrichmentAsync(
  * @param benefitQuery - Optional benefit query for focused search
  * @returns Ranking data with positive/negative studies
  */
-// Simple cache for studies-fetcher results to avoid PubMed rate limiting
+// Cache for studies-fetcher results to respect PubMed rate limits
+// PubMed limits: 3 requests/second with API key, 1 request/second without
 const studiesFetcherCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL_MS = 3600000; // 1 hour
+const rateLimitBackoff = new Map<string, { retryAfter: number; count: number }>();
+const CACHE_TTL_MS = 3600000; // 1 hour - cache successful results
+const RATE_LIMIT_BACKOFF_MS = 300000; // 5 minutes backoff on 429 errors
+const MAX_BACKOFF_RETRIES = 3;
 
 async function invokeStudiesFetcher(
   supplementName: string,
   benefitQuery?: string
 ): Promise<any> {
-  // Check cache first
   const cacheKey = `${supplementName}|${benefitQuery || ''}`;
-  const cached = studiesFetcherCache.get(cacheKey);
 
+  // Check successful cache first
+  const cached = studiesFetcherCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     console.log(`✅ [STUDIES_FETCHER_CACHE] Using cached ranking for "${supplementName}"`);
     return cached.data;
+  }
+
+  // Check if in backoff due to rate limiting
+  const backoff = rateLimitBackoff.get(cacheKey);
+  if (backoff && Date.now() < backoff.retryAfter) {
+    if (backoff.count >= MAX_BACKOFF_RETRIES) {
+      console.log(`⏸️ [STUDIES_FETCHER_BACKOFF] Max retries reached for "${supplementName}", skipping to respect PubMed limits`);
+      return null;
+    }
+    const waitMs = Math.ceil((backoff.retryAfter - Date.now()) / 1000);
+    console.log(`⏸️ [STUDIES_FETCHER_BACKOFF] Rate limited, waiting ${waitMs}s before retry (${backoff.count}/${MAX_BACKOFF_RETRIES})`);
+    return null; // Skip this request, respect PubMed limits
   }
 
   try {
@@ -222,6 +238,7 @@ async function invokeStudiesFetcher(
         FunctionName: process.env.STUDIES_FETCHER_LAMBDA || 'suplementia-studies-fetcher-prod',
         InvocationType: 'RequestResponse', // Synchronous call - wait for response
         Payload: Buffer.from(JSON.stringify(payload)),
+        Timeout: 30000, // 30 second timeout to respect Lambda limits
       })
     );
 
@@ -234,6 +251,15 @@ async function invokeStudiesFetcher(
     const parsedBody = JSON.parse(result.body);
 
     if (!parsedBody.success) {
+      // Check if it's a rate limit error
+      if (parsedBody.error?.includes('429') || parsedBody.error?.includes('Too Many Requests')) {
+        console.warn(`⚠️ [STUDIES_FETCHER_RATE_LIMIT] PubMed rate limit hit for "${supplementName}"`);
+        const currentBackoff = rateLimitBackoff.get(cacheKey) || { retryAfter: 0, count: 0 };
+        rateLimitBackoff.set(cacheKey, {
+          retryAfter: Date.now() + RATE_LIMIT_BACKOFF_MS,
+          count: currentBackoff.count + 1,
+        });
+      }
       console.error(`❌ [STUDIES_FETCHER] Failed:`, parsedBody.error);
       return null;
     }
@@ -243,6 +269,8 @@ async function invokeStudiesFetcher(
       console.log(`✅ [STUDIES_FETCHER] Got ranking: positive=${ranking.positive?.length || 0} negative=${ranking.negative?.length || 0} confidence=${ranking.metadata?.confidenceScore || 0}`);
       // Cache the successful result
       studiesFetcherCache.set(cacheKey, { data: ranking, timestamp: Date.now() });
+      // Clear backoff on success
+      rateLimitBackoff.delete(cacheKey);
     } else {
       console.log(`⚠️ [STUDIES_FETCHER] No ranking data in response`);
     }
