@@ -66,6 +66,18 @@ export async function handler(
 
     const { supplementId, category, forceRefresh, studies, ranking, contentType = 'standard', benefitQuery, jobId } = request;
 
+    // CRITICAL DEBUG: Log what we received for ranking
+    console.log(JSON.stringify({
+      event: 'RANKING_DEBUG',
+      requestId,
+      hasRanking: !!ranking,
+      rankingType: ranking ? typeof ranking : 'undefined',
+      rankingKeys: ranking && typeof ranking === 'object' ? Object.keys(ranking) : 'N/A',
+      rankingPositiveCount: ranking?.positive?.length || 0,
+      rankingNegativeCount: ranking?.negative?.length || 0,
+      timestamp: new Date().toISOString(),
+    }));
+
     // Validate supplementId
     if (!supplementId || supplementId.trim().length === 0) {
       return createErrorResponse(400, 'supplementId is required', requestId);
@@ -119,12 +131,17 @@ export async function handler(
 
     // Try cache first (unless forceRefresh)
     let enrichedContent;
+    let cachedRanking;
 
     if (!forceRefresh) {
-      enrichedContent = await getFromCache(supplementId);
-      if (enrichedContent) {
+      const cached = await getFromCache(supplementId);
+      if (cached) {
+        enrichedContent = cached.data;
+        cachedRanking = cached.metadata?.studies?.ranked;
+
         if (subsegment) {
           subsegment.addAnnotation('cacheHit', true);
+          subsegment.addAnnotation('hasCachedRanking', !!cachedRanking);
         }
 
         const duration = Date.now() - startTime;
@@ -137,9 +154,15 @@ export async function handler(
             supplementId,
             duration,
             studiesProvided: studiesCount,
+            hasCachedRanking: !!cachedRanking,
+            cachedRankingPositive: cachedRanking?.positive?.length || 0,
+            cachedRankingNegative: cachedRanking?.negative?.length || 0,
             timestamp: new Date().toISOString(),
           })
         );
+
+        // Use cached ranking if available, otherwise fall back to provided ranking
+        const finalRanking = cachedRanking || ranking;
 
         const response: EnrichmentResponse = {
           success: true,
@@ -153,6 +176,14 @@ export async function handler(
             requestId,
             correlationId,
           },
+          // Preserve ranking data from cache OR LanceDB if provided
+          ...(finalRanking && {
+            evidence_summary: {
+              studies: {
+                ranked: finalRanking,
+              },
+            },
+          }),
         };
 
         // Update job store if jobId provided (cache hit path)
@@ -330,6 +361,14 @@ export async function handler(
         requestId,
         correlationId,
       },
+      // Preserve ranking data from LanceDB if provided
+      ...(ranking && {
+        evidence_summary: {
+          studies: {
+            ranked: ranking,
+          },
+        },
+      }),
     };
 
     // Update job store if jobId provided (async enrichment)

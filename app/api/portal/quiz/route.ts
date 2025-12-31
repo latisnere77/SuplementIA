@@ -784,6 +784,51 @@ export async function POST(request: NextRequest) {
               console.log(`⚠️ [STUDIES_RANKING] No ranking data - enrichment will proceed without it`);
             }
 
+            // STEP 1.5: Store initial recommendation with ranking data in DynamoDB IMMEDIATELY
+            // This ensures ranking is preserved even if async enrichment has issues
+            // The initial recommendation will be enhanced further when enrichment completes
+            const initialRecommendation = {
+              ...rec,
+              evidence_summary: {
+                ...rec.evidence_summary,
+                studies: {
+                  ...(rec.evidence_summary?.studies || {}),
+                  ranked: rankingData, // Preserve ranking data in initial recommendation
+                },
+              },
+            };
+
+            // Mark as interim enrichment with ranking but no detailed analysis yet
+            initialRecommendation._enrichment_metadata = {
+              ...initialRecommendation._enrichment_metadata,
+              hasRanking: !!rankingData,
+              rankingSource: 'studies-fetcher',
+              interim: true, // Will be enhanced by async enrichment
+              storedAt: new Date().toISOString(),
+            };
+
+            // Use a helper to update the existing job with initial recommendation and ranking
+            // We need to update the job status to include the recommendation while keeping status 'processing'
+            try {
+              const { DynamoDBClient } = await import('@aws-sdk/client-dynamodb');
+              const { UpdateCommand } = await import('@aws-sdk/lib-dynamodb');
+              const docClient = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
+
+              await docClient.send(new UpdateCommand({
+                TableName: process.env.PORTAL_JOBS_TABLE || 'portal-jobs',
+                Key: { jobId },
+                UpdateExpression: 'SET recommendation = :rec',
+                ExpressionAttributeValues: {
+                  ':rec': initialRecommendation,
+                },
+              }));
+
+              console.log(`✅ [JOB_UPDATED] Stored initial recommendation with ranking for jobId=${jobId}`);
+            } catch (updateError) {
+              console.error(`⚠️ [JOB_UPDATE_ERROR] Failed to store initial recommendation:`, updateError);
+              // Don't block enrichment if this fails, just log it
+            }
+
             // STEP 2: ASYNC ENRICHMENT with ranking data
             // Lambda will enrich content AND preserve the ranking we just generated
             // The enrichment Lambda will save both to cache for future requests

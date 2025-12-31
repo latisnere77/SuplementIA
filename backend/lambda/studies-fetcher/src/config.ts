@@ -15,19 +15,30 @@ async function loadPubMedApiKey(): Promise<string> {
   }
 
   try {
+    const secretArn = process.env.PUBMED_API_KEY_SECRET_ARN;
+    
+    if (!secretArn) {
+      console.warn('⚠️  PUBMED_API_KEY_SECRET_ARN not set, API key will not be available');
+      return '';
+    }
+
     const client = new SecretsManagerClient({ region: 'us-east-1' });
     const command = new GetSecretValueCommand({
-      SecretId: 'suplementia/pubmed-api-key',
+      SecretId: secretArn,
     });
     
     const response = await client.send(command);
-    const secret = JSON.parse(response.SecretString || '{}');
-    cachedApiKey = secret.api_key || '';
+    // The secret is stored as a plain string, not JSON
+    cachedApiKey = response.SecretString || '';
     
-    console.log('✅ PubMed API key loaded from Secrets Manager');
-    return cachedApiKey || '';
+    if (cachedApiKey) {
+      console.log('✅ PubMed API key loaded from Secrets Manager');
+    } else {
+      console.warn('⚠️  PubMed API key is empty in Secrets Manager');
+    }
+    return cachedApiKey;
   } catch (error) {
-    console.warn('⚠️  Failed to load PubMed API key from Secrets Manager:', error);
+    console.error('❌ Failed to load PubMed API key from Secrets Manager:', error);
     return '';
   }
 }
@@ -37,8 +48,8 @@ export const config = {
   pubmedBaseUrl: 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
 
   // API Key (loaded from Secrets Manager)
-  // Without key: 3 requests/second
-  // With key: 10 requests/second
+  // Without key: 1 request/second
+  // With key: 3 requests/second
   get pubmedApiKey(): string {
     return cachedApiKey || '';
   },
@@ -55,7 +66,7 @@ export const config = {
   defaultYearFrom: parseInt(process.env.DEFAULT_YEAR_FROM || '2010'),
 
   // Rate limiting
-  requestDelayMs: 350, // 350ms = ~3 requests/second (safe without API key)
+  requestDelayMs: 350, // 350ms = ~3 requests/second (respects PubMed limits)
 
   // X-Ray
   xrayEnabled: process.env.XRAY_ENABLED !== 'false',

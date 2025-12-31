@@ -52,6 +52,12 @@ Resources:
               Action:
                 - bedrock:InvokeModel
               Resource: '*'
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+              Resource: 'arn:aws:dynamodb:us-east-1:*:table/suplementai-async-jobs'
         - AWSXRayDaemonWriteAccess
       Events:
         PostEnrich:

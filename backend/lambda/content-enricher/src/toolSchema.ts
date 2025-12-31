@@ -387,6 +387,65 @@ export const ENRICHED_CONTENT_TOOL_CONFIG: ToolConfiguration = {
                   'notes',
                 ],
               },
+              buyingGuidance: {
+                type: 'object',
+                description: 'Comprehensive buying guidance based on evidence',
+                properties: {
+                  preferredForm: {
+                    type: 'string',
+                    description:
+                      'Preferred form according to evidence (e.g., Fruiting body extract, Monohydrate, Citrate). ONLY forms with clinical study support.',
+                  },
+                  keyCompounds: {
+                    type: 'array',
+                    description: 'Key active compounds to look for',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        name: {
+                          type: 'string',
+                          description: 'Main active compound name (e.g., Hericenones, Withanolides, Creatine)',
+                        },
+                        source: {
+                          type: 'string',
+                          description: 'Where it comes from (e.g., fruiting body, root, synthesis)',
+                        },
+                        lookFor: {
+                          type: 'string',
+                          description: 'What to look for on label (e.g., >30% beta-glucans, 5% withanolides)',
+                        },
+                      },
+                      required: ['name', 'source', 'lookFor'],
+                    },
+                    minItems: 1,
+                    maxItems: 5,
+                  },
+                  avoidFlags: {
+                    type: 'array',
+                    description: 'Warning signs based on evidence',
+                    items: {
+                      type: 'string',
+                    },
+                    minItems: 1,
+                    maxItems: 5,
+                  },
+                  qualityIndicators: {
+                    type: 'array',
+                    description: 'Verifiable quality indicators',
+                    items: {
+                      type: 'string',
+                    },
+                    minItems: 1,
+                    maxItems: 5,
+                  },
+                  notes: {
+                    type: 'string',
+                    description:
+                      'Additional context ONLY if based on published evidence. DO NOT invent absorption or bioavailability claims.',
+                  },
+                },
+                required: ['preferredForm', 'keyCompounds', 'avoidFlags', 'qualityIndicators'],
+              },
               keyStudies: {
                 type: 'array',
                 description: 'Key studies supporting the evidence. Only include if you know exact PMIDs.',
@@ -458,6 +517,7 @@ export const ENRICHED_CONTENT_TOOL_CONFIG: ToolConfiguration = {
               'worksFor',
               'dosage',
               'safety',
+              'buyingGuidance',
               'practicalRecommendations',
             ],
           },

@@ -79,10 +79,11 @@ export async function saveToCacheAsync(
 
 /**
  * Get enriched content from DynamoDB cache
+ * Returns both data AND metadata (including ranking)
  */
 export async function getFromCache(
   supplementId: string
-): Promise<EnrichedContent | ExamineStyleContent | null> {
+): Promise<{ data: EnrichedContent | ExamineStyleContent; metadata?: any } | null> {
   try {
     const result = await docClient.send(
       new GetCommand({
@@ -113,10 +114,17 @@ export async function getFromCache(
         operation: 'CacheHit',
         supplementId,
         age: result.Item.createdAt,
+        hasMetadata: !!result.Item.metadata,
+        hasRanking: !!result.Item.metadata?.studies?.ranked,
       })
     );
 
-    return result.Item.data as EnrichedContent | ExamineStyleContent;
+    // CRITICAL FIX: Return BOTH data AND metadata (including ranking)
+    // Previously we only returned data, losing the ranking metadata
+    return {
+      data: result.Item.data as EnrichedContent | ExamineStyleContent,
+      metadata: result.Item.metadata,
+    };
   } catch (error: any) {
     // Don't throw - cache read is optional
     console.warn('DynamoDB cache read error (non-fatal):', error.message);
