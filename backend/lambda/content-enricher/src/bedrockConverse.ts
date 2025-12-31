@@ -7,7 +7,7 @@ import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-r
 import AWSXRay from 'aws-xray-sdk-core';
 import { config } from './config';
 import { ConverseResponse, EnrichedContent, PubMedStudy } from './types';
-import { buildEnrichmentPrompt, validateEnrichedContent } from './prompts';
+import { buildEnrichmentPrompt, validateEnrichedContent, sanitizeDosageWithPMIDValidation } from './prompts';
 import { retryWithBackoff } from './retry';
 import { ENRICHED_CONTENT_TOOL_CONFIG } from './toolSchema';
 
@@ -200,6 +200,24 @@ export async function generateEnrichedContentWithToolUse(
       })
     );
     throw new Error(`Invalid enriched content structure: ${validation.errors.join(', ')}`);
+  }
+
+  // CRITICAL SAFETY STEP: Sanitize dosage data to remove unsupported claims
+  if (enrichedData.dosage) {
+    const originalDosage = JSON.stringify(enrichedData.dosage);
+    enrichedData.dosage = sanitizeDosageWithPMIDValidation(enrichedData.dosage);
+    const sanitizedDosage = JSON.stringify(enrichedData.dosage);
+
+    if (originalDosage !== sanitizedDosage) {
+      console.warn(
+        JSON.stringify({
+          event: 'DOSAGE_SANITIZED',
+          supplementId,
+          message: 'Removed unverified dosage claims without PMID support',
+          hadSourcePMIDs: !!enrichedData.dosage.sourcePMIDs,
+        })
+      );
+    }
   }
 
   return {
