@@ -154,7 +154,7 @@ dosage.sourcePMIDs[0] must be a numeric string (PMID format)
 | Quiz Orchestrator | ✅ Completo | `quiz-orchestrator` |
 
 **Deployed to Production**:
-- ✅ `production-content-enricher` (LastModified: 2025-12-31T14:43:18)
+- ✅ `production-content-enricher` (LastModified: 2025-12-31T14:52:16) - includes sanitization in both bedrock.ts AND bedrockConverse.ts
 - ✅ `production-quiz-orchestrator` (LastModified: 2025-12-31T14:08:49)
 
 ## 🧪 Testing
