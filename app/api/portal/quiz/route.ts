@@ -249,6 +249,15 @@ async function invokeStudiesFetcher(
     const result = JSON.parse(Buffer.from(response.Payload).toString());
     const parsedBody = JSON.parse(result.body);
 
+    // DEBUG: Log the entire response for debugging
+    console.log(`🔍 [STUDIES_FETCHER_DEBUG] Response for "${supplementName}":`, {
+      success: parsedBody.success,
+      hasData: !!parsedBody.data,
+      dataKeys: parsedBody.data ? Object.keys(parsedBody.data) : [],
+      hasRanked: !!parsedBody.data?.ranked,
+      error: parsedBody.error,
+    });
+
     if (!parsedBody.success) {
       // Check if it's a rate limit error
       if (parsedBody.error?.includes('429') || parsedBody.error?.includes('Too Many Requests')) {
