@@ -550,6 +550,224 @@ export const SUPPLEMENT_BENEFIT_SUGGESTIONS: Record<string, BenefitSuggestion[]>
       reason: 'Iron is essential for oxygen transport and energy production'
     }
   ],
+
+  // ========== VITAMINA C / VITAMIN C ==========
+  'vitamina c': [
+    {
+      benefit: 'immunity',
+      benefitEs: 'inmunidad',
+      priority: 1,
+      reason: 'Vitamin C boosts immune function and supports antibody production'
+    },
+    {
+      benefit: 'antioxidant',
+      benefitEs: 'antioxidante',
+      priority: 2,
+      reason: 'Powerful antioxidant that protects cells from oxidative stress'
+    },
+    {
+      benefit: 'skin health',
+      benefitEs: 'salud de la piel',
+      priority: 3,
+      reason: 'Vitamin C is essential for collagen synthesis and skin health'
+    }
+  ],
+  'vitamin c': [
+    {
+      benefit: 'immunity',
+      benefitEs: 'inmunidad',
+      priority: 1,
+      reason: 'Vitamin C boosts immune function and supports antibody production'
+    },
+    {
+      benefit: 'antioxidant',
+      benefitEs: 'antioxidante',
+      priority: 2,
+      reason: 'Powerful antioxidant that protects cells from oxidative stress'
+    },
+    {
+      benefit: 'skin health',
+      benefitEs: 'salud de la piel',
+      priority: 3,
+      reason: 'Vitamin C is essential for collagen synthesis and skin health'
+    }
+  ],
+
+  // ========== PROBIÓTICOS / PROBIOTICS ==========
+  'probióticos': [
+    {
+      benefit: 'digestion',
+      benefitEs: 'digestión',
+      priority: 1,
+      reason: 'Probiotics improve digestive health and nutrient absorption'
+    },
+    {
+      benefit: 'gut',
+      benefitEs: 'intestino',
+      priority: 2,
+      reason: 'Promote healthy gut microbiota and intestinal barrier function'
+    },
+    {
+      benefit: 'immune system',
+      benefitEs: 'sistema inmune',
+      priority: 3,
+      reason: '70% of immune function is in the gut; probiotics boost immunity'
+    }
+  ],
+  'probioticos': [
+    {
+      benefit: 'digestion',
+      benefitEs: 'digestión',
+      priority: 1,
+      reason: 'Probiotics improve digestive health and nutrient absorption'
+    },
+    {
+      benefit: 'gut',
+      benefitEs: 'intestino',
+      priority: 2,
+      reason: 'Promote healthy gut microbiota and intestinal barrier function'
+    },
+    {
+      benefit: 'immune system',
+      benefitEs: 'sistema inmune',
+      priority: 3,
+      reason: '70% of immune function is in the gut; probiotics boost immunity'
+    }
+  ],
+  'probiotics': [
+    {
+      benefit: 'digestion',
+      benefitEs: 'digestión',
+      priority: 1,
+      reason: 'Probiotics improve digestive health and nutrient absorption'
+    },
+    {
+      benefit: 'gut',
+      benefitEs: 'intestino',
+      priority: 2,
+      reason: 'Promote healthy gut microbiota and intestinal barrier function'
+    },
+    {
+      benefit: 'immune system',
+      benefitEs: 'sistema inmune',
+      priority: 3,
+      reason: '70% of immune function is in the gut; probiotics boost immunity'
+    }
+  ],
+
+  // ========== CoQ10 ==========
+  'coq10': [
+    {
+      benefit: 'heart health',
+      benefitEs: 'salud cardiovascular',
+      priority: 1,
+      reason: 'CoQ10 is essential for heart muscle energy production'
+    },
+    {
+      benefit: 'energy',
+      benefitEs: 'energía',
+      priority: 2,
+      reason: 'Critical cofactor in ATP energy production in mitochondria'
+    },
+    {
+      benefit: 'antioxidant',
+      benefitEs: 'antioxidante',
+      priority: 3,
+      reason: 'Strong antioxidant that protects against oxidative damage'
+    }
+  ],
+  'co-q10': [
+    {
+      benefit: 'heart health',
+      benefitEs: 'salud cardiovascular',
+      priority: 1,
+      reason: 'CoQ10 is essential for heart muscle energy production'
+    },
+    {
+      benefit: 'energy',
+      benefitEs: 'energía',
+      priority: 2,
+      reason: 'Critical cofactor in ATP energy production in mitochondria'
+    }
+  ],
+
+  // ========== GINKGO BILOBA ==========
+  'ginkgo': [
+    {
+      benefit: 'memory',
+      benefitEs: 'memoria',
+      priority: 1,
+      reason: 'Ginkgo biloba improves memory and cognitive performance'
+    },
+    {
+      benefit: 'concentration',
+      benefitEs: 'concentración',
+      priority: 2,
+      reason: 'Enhances mental focus and concentration'
+    },
+    {
+      benefit: 'circulation',
+      benefitEs: 'circulación',
+      priority: 3,
+      reason: 'Improves blood flow to the brain and peripheral tissues'
+    }
+  ],
+  'ginkgo biloba': [
+    {
+      benefit: 'memory',
+      benefitEs: 'memoria',
+      priority: 1,
+      reason: 'Ginkgo biloba improves memory and cognitive performance'
+    },
+    {
+      benefit: 'concentration',
+      benefitEs: 'concentración',
+      priority: 2,
+      reason: 'Enhances mental focus and concentration'
+    },
+    {
+      benefit: 'circulation',
+      benefitEs: 'circulación',
+      priority: 3,
+      reason: 'Improves blood flow to the brain and peripheral tissues'
+    }
+  ],
+
+  // ========== CALCIO / CALCIUM ==========
+  'calcio': [
+    {
+      benefit: 'bone health',
+      benefitEs: 'salud ósea',
+      priority: 1,
+      reason: 'Calcium is the primary mineral component of bone structure'
+    },
+    {
+      benefit: 'muscle',
+      benefitEs: 'músculo',
+      priority: 2,
+      reason: 'Calcium is essential for muscle contraction and function'
+    },
+    {
+      benefit: 'teeth',
+      benefitEs: 'dientes',
+      priority: 3,
+      reason: 'Critical for dental health and tooth strength'
+    }
+  ],
+  'calcium': [
+    {
+      benefit: 'bone health',
+      benefitEs: 'salud ósea',
+      priority: 1,
+      reason: 'Calcium is the primary mineral component of bone structure'
+    },
+    {
+      benefit: 'muscle',
+      benefitEs: 'músculo',
+      priority: 2,
+      reason: 'Calcium is essential for muscle contraction and function'
+    }
+  ],
 };
 
 /**

@@ -204,17 +204,27 @@ const BENEFIT_MAP: Record<string, {
   // ========== COGNITIVO / COGNITIVE ==========
   'memoria': {
     english: 'memory',
-    alternatives: ['cognitive function', 'recall'],
+    alternatives: ['cognitive function', 'recall', 'concentration', 'focus'],
     category: 'cognitive'
   },
   'concentracion': {
     english: 'concentration',
-    alternatives: ['focus', 'attention', 'cognitive performance'],
+    alternatives: ['focus', 'attention', 'cognitive performance', 'memory'],
     category: 'cognitive'
   },
   'concentración': {
     english: 'concentration',
-    alternatives: ['focus', 'attention'],
+    alternatives: ['focus', 'attention', 'memory'],
+    category: 'cognitive'
+  },
+  'atención': {
+    english: 'attention',
+    alternatives: ['concentration', 'focus', 'cognitive function'],
+    category: 'cognitive'
+  },
+  'atencion': {
+    english: 'attention',
+    alternatives: ['concentration', 'focus'],
     category: 'cognitive'
   },
   'enfoque': {
@@ -461,6 +471,100 @@ const BENEFIT_MAP: Record<string, {
     english: 'bones',
     alternatives: ['bone health', 'bone density'],
     category: 'joint'
+  },
+
+  // ========== CARDIOVASCULAR / HEART ==========
+  'cardiovascular': {
+    english: 'cardiovascular',
+    alternatives: ['heart health', 'blood pressure', 'cholesterol'],
+    category: 'general'
+  },
+  'corazon': {
+    english: 'heart health',
+    alternatives: ['cardiovascular', 'cardiac health'],
+    category: 'general'
+  },
+  'corazón': {
+    english: 'heart health',
+    alternatives: ['cardiovascular', 'cardiac function'],
+    category: 'general'
+  },
+  'tension arterial': {
+    english: 'blood pressure',
+    alternatives: ['hypertension', 'cardiovascular health'],
+    category: 'general'
+  },
+  'presion arterial': {
+    english: 'blood pressure',
+    alternatives: ['hypertension'],
+    category: 'general'
+  },
+  'presión arterial': {
+    english: 'blood pressure',
+    alternatives: ['hypertension', 'cardiovascular'],
+    category: 'general'
+  },
+  'colesterol': {
+    english: 'cholesterol',
+    alternatives: ['lipid profile', 'blood cholesterol'],
+    category: 'general'
+  },
+
+  // ========== METABOLISMO / METABOLISM ==========
+  'metabolismo': {
+    english: 'metabolism',
+    alternatives: ['metabolic rate', 'metabolic health'],
+    category: 'general'
+  },
+  'metabolismo lento': {
+    english: 'slow metabolism',
+    alternatives: ['metabolic rate', 'energy expenditure'],
+    category: 'energy'
+  },
+  'peso': {
+    english: 'weight',
+    alternatives: ['weight management', 'body weight'],
+    category: 'general'
+  },
+  'perdida de peso': {
+    english: 'weight loss',
+    alternatives: ['fat loss', 'body composition'],
+    category: 'general'
+  },
+  'pérdida de peso': {
+    english: 'weight loss',
+    alternatives: ['fat loss', 'obesity management'],
+    category: 'general'
+  },
+  'grasa': {
+    english: 'fat loss',
+    alternatives: ['weight loss', 'body composition'],
+    category: 'general'
+  },
+  'glucosa': {
+    english: 'blood sugar',
+    alternatives: ['glucose', 'glycemic control'],
+    category: 'general'
+  },
+  'azucar en sangre': {
+    english: 'blood sugar',
+    alternatives: ['glucose', 'glycemic'],
+    category: 'general'
+  },
+  'diabetes': {
+    english: 'diabetes',
+    alternatives: ['blood sugar', 'glucose control'],
+    category: 'general'
+  },
+  'insulin': {
+    english: 'insulin',
+    alternatives: ['insulin resistance', 'blood sugar'],
+    category: 'general'
+  },
+  'insulina': {
+    english: 'insulin',
+    alternatives: ['insulin resistance', 'glucose'],
+    category: 'general'
   },
 
   // ========== GENERALES / GENERAL ==========
