@@ -206,7 +206,7 @@ async function invokeStudiesFetcher(
 
     const response = await lambdaClient.send(
       new InvokeCommand({
-        FunctionName: process.env.STUDIES_FETCHER_LAMBDA || 'production-studies-fetcher',
+        FunctionName: process.env.STUDIES_FETCHER_LAMBDA || 'suplementia-studies-fetcher-prod',
         InvocationType: 'RequestResponse', // Synchronous call - wait for response
         Payload: Buffer.from(JSON.stringify(payload)),
       })
