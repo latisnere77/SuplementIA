@@ -1,6 +1,7 @@
 /**
  * Portal Quiz API Route
  * Submits quiz responses and triggers recommendation generation
+ * Last updated: 2025-12-31 03:38:00 UTC
  */
 
 import { NextRequest, NextResponse } from 'next/server';
