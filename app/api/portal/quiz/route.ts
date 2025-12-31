@@ -238,7 +238,6 @@ async function invokeStudiesFetcher(
         FunctionName: process.env.STUDIES_FETCHER_LAMBDA || 'suplementia-studies-fetcher-prod',
         InvocationType: 'RequestResponse', // Synchronous call - wait for response
         Payload: Buffer.from(JSON.stringify(payload)),
-        Timeout: 30000, // 30 second timeout to respect Lambda limits
       })
     );
 

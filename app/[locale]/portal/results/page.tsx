@@ -17,6 +17,7 @@ import ProductRecommendationsGrid from '@/components/portal/ProductRecommendatio
 import PaywallModal from '@/components/portal/PaywallModal';
 import ShareReferralCard from '@/components/portal/ShareReferralCard';
 import ScientificStudiesPanel from '@/components/portal/ScientificStudiesPanel';
+import RankingAnalysisPanel from '@/components/portal/RankingAnalysisPanel';
 import IntelligentLoadingSpinner from '@/components/portal/IntelligentLoadingSpinner';
 
 import LegalDisclaimer from '@/components/portal/LegalDisclaimer';
@@ -438,6 +439,10 @@ interface Recommendation {
       studyCount: number;
       rctCount: number;
     }>;
+    studies?: {
+      ranked?: any;
+      [key: string]: unknown;
+    };
   };
   ingredients: Array<{
     name: string;
@@ -1415,6 +1420,17 @@ function ResultsPageContent() {
         {/* Common sections for ingredient view */}
         {searchType === 'ingredient' && recommendation && (
           <>
+            {/* Ranking Analysis Panel - Displays intelligent analysis of ranked studies */}
+            {(() => {
+              const rankingData = recommendation?.evidence_summary?.studies?.ranked;
+              return rankingData ? (
+                <RankingAnalysisPanel
+                  ranking={rankingData}
+                  supplementName={localizedSupplementName}
+                />
+              ) : null;
+            })()}
+
             <div className="mb-8">
               <ScientificStudiesPanel
                 supplementName={localizedSupplementName}
