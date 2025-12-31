@@ -30,21 +30,10 @@ const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
  * @returns true if enrichment is needed
  */
 function needsEnrichment(recommendation: any): boolean {
-  // ALWAYS enrich if studies.ranked is missing or invalid (for intelligent analysis)
-  // FIX: Check for VALID ranking data, not just if the object exists
-  const ranked = recommendation?.evidence_summary?.studies?.ranked;
-  const hasValidRanking = ranked && (
-    (ranked.metadata?.confidenceScore > 0) ||
-    (ranked.positive?.length > 0) ||
-    (ranked.negative?.length > 0)
-  );
-  const grade = recommendation?.supplement?.evidenceGrade || recommendation?.evidence_summary?.evidenceGrade;
-  console.log(`🔍 [NEEDS_ENRICH] hasValidRanking=${hasValidRanking} grade=${grade} supplement=${recommendation?.supplement?.name || 'unknown'}`);
-
-  if (!hasValidRanking) {
-    console.log(`✅ [NEEDS_ENRICH] YES - no valid ranked data`);
-    return true;
-  }
+  // FORCE ENRICHMENT: Always enrich to ensure ranking data is generated
+  // This ensures studies-fetcher is always called to get intelligent ranking
+  console.log(`⚡ [NEEDS_ENRICH] FORCING ENRICHMENT for ranking generation`);
+  return true;
 
   const worksFor = recommendation?.supplement?.worksFor || [];
 
