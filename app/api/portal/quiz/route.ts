@@ -791,10 +791,10 @@ export async function POST(request: NextRequest) {
               ...rec,
               evidence_summary: {
                 ...rec.evidence_summary,
-                studies: {
+                studies: rankingData ? {
                   ...(rec.evidence_summary?.studies || {}),
                   ranked: rankingData, // Preserve ranking data in initial recommendation
-                },
+                } : rec.evidence_summary?.studies,
               },
             };
 
@@ -802,30 +802,19 @@ export async function POST(request: NextRequest) {
             initialRecommendation._enrichment_metadata = {
               ...initialRecommendation._enrichment_metadata,
               hasRanking: !!rankingData,
-              rankingSource: 'studies-fetcher',
+              rankingSource: rankingData ? 'studies-fetcher' : 'none',
               interim: true, // Will be enhanced by async enrichment
               storedAt: new Date().toISOString(),
             };
 
-            // Use a helper to update the existing job with initial recommendation and ranking
-            // We need to update the job status to include the recommendation while keeping status 'processing'
+            // Update job with initial recommendation including ranking data
+            // Use storeJobResult with 'completed' status to save the recommendation
+            // (Note: this changes status from 'processing' to 'completed', but frontend will poll for final enriched version)
             try {
-              const { DynamoDBClient } = await import('@aws-sdk/client-dynamodb');
-              const { UpdateCommand } = await import('@aws-sdk/lib-dynamodb');
-              const docClient = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
-
-              await docClient.send(new UpdateCommand({
-                TableName: process.env.PORTAL_JOBS_TABLE || 'portal-jobs',
-                Key: { jobId },
-                UpdateExpression: 'SET recommendation = :rec',
-                ExpressionAttributeValues: {
-                  ':rec': initialRecommendation,
-                },
-              }));
-
-              console.log(`✅ [JOB_UPDATED] Stored initial recommendation with ranking for jobId=${jobId}`);
-            } catch (updateError) {
-              console.error(`⚠️ [JOB_UPDATE_ERROR] Failed to store initial recommendation:`, updateError);
+              await storeJobResult(jobId, 'completed', { recommendation: initialRecommendation });
+              console.log(`✅ [JOB_STORED] Initial recommendation with ranking stored for jobId=${jobId}`);
+            } catch (storeError) {
+              console.error(`⚠️ [JOB_STORE_ERROR] Failed to store initial recommendation:`, storeError);
               // Don't block enrichment if this fails, just log it
             }
 
