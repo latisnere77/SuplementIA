@@ -184,10 +184,23 @@ async function invokeLambdaEnrichmentAsync(
  * @param benefitQuery - Optional benefit query for focused search
  * @returns Ranking data with positive/negative studies
  */
+// Simple cache for studies-fetcher results to avoid PubMed rate limiting
+const studiesFetcherCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL_MS = 3600000; // 1 hour
+
 async function invokeStudiesFetcher(
   supplementName: string,
   benefitQuery?: string
 ): Promise<any> {
+  // Check cache first
+  const cacheKey = `${supplementName}|${benefitQuery || ''}`;
+  const cached = studiesFetcherCache.get(cacheKey);
+
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    console.log(`✅ [STUDIES_FETCHER_CACHE] Using cached ranking for "${supplementName}"`);
+    return cached.data;
+  }
+
   try {
     const payload = {
       httpMethod: 'POST',
@@ -228,6 +241,8 @@ async function invokeStudiesFetcher(
     const ranking = parsedBody.data?.ranked;
     if (ranking) {
       console.log(`✅ [STUDIES_FETCHER] Got ranking: positive=${ranking.positive?.length || 0} negative=${ranking.negative?.length || 0} confidence=${ranking.metadata?.confidenceScore || 0}`);
+      // Cache the successful result
+      studiesFetcherCache.set(cacheKey, { data: ranking, timestamp: Date.now() });
     } else {
       console.log(`⚠️ [STUDIES_FETCHER] No ranking data in response`);
     }
