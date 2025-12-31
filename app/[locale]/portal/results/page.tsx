@@ -7,9 +7,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-// Force dynamic rendering for AWS Amplify - prevent static generation and CloudFront caching
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Client component - fetches data client-side via useEffect
+// Data freshness is ensured by API calls on component mount
 
 import { useEffect, useState, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
