@@ -829,7 +829,7 @@ export async function POST(request: NextRequest) {
               jobId,
               status: 'processing',
               message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
-              recommendation: rec, // Return initial recommendation for immediate display
+              recommendation: initialRecommendation, // Return initial recommendation WITH ranking data
               source: 'lancedb_enriching_async'
             });
           } else {
