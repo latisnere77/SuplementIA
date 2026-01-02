@@ -937,16 +937,23 @@ function ResultsPageContent() {
 
           const data = await response.json();
 
-          // DEBUG: Log what quiz API actually returns (using console.error to survive production)
-          console.error('[🔍 DEBUG Quiz API Response] ' + JSON.stringify({
-            hasSuccess: !!data.success,
+          // DEBUG: Log FULL quiz API response to diagnose synergies issue
+          console.error('[🔍 DEBUG Quiz API FULL Response]', {
+            success: data.success,
+            status: data.status,
+            source: data.source,
             hasRecommendation: !!data.recommendation,
-            recommendationHasSynergies: !!data.recommendation?.synergies,
-            synergiesCount: data.recommendation?.synergies?.length || 0,
-            synergiesSource: data.recommendation?.synergiesSource,
-            // Full synergies array for inspection
-            firstSynergy: data.recommendation?.synergies?.[0],
-          }, null, 2));
+            // Log ALL top-level keys
+            responseKeys: Object.keys(data),
+            recommendationKeys: data.recommendation ? Object.keys(data.recommendation) : [],
+            // Synergies info
+            synergiesAtRoot: data.synergies ? data.synergies.length : 'undefined',
+            synergiesInRec: data.recommendation?.synergies ? data.recommendation.synergies.length : 'undefined',
+            synergiesSource: data.recommendation?.synergiesSource || data.synergiesSource,
+            // First synergy for inspection
+            firstSynergyAtRoot: data.synergies?.[0],
+            firstSynergyInRec: data.recommendation?.synergies?.[0],
+          });
 
           if (data.searchType === 'condition') {
             console.log('[Data Fetch] ✅ Received CONDITION result:', data);
