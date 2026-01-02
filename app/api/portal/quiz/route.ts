@@ -394,6 +394,18 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
     recommendation.products = enrichedProducts;
   }
 
+  // **CRITICAL**: Add synergies support (from external DB or Claude fallback)
+  const enrichedSynergies = evidence.synergies || enrichedData?.data?.synergies || enrichedData?.synergies;
+  const synergiesSource = evidence.synergiesSource || enrichedData?.data?.synergiesSource || enrichedData?.synergiesSource;
+
+  if (enrichedSynergies) {
+    recommendation.synergies = Array.isArray(enrichedSynergies) ? enrichedSynergies : [];
+    recommendation.synergiesSource = synergiesSource;
+    console.log(`✅ [SYNERGIES_MERGED] Added ${recommendation.synergies.length} synergies from ${synergiesSource || 'unknown source'}`);
+  } else {
+    console.log(`⚠️ [SYNERGIES_MERGED] No synergies found in enrichment response`);
+  }
+
   // **CRITICAL**: Resolve and Copy studies.ranked data
   // Look in evidence.studies (some Lambdas might return it here)
   // or enrichedData.data.studies (where enrich/route.ts puts it)
