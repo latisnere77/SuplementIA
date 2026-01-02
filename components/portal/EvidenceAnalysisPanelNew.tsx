@@ -334,13 +334,23 @@ export default function EvidenceAnalysisPanelNew({
       )}
 
       {/* Synergies Section - Combinations with other supplements */}
-      {evidenceSummary.synergies && evidenceSummary.synergies.length > 0 && (
-        <SynergiesSection
-          synergies={evidenceSummary.synergies}
-          supplementName={supplementName || 'este suplemento'}
-          isFallback={evidenceSummary.synergiesSource === 'claude_fallback'}
-        />
-      )}
+      {/* TEMPORARY: Always show synergies section for debugging */}
+      <SynergiesSection
+        synergies={evidenceSummary.synergies && evidenceSummary.synergies.length > 0 ? evidenceSummary.synergies : [
+          {
+            supplement: "TEST: Zinc",
+            type: "general_synergy",
+            mechanism: "DEBUG: If you see this, component renders but data is missing",
+            effect: "Test",
+            score: 70,
+            tier: 3,
+            categories: [],
+            direction: "positive" as const
+          }
+        ]}
+        supplementName={supplementName || 'este suplemento'}
+        isFallback={evidenceSummary.synergiesSource === 'claude_fallback'}
+      />
 
       {/* Side Effects */}
       {evidenceSummary.sideEffects && (evidenceSummary.sideEffects.common?.length > 0 || evidenceSummary.sideEffects.rare?.length > 0) && (
