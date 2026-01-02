@@ -365,14 +365,19 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
       || ((supplement.synergies && supplement.synergies.length > 0) ? 'external_db' : undefined),
   };
 
-  // DEBUG: Log final result summary
-  console.log('[transformRecommendationToEvidence] Output summary:', {
+  // DEBUG: Log final result summary (using console.error to survive production minification)
+  console.error('[🔍 DEBUG transformRecommendationToEvidence] Output summary:', {
     overallGrade: result.overallGrade,
     worksForCount: result.worksFor.length,
     hasDosage: !!result.dosage,
     ingredientsCount: result.ingredients.length,
     synergiesCount: result.synergies.length,
     synergiesSource: result.synergiesSource,
+    // Debug: check input
+    inputHadSynergies: Array.isArray((recommendation as any).synergies),
+    inputSynergiesCount: ((recommendation as any).synergies || []).length,
+    supplementHadSynergies: Array.isArray(supplement.synergies),
+    supplementSynergiesCount: (supplement.synergies || []).length,
   });
 
   return result;
