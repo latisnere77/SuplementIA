@@ -938,7 +938,7 @@ function ResultsPageContent() {
           const data = await response.json();
 
           // DEBUG: Log FULL quiz API response to diagnose synergies issue
-          console.error('[🔍 DEBUG Quiz API FULL Response]', {
+          console.error('[🔍 DEBUG Quiz API FULL Response] ' + JSON.stringify({
             success: data.success,
             status: data.status,
             source: data.source,
@@ -953,7 +953,7 @@ function ResultsPageContent() {
             // First synergy for inspection
             firstSynergyAtRoot: data.synergies?.[0],
             firstSynergyInRec: data.recommendation?.synergies?.[0],
-          });
+          }, null, 2));
 
           if (data.searchType === 'condition') {
             console.log('[Data Fetch] ✅ Received CONDITION result:', data);
