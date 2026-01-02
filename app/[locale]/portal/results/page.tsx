@@ -355,6 +355,9 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     studies,
     // Research span for evidence overview
     researchSpanYears: evidenceSummary.researchSpanYears || 0,
+    // NEW: Include synergies from external DB or Claude fallback
+    synergies: Array.isArray(supplement.synergies) ? supplement.synergies : [],
+    synergiesSource: supplement.synergiesSource || ((supplement.synergies && supplement.synergies.length > 0) ? 'external_db' : undefined),
   };
 
   // DEBUG: Log final result summary
@@ -363,6 +366,8 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     worksForCount: result.worksFor.length,
     hasDosage: !!result.dosage,
     ingredientsCount: result.ingredients.length,
+    synergiesCount: result.synergies.length,
+    synergiesSource: result.synergiesSource,
   });
 
   return result;
