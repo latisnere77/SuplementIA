@@ -703,6 +703,10 @@ function ResultsPageContent() {
         (Array.isArray(transformed.interactions.supplements) && transformed.interactions.supplements.length > 0)
       ),
       hasContraindications: Array.isArray(transformed.contraindications) && transformed.contraindications.length > 0,
+      // DEBUG: Add synergies logging
+      hasSynergies: Array.isArray(transformed.synergies) && transformed.synergies.length > 0,
+      synergiesCount: transformed.synergies?.length || 0,
+      synergiesSource: transformed.synergiesSource,
     });
 
     // Log missing sections

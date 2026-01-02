@@ -12,7 +12,20 @@ interface SynergiesSectionProps {
 export function SynergiesSection({ synergies, supplementName: _supplementName, isFallback = false }: SynergiesSectionProps) {
   const [showAll, setShowAll] = useState(false);
 
-  if (!synergies || synergies.length === 0) return null;
+  // DEBUG: Log synergies component render
+  console.log('🔗 [SynergiesSection] Rendering with:', {
+    hasSynergies: !!synergies,
+    synergiesCount: synergies?.length || 0,
+    isFallback,
+    synergies: synergies?.slice(0, 2) // Log first 2 for debugging
+  });
+
+  if (!synergies || synergies.length === 0) {
+    console.log('🔗 [SynergiesSection] NOT rendering - no synergies data');
+    return null;
+  }
+
+  console.log('🔗 [SynergiesSection] RENDERING synergies section');
 
   const positiveSynergies = synergies.filter(s => s.direction === 'positive');
   const negativeSynergies = synergies.filter(s => s.direction === 'negative');
