@@ -777,6 +777,67 @@ export async function POST(request: NextRequest) {
             console.log(`🔍 [LANCEDB_RANKED] keys=${JSON.stringify(Object.keys(r))} hasMetadata=${!!r.metadata} confidence=${r.metadata?.confidenceScore || 0} positive=${r.positive?.length || 0} negative=${r.negative?.length || 0}`);
           }
 
+          // STEP 0: ALWAYS fetch synergies (before enrichment check)
+          // Synergies should be available for ALL supplements, not just those needing enrichment
+          console.log(`🔗 [SYNERGIES] Fetching synergies for "${searchTerm}"...`);
+          let synergiesData: any[] = [];
+          let synergiesSource = 'none';
+          const synergiesDebug: any = {};
+          try {
+            const enricherUrl = process.env.NEXT_PUBLIC_ENRICHER_API_URL || process.env.ENRICHER_API_URL;
+            console.log(`🔗 [SYNERGIES_URL] Using enricher URL: ${enricherUrl?.substring(0, 50)}...`);
+
+            if (enricherUrl) {
+              const fetchStart = Date.now();
+              const synergiesResponse = await fetch(`${enricherUrl}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  supplementId: searchTerm,
+                  category: 'general',
+                  maxStudies: 1 // Minimal studies since we only want synergies
+                }),
+                signal: AbortSignal.timeout(10000) // 10 second timeout for synergies
+              });
+
+              const fetchDuration = Date.now() - fetchStart;
+              console.log(`🔗 [SYNERGIES_FETCH] Completed in ${fetchDuration}ms, status: ${synergiesResponse.status}`);
+              synergiesDebug.fetchDuration = fetchDuration;
+              synergiesDebug.status = synergiesResponse.status;
+
+              if (synergiesResponse.ok) {
+                const enricherData = await synergiesResponse.json();
+                console.log(`🔍 [SYNERGIES_RESPONSE] enricherData keys:`, Object.keys(enricherData || {}));
+                console.log(`🔍 [SYNERGIES_RESPONSE] enricherData.data keys:`, enricherData.data ? Object.keys(enricherData.data) : 'NO DATA');
+
+                // Enricher returns {success, data, metadata} structure
+                synergiesData = enricherData.data?.synergies || enricherData.synergies || [];
+                synergiesSource = enricherData.data?.synergiesSource || enricherData.synergiesSource || 'external_db';
+
+                synergiesDebug.receivedKeys = Object.keys(enricherData || {});
+                synergiesDebug.dataKeys = enricherData.data ? Object.keys(enricherData.data) : null;
+                synergiesDebug.synergiesCount = synergiesData.length;
+                console.log(`✅ [SYNERGIES] Got ${synergiesData.length} synergies (source: ${synergiesSource})`);
+              } else {
+                const errorText = await synergiesResponse.text();
+                console.error(`❌ [SYNERGIES] Enricher returned ${synergiesResponse.status}: ${errorText.substring(0, 200)}`);
+                synergiesDebug.error = errorText.substring(0, 200);
+              }
+            } else {
+              console.error(`❌ [SYNERGIES] No enricher URL configured`);
+              synergiesDebug.error = 'NO_URL';
+            }
+          } catch (synergiesError: any) {
+            console.error(`⚠️ [SYNERGIES] Failed to fetch synergies:`, synergiesError.message || synergiesError);
+            synergiesDebug.error = synergiesError.message || String(synergiesError);
+            // Non-fatal - continue without synergies
+          }
+
+          // Add synergies to rec immediately
+          rec.synergies = synergiesData;
+          rec.synergiesSource = synergiesSource;
+          rec._synergiesDebug = synergiesDebug;
+
           if (needsEnrichment(rec)) {
             console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" jobId=${jobId}`);
 
@@ -794,68 +855,11 @@ export async function POST(request: NextRequest) {
               console.log(`⚠️ [STUDIES_RANKING] No ranking data - enrichment will proceed without it`);
             }
 
-            // STEP 1.2: Get synergies from content-enricher Lambda
-            // Call enricher synchronously JUST for synergies (fast operation)
-            console.log(`🔗 [SYNERGIES] Fetching synergies for "${searchTerm}"...`);
-            let synergiesData: any[] = [];
-            let synergiesSource = 'none';
-            let synergiesDebug: any = {};
-            try {
-              const enricherUrl = process.env.NEXT_PUBLIC_ENRICHER_API_URL || process.env.ENRICHER_API_URL;
-              console.log(`🔗 [SYNERGIES_URL] Using enricher URL: ${enricherUrl?.substring(0, 50)}...`);
-
-              if (enricherUrl) {
-                const fetchStart = Date.now();
-                const synergiesResponse = await fetch(`${enricherUrl}`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    supplementId: searchTerm,
-                    category: 'general',
-                    maxStudies: 1 // Minimal studies since we only want synergies
-                  }),
-                  signal: AbortSignal.timeout(10000) // 10 second timeout for synergies
-                });
-
-                const fetchDuration = Date.now() - fetchStart;
-                console.log(`🔗 [SYNERGIES_FETCH] Completed in ${fetchDuration}ms, status: ${synergiesResponse.status}`);
-                synergiesDebug.fetchDuration = fetchDuration;
-                synergiesDebug.status = synergiesResponse.status;
-
-                if (synergiesResponse.ok) {
-                  const enricherData = await synergiesResponse.json();
-                  console.log(`🔍 [SYNERGIES_RESPONSE] enricherData keys:`, Object.keys(enricherData || {}));
-                  console.log(`🔍 [SYNERGIES_RESPONSE] enricherData.data keys:`, enricherData.data ? Object.keys(enricherData.data) : 'NO DATA');
-
-                  // Enricher returns {success, data, metadata} structure
-                  synergiesData = enricherData.data?.synergies || enricherData.synergies || [];
-                  synergiesSource = enricherData.data?.synergiesSource || enricherData.synergiesSource || 'external_db';
-
-                  synergiesDebug.receivedKeys = Object.keys(enricherData || {});
-                  synergiesDebug.dataKeys = enricherData.data ? Object.keys(enricherData.data) : null;
-                  synergiesDebug.synergiesCount = synergiesData.length;
-                  console.log(`✅ [SYNERGIES] Got ${synergiesData.length} synergies (source: ${synergiesSource})`);
-                } else {
-                  const errorText = await synergiesResponse.text();
-                  console.error(`❌ [SYNERGIES] Enricher returned ${synergiesResponse.status}: ${errorText.substring(0, 200)}`);
-                  synergiesDebug.error = errorText.substring(0, 200);
-                }
-              } else {
-                console.error(`❌ [SYNERGIES] No enricher URL configured`);
-                synergiesDebug.error = 'NO_URL';
-              }
-            } catch (synergiesError: any) {
-              console.error(`⚠️ [SYNERGIES] Failed to fetch synergies:`, synergiesError.message || synergiesError);
-              synergiesDebug.error = synergiesError.message || String(synergiesError);
-              // Non-fatal - continue without synergies
-            }
-
             // STEP 1.5: Store initial recommendation with ranking data and synergies in DynamoDB IMMEDIATELY
             // This ensures ranking and synergies are available even before async enrichment completes
+            // Note: synergies were already added to rec in STEP 0
             const initialRecommendation = {
               ...rec,
-              synergies: synergiesData,
-              synergiesSource: synergiesSource,
               evidence_summary: {
                 ...rec.evidence_summary,
                 studies: rankingData ? {
@@ -870,8 +874,8 @@ export async function POST(request: NextRequest) {
               ...initialRecommendation._enrichment_metadata,
               hasRanking: !!rankingData,
               rankingSource: rankingData ? 'studies-fetcher' : 'none',
-              hasSynergies: synergiesData.length > 0,
-              synergiesDebug: synergiesDebug, // Debug info for troubleshooting
+              hasSynergies: (rec.synergies || []).length > 0,
+              synergiesDebug: rec._synergiesDebug, // Debug info for troubleshooting
               interim: true, // Will be enhanced by async enrichment
               storedAt: new Date().toISOString(),
             };
