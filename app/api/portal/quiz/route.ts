@@ -806,23 +806,24 @@ export async function POST(request: NextRequest) {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    httpMethod: 'POST',
-                    body: JSON.stringify({
-                      supplementId: searchTerm,
-                      category: 'general',
-                      synergiesOnly: true, // Flag to only fetch synergies
-                      maxStudies: 1 // Minimal studies since we only want synergies
-                    })
+                    supplementId: searchTerm,
+                    category: 'general',
+                    maxStudies: 1 // Minimal studies since we only want synergies
                   }),
                   signal: AbortSignal.timeout(10000) // 10 second timeout for synergies
                 });
 
                 if (synergiesResponse.ok) {
                   const enricherData = await synergiesResponse.json();
+                  console.log(`🔍 [SYNERGIES_RESPONSE] enricherData keys:`, Object.keys(enricherData || {}));
                   synergiesData = enricherData.synergies || [];
                   synergiesSource = enricherData.synergiesSource || 'external_db';
                   console.log(`✅ [SYNERGIES] Got ${synergiesData.length} synergies (source: ${synergiesSource})`);
+                } else {
+                  console.error(`❌ [SYNERGIES] Enricher returned ${synergiesResponse.status}`);
                 }
+              } else {
+                console.error(`❌ [SYNERGIES] No enricher URL configured`);
               }
             } catch (synergiesError) {
               console.error(`⚠️ [SYNERGIES] Failed to fetch synergies:`, synergiesError);
