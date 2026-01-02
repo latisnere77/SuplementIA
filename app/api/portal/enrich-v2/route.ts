@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Step 1: Fetch studies from Lambda
-    const studiesUrl = process.env.STUDIES_API_URL || 
+    const studiesUrl = process.env.NEXT_PUBLIC_STUDIES_API_URL || process.env.STUDIES_API_URL ||
       'https://ctl2qa3wji.execute-api.us-east-1.amazonaws.com/dev/studies/search';
     
     console.log(`[enrich-v2] Fetching studies from: ${studiesUrl}`);
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Step 2: Enrich with Claude via content-enricher Lambda
-    const enricherUrl = process.env.ENRICHER_API_URL ||
+    const enricherUrl = process.env.NEXT_PUBLIC_ENRICHER_API_URL || process.env.ENRICHER_API_URL ||
       'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
     
     console.log(`[enrich-v2] Enriching with Claude via: ${enricherUrl}`);
