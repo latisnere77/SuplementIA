@@ -799,9 +799,13 @@ export async function POST(request: NextRequest) {
             console.log(`🔗 [SYNERGIES] Fetching synergies for "${searchTerm}"...`);
             let synergiesData: any[] = [];
             let synergiesSource = 'none';
+            let synergiesDebug: any = {};
             try {
               const enricherUrl = process.env.NEXT_PUBLIC_ENRICHER_API_URL || process.env.ENRICHER_API_URL;
+              console.log(`🔗 [SYNERGIES_URL] Using enricher URL: ${enricherUrl?.substring(0, 50)}...`);
+
               if (enricherUrl) {
+                const fetchStart = Date.now();
                 const synergiesResponse = await fetch(`${enricherUrl}`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
@@ -813,20 +817,31 @@ export async function POST(request: NextRequest) {
                   signal: AbortSignal.timeout(10000) // 10 second timeout for synergies
                 });
 
+                const fetchDuration = Date.now() - fetchStart;
+                console.log(`🔗 [SYNERGIES_FETCH] Completed in ${fetchDuration}ms, status: ${synergiesResponse.status}`);
+                synergiesDebug.fetchDuration = fetchDuration;
+                synergiesDebug.status = synergiesResponse.status;
+
                 if (synergiesResponse.ok) {
                   const enricherData = await synergiesResponse.json();
                   console.log(`🔍 [SYNERGIES_RESPONSE] enricherData keys:`, Object.keys(enricherData || {}));
                   synergiesData = enricherData.synergies || [];
                   synergiesSource = enricherData.synergiesSource || 'external_db';
+                  synergiesDebug.receivedKeys = Object.keys(enricherData || {});
+                  synergiesDebug.synergiesCount = synergiesData.length;
                   console.log(`✅ [SYNERGIES] Got ${synergiesData.length} synergies (source: ${synergiesSource})`);
                 } else {
-                  console.error(`❌ [SYNERGIES] Enricher returned ${synergiesResponse.status}`);
+                  const errorText = await synergiesResponse.text();
+                  console.error(`❌ [SYNERGIES] Enricher returned ${synergiesResponse.status}: ${errorText.substring(0, 200)}`);
+                  synergiesDebug.error = errorText.substring(0, 200);
                 }
               } else {
                 console.error(`❌ [SYNERGIES] No enricher URL configured`);
+                synergiesDebug.error = 'NO_URL';
               }
-            } catch (synergiesError) {
-              console.error(`⚠️ [SYNERGIES] Failed to fetch synergies:`, synergiesError);
+            } catch (synergiesError: any) {
+              console.error(`⚠️ [SYNERGIES] Failed to fetch synergies:`, synergiesError.message || synergiesError);
+              synergiesDebug.error = synergiesError.message || String(synergiesError);
               // Non-fatal - continue without synergies
             }
 
@@ -850,6 +865,8 @@ export async function POST(request: NextRequest) {
               ...initialRecommendation._enrichment_metadata,
               hasRanking: !!rankingData,
               rankingSource: rankingData ? 'studies-fetcher' : 'none',
+              hasSynergies: synergiesData.length > 0,
+              synergiesDebug: synergiesDebug, // Debug info for troubleshooting
               interim: true, // Will be enhanced by async enrichment
               storedAt: new Date().toISOString(),
             };
