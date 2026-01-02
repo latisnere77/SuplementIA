@@ -356,8 +356,13 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     // Research span for evidence overview
     researchSpanYears: evidenceSummary.researchSpanYears || 0,
     // NEW: Include synergies from external DB or Claude fallback
-    synergies: Array.isArray(supplement.synergies) ? supplement.synergies : [],
-    synergiesSource: supplement.synergiesSource || ((supplement.synergies && supplement.synergies.length > 0) ? 'external_db' : undefined),
+    // Check recommendation.synergies first (from quiz API), then fall back to supplement.synergies
+    synergies: Array.isArray((recommendation as any).synergies)
+      ? (recommendation as any).synergies
+      : (Array.isArray(supplement.synergies) ? supplement.synergies : []),
+    synergiesSource: (recommendation as any).synergiesSource
+      || supplement.synergiesSource
+      || ((supplement.synergies && supplement.synergies.length > 0) ? 'external_db' : undefined),
   };
 
   // DEBUG: Log final result summary
