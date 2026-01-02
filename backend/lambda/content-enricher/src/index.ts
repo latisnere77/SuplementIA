@@ -65,20 +65,17 @@ export async function handler(
       return createErrorResponse(400, 'Missing request body or query parameters', requestId);
     }
 
-    const { supplementId, category, forceRefresh, studies, ranking, synergies, contentType = 'standard', benefitQuery, jobId } = request;
+    const { supplementId, category, forceRefresh, studies, ranking, contentType = 'standard', benefitQuery, jobId } = request;
 
-    // CRITICAL DEBUG: Log what we received for ranking and synergies
+    // CRITICAL DEBUG: Log what we received for ranking
     console.log(JSON.stringify({
-      event: 'RANKING_SYNERGIES_DEBUG',
+      event: 'RANKING_DEBUG',
       requestId,
       hasRanking: !!ranking,
       rankingType: ranking ? typeof ranking : 'undefined',
       rankingKeys: ranking && typeof ranking === 'object' ? Object.keys(ranking) : 'N/A',
       rankingPositiveCount: ranking?.positive?.length || 0,
       rankingNegativeCount: ranking?.negative?.length || 0,
-      hasSynergies: !!synergies,
-      synergiesCount: synergies?.data?.length || 0,
-      synergiesSource: synergies?.source,
       timestamp: new Date().toISOString(),
     }));
 
@@ -219,12 +216,6 @@ export async function handler(
               },
             },
           }),
-          // Preserve synergies data if provided (cache hit path)
-          ...(synergies && synergies.data && synergies.data.length > 0 && {
-            synergies: synergies.data,
-            synergiesSource: synergies.source,
-            _synergiesDebug: synergies.debug,
-          }),
         };
 
         // Update job store if jobId provided (cache hit path)
@@ -329,54 +320,39 @@ export async function handler(
     let localSynergies: TransformedSynergy[] = [];
     let localSynergiesSource: 'external_db' | 'claude_fallback' = 'claude_fallback';
 
-    // Use synergies from request if provided (from quiz API), otherwise fetch locally
-    if (synergies && synergies.data && synergies.data.length > 0) {
-      // Synergies provided in request - use them
-      localSynergies = synergies.data;
-      localSynergiesSource = synergies.source as any;
+    // Fetch synergies from external DynamoDB (cross-account)
+    try {
+      const externalSynergies = await getSynergiesForSupplement(supplementId);
+
+      if (externalSynergies.length > 0) {
+        localSynergies = externalSynergies;
+        localSynergiesSource = 'external_db';
+      } else {
+        // Fallback to Claude's stacksWith if no external synergies found
+        const standardContent = enrichedContent as any;
+        localSynergies = transformStacksWithFallback(standardContent.dosage?.stacksWith);
+        localSynergiesSource = 'claude_fallback';
+      }
+
       console.log(JSON.stringify({
-        event: 'SYNERGIES_FROM_REQUEST',
+        event: 'SYNERGIES_FETCHED',
         requestId,
         supplementId,
         synergiesCount: localSynergies.length,
         source: localSynergiesSource,
+        positiveCount: localSynergies.filter((s: any) => s.direction === 'positive').length,
+        negativeCount: localSynergies.filter((s: any) => s.direction === 'negative').length,
         timestamp: new Date().toISOString(),
       }));
-    } else {
-      // No synergies in request - fetch them ourselves
-      try {
-        const externalSynergies = await getSynergiesForSupplement(supplementId);
-
-        if (externalSynergies.length > 0) {
-          localSynergies = externalSynergies;
-          localSynergiesSource = 'external_db';
-        } else {
-          // Fallback to Claude's stacksWith if no external synergies found
-          const standardContent = enrichedContent as any;
-          localSynergies = transformStacksWithFallback(standardContent.dosage?.stacksWith);
-          localSynergiesSource = 'claude_fallback';
-        }
-
-        console.log(JSON.stringify({
-          event: 'SYNERGIES_FETCHED',
-          requestId,
-          supplementId,
-          synergiesCount: localSynergies.length,
-          source: localSynergiesSource,
-          positiveCount: localSynergies.filter((s: any) => s.direction === 'positive').length,
-          negativeCount: localSynergies.filter((s: any) => s.direction === 'negative').length,
-          timestamp: new Date().toISOString(),
-        }));
-      } catch (synergiesError) {
-        console.error(JSON.stringify({
-          event: 'SYNERGIES_FETCH_ERROR',
-          requestId,
-          supplementId,
-          error: synergiesError instanceof Error ? synergiesError.message : 'Unknown error',
-          timestamp: new Date().toISOString(),
-        }));
-        // Continue without synergies on error
-      }
+    } catch (synergiesError) {
+      console.error(JSON.stringify({
+        event: 'SYNERGIES_FETCH_ERROR',
+        requestId,
+        supplementId,
+        error: synergiesError instanceof Error ? synergiesError.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      }));
+      // Continue without synergies on error
     }
 
     // Add synergies to enriched content
@@ -467,12 +443,6 @@ export async function handler(
             ranked: ranking,
           },
         },
-      }),
-      // Preserve synergies data if provided
-      ...(synergies && synergies.data && synergies.data.length > 0 && {
-        synergies: synergies.data,
-        synergiesSource: synergies.source,
-        _synergiesDebug: synergies.debug,
       }),
     };
 

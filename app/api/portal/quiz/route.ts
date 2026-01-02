@@ -116,14 +116,12 @@ async function enrichSupplement(supplementName: string, baseUrl: string, forceRe
  * @param supplementName - The supplement name to enrich
  * @param forceRefresh - Force bypass of enrichment cache
  * @param ranking - Optional ranking data from LanceDB to preserve in enrichment
- * @param synergies - Optional synergies data to preserve in enrichment response
  */
 async function invokeLambdaEnrichmentAsync(
   jobId: string,
   supplementName: string,
   forceRefresh: boolean = false,
-  ranking?: any,
-  synergies?: { data: any[]; source: string; debug?: any }
+  ranking?: any
 ): Promise<void> {
   try {
     const payload = {
@@ -134,7 +132,6 @@ async function invokeLambdaEnrichmentAsync(
         forceRefresh,
         jobId, // Pass jobId so Lambda can update the job store
         ranking, // Pass ranking data to preserve in enrichment response
-        synergies, // Pass synergies data to preserve in enrichment response
         maxStudies: 5,
         rctOnly: false,
       }),
@@ -780,66 +777,10 @@ export async function POST(request: NextRequest) {
             console.log(`🔍 [LANCEDB_RANKED] keys=${JSON.stringify(Object.keys(r))} hasMetadata=${!!r.metadata} confidence=${r.metadata?.confidenceScore || 0} positive=${r.positive?.length || 0} negative=${r.negative?.length || 0}`);
           }
 
-          // STEP 0: ALWAYS fetch synergies (before enrichment check)
-          // Synergies should be available for ALL supplements, not just those needing enrichment
-          console.log(`🔗 [SYNERGIES] Fetching synergies for "${searchTerm}"...`);
-          let synergiesData: any[] = [];
-          let synergiesSource = 'none';
-          const synergiesDebug: any = {};
-          try {
-            const enricherUrl = process.env.NEXT_PUBLIC_ENRICHER_API_URL || process.env.ENRICHER_API_URL;
-            console.log(`🔗 [SYNERGIES_URL] Using enricher URL: ${enricherUrl?.substring(0, 50)}...`);
-
-            if (enricherUrl) {
-              const fetchStart = Date.now();
-              const synergiesResponse = await fetch(`${enricherUrl}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  supplementId: searchTerm,
-                  category: 'general',
-                  maxStudies: 1 // Minimal studies since we only want synergies
-                }),
-                signal: AbortSignal.timeout(10000) // 10 second timeout for synergies
-              });
-
-              const fetchDuration = Date.now() - fetchStart;
-              console.log(`🔗 [SYNERGIES_FETCH] Completed in ${fetchDuration}ms, status: ${synergiesResponse.status}`);
-              synergiesDebug.fetchDuration = fetchDuration;
-              synergiesDebug.status = synergiesResponse.status;
-
-              if (synergiesResponse.ok) {
-                const enricherData = await synergiesResponse.json();
-                console.log(`🔍 [SYNERGIES_RESPONSE] enricherData keys:`, Object.keys(enricherData || {}));
-                console.log(`🔍 [SYNERGIES_RESPONSE] enricherData.data keys:`, enricherData.data ? Object.keys(enricherData.data) : 'NO DATA');
-
-                // Enricher returns {success, data, metadata} structure
-                synergiesData = enricherData.data?.synergies || enricherData.synergies || [];
-                synergiesSource = enricherData.data?.synergiesSource || enricherData.synergiesSource || 'external_db';
-
-                synergiesDebug.receivedKeys = Object.keys(enricherData || {});
-                synergiesDebug.dataKeys = enricherData.data ? Object.keys(enricherData.data) : null;
-                synergiesDebug.synergiesCount = synergiesData.length;
-                console.log(`✅ [SYNERGIES] Got ${synergiesData.length} synergies (source: ${synergiesSource})`);
-              } else {
-                const errorText = await synergiesResponse.text();
-                console.error(`❌ [SYNERGIES] Enricher returned ${synergiesResponse.status}: ${errorText.substring(0, 200)}`);
-                synergiesDebug.error = errorText.substring(0, 200);
-              }
-            } else {
-              console.error(`❌ [SYNERGIES] No enricher URL configured`);
-              synergiesDebug.error = 'NO_URL';
-            }
-          } catch (synergiesError: any) {
-            console.error(`⚠️ [SYNERGIES] Failed to fetch synergies:`, synergiesError.message || synergiesError);
-            synergiesDebug.error = synergiesError.message || String(synergiesError);
-            // Non-fatal - continue without synergies
-          }
-
-          // Add synergies to rec immediately
-          rec.synergies = synergiesData;
-          rec.synergiesSource = synergiesSource;
-          rec._synergiesDebug = synergiesDebug;
+          // STEP 0: Synergies will be fetched by async enrichment Lambda
+          // The Lambda fetches synergies efficiently during enrichment (takes only ~150ms)
+          // No need to fetch them here - avoids timeout issues for uncached supplements
+          console.log(`🔗 [SYNERGIES] Synergies will be fetched during async enrichment`);
 
           if (needsEnrichment(rec)) {
             console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" jobId=${jobId}`);
@@ -894,15 +835,10 @@ export async function POST(request: NextRequest) {
               // Don't block enrichment if this fails, just log it
             }
 
-            // STEP 2: ASYNC ENRICHMENT with ranking data and synergies
-            // Lambda will enrich content AND preserve the ranking and synergies
+            // STEP 2: ASYNC ENRICHMENT with ranking data
+            // Lambda will enrich content, fetch synergies, and preserve the ranking
             // The enrichment Lambda will save all to cache for future requests
-            const synergiesPayload = {
-              data: rec.synergies || [],
-              source: rec.synergiesSource || 'none',
-              debug: rec._synergiesDebug
-            };
-            await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData, synergiesPayload);
+            await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData);
 
             // Return immediately with processing status
             return NextResponse.json({
