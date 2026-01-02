@@ -513,6 +513,9 @@ function transformToRecommendation(
       keyStudies: enrichedContent.keyStudies || [],
       // Practical recommendations
       practicalRecommendations: enrichedContent.practicalRecommendations || [],
+      // Synergies with other supplements (from external DB or Claude fallback)
+      synergies: enrichedContent.synergies || [],
+      synergiesSource: enrichedContent.synergiesSource,
       // LEGACY: Keep old format for backwards compatibility
       benefits: enrichedContent.worksFor?.map((w: any) => {
         if (typeof w === 'string') return w;
