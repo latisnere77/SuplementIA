@@ -366,7 +366,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   };
 
   // DEBUG: Log final result summary (using console.error to survive production minification)
-  console.error('[🔍 DEBUG transformRecommendationToEvidence] Output summary:', {
+  const debugInfo = {
     overallGrade: result.overallGrade,
     worksForCount: result.worksFor.length,
     hasDosage: !!result.dosage,
@@ -378,7 +378,8 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     inputSynergiesCount: ((recommendation as any).synergies || []).length,
     supplementHadSynergies: Array.isArray(supplement.synergies),
     supplementSynergiesCount: (supplement.synergies || []).length,
-  });
+  };
+  console.error('[🔍 DEBUG transformRecommendationToEvidence] ' + JSON.stringify(debugInfo, null, 2));
 
   return result;
 }
