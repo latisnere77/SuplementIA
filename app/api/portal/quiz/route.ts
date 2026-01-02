@@ -825,9 +825,14 @@ export async function POST(request: NextRequest) {
                 if (synergiesResponse.ok) {
                   const enricherData = await synergiesResponse.json();
                   console.log(`🔍 [SYNERGIES_RESPONSE] enricherData keys:`, Object.keys(enricherData || {}));
-                  synergiesData = enricherData.synergies || [];
-                  synergiesSource = enricherData.synergiesSource || 'external_db';
+                  console.log(`🔍 [SYNERGIES_RESPONSE] enricherData.data keys:`, enricherData.data ? Object.keys(enricherData.data) : 'NO DATA');
+
+                  // Enricher returns {success, data, metadata} structure
+                  synergiesData = enricherData.data?.synergies || enricherData.synergies || [];
+                  synergiesSource = enricherData.data?.synergiesSource || enricherData.synergiesSource || 'external_db';
+
                   synergiesDebug.receivedKeys = Object.keys(enricherData || {});
+                  synergiesDebug.dataKeys = enricherData.data ? Object.keys(enricherData.data) : null;
                   synergiesDebug.synergiesCount = synergiesData.length;
                   console.log(`✅ [SYNERGIES] Got ${synergiesData.length} synergies (source: ${synergiesSource})`);
                 } else {
