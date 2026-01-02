@@ -58,6 +58,11 @@ Resources:
                 - dynamodb:GetItem
                 - dynamodb:UpdateItem
               Resource: 'arn:aws:dynamodb:us-east-1:*:table/suplementai-async-jobs'
+            # Cross-account access to SuplementsDB for synergies
+            - Effect: Allow
+              Action:
+                - sts:AssumeRole
+              Resource: 'arn:aws:iam::239378269775:role/suplementia-synergies-access-role'
         - AWSXRayDaemonWriteAccess
       Events:
         PostEnrich:

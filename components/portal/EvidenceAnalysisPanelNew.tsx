@@ -10,13 +10,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Shield, Beaker, Users, Calendar, ExternalLink, ChevronDown, ChevronUp, Brain, ShoppingCart, CheckCircle, AlertTriangle, FlaskConical } from 'lucide-react';
-import SupplementGrade, { SupplementGradeBadge } from './SupplementGrade';
+import { Shield, Beaker, Users, Calendar, ShoppingCart, CheckCircle, AlertTriangle, FlaskConical } from 'lucide-react';
 import EvidenceOverview from './EvidenceOverview';
 import type { GradeType } from '@/types/supplement-grade';
 import WorksForSection, { type WorksForItem } from './WorksForSection';
 import IntelligentRankingSection from './IntelligentRankingSection';
 import { BenefitEvidenceCard } from './BenefitEvidenceCard';
+import { SynergiesSection } from './SynergiesSection';
+import type { Synergy } from '@/types/synergies';
 
 interface EvidenceBadge {
   type: 'rct' | 'meta' | 'longterm' | 'safe';
@@ -132,6 +133,10 @@ interface EvidenceSummaryNew {
 
   // Research span in years
   researchSpanYears?: number;
+
+  // Synergies from external DB or Claude fallback
+  synergies?: Synergy[];
+  synergiesSource?: 'external_db' | 'claude_fallback';
 }
 
 interface EvidenceAnalysisPanelNewProps {
@@ -182,9 +187,9 @@ const QUALITY_BADGES = [
 export default function EvidenceAnalysisPanelNew({
   evidenceSummary,
   supplementName,
-  onViewStudies,
+  onViewStudies: _onViewStudies,
 }: EvidenceAnalysisPanelNewProps) {
-  const [expandedIngredient, setExpandedIngredient] = useState<string | null>(null);
+  const [_expandedIngredient, _setExpandedIngredient] = useState<string | null>(null);
 
   return (
     <div className="space-y-6">
@@ -326,6 +331,15 @@ export default function EvidenceAnalysisPanelNew({
             </p>
           </div>
         </div>
+      )}
+
+      {/* Synergies Section - Combinations with other supplements */}
+      {evidenceSummary.synergies && evidenceSummary.synergies.length > 0 && (
+        <SynergiesSection
+          synergies={evidenceSummary.synergies}
+          supplementName={supplementName || 'este suplemento'}
+          isFallback={evidenceSummary.synergiesSource === 'claude_fallback'}
+        />
       )}
 
       {/* Side Effects */}

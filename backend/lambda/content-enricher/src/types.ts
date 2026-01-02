@@ -65,6 +65,7 @@ export interface Dosage {
   duration: string;
   forms?: DosageForm[];
   stacksWith?: string[];
+  sourcePMIDs?: string[]; // PMIDs referenced for dosage recommendations
 }
 
 export interface DosageForm {

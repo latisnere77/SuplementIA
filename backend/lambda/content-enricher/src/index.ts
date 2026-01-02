@@ -13,6 +13,7 @@ import { generateEnrichedContentWithToolUse } from './bedrockConverse';
 import { getFromCache, saveToCacheAsync } from './cache';
 import { EnrichmentRequest, EnrichmentResponse } from './types';
 import { updateJobWithResult } from './job-store';
+import { getSynergiesForSupplement, transformStacksWithFallback, TransformedSynergy } from './synergies';
 
 // Feature flag to enable Tool Use API (will be controlled via environment variable)
 const USE_TOOL_API = process.env.USE_TOOL_API === 'true';
@@ -144,6 +145,35 @@ export async function handler(
           subsegment.addAnnotation('hasCachedRanking', !!cachedRanking);
         }
 
+        // Fetch synergies for cached content (synergies are NOT cached, always fresh from external DB)
+        let cachedSynergies: TransformedSynergy[] = [];
+        let cachedSynergiesSource: 'external_db' | 'claude_fallback' = 'claude_fallback';
+
+        try {
+          const externalSynergies = await getSynergiesForSupplement(supplementId);
+          if (externalSynergies.length > 0) {
+            cachedSynergies = externalSynergies;
+            cachedSynergiesSource = 'external_db';
+          } else {
+            // Fallback to Claude's stacksWith if no external synergies found
+            const standardContent = enrichedContent as any;
+            cachedSynergies = transformStacksWithFallback(standardContent.dosage?.stacksWith);
+            cachedSynergiesSource = 'claude_fallback';
+          }
+        } catch (synergiesError) {
+          console.error(JSON.stringify({
+            event: 'SYNERGIES_FETCH_ERROR_CACHE_PATH',
+            requestId,
+            supplementId,
+            error: synergiesError instanceof Error ? synergiesError.message : 'Unknown error',
+            timestamp: new Date().toISOString(),
+          }));
+        }
+
+        // Add synergies to cached content
+        (enrichedContent as any).synergies = cachedSynergies;
+        (enrichedContent as any).synergiesSource = cachedSynergiesSource;
+
         const duration = Date.now() - startTime;
 
         console.log(
@@ -157,6 +187,8 @@ export async function handler(
             hasCachedRanking: !!cachedRanking,
             cachedRankingPositive: cachedRanking?.positive?.length || 0,
             cachedRankingNegative: cachedRanking?.negative?.length || 0,
+            synergiesCount: cachedSynergies.length,
+            synergiesSource: cachedSynergiesSource,
             timestamp: new Date().toISOString(),
           })
         );
@@ -283,6 +315,48 @@ export async function handler(
         );
 
     enrichedContent = content;
+
+    // Fetch synergies from external database
+    let synergies: TransformedSynergy[] = [];
+    let synergiesSource: 'external_db' | 'claude_fallback' = 'claude_fallback';
+
+    try {
+      const externalSynergies = await getSynergiesForSupplement(supplementId);
+
+      if (externalSynergies.length > 0) {
+        synergies = externalSynergies;
+        synergiesSource = 'external_db';
+      } else {
+        // Fallback to Claude's stacksWith if no external synergies found
+        const standardContent = enrichedContent as any;
+        synergies = transformStacksWithFallback(standardContent.dosage?.stacksWith);
+        synergiesSource = 'claude_fallback';
+      }
+
+      console.log(JSON.stringify({
+        event: 'SYNERGIES_FETCHED',
+        requestId,
+        supplementId,
+        synergiesCount: synergies.length,
+        source: synergiesSource,
+        positiveCount: synergies.filter(s => s.direction === 'positive').length,
+        negativeCount: synergies.filter(s => s.direction === 'negative').length,
+        timestamp: new Date().toISOString(),
+      }));
+    } catch (synergiesError) {
+      console.error(JSON.stringify({
+        event: 'SYNERGIES_FETCH_ERROR',
+        requestId,
+        supplementId,
+        error: synergiesError instanceof Error ? synergiesError.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      }));
+      // Continue without synergies on error
+    }
+
+    // Add synergies to enriched content
+    (enrichedContent as any).synergies = synergies;
+    (enrichedContent as any).synergiesSource = synergiesSource;
 
     // Save to cache with ranking metadata (await to ensure it completes before Lambda freezes)
     try {

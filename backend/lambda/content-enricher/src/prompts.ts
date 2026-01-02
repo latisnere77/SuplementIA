@@ -496,3 +496,13 @@ export function validateEnrichedContent(data: any): {
     errors,
   };
 }
+
+/**
+ * Sanitize dosage object - stub function for bedrockConverse.ts compatibility
+ * @deprecated This function is a placeholder for future PMID validation
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function sanitizeDosageWithPMIDValidation(dosage: any): any {
+  // Passthrough for now - actual PMID validation not yet implemented
+  return dosage;
+}
