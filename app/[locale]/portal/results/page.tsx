@@ -937,6 +937,17 @@ function ResultsPageContent() {
 
           const data = await response.json();
 
+          // DEBUG: Log what quiz API actually returns (using console.error to survive production)
+          console.error('[🔍 DEBUG Quiz API Response] ' + JSON.stringify({
+            hasSuccess: !!data.success,
+            hasRecommendation: !!data.recommendation,
+            recommendationHasSynergies: !!data.recommendation?.synergies,
+            synergiesCount: data.recommendation?.synergies?.length || 0,
+            synergiesSource: data.recommendation?.synergiesSource,
+            // Full synergies array for inspection
+            firstSynergy: data.recommendation?.synergies?.[0],
+          }, null, 2));
+
           if (data.searchType === 'condition') {
             console.log('[Data Fetch] ✅ Received CONDITION result:', data);
             setConditionResult(data);
