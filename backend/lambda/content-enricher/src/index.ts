@@ -325,47 +325,63 @@ export async function handler(
 
     enrichedContent = content;
 
-    // Fetch synergies from external database
-    let synergies: TransformedSynergy[] = [];
-    let synergiesSource: 'external_db' | 'claude_fallback' = 'claude_fallback';
+    // Fetch synergies from external database (only if not provided in request)
+    let localSynergies: TransformedSynergy[] = [];
+    let localSynergiesSource: 'external_db' | 'claude_fallback' = 'claude_fallback';
 
-    try {
-      const externalSynergies = await getSynergiesForSupplement(supplementId);
-
-      if (externalSynergies.length > 0) {
-        synergies = externalSynergies;
-        synergiesSource = 'external_db';
-      } else {
-        // Fallback to Claude's stacksWith if no external synergies found
-        const standardContent = enrichedContent as any;
-        synergies = transformStacksWithFallback(standardContent.dosage?.stacksWith);
-        synergiesSource = 'claude_fallback';
-      }
-
+    // Use synergies from request if provided (from quiz API), otherwise fetch locally
+    if (synergies && synergies.data && synergies.data.length > 0) {
+      // Synergies provided in request - use them
+      localSynergies = synergies.data;
+      localSynergiesSource = synergies.source as any;
       console.log(JSON.stringify({
-        event: 'SYNERGIES_FETCHED',
+        event: 'SYNERGIES_FROM_REQUEST',
         requestId,
         supplementId,
-        synergiesCount: synergies.length,
-        source: synergiesSource,
-        positiveCount: synergies.filter(s => s.direction === 'positive').length,
-        negativeCount: synergies.filter(s => s.direction === 'negative').length,
+        synergiesCount: localSynergies.length,
+        source: localSynergiesSource,
         timestamp: new Date().toISOString(),
       }));
-    } catch (synergiesError) {
-      console.error(JSON.stringify({
-        event: 'SYNERGIES_FETCH_ERROR',
-        requestId,
-        supplementId,
-        error: synergiesError instanceof Error ? synergiesError.message : 'Unknown error',
-        timestamp: new Date().toISOString(),
-      }));
-      // Continue without synergies on error
+    } else {
+      // No synergies in request - fetch them ourselves
+      try {
+        const externalSynergies = await getSynergiesForSupplement(supplementId);
+
+        if (externalSynergies.length > 0) {
+          localSynergies = externalSynergies;
+          localSynergiesSource = 'external_db';
+        } else {
+          // Fallback to Claude's stacksWith if no external synergies found
+          const standardContent = enrichedContent as any;
+          localSynergies = transformStacksWithFallback(standardContent.dosage?.stacksWith);
+          localSynergiesSource = 'claude_fallback';
+        }
+
+        console.log(JSON.stringify({
+          event: 'SYNERGIES_FETCHED',
+          requestId,
+          supplementId,
+          synergiesCount: localSynergies.length,
+          source: localSynergiesSource,
+          positiveCount: localSynergies.filter((s: any) => s.direction === 'positive').length,
+          negativeCount: localSynergies.filter((s: any) => s.direction === 'negative').length,
+          timestamp: new Date().toISOString(),
+        }));
+      } catch (synergiesError) {
+        console.error(JSON.stringify({
+          event: 'SYNERGIES_FETCH_ERROR',
+          requestId,
+          supplementId,
+          error: synergiesError instanceof Error ? synergiesError.message : 'Unknown error',
+          timestamp: new Date().toISOString(),
+        }));
+        // Continue without synergies on error
+      }
     }
 
     // Add synergies to enriched content
-    (enrichedContent as any).synergies = synergies;
-    (enrichedContent as any).synergiesSource = synergiesSource;
+    (enrichedContent as any).synergies = localSynergies;
+    (enrichedContent as any).synergiesSource = localSynergiesSource;
 
     // Save to cache with ranking metadata (await to ensure it completes before Lambda freezes)
     try {

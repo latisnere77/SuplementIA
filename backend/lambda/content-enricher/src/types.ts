@@ -24,6 +24,7 @@ export interface EnrichmentRequest {
   forceRefresh?: boolean;
   studies?: PubMedStudy[]; // Real PubMed studies from studies-fetcher
   ranking?: any; // NEW: Intelligent ranking from studies-fetcher
+  synergies?: { data: any[]; source: string; debug?: any }; // NEW: Synergies data from cross-account DynamoDB
   contentType?: 'standard' | 'examine-style'; // NEW: Content format type
   benefitQuery?: string; // NEW: Optional benefit-specific query (e.g., "hair growth") - for now just accepted, future: focused analysis
   jobId?: string; // NEW: Job ID for async enrichment with DynamoDB job store
