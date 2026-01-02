@@ -116,12 +116,14 @@ async function enrichSupplement(supplementName: string, baseUrl: string, forceRe
  * @param supplementName - The supplement name to enrich
  * @param forceRefresh - Force bypass of enrichment cache
  * @param ranking - Optional ranking data from LanceDB to preserve in enrichment
+ * @param synergies - Optional synergies data to preserve in enrichment response
  */
 async function invokeLambdaEnrichmentAsync(
   jobId: string,
   supplementName: string,
   forceRefresh: boolean = false,
-  ranking?: any
+  ranking?: any,
+  synergies?: { data: any[]; source: string; debug?: any }
 ): Promise<void> {
   try {
     const payload = {
@@ -132,6 +134,7 @@ async function invokeLambdaEnrichmentAsync(
         forceRefresh,
         jobId, // Pass jobId so Lambda can update the job store
         ranking, // Pass ranking data to preserve in enrichment response
+        synergies, // Pass synergies data to preserve in enrichment response
         maxStudies: 5,
         rctOnly: false,
       }),
@@ -891,10 +894,15 @@ export async function POST(request: NextRequest) {
               // Don't block enrichment if this fails, just log it
             }
 
-            // STEP 2: ASYNC ENRICHMENT with ranking data
-            // Lambda will enrich content AND preserve the ranking we just generated
-            // The enrichment Lambda will save both to cache for future requests
-            await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData);
+            // STEP 2: ASYNC ENRICHMENT with ranking data and synergies
+            // Lambda will enrich content AND preserve the ranking and synergies
+            // The enrichment Lambda will save all to cache for future requests
+            const synergiesPayload = {
+              data: rec.synergies || [],
+              source: rec.synergiesSource || 'none',
+              debug: rec._synergiesDebug
+            };
+            await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData, synergiesPayload);
 
             // Return immediately with processing status
             return NextResponse.json({

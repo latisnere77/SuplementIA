@@ -65,17 +65,20 @@ export async function handler(
       return createErrorResponse(400, 'Missing request body or query parameters', requestId);
     }
 
-    const { supplementId, category, forceRefresh, studies, ranking, contentType = 'standard', benefitQuery, jobId } = request;
+    const { supplementId, category, forceRefresh, studies, ranking, synergies, contentType = 'standard', benefitQuery, jobId } = request;
 
-    // CRITICAL DEBUG: Log what we received for ranking
+    // CRITICAL DEBUG: Log what we received for ranking and synergies
     console.log(JSON.stringify({
-      event: 'RANKING_DEBUG',
+      event: 'RANKING_SYNERGIES_DEBUG',
       requestId,
       hasRanking: !!ranking,
       rankingType: ranking ? typeof ranking : 'undefined',
       rankingKeys: ranking && typeof ranking === 'object' ? Object.keys(ranking) : 'N/A',
       rankingPositiveCount: ranking?.positive?.length || 0,
       rankingNegativeCount: ranking?.negative?.length || 0,
+      hasSynergies: !!synergies,
+      synergiesCount: synergies?.data?.length || 0,
+      synergiesSource: synergies?.source,
       timestamp: new Date().toISOString(),
     }));
 
@@ -216,12 +219,18 @@ export async function handler(
               },
             },
           }),
+          // Preserve synergies data if provided (cache hit path)
+          ...(synergies && synergies.data && synergies.data.length > 0 && {
+            synergies: synergies.data,
+            synergiesSource: synergies.source,
+            _synergiesDebug: synergies.debug,
+          }),
         };
 
         // Update job store if jobId provided (cache hit path)
         if (jobId) {
           await updateJobWithResult(jobId, 'completed', {
-            recommendation: response,
+            recommendation: response, // Now includes synergies!
           });
         }
 
@@ -443,12 +452,18 @@ export async function handler(
           },
         },
       }),
+      // Preserve synergies data if provided
+      ...(synergies && synergies.data && synergies.data.length > 0 && {
+        synergies: synergies.data,
+        synergiesSource: synergies.source,
+        _synergiesDebug: synergies.debug,
+      }),
     };
 
     // Update job store if jobId provided (async enrichment)
     if (jobId) {
       await updateJobWithResult(jobId, 'completed', {
-        recommendation: response, // Store the full enrichment response
+        recommendation: response, // Store the full enrichment response (now includes synergies!)
       });
     }
 
