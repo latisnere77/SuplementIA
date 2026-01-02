@@ -794,11 +794,47 @@ export async function POST(request: NextRequest) {
               console.log(`⚠️ [STUDIES_RANKING] No ranking data - enrichment will proceed without it`);
             }
 
-            // STEP 1.5: Store initial recommendation with ranking data in DynamoDB IMMEDIATELY
-            // This ensures ranking is preserved even if async enrichment has issues
-            // The initial recommendation will be enhanced further when enrichment completes
+            // STEP 1.2: Get synergies from content-enricher Lambda
+            // Call enricher synchronously JUST for synergies (fast operation)
+            console.log(`🔗 [SYNERGIES] Fetching synergies for "${searchTerm}"...`);
+            let synergiesData: any[] = [];
+            let synergiesSource = 'none';
+            try {
+              const enricherUrl = process.env.NEXT_PUBLIC_ENRICHER_API_URL || process.env.ENRICHER_API_URL;
+              if (enricherUrl) {
+                const synergiesResponse = await fetch(`${enricherUrl}`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    httpMethod: 'POST',
+                    body: JSON.stringify({
+                      supplementId: searchTerm,
+                      category: 'general',
+                      synergiesOnly: true, // Flag to only fetch synergies
+                      maxStudies: 1 // Minimal studies since we only want synergies
+                    })
+                  }),
+                  signal: AbortSignal.timeout(10000) // 10 second timeout for synergies
+                });
+
+                if (synergiesResponse.ok) {
+                  const enricherData = await synergiesResponse.json();
+                  synergiesData = enricherData.synergies || [];
+                  synergiesSource = enricherData.synergiesSource || 'external_db';
+                  console.log(`✅ [SYNERGIES] Got ${synergiesData.length} synergies (source: ${synergiesSource})`);
+                }
+              }
+            } catch (synergiesError) {
+              console.error(`⚠️ [SYNERGIES] Failed to fetch synergies:`, synergiesError);
+              // Non-fatal - continue without synergies
+            }
+
+            // STEP 1.5: Store initial recommendation with ranking data and synergies in DynamoDB IMMEDIATELY
+            // This ensures ranking and synergies are available even before async enrichment completes
             const initialRecommendation = {
               ...rec,
+              synergies: synergiesData,
+              synergiesSource: synergiesSource,
               evidence_summary: {
                 ...rec.evidence_summary,
                 studies: rankingData ? {
