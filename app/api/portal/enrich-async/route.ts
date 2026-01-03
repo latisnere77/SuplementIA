@@ -6,10 +6,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createJob, createRetryJob, hasExceededRetryLimit } from '@/lib/portal/job-store';
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 10; // Quick response - actual processing happens in background
+export const maxDuration = 30; // Increased to allow Lambda invocation
 
 // Reserved for future use when direct enrichment is needed
 // const ENRICHER_API_URL = process.env.ENRICHER_API_URL || 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
@@ -98,93 +99,33 @@ export async function POST(request: NextRequest) {
 
     console.log(`🚀 [Job ${jobId}] Starting async enrichment for: "${supplementName}" (Retry: ${isRetry}, Count: ${retryCount})`);
 
-    // FIXED: Directly invoke Lambda functions instead of calling API routes
-    // This bypasses Amplify timeout limits and ensures enrichment completes
-    void (async () => {
-      try {
-        const { storeJobResult } = await import('@/lib/portal/job-store');
+    // FIXED: Use Lambda async invocation instead of background fetch
+    // Invoke quiz-orchestrator Lambda with InvocationType='Event' for true async execution
+    try {
+      const lambdaClient = new LambdaClient({ region: 'us-east-1' });
 
-        // Step 1: Fetch studies from studies-fetcher Lambda
-        const studiesUrl = process.env.STUDIES_API_URL || 'https://pl3wb2enqwsfevm5k2lmlrv3em0jipsy.lambda-url.us-east-1.on.aws/';
-        console.log(`📚 [Job ${jobId}] Fetching studies from Lambda...`);
+      const payload = {
+        category: supplementName,
+        age: 35,
+        gender: 'male',
+        location: 'CDMX',
+        jobId,
+        forceRefresh: body.forceRefresh || false,
+      };
 
-        const studiesResponse = await fetch(studiesUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Request-ID': correlationId },
-          body: JSON.stringify({
-            supplementName,
-            maxResults: 10,
-            humanStudiesOnly: true,
-            yearFrom: 2010,
-          }),
-          signal: AbortSignal.timeout(45000), // 45s timeout for studies
-        });
+      await lambdaClient.send(new InvokeCommand({
+        FunctionName: 'production-quiz-orchestrator',
+        InvocationType: 'Event', // Async invocation - doesn't wait for response
+        Payload: JSON.stringify(payload),
+      }));
 
-        if (!studiesResponse.ok) {
-          throw new Error(`Studies fetch failed: ${studiesResponse.status}`);
-        }
-
-        const studiesData = await studiesResponse.json();
-        const studies = studiesData.data?.studies || studiesData.studies || [];
-        console.log(`✅ [Job ${jobId}] Fetched ${studies.length} studies`);
-
-        if (studies.length === 0) {
-          await storeJobResult(jobId, 'failed', { error: 'No studies found' });
-          return;
-        }
-
-        // Step 2: Enrich with content-enricher Lambda (includes synergies!)
-        const enricherUrl = process.env.ENRICHER_API_URL || 'https://55noz2p7ypqcatwf2o2kjnw7dq0eeqge.lambda-url.us-east-1.on.aws/';
-        console.log(`🤖 [Job ${jobId}] Enriching with Claude + fetching synergies...`);
-
-        const enrichResponse = await fetch(enricherUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Request-ID': correlationId },
-          body: JSON.stringify({
-            supplementId: supplementName,
-            category: body.category || 'general',
-            studies: studies.slice(0, 8),
-          }),
-          signal: AbortSignal.timeout(180000), // 180s timeout for Claude
-        });
-
-        if (!enrichResponse.ok) {
-          throw new Error(`Enrichment failed: ${enrichResponse.status}`);
-        }
-
-        const enrichData = await enrichResponse.json();
-        console.log(`✅ [Job ${jobId}] Enrichment completed with ${enrichData.synergies?.length || 0} synergies`);
-
-        // Step 3: Transform to recommendation format and store
-        const recommendation = {
-          recommendation_id: jobId,
-          quiz_id: jobId,
-          category: supplementName,
-          supplement: {
-            name: supplementName,
-            description: enrichData.data?.whatIsIt || '',
-            worksFor: enrichData.data?.worksFor || [],
-            doesntWorkFor: enrichData.data?.doesntWorkFor || [],
-            limitedEvidence: enrichData.data?.limitedEvidence || [],
-            dosage: enrichData.data?.dosage || {},
-            sideEffects: enrichData.data?.safety?.sideEffects || [],
-            synergies: enrichData.synergies || [], // CRITICAL: Include synergies!
-            synergiesSource: enrichData.synergiesSource,
-          },
-          evidence_summary: {
-            totalStudies: studies.length,
-          },
-        };
-
-        await storeJobResult(jobId, 'completed', { recommendation });
-        console.log(`🎉 [Job ${jobId}] Async enrichment completed successfully`);
-
-      } catch (error: any) {
-        console.error(`❌ [Job ${jobId}] Background enrichment error:`, error);
-        const { storeJobResult } = await import('@/lib/portal/job-store');
-        await storeJobResult(jobId, 'failed', { error: error.message });
-      }
-    })();
+      console.log(`✅ [Job ${jobId}] Async Lambda invocation successful`);
+    } catch (error: unknown) {
+      console.error(`❌ [Job ${jobId}] Lambda invocation failed:`, error);
+      const { storeJobResult } = await import('@/lib/portal/job-store');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      await storeJobResult(jobId, 'failed', { error: `Lambda invocation failed: ${errorMessage}` });
+    }
 
     // Don't await - let it run in background
     // Return immediately with Job ID
