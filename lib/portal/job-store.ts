@@ -256,6 +256,25 @@ export async function getJob(jobId: string): Promise<Job | undefined> {
       },
     }));
 
+    // FIXED: Extract recommendation from result field for quiz-orchestrator compatibility
+    const item = response.Item as Record<string, unknown>;
+
+    // If data is stored in 'result' field (from quiz-orchestrator),
+    // extract recommendation to top level for compatibility with Job interface
+    if (item.result && typeof item.result === 'object') {
+      const result = item.result as Record<string, unknown>;
+      return {
+        status: item.status,
+        recommendation: result.recommendation || item.result,
+        error: result.error || item.error,
+        createdAt: item.timestamp || item.createdAt || now,
+        expiresAt: item.expiresAt || (now + EXPIRATION_TIMES[item.status as Job['status']]),
+        completedAt: item.completedAt,
+        lastAccessedAt: now,
+        retryCount: item.retryCount,
+      } as Job;
+    }
+
     return response.Item as Job;
   } catch (error) {
     console.error('[JobStore] Error getting job:', error);
