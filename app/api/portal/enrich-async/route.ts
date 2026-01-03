@@ -104,13 +104,17 @@ export async function POST(request: NextRequest) {
     try {
       const lambdaClient = new LambdaClient({ region: 'us-east-1' });
 
+      // Quiz-orchestrator expects API Gateway/Function URL event format
       const payload = {
-        category: supplementName,
-        age: 35,
-        gender: 'male',
-        location: 'CDMX',
-        jobId,
-        forceRefresh: body.forceRefresh || false,
+        httpMethod: 'POST',
+        body: JSON.stringify({
+          category: supplementName,
+          age: 35,
+          gender: 'male',
+          location: 'CDMX',
+          jobId,
+          forceRefresh: body.forceRefresh || false,
+        }),
       };
 
       await lambdaClient.send(new InvokeCommand({
