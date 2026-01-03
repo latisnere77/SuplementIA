@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
 
     // 2. CHECK CACHE (unless forceRefresh)
     if (!forceRefresh) {
-      const cacheKey = `enrich:v4:${supplementName.toLowerCase()}:${category || 'general'}`;
+      const cacheKey = `enrich:v5:${supplementName.toLowerCase()}:${category || 'general'}`; // v5: includes synergies from SuplementsDB
       const cached = enrichmentCache.get(cacheKey);
 
       if (cached) {
@@ -1040,8 +1040,8 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // Cache enrichment result (v4 prefix for consistency with read)
-    const cacheKey = `enrich:v4:${supplementName.toLowerCase()}:${category || 'general'}`;
+    // Cache enrichment result (v5 prefix includes synergies)
+    const cacheKey = `enrich:v5:${supplementName.toLowerCase()}:${category || 'general'}`;
     enrichmentCache.set(cacheKey, response);
 
     console.log(
