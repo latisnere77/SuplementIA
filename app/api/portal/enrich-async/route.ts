@@ -98,51 +98,93 @@ export async function POST(request: NextRequest) {
 
     console.log(`🚀 [Job ${jobId}] Starting async enrichment for: "${supplementName}" (Retry: ${isRetry}, Count: ${retryCount})`);
 
-    // Start enrichment in background using quiz endpoint
-    // The quiz endpoint already handles enrichment properly
-    // Frontend will poll /api/portal/enrichment-status/[jobId] to check completion
-    
-    // Use absolute URL for internal fetch (required in production)
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
-    
-    // Fire and forget - no need to await
-    void fetch(`${baseUrl}/api/portal/quiz`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Request-ID': correlationId,
-        'X-Job-ID': jobId,
-      },
-      body: JSON.stringify({
-        category: supplementName,
-        age: 35, // Default
-        gender: 'male', // Default
-        location: 'CDMX', // Default
-        jobId,
-      }),
-    }).then(async (response) => {
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`✅ [Job ${jobId}] Background enrichment completed`);
-        
-        // Update job with recommendation data
+    // FIXED: Directly invoke Lambda functions instead of calling API routes
+    // This bypasses Amplify timeout limits and ensures enrichment completes
+    void (async () => {
+      try {
         const { storeJobResult } = await import('@/lib/portal/job-store');
-        if (data.recommendation) {
-          await storeJobResult(jobId, 'completed', { recommendation: data.recommendation });
+
+        // Step 1: Fetch studies from studies-fetcher Lambda
+        const studiesUrl = process.env.STUDIES_API_URL || 'https://pl3wb2enqwsfevm5k2lmlrv3em0jipsy.lambda-url.us-east-1.on.aws/';
+        console.log(`📚 [Job ${jobId}] Fetching studies from Lambda...`);
+
+        const studiesResponse = await fetch(studiesUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Request-ID': correlationId },
+          body: JSON.stringify({
+            supplementName,
+            maxResults: 10,
+            humanStudiesOnly: true,
+            yearFrom: 2010,
+          }),
+          signal: AbortSignal.timeout(45000), // 45s timeout for studies
+        });
+
+        if (!studiesResponse.ok) {
+          throw new Error(`Studies fetch failed: ${studiesResponse.status}`);
         }
-      } else {
-        console.error(`❌ [Job ${jobId}] Background enrichment failed: ${response.status}`);
+
+        const studiesData = await studiesResponse.json();
+        const studies = studiesData.data?.studies || studiesData.studies || [];
+        console.log(`✅ [Job ${jobId}] Fetched ${studies.length} studies`);
+
+        if (studies.length === 0) {
+          await storeJobResult(jobId, 'failed', { error: 'No studies found' });
+          return;
+        }
+
+        // Step 2: Enrich with content-enricher Lambda (includes synergies!)
+        const enricherUrl = process.env.ENRICHER_API_URL || 'https://55noz2p7ypqcatwf2o2kjnw7dq0eeqge.lambda-url.us-east-1.on.aws/';
+        console.log(`🤖 [Job ${jobId}] Enriching with Claude + fetching synergies...`);
+
+        const enrichResponse = await fetch(enricherUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Request-ID': correlationId },
+          body: JSON.stringify({
+            supplementId: supplementName,
+            category: body.category || 'general',
+            studies: studies.slice(0, 8),
+          }),
+          signal: AbortSignal.timeout(180000), // 180s timeout for Claude
+        });
+
+        if (!enrichResponse.ok) {
+          throw new Error(`Enrichment failed: ${enrichResponse.status}`);
+        }
+
+        const enrichData = await enrichResponse.json();
+        console.log(`✅ [Job ${jobId}] Enrichment completed with ${enrichData.synergies?.length || 0} synergies`);
+
+        // Step 3: Transform to recommendation format and store
+        const recommendation = {
+          recommendation_id: jobId,
+          quiz_id: jobId,
+          category: supplementName,
+          supplement: {
+            name: supplementName,
+            description: enrichData.data?.whatIsIt || '',
+            worksFor: enrichData.data?.worksFor || [],
+            doesntWorkFor: enrichData.data?.doesntWorkFor || [],
+            limitedEvidence: enrichData.data?.limitedEvidence || [],
+            dosage: enrichData.data?.dosage || {},
+            sideEffects: enrichData.data?.safety?.sideEffects || [],
+            synergies: enrichData.synergies || [], // CRITICAL: Include synergies!
+            synergiesSource: enrichData.synergiesSource,
+          },
+          evidence_summary: {
+            totalStudies: studies.length,
+          },
+        };
+
+        await storeJobResult(jobId, 'completed', { recommendation });
+        console.log(`🎉 [Job ${jobId}] Async enrichment completed successfully`);
+
+      } catch (error: any) {
+        console.error(`❌ [Job ${jobId}] Background enrichment error:`, error);
         const { storeJobResult } = await import('@/lib/portal/job-store');
-        await storeJobResult(jobId, 'failed', { error: `Enrichment failed with status ${response.status}` });
+        await storeJobResult(jobId, 'failed', { error: error.message });
       }
-    }).catch(async (error) => {
-      console.error(`❌ [Job ${jobId}] Background enrichment error:`, error);
-      // Update job status to failed
-      const { storeJobResult } = await import('@/lib/portal/job-store');
-      await storeJobResult(jobId, 'failed', { error: error.message });
-    });
+    })();
 
     // Don't await - let it run in background
     // Return immediately with Job ID
