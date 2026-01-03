@@ -12,12 +12,8 @@ import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 
 import { searchSupplements } from '@/lib/search-service';
-
-// Initialize Lambda client for async enrichment
-const lambdaClient = new LambdaClient({ region: process.env.AWS_REGION || 'us-east-1' });
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -124,17 +120,19 @@ async function invokeLambdaEnrichmentAsync(
   ranking?: any
 ): Promise<void> {
   try {
+    const enricherUrl = process.env.ENRICHER_API_URL;
+    if (!enricherUrl) {
+      throw new Error('ENRICHER_API_URL environment variable not configured');
+    }
+
     const payload = {
-      httpMethod: 'POST',
-      body: JSON.stringify({
-        supplementId: supplementName,
-        category: 'general',
-        forceRefresh,
-        jobId, // Pass jobId so Lambda can update the job store
-        ranking, // Pass ranking data to preserve in enrichment response
-        maxStudies: 5,
-        rctOnly: false,
-      }),
+      supplementId: supplementName,
+      category: 'general',
+      forceRefresh,
+      jobId, // Pass jobId so Lambda can update the job store
+      ranking, // Pass ranking data to preserve in enrichment response
+      maxStudies: 5,
+      rctOnly: false,
     };
 
     // DEBUG: Log the exact payload being sent to Lambda
@@ -148,19 +146,32 @@ async function invokeLambdaEnrichmentAsync(
       fullRanking: ranking ? JSON.stringify(ranking).substring(0, 200) : 'null',
     }));
 
-    // Invoke Lambda asynchronously (InvocationType: 'Event')
-    // This returns immediately without waiting for Lambda to complete
-    await lambdaClient.send(
-      new InvokeCommand({
-        FunctionName: process.env.ENRICHER_LAMBDA || 'production-content-enricher',
-        InvocationType: 'Event', // Async invocation - fire and forget
-        Payload: Buffer.from(JSON.stringify(payload)),
-      })
-    );
+    console.log(`🚀 [ENRICHER_INVOKE] Starting async invocation to ${enricherUrl}`);
 
-    console.log(`🚀 [LAMBDA_INVOKED] jobId=${jobId} supplement="${supplementName}" forceRefresh=${forceRefresh} hasRanking=${!!ranking} invocationType=Event`);
+    // Invoke Lambda via HTTP URL asynchronously - fire and forget
+    fetch(enricherUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Job-ID': jobId,
+        'X-Supplement': supplementName,
+      },
+      body: JSON.stringify(payload),
+    }).then(
+      (response) => {
+        if (!response.ok) {
+          console.error(`⚠️ [ENRICHER_RESPONSE] Non-200 status: ${response.status}`);
+        } else {
+          console.log(`✅ [ENRICHER_INVOKED] jobId=${jobId} status=${response.status}`);
+        }
+      }
+    ).catch((error) => {
+      console.error(`❌ [ENRICHER_FETCH_ERROR] jobId=${jobId}:`, error.message);
+    });
+
+    console.log(`🚀 [ENRICHER_QUEUED] jobId=${jobId} supplement="${supplementName}" queued for async processing`);
   } catch (error: any) {
-    console.error(`❌ [LAMBDA_INVOKE_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
+    console.error(`❌ [ENRICHER_INVOKE_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
     // Mark job as failed if we can't even invoke the Lambda
     await storeJobResult(jobId, 'failed', {
       error: `Failed to invoke enrichment Lambda: ${error.message}`
@@ -208,36 +219,37 @@ async function invokeStudiesFetcher(
   }
 
   try {
+    const studiesUrl = process.env.STUDIES_API_URL;
+    if (!studiesUrl) {
+      throw new Error('STUDIES_API_URL environment variable not configured');
+    }
+
     const payload = {
-      httpMethod: 'POST',
-      body: JSON.stringify({
-        supplementName,
-        maxResults: 100, // Maximum allowed by studies-fetcher Lambda
-        benefitQuery, // Pass benefit query if available
-        filters: {
-          rctOnly: false,
-          humanStudiesOnly: true,
-        },
-      }),
+      supplementName,
+      maxResults: 100, // Maximum allowed by studies-fetcher Lambda
+      benefitQuery, // Pass benefit query if available
+      filters: {
+        rctOnly: false,
+        humanStudiesOnly: true,
+      },
     };
 
     console.log(`🔬 [STUDIES_FETCHER] Calling for "${supplementName}"...`);
 
-    const response = await lambdaClient.send(
-      new InvokeCommand({
-        FunctionName: process.env.STUDIES_FETCHER_LAMBDA || 'suplementia-studies-fetcher-prod',
-        InvocationType: 'RequestResponse', // Synchronous call - wait for response
-        Payload: Buffer.from(JSON.stringify(payload)),
-      })
-    );
+    const response = await fetch(studiesUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
 
-    if (!response.Payload) {
-      console.error(`❌ [STUDIES_FETCHER] No payload returned`);
+    if (!response.ok) {
+      console.error(`❌ [STUDIES_FETCHER] HTTP error: ${response.status}`);
       return null;
     }
 
-    const result = JSON.parse(Buffer.from(response.Payload).toString());
-    const parsedBody = JSON.parse(result.body);
+    const parsedBody = await response.json();
 
     // DEBUG: Log the entire response for debugging
     console.log(`🔍 [STUDIES_FETCHER_DEBUG] Response for "${supplementName}":`, {
