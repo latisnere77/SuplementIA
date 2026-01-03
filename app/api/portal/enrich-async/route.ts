@@ -6,14 +6,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createJob, createRetryJob, hasExceededRetryLimit } from '@/lib/portal/job-store';
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 30; // Increased to allow Lambda invocation
-
-// Reserved for future use when direct enrichment is needed
-// const ENRICHER_API_URL = process.env.ENRICHER_API_URL || 'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
 
 export interface EnrichAsyncRequest {
   supplementName: string;
@@ -99,36 +95,52 @@ export async function POST(request: NextRequest) {
 
     console.log(`🚀 [Job ${jobId}] Starting async enrichment for: "${supplementName}" (Retry: ${isRetry}, Count: ${retryCount})`);
 
-    // FIXED: Use Lambda async invocation instead of background fetch
-    // Invoke quiz-orchestrator Lambda with InvocationType='Event' for true async execution
+    // Invoke quiz-orchestrator Lambda via HTTP URL asynchronously
     try {
-      const lambdaClient = new LambdaClient({ region: 'us-east-1' });
+      const quizUrl = process.env.NEXT_PUBLIC_QUIZ_API_URL;
+      if (!quizUrl) {
+        throw new Error('NEXT_PUBLIC_QUIZ_API_URL environment variable not configured');
+      }
 
-      // Quiz-orchestrator expects API Gateway/Function URL event format
+      // Quiz-orchestrator expects JSON payload (not httpMethod/body wrapper)
       const payload = {
-        httpMethod: 'POST',
-        body: JSON.stringify({
-          category: supplementName,
-          age: 35,
-          gender: 'male',
-          location: 'CDMX',
-          jobId,
-          forceRefresh: body.forceRefresh || false,
-        }),
+        category: supplementName,
+        age: 35,
+        gender: 'male',
+        location: 'CDMX',
+        jobId,
+        forceRefresh: body.forceRefresh || false,
       };
 
-      await lambdaClient.send(new InvokeCommand({
-        FunctionName: 'production-quiz-orchestrator',
-        InvocationType: 'Event', // Async invocation - doesn't wait for response
-        Payload: JSON.stringify(payload),
-      }));
+      console.log(`🚀 [Job ${jobId}] Invoking quiz-orchestrator at ${quizUrl}`);
 
-      console.log(`✅ [Job ${jobId}] Async Lambda invocation successful`);
+      // Fire and forget - don't await the fetch
+      fetch(quizUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Job-ID': jobId,
+          'X-Request-ID': correlationId,
+        },
+        body: JSON.stringify(payload),
+      }).then(
+        (response) => {
+          if (!response.ok) {
+            console.error(`⚠️ [Job ${jobId}] Quiz API returned status: ${response.status}`);
+          } else {
+            console.log(`✅ [Job ${jobId}] Quiz API invocation successful`);
+          }
+        }
+      ).catch((error) => {
+        console.error(`❌ [Job ${jobId}] Quiz API invocation failed:`, error);
+      });
+
+      console.log(`✅ [Job ${jobId}] Async invocation queued`);
     } catch (error: unknown) {
-      console.error(`❌ [Job ${jobId}] Lambda invocation failed:`, error);
+      console.error(`❌ [Job ${jobId}] Failed to queue invocation:`, error);
       const { storeJobResult } = await import('@/lib/portal/job-store');
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      await storeJobResult(jobId, 'failed', { error: `Lambda invocation failed: ${errorMessage}` });
+      await storeJobResult(jobId, 'failed', { error: `Failed to invoke quiz: ${errorMessage}` });
     }
 
     // Don't await - let it run in background
