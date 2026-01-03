@@ -12,7 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { expandAbbreviation, detectAbbreviation, generateSearchVariations } from '@/lib/services/abbreviation-expander';
+import { expandAbbreviation, generateSearchVariations } from '@/lib/services/abbreviation-expander';
 import { studiesCache, enrichmentCache } from '@/lib/cache/simple-cache';
 import { TimeoutManager, TIMEOUTS } from '@/lib/resilience/timeout-manager';
 import { globalRateLimiter } from '@/lib/resilience/rate-limiter';
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
 
     // 2. CHECK CACHE (unless forceRefresh)
     if (!forceRefresh) {
-      const cacheKey = `enrich:v5:${supplementName.toLowerCase()}:${category || 'general'}`; // v5: includes synergies from SuplementsDB
+      const cacheKey = `enrich:v4:${supplementName.toLowerCase()}:${category || 'general'}`; // v4: back to avoid cache miss timeouts
       const cached = enrichmentCache.get(cacheKey);
 
       if (cached) {
@@ -123,9 +123,41 @@ export async function POST(request: NextRequest) {
             correlationId,
             supplementName,
             cacheKey,
+            hasSynergies: !!cached.synergies,
             timestamp: new Date().toISOString(),
           })
         );
+
+        // CRITICAL: If cached data doesn't have synergies, fetch them from Lambda
+        if (!cached.synergies || cached.synergies.length === 0) {
+          try {
+            console.log(`🔗 [SYNERGIES_BACKFILL] Fetching synergies for cached "${supplementName}"`);
+            const synergiesResponse = await fetch(getEnricherApiUrl(), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                supplementId: supplementName,
+                category,
+                fetchSynergiesOnly: true, // New flag to only fetch synergies
+              }),
+              signal: AbortSignal.timeout(5000), // 5 second timeout for synergies only
+            });
+
+            if (synergiesResponse.ok) {
+              const synergiesData = await synergiesResponse.json();
+              if (synergiesData.synergies && synergiesData.synergies.length > 0) {
+                cached.synergies = synergiesData.synergies;
+                cached.synergiesSource = synergiesData.synergiesSource;
+                // Update cache with synergies
+                enrichmentCache.set(cacheKey, cached);
+                console.log(`✅ [SYNERGIES_BACKFILL] Added ${synergiesData.synergies.length} synergies to cache`);
+              }
+            }
+          } catch (error) {
+            console.warn(`⚠️ [SYNERGIES_BACKFILL] Failed to fetch synergies:`, error);
+            // Continue with cached data even if synergies fetch fails
+          }
+        }
 
         return NextResponse.json({
           ...cached,
@@ -1040,8 +1072,8 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // Cache enrichment result (v5 prefix includes synergies)
-    const cacheKey = `enrich:v5:${supplementName.toLowerCase()}:${category || 'general'}`;
+    // Cache enrichment result (back to v4 to avoid cache miss timeouts)
+    const cacheKey = `enrich:v4:${supplementName.toLowerCase()}:${category || 'general'}`;
     enrichmentCache.set(cacheKey, response);
 
     console.log(
