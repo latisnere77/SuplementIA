@@ -25,33 +25,46 @@ export const DEFAULT_RETRY_CONFIG: RetryConfig = {
 };
 
 /**
+ * Type guard for errors with AWS SDK metadata
+ */
+interface AWSError {
+  name?: string;
+  code?: string;
+  statusCode?: number;
+  $metadata?: {
+    httpStatusCode?: number;
+  };
+}
+
+/**
  * Check if an error is retryable based on error name or code
  */
-function isRetryableError(error: any, retryableErrors: string[]): boolean {
-  if (!error) return false;
+function isRetryableError(error: unknown, retryableErrors: string[]): boolean {
+  if (!error || typeof error !== 'object') return false;
 
-  const errorIdentifier = error.name || error.code || error.$metadata?.httpStatusCode;
+  const err = error as AWSError;
+  const errorIdentifier = err.name || err.code || err.$metadata?.httpStatusCode;
 
   // Check if error name or code matches
   if (retryableErrors.some(errName =>
     errorIdentifier === errName ||
-    error.name === errName ||
-    error.code === errName
+    err.name === errName ||
+    err.code === errName
   )) {
     return true;
   }
 
   // Check HTTP status codes
-  const statusCode = error.$metadata?.httpStatusCode || error.statusCode;
+  const statusCode = err.$metadata?.httpStatusCode || err.statusCode;
   if (statusCode) {
     // Retry on 429 (rate limit), 500, 503, 504
     return [429, 500, 503, 504].includes(statusCode);
   }
 
   // Check for network errors
-  if (error.code === 'ECONNRESET' ||
-      error.code === 'ETIMEDOUT' ||
-      error.code === 'ENOTFOUND') {
+  if (err.code === 'ECONNRESET' ||
+      err.code === 'ETIMEDOUT' ||
+      err.code === 'ENOTFOUND') {
     return true;
   }
 
@@ -84,11 +97,17 @@ export async function retryWithBackoff<T>(
   for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
     try {
       return await operation();
-    } catch (error: any) {
-      lastError = error;
+    } catch (error: unknown) {
+      lastError = error instanceof Error ? error : new Error(String(error));
 
       // Check if error is retryable
       const isRetryable = isRetryableError(error, config.retryableErrors);
+
+      // Type guard for AWS errors
+      const err = error as AWSError;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorType = err.name || err.code || 'UnknownError';
+      const statusCode = err.$metadata?.httpStatusCode || err.statusCode;
 
       // If not retryable or last attempt, throw immediately
       if (!isRetryable || attempt === config.maxAttempts) {
@@ -99,8 +118,8 @@ export async function retryWithBackoff<T>(
               operation: operationName,
               attempts: attempt,
               maxAttempts: config.maxAttempts,
-              error: error.message,
-              errorType: error.name || error.code,
+              error: errorMessage,
+              errorType,
               isRetryable,
             })
           );
@@ -117,9 +136,9 @@ export async function retryWithBackoff<T>(
           operation: operationName,
           attempt,
           maxAttempts: config.maxAttempts,
-          error: error.message,
-          errorType: error.name || error.code,
-          statusCode: error.$metadata?.httpStatusCode || error.statusCode,
+          error: errorMessage,
+          errorType,
+          statusCode,
           retryAfterMs: Math.round(delay),
           nextAttempt: attempt + 1,
         })

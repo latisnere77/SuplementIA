@@ -235,8 +235,9 @@ export async function generateEnrichedContent(
     // Strategy 1: Direct parse with sanitization
     try {
       return JSON.parse(sanitizeJSON(text));
-    } catch (error1: any) {
-      console.warn(`Strategy 1 failed (direct parse): ${error1.message}`);
+    } catch (error1: unknown) {
+      const msg1 = error1 instanceof Error ? error1.message : String(error1);
+      console.warn(`Strategy 1 failed (direct parse): ${msg1}`);
     }
 
     // Strategy 2: Extract from markdown code block
@@ -244,8 +245,9 @@ export async function generateEnrichedContent(
     if (markdownMatch) {
       try {
         return JSON.parse(sanitizeJSON(markdownMatch[1]));
-      } catch (error2: any) {
-        console.warn(`Strategy 2 failed (markdown): ${error2.message}`);
+      } catch (error2: unknown) {
+        const msg2 = error2 instanceof Error ? error2.message : String(error2);
+        console.warn(`Strategy 2 failed (markdown): ${msg2}`);
       }
     }
 
@@ -257,11 +259,12 @@ export async function generateEnrichedContent(
       const sanitizedExtracted = sanitizeJSON(extracted);
       try {
         return JSON.parse(sanitizedExtracted);
-      } catch (error3: any) {
-        console.warn(`Strategy 3 failed (extraction): ${error3.message}`);
+      } catch (error3: unknown) {
+        const msg3 = error3 instanceof Error ? error3.message : String(error3);
+        console.warn(`Strategy 3 failed (extraction): ${msg3}`);
 
         // Get error position for debugging
-        const errorPos = parseInt(error3.message.match(/\d+/)?.[0] || '0');
+        const errorPos = parseInt(msg3.match(/\d+/)?.[0] || '0');
         const snippet = sanitizedExtracted.substring(
           Math.max(0, errorPos - 50),
           Math.min(sanitizedExtracted.length, errorPos + 50)
@@ -287,13 +290,14 @@ export async function generateEnrichedContent(
         const candidate = text.substring(firstBrace, bracePos + 1);
         try {
           return JSON.parse(sanitizeJSON(candidate));
-        } catch (e) {
+        } catch {
           // Try next brace
           continue;
         }
       }
-    } catch (error4: any) {
-      console.warn(`Strategy 4 failed (aggressive repair): ${error4.message}`);
+    } catch (error4: unknown) {
+      const msg4 = error4 instanceof Error ? error4.message : String(error4);
+      console.warn(`Strategy 4 failed (aggressive repair): ${msg4}`);
     }
 
     // All strategies failed
@@ -304,18 +308,19 @@ export async function generateEnrichedContent(
   };
 
   // Parse JSON from Claude's response with enhanced error handling
-  let enrichedData: any;
+  let enrichedData: EnrichedContent | ExamineStyleContent;
 
   try {
     enrichedData = parseJSONWithFallback(contentText);
-  } catch (parseError: any) {
+  } catch (parseError: unknown) {
+    const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
     // Log detailed error for debugging
     console.error(
       JSON.stringify({
         event: 'JSON_PARSE_FAILED_ALL_STRATEGIES',
         supplementId,
         contentType,
-        error: parseError.message,
+        error: errorMessage,
         responseLength: contentText.length,
         responsePreview: contentText.substring(0, 500),
         timestamp: new Date().toISOString(),
@@ -324,7 +329,7 @@ export async function generateEnrichedContent(
 
     // Re-throw with more context
     throw new Error(
-      `Failed to parse enriched content JSON: ${parseError.message}. ` +
+      `Failed to parse enriched content JSON: ${errorMessage}. ` +
       `This indicates the LLM generated invalid JSON despite repair attempts.`
     );
   }

@@ -11,9 +11,29 @@ import { config, CORS_HEADERS } from './config';
 import { generateEnrichedContent } from './bedrock';
 import { generateEnrichedContentWithToolUse } from './bedrockConverse';
 import { getFromCache, saveToCacheAsync } from './cache';
-import { EnrichmentRequest, EnrichmentResponse } from './types';
+import { EnrichmentRequest, EnrichmentResponse, EnrichedContent, ExamineStyleContent, PubMedStudy } from './types';
 import { updateJobWithResult } from './job-store';
 import { getSynergiesForSupplement, transformStacksWithFallback, TransformedSynergy } from './synergies';
+
+/**
+ * Lambda event type with headers and body
+ */
+interface LambdaEvent {
+  httpMethod?: string;
+  body?: string;
+  headers?: Record<string, string>;
+  requestContext?: {
+    requestId?: string;
+  };
+}
+
+/**
+ * Extended content type with synergies support
+ */
+type EnrichedContentWithSynergies = (EnrichedContent | ExamineStyleContent) & {
+  synergies?: TransformedSynergy[];
+  synergiesSource?: 'external_db' | 'claude_fallback';
+};
 
 // Feature flag to enable Tool Use API (will be controlled via environment variable)
 const USE_TOOL_API = process.env.USE_TOOL_API === 'true';
@@ -43,8 +63,8 @@ export async function handler(
 
   const requestId = context.awsRequestId;
   const startTime = Date.now();
-  const correlationId = (event as any).headers?.['X-Request-ID'] || 
-                        (event as any).headers?.['x-request-id'] || 
+  const correlationId = event.headers?.['X-Request-ID'] ||
+                        event.headers?.['x-request-id'] || 
                         requestId;
 
   try {
@@ -86,8 +106,8 @@ export async function handler(
 
     // Extract study metadata
     const studiesCount = studies?.length || 0;
-    const studyTypes = studies?.map((s: any) => s.studyType || 'unknown') || [];
-    const studyIds = studies?.map((s: any) => s.pmid || s.id).filter(Boolean) || [];
+    const studyTypes = studies?.map((s) => s.studyType || 'unknown') || [];
+    const studyIds = studies?.map((s) => s.pmid).filter(Boolean) || [];
     const uniqueStudyTypes = [...new Set(studyTypes)];
 
     // Add X-Ray annotations
@@ -156,7 +176,7 @@ export async function handler(
             cachedSynergiesSource = 'external_db';
           } else {
             // Fallback to Claude's stacksWith if no external synergies found
-            const standardContent = enrichedContent as any;
+            const standardContent = enrichedContent as EnrichedContent;
             cachedSynergies = transformStacksWithFallback(standardContent.dosage?.stacksWith);
             cachedSynergiesSource = 'claude_fallback';
           }
@@ -171,8 +191,9 @@ export async function handler(
         }
 
         // Add synergies to cached content
-        (enrichedContent as any).synergies = cachedSynergies;
-        (enrichedContent as any).synergiesSource = cachedSynergiesSource;
+        const contentWithSynergies = enrichedContent as EnrichedContentWithSynergies;
+        contentWithSynergies.synergies = cachedSynergies;
+        contentWithSynergies.synergiesSource = cachedSynergiesSource;
 
         const duration = Date.now() - startTime;
 
@@ -215,6 +236,11 @@ export async function handler(
                 ranked: finalRanking,
               },
             },
+          }),
+          // Add synergies at top level for frontend
+          ...(cachedSynergies.length > 0 && {
+            synergies: cachedSynergies,
+            synergiesSource: cachedSynergiesSource,
           }),
         };
 
@@ -274,7 +300,7 @@ export async function handler(
           ...studies.find(study => study.pmid === s.pmid),
           abstract: s.summary, // Replace long abstract with short summary
           findings: undefined, // Remove findings to save tokens
-        })) as any;
+        })) as PubMedStudy[];
 
         console.log(JSON.stringify({
           event: 'STUDIES_SUMMARIZED',
@@ -329,7 +355,7 @@ export async function handler(
         localSynergiesSource = 'external_db';
       } else {
         // Fallback to Claude's stacksWith if no external synergies found
-        const standardContent = enrichedContent as any;
+        const standardContent = enrichedContent as EnrichedContent;
         localSynergies = transformStacksWithFallback(standardContent.dosage?.stacksWith);
         localSynergiesSource = 'claude_fallback';
       }
@@ -340,8 +366,8 @@ export async function handler(
         supplementId,
         synergiesCount: localSynergies.length,
         source: localSynergiesSource,
-        positiveCount: localSynergies.filter((s: any) => s.direction === 'positive').length,
-        negativeCount: localSynergies.filter((s: any) => s.direction === 'negative').length,
+        positiveCount: localSynergies.filter((s) => s.direction === 'positive').length,
+        negativeCount: localSynergies.filter((s) => s.direction === 'negative').length,
         timestamp: new Date().toISOString(),
       }));
     } catch (synergiesError) {
@@ -356,19 +382,27 @@ export async function handler(
     }
 
     // Add synergies to enriched content
-    (enrichedContent as any).synergies = localSynergies;
-    (enrichedContent as any).synergiesSource = localSynergiesSource;
+    const contentWithSynergies = enrichedContent as EnrichedContentWithSynergies;
+    contentWithSynergies.synergies = localSynergies;
+    contentWithSynergies.synergiesSource = localSynergiesSource;
 
     // Save to cache with ranking metadata (await to ensure it completes before Lambda freezes)
     try {
-      const cacheMetadata = ranking ? {
-        studies: {
-          ranked: ranking,
-          all: studies || [],
-          total: studies?.length || 0,
-        },
-      } : undefined;
-      
+      const cacheMetadata = {
+        supplementId,
+        generatedAt: new Date().toISOString(),
+        contentType: contentType as 'standard' | 'examine-style',
+        hasRealData: !!studies && studies.length > 0,
+        studiesUsed: studies?.length || 0,
+        ...(ranking ? {
+          studies: {
+            ranked: ranking,
+            all: studies || [],
+            total: studies?.length || 0,
+          },
+        } : {}),
+      };
+
       await saveToCacheAsync(supplementId, enrichedContent, cacheMetadata);
     } catch (err) {
       console.error('Failed to save to cache (non-fatal):', err);
@@ -377,7 +411,7 @@ export async function handler(
     const duration = Date.now() - startTime;
 
     // Log success (handle both content types)
-    const logData: any = {
+    const logData: Record<string, unknown> = {
       event: 'CONTENT_ENRICH_SUCCESS',
       requestId,
       correlationId,
@@ -393,11 +427,11 @@ export async function handler(
 
     // Add format-specific metrics
     if (contentType === 'examine-style') {
-      const examineContent = enrichedContent as any;
+      const examineContent = enrichedContent as ExamineStyleContent;
       logData.benefitsCount = examineContent.benefitsByCondition?.length || 0;
       logData.mechanismsCount = examineContent.mechanisms?.length || 0;
     } else {
-      const standardContent = enrichedContent as any;
+      const standardContent = enrichedContent as EnrichedContent;
       logData.mechanismsCount = standardContent.mechanisms?.length || 0;
       logData.worksForCount = standardContent.worksFor?.length || 0;
     }
@@ -444,6 +478,11 @@ export async function handler(
           },
         },
       }),
+      // Add synergies at top level for frontend
+      ...(localSynergies.length > 0 && {
+        synergies: localSynergies,
+        synergiesSource: localSynergiesSource,
+      }),
     };
 
     // Update job store if jobId provided (async enrichment)
@@ -458,15 +497,21 @@ export async function handler(
       headers: CORS_HEADERS,
       body: JSON.stringify(response),
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+
+    // Extract error details
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
 
     // Extract jobId from request for error handling
     let jobId: string | undefined;
+    let supplementId = 'unknown';
     try {
       if (event.body) {
         const parsedBody = JSON.parse(event.body);
         jobId = parsedBody.jobId;
+        supplementId = parsedBody.supplementId || 'unknown';
       }
     } catch {
       // Ignore parsing errors
@@ -478,31 +523,34 @@ export async function handler(
         event: 'CONTENT_ENRICH_ERROR',
         requestId,
         correlationId,
-        supplementId: (event as any).body ? JSON.parse((event as any).body)?.supplementId : 'unknown',
+        supplementId,
         jobId,
-        error: error.message,
-        stack: error.stack,
+        error: errorMessage,
+        stack: errorStack,
         duration,
         timestamp: new Date().toISOString(),
       })
     );
 
+    // Create error object for X-Ray
+    const errorObj = error instanceof Error ? error : new Error(errorMessage);
+
     // Update job store with failed status if jobId provided
     if (jobId) {
       await updateJobWithResult(jobId, 'failed', {
-        error: `Enrichment failed: ${error.message}`,
+        error: `Enrichment failed: ${errorMessage}`,
       });
     }
 
     // Add error to X-Ray
     if (subsegment) {
       subsegment.addAnnotation('success', false);
-      subsegment.addAnnotation('error', error.message);
-      subsegment.addError(error);
+      subsegment.addAnnotation('error', errorMessage);
+      subsegment.addError(errorObj);
       subsegment.close();
     }
 
-    return createErrorResponse(500, 'Failed to generate enriched content', requestId, error.message);
+    return createErrorResponse(500, 'Failed to generate enriched content', requestId, errorMessage);
   }
 }
 

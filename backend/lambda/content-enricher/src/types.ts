@@ -18,12 +18,21 @@ export interface PubMedStudy {
   pubmedUrl: string;
 }
 
+/**
+ * Study ranking from studies-fetcher
+ */
+export interface StudyRanking {
+  positive?: PubMedStudy[];
+  negative?: PubMedStudy[];
+  neutral?: PubMedStudy[];
+}
+
 export interface EnrichmentRequest {
   supplementId: string;
   category?: string;
   forceRefresh?: boolean;
   studies?: PubMedStudy[]; // Real PubMed studies from studies-fetcher
-  ranking?: any; // NEW: Intelligent ranking from studies-fetcher
+  ranking?: StudyRanking; // NEW: Intelligent ranking from studies-fetcher
   contentType?: 'standard' | 'examine-style'; // NEW: Content format type
   benefitQuery?: string; // NEW: Optional benefit-specific query (e.g., "hair growth") - for now just accepted, future: focused analysis
   jobId?: string; // NEW: Job ID for async enrichment with DynamoDB job store
@@ -158,7 +167,7 @@ export interface ConverseContentBlock {
   toolUse?: {
     toolUseId: string;
     name: string;
-    input: any; // Tool-specific input (EnrichedContent in our case)
+    input: EnrichedContent | ExamineStyleContent | Record<string, unknown>; // Tool-specific input
   };
 }
 
@@ -176,6 +185,11 @@ export interface EnrichmentResponse {
     requestId?: string;
     correlationId?: string;
     contentType?: 'standard' | 'examine-style'; // NEW: Track content type
+    studies?: {
+      ranked: StudyRanking;
+      all: PubMedStudy[];
+      total: number;
+    };
   };
   error?: string;
   message?: string;

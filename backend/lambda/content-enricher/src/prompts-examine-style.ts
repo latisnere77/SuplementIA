@@ -183,11 +183,20 @@ export function buildExamineStylePrompt(
 /**
  * Validate Examine-style content structure
  */
-export function validateExamineStyleContent(data: any): {
+export function validateExamineStyleContent(data: unknown): {
   valid: boolean;
   errors: string[];
 } {
   const errors: string[] = [];
+
+  // Type guard to check if data is an object
+  if (!data || typeof data !== 'object') {
+    errors.push('Data must be an object');
+    return { valid: false, errors };
+  }
+
+  // Cast to record for property access
+  const obj = data as Record<string, unknown>;
 
   // Required fields
   const requiredFields = [
@@ -198,39 +207,42 @@ export function validateExamineStyleContent(data: any): {
   ];
 
   for (const field of requiredFields) {
-    if (!(field in data)) {
+    if (!(field in obj)) {
       errors.push(`Missing required field: ${field}`);
     }
   }
 
   // Validate overview structure
-  if (data.overview) {
-    if (!data.overview.whatIsIt) {
+  if ('overview' in obj && obj.overview && typeof obj.overview === 'object') {
+    const overview = obj.overview as Record<string, unknown>;
+    if (!overview.whatIsIt) {
       errors.push('overview.whatIsIt is required');
     }
-    if (!Array.isArray(data.overview.functions)) {
+    if (!Array.isArray(overview.functions)) {
       errors.push('overview.functions must be an array');
     }
   }
 
   // Validate benefitsByCondition
-  if (data.benefitsByCondition && !Array.isArray(data.benefitsByCondition)) {
+  if ('benefitsByCondition' in obj && obj.benefitsByCondition && !Array.isArray(obj.benefitsByCondition)) {
     errors.push('benefitsByCondition must be an array');
   }
 
   // Validate dosage structure
-  if (data.dosage) {
+  if ('dosage' in obj && obj.dosage && typeof obj.dosage === 'object') {
+    const dosage = obj.dosage as Record<string, unknown>;
     const dosageRequired = ['effectiveDose', 'commonDose', 'timing'];
     for (const field of dosageRequired) {
-      if (!(field in data.dosage)) {
+      if (!(field in dosage)) {
         errors.push(`dosage.${field} is required`);
       }
     }
   }
 
   // Validate safety structure
-  if (data.safety) {
-    if (!data.safety.sideEffects) {
+  if ('safety' in obj && obj.safety && typeof obj.safety === 'object') {
+    const safety = obj.safety as Record<string, unknown>;
+    if (!safety.sideEffects) {
       errors.push('safety.sideEffects is required');
     }
   }

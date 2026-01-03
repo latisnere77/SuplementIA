@@ -113,12 +113,64 @@ function normalizeSupplementName(name: string): string {
 }
 
 /**
+ * DynamoDB attribute value types
+ */
+interface DynamoDBStringValue {
+  S: string;
+}
+
+interface DynamoDBNumberValue {
+  N: string;
+}
+
+interface DynamoDBListValue {
+  L: Array<{ S?: string; N?: string; M?: Record<string, unknown> }>;
+}
+
+interface DynamoDBMapValue {
+  M: Record<string, { S?: string; N?: string; L?: DynamoDBListValue }>;
+}
+
+/**
+ * Raw DynamoDB synergy item structure
+ */
+interface DynamoDBSynergyItem {
+  ingredient_1?: DynamoDBStringValue | string;
+  ingredient_2?: DynamoDBStringValue | string;
+  synergy_type?: DynamoDBStringValue | string;
+  mechanism?: DynamoDBStringValue | string;
+  effect?: DynamoDBStringValue | string;
+  synergy_score?: DynamoDBNumberValue | string;
+  tier?: DynamoDBNumberValue | string;
+  matched_categories?: DynamoDBListValue | string[];
+  evidence?: DynamoDBMapValue;
+}
+
+/**
+ * Helper to extract string from DynamoDB attribute or plain string
+ */
+function extractString(value: DynamoDBStringValue | string | undefined, defaultValue: string = ''): string {
+  if (!value) return defaultValue;
+  if (typeof value === 'string') return value;
+  return value.S || defaultValue;
+}
+
+/**
+ * Helper to extract number from DynamoDB attribute or plain string
+ */
+function extractNumber(value: DynamoDBNumberValue | string | undefined, defaultValue: string): number {
+  if (!value) return parseInt(defaultValue, 10);
+  if (typeof value === 'string') return parseInt(value, 10);
+  return parseInt(value.N || defaultValue, 10);
+}
+
+/**
  * Transform raw DynamoDB item to frontend format
  */
-function transformSynergy(item: any, currentSupplement: string): TransformedSynergy {
-  const ingredient1 = item.ingredient_1?.S || item.ingredient_1 || '';
-  const ingredient2 = item.ingredient_2?.S || item.ingredient_2 || '';
-  const synergyType = item.synergy_type?.S || item.synergy_type || 'general_synergy';
+function transformSynergy(item: DynamoDBSynergyItem, currentSupplement: string): TransformedSynergy {
+  const ingredient1 = extractString(item.ingredient_1);
+  const ingredient2 = extractString(item.ingredient_2);
+  const synergyType = extractString(item.synergy_type, 'general_synergy');
 
   // Determine which ingredient is the partner
   const partnerSupplement = ingredient1.toLowerCase() === currentSupplement.toLowerCase()
@@ -132,8 +184,8 @@ function transformSynergy(item: any, currentSupplement: string): TransformedSyne
 
   // Extract categories
   const categories: string[] = [];
-  if (item.matched_categories?.L) {
-    item.matched_categories.L.forEach((cat: any) => {
+  if (item.matched_categories && typeof item.matched_categories === 'object' && 'L' in item.matched_categories) {
+    item.matched_categories.L.forEach((cat) => {
       if (cat.S) categories.push(cat.S);
     });
   } else if (item.matched_categories && Array.isArray(item.matched_categories)) {
@@ -142,22 +194,32 @@ function transformSynergy(item: any, currentSupplement: string): TransformedSyne
 
   // Extract evidence if available
   let evidence: TransformedSynergy['evidence'] | undefined;
-  if (item.evidence?.M) {
+  if (item.evidence && 'M' in item.evidence) {
     const ev = item.evidence.M;
+    const pubmedIds: string[] = [];
+
+    if (ev.pubmedIds && 'L' in ev.pubmedIds && Array.isArray(ev.pubmedIds.L)) {
+      for (const item of ev.pubmedIds.L) {
+        if (item.S) {
+          pubmedIds.push(item.S);
+        }
+      }
+    }
+
     evidence = {
-      studyCount: parseInt(ev.studyCount?.N || '0', 10),
-      pubmedIds: ev.pubmedIds?.L?.map((p: any) => p.S) || [],
-      source: ev.source?.S || 'unknown',
+      studyCount: ev.studyCount && 'N' in ev.studyCount ? parseInt(ev.studyCount.N || '0', 10) : 0,
+      pubmedIds,
+      source: ev.source && 'S' in ev.source ? ev.source.S || 'unknown' : 'unknown',
     };
   }
 
   return {
     supplement: partnerSupplement,
     type: synergyType,
-    mechanism: item.mechanism?.S || item.mechanism || 'Synergistic combination',
-    effect: item.effect?.S || item.effect || 'Enhanced effectiveness',
-    score: parseInt(item.synergy_score?.N || item.synergy_score || '70', 10),
-    tier: parseInt(item.tier?.N || item.tier || '3', 10),
+    mechanism: extractString(item.mechanism, 'Synergistic combination'),
+    effect: extractString(item.effect, 'Enhanced effectiveness'),
+    score: extractNumber(item.synergy_score, '70'),
+    tier: extractNumber(item.tier, '3'),
     categories,
     direction: isNegative ? 'negative' : 'positive',
     evidence,

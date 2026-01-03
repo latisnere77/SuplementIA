@@ -4,7 +4,9 @@
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
-import { EnrichedContent, ExamineStyleContent } from './types';
+import { EnrichedContent, ExamineStyleContent, EnrichmentResponse } from './types';
+
+type CacheMetadata = EnrichmentResponse['metadata'];
 
 const dynamoClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -17,7 +19,7 @@ const CACHE_TTL_DAYS = 7; // Cache expires after 7 days
 export async function saveToCacheAsync(
   supplementId: string,
   data: EnrichedContent | ExamineStyleContent,
-  metadata?: any
+  metadata?: CacheMetadata
 ): Promise<void> {
   try {
     // ✅ VALIDACIÓN: Detectar ranking vacío ANTES de guardar
@@ -71,9 +73,10 @@ export async function saveToCacheAsync(
         hasRanking: !!metadata?.studies?.ranked,
       })
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Don't throw - cache save is optional
-    console.warn('DynamoDB cache save error (non-fatal):', error.message);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.warn('DynamoDB cache save error (non-fatal):', errorMessage);
   }
 }
 
@@ -83,7 +86,7 @@ export async function saveToCacheAsync(
  */
 export async function getFromCache(
   supplementId: string
-): Promise<{ data: EnrichedContent | ExamineStyleContent; metadata?: any } | null> {
+): Promise<{ data: EnrichedContent | ExamineStyleContent; metadata?: CacheMetadata } | null> {
   try {
     const result = await docClient.send(
       new GetCommand({
@@ -125,9 +128,10 @@ export async function getFromCache(
       data: result.Item.data as EnrichedContent | ExamineStyleContent,
       metadata: result.Item.metadata,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Don't throw - cache read is optional
-    console.warn('DynamoDB cache read error (non-fatal):', error.message);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.warn('DynamoDB cache read error (non-fatal):', errorMessage);
     return null;
   }
 }
