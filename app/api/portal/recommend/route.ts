@@ -478,6 +478,15 @@ function transformToRecommendation(
   const enrichedContent = enrichData.data || {};
   const metadata = enrichData.metadata || {};
 
+  // DEBUG: Log synergies presence
+  console.log(`🔍 [RECOMMEND_TRANSFORM_DEBUG] category="${category}"`, {
+    hasEnrichDataSynergies: !!enrichData.synergies,
+    enrichDataSynergiesCount: enrichData.synergies?.length || 0,
+    enrichDataSynergiesSource: enrichData.synergiesSource,
+    hasEnrichedContentSynergies: !!enrichedContent.synergies,
+    enrichDataTopLevelKeys: Object.keys(enrichData || {}),
+  });
+
   return {
     recommendation_id: recId,
     quiz_id: quiz_id || `quiz_${Date.now()}_${randomUUID().substring(0, 8)}`,
