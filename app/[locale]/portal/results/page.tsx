@@ -973,6 +973,26 @@ function ResultsPageContent() {
             setRecommendation(data.recommendation);
             setConditionResult(null); // Clear other state
             setSearchType('ingredient');
+          } else if (!data.success && data.error) {
+            // Handle API errors (e.g., no_results, insufficient_data)
+            // Show the actual error message from the API instead of generic "Invalid API response format"
+            console.log('[Data Fetch] ⚠️ API returned error:', data.error, data.message);
+            
+            setRecommendation(null); // Clear recommendation before setting error
+            setError({
+              type: data.error === 'no_results' ? 'insufficient_scientific_data' : 'system_error',
+              message: data.message || `No encontramos información sobre "${normalizedQuery}".`,
+              searchedFor: normalizedQuery,
+              suggestions: [],
+              metadata: {
+                normalizedQuery: searchTerm,
+                errorType: data.error,
+                requestId: data.metadata?.requestId,
+                timestamp: new Date().toISOString(),
+              },
+            });
+            setIsLoading(false);
+            return;
           } else {
             // Handle cases where response is not in expected format
             console.error('[Data Fetch] ❌ Invalid API response format. Response keys:', Object.keys(data), 'Data:', data);
