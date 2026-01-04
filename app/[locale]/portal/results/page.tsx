@@ -966,8 +966,16 @@ function ResultsPageContent() {
             setRecommendation(data.recommendation);
             setConditionResult(null); // Clear other state
             setSearchType('ingredient');
+          } else if (data.recommendation && (typeof data.recommendation === 'object')) {
+            // FALLBACK: Handle API response with recommendation but without explicit success flag
+            // This handles cases where the quiz-orchestrator returns data in a slightly different format
+            console.log('[Data Fetch] ✅ Received INGREDIENT result (flexible format):', data.recommendation);
+            setRecommendation(data.recommendation);
+            setConditionResult(null); // Clear other state
+            setSearchType('ingredient');
           } else {
             // Handle cases where response is not in expected format
+            console.error('[Data Fetch] ❌ Invalid API response format. Response keys:', Object.keys(data), 'Data:', data);
             throw new Error('Invalid API response format');
           }
 
