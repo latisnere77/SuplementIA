@@ -503,6 +503,11 @@ function ResultsPageContent() {
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [conditionResult, setConditionResult] = useState<PubMedQueryResult | null>(null);
   const [searchType, setSearchType] = useState<'ingredient' | 'condition' | null>(null);
+  const [querySuggestions, setQuerySuggestions] = useState<Array<{
+    query: string;
+    displayName: string;
+    description?: string;
+  }> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | {
     type: 'insufficient_scientific_data' | 'system_error' | 'network_error' | 'generic';
@@ -954,6 +959,14 @@ function ResultsPageContent() {
             firstSynergyAtRoot: data.synergies?.[0],
             firstSynergyInRec: data.recommendation?.synergies?.[0],
           }, null, 2));
+
+          // Capture query suggestions if available
+          if (data.suggestions && Array.isArray(data.suggestions)) {
+            console.log('[Data Fetch] 📋 Query suggestions available:', data.suggestions);
+            setQuerySuggestions(data.suggestions);
+          } else {
+            setQuerySuggestions(null);
+          }
 
           if (data.searchType === 'condition') {
             console.log('[Data Fetch] ✅ Received CONDITION result:', data);
@@ -1444,6 +1457,53 @@ function ResultsPageContent() {
             </div>
           );
         })()}
+
+        {/* Query Suggestions Banner */}
+        {querySuggestions && querySuggestions.length > 0 && (
+          <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-1">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-gray-900 mb-2">
+                  {language === 'es' ? '¿Buscas una variante específica?' : 'Looking for a specific variant?'}
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  {language === 'es'
+                    ? 'Mostrando información general. Prueba buscar una variante más específica:'
+                    : 'Showing general information. Try searching for a more specific variant:'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {querySuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        // Navigate to the suggested query
+                        router.push(`/portal/results?supplement=${encodeURIComponent(suggestion.query)}&q=${encodeURIComponent(suggestion.query)}`);
+                      }}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-blue-50 border-2 border-blue-300 hover:border-blue-400 rounded-lg transition-all duration-200 group"
+                    >
+                      <span className="font-medium text-blue-900 group-hover:text-blue-700">
+                        {suggestion.displayName}
+                      </span>
+                      {suggestion.description && (
+                        <span className="text-xs text-gray-500 hidden sm:inline">
+                          • {suggestion.description}
+                        </span>
+                      )}
+                      <svg className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Conditional Rendering: Condition View vs. Ingredient View */}
         <div className="mb-8">
