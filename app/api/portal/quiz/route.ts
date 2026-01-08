@@ -769,7 +769,7 @@ export async function POST(request: NextRequest) {
           if (variantDetection.hasVariants) {
             console.log(`🔍 [VARIANT_DETECTION] Found ${variantDetection.variants.length} variants for "${searchTerm}"`);
             variantDetection.variants.forEach((v, i) => {
-              console.log(`  ${i + 1}. ${v.displayName}: ${v.studyCount} studies (confidence: ${Math.round(v.confidence * 100)}%)`);
+              console.log(`  ${i + 1}. ${v.displayName}: ${v.studyCount ?? 'N/A'} studies (confidence: ${v.confidence ? Math.round(v.confidence * 100) : 'N/A'}%)`);
             });
           }
 

@@ -234,7 +234,7 @@ export function detectVariants(
         description: patternInfo?.description
       };
     })
-    .sort((a, b) => b.studyCount - a.studyCount); // Sort by study count descending
+    .sort((a, b) => (b.studyCount ?? 0) - (a.studyCount ?? 0)); // Sort by study count descending
 
   // Find most studied variant
   const mostStudied = variants.length > 0 ? variants[0] : null;
@@ -243,12 +243,12 @@ export function detectVariants(
   // 1. At least 2 variants found
   // 2. Each with significant study count (>5)
   // 3. Top variant has <60% of total studies (not completely dominant)
-  const totalVariantStudies = variants.reduce((sum, v) => sum + v.studyCount, 0);
-  const topStudyPercentage = mostStudied ? (mostStudied.studyCount / totalVariantStudies) * 100 : 0;
+  const totalVariantStudies = variants.reduce((sum, v) => sum + (v.studyCount ?? 0), 0);
+  const topStudyPercentage = mostStudied ? ((mostStudied.studyCount ?? 0) / totalVariantStudies) * 100 : 0;
 
   const shouldRecommend =
     variants.length >= 2 &&
-    variants.every(v => v.studyCount >= 3) && // Each variant has reasonable studies
+    variants.every(v => (v.studyCount ?? 0) >= 3) && // Each variant has reasonable studies
     topStudyPercentage < 80; // Top variant isn't completely dominant
 
   return {

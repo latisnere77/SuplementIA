@@ -127,13 +127,17 @@ export default function VariantSelectorModal({
                         )}
 
                         {/* Stats */}
-                        <div className="flex items-center gap-4 text-xs">
-                          <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full text-gray-700 dark:text-gray-300">
-                            📚 {variant.studyCount} estudios
-                          </span>
-                          <span className="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-full text-amber-700 dark:text-amber-400">
-                            ⭐ {Math.round(variant.confidence * 100)}% confianza
-                          </span>
+                        <div className="flex items-center gap-4 text-xs flex-wrap">
+                          {variant.studyCount !== undefined && variant.studyCount > 0 && (
+                            <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full text-gray-700 dark:text-gray-300">
+                              📚 {variant.studyCount.toLocaleString()} estudios
+                            </span>
+                          )}
+                          {variant.confidence !== undefined && variant.confidence > 0 && (
+                            <span className="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-full text-amber-700 dark:text-amber-400">
+                              ⭐ {Math.round(variant.confidence * 100)}% confianza
+                            </span>
+                          )}
                         </div>
                       </div>
                     </motion.button>
