@@ -36,9 +36,11 @@ import { normalizeBenefit } from '@/lib/portal/benefit-normalization';
 import { getTopSuggestedBenefit, getSuggestedBenefits } from '@/lib/portal/supplement-benefit-suggestions';
 import { filterByBenefit } from '@/lib/portal/benefit-study-filter';
 import BenefitStudiesModal from '@/components/portal/BenefitStudiesModal';
+import VariantSelectorModal from '@/components/portal/VariantSelectorModal';
 import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
 import type { GradeType } from '@/types/supplement-grade';
 import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } from '@/lib/services/pubmed-search';
+import type { SupplementVariant, VariantDetectionResult } from '@/types/supplement-variants';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
 
 // ====================================
@@ -525,6 +527,10 @@ function ResultsPageContent() {
   const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
   const [selectedBenefit, setSelectedBenefit] = useState<{ en: string; es: string } | null>(null);
 
+  // Modal state for variant selector
+  const [variantDetection, setVariantDetection] = useState<VariantDetectionResult | null>(null);
+  const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
+
   // ====================================
   // LOGGING: State Change Tracking
   // ====================================
@@ -933,6 +939,16 @@ function ResultsPageContent() {
             setRecommendation(data.recommendation);
             setConditionResult(null); // Clear other state
             setSearchType('ingredient');
+
+            // Capture variant detection data if present in API response
+            if (data.variantDetection) {
+              console.log('[Variant Detection] Found variant data:', data.variantDetection);
+              setVariantDetection(data.variantDetection);
+              // Auto-open variant modal if backend suggests it
+              if (data.suggestVariantSelection) {
+                setIsVariantModalOpen(true);
+              }
+            }
           } else {
             // Handle cases where response is not in expected format
             throw new Error('Invalid API response format');
@@ -1180,6 +1196,22 @@ function ResultsPageContent() {
     };
   // Note: routerRef is used instead of router to prevent infinite re-renders
   }, [query, jobId, submittedBenefitQuery]);
+
+  // Handle variant selection from modal
+  const handleSelectVariant = (variant: SupplementVariant | null) => {
+    if (variant) {
+      console.log('[Variant Selected] User selected variant:', variant.displayName);
+      // Optionally trigger a new search with the specific variant
+      // For now, close the modal and the recommendation will show general info
+    }
+    setIsVariantModalOpen(false);
+  };
+
+  // Handle generic search (no specific variant selected)
+  const handleSelectGeneric = () => {
+    console.log('[Variant Selection] User chose generic search without specific variant');
+    setIsVariantModalOpen(false);
+  };
 
   const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; directLink?: string; affiliateLink?: string }) => {
     if (isFreeUser && product.tier !== 'budget') {
@@ -1588,6 +1620,17 @@ function ResultsPageContent() {
           }
         }}
       />
+
+      {/* Variant Selector Modal */}
+      {variantDetection && (
+        <VariantSelectorModal
+          isOpen={isVariantModalOpen}
+          supplementName={localizedSupplementName}
+          variantDetection={variantDetection}
+          onSelectVariant={handleSelectVariant}
+          onSelectGeneric={handleSelectGeneric}
+        />
+      )}
 
       {/* Benefit Studies Modal */}
       {selectedBenefit && (

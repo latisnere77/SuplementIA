@@ -13,6 +13,7 @@ import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
+import { detectVariants } from '@/lib/portal/variant-detector';
 
 import { searchSupplements } from '@/lib/search-service';
 
@@ -757,6 +758,21 @@ export async function POST(request: NextRequest) {
           console.log(`[Search] LanceDB returned ${hits.length} hits, filtered to ${finalHits.length}.`);
           const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
 
+          // NEW: Detect supplement variants (e.g., Magnesium Glycinate, Citrate, etc.)
+          // Only detect variants if we have study data
+          // Ensure hits are properly shaped with title and abstract fields
+          const hitsForVariantDetection = finalHits.map((hit: any) => ({
+            title: hit.title || '',
+            abstract: hit.abstract || ''
+          }));
+          const variantDetection = detectVariants(searchTerm, hitsForVariantDetection);
+          if (variantDetection.hasVariants) {
+            console.log(`🔍 [VARIANT_DETECTION] Found ${variantDetection.variants.length} variants for "${searchTerm}"`);
+            variantDetection.variants.forEach((v, i) => {
+              console.log(`  ${i + 1}. ${v.displayName}: ${v.studyCount} studies (confidence: ${Math.round(v.confidence * 100)}%)`);
+            });
+          }
+
           // INLINE AUTO-ENRICHMENT: Check if metadata is poor and enrich if needed
           // 🔍🔍🔍 DEBUG: Log what LanceDB returned
           console.log(`🔍🔍🔍 [LANCEDB_DATA] supplement="${searchTerm}" hasEvidenceSummary=${!!rec?.evidence_summary} hasStudies=${!!rec?.evidence_summary?.studies} hasRanked=${!!rec?.evidence_summary?.studies?.ranked}`);
@@ -829,6 +845,8 @@ export async function POST(request: NextRequest) {
               status: 'processing',
               message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
               recommendation: initialRecommendation, // Return initial recommendation WITH ranking data
+              variantDetection: variantDetection, // NEW: Include variant detection info
+              suggestVariantSelection: variantDetection.recommendedForGenericSearch, // NEW: True if should show selector
               source: 'lancedb_enriching_async'
             });
           } else {
@@ -842,6 +860,8 @@ export async function POST(request: NextRequest) {
               recommendation: rec,
               jobId,
               status: 'completed',
+              variantDetection: variantDetection, // NEW: Include variant detection info
+              suggestVariantSelection: variantDetection.recommendedForGenericSearch, // NEW: True if should show selector
               source: rec.enriched ? 'lancedb_lambda_enriched' : 'lancedb_lambda_serverless'
             });
           }
