@@ -656,7 +656,14 @@ function ResultsPageContent() {
 
   const isFreeUser = !subscription || subscription.plan_id === 'free';
 
-  const query = searchParams.get('q');
+  // BUGFIX: If both q and supplement params exist and are different,
+  // prioritize 'supplement' since it's more specific.
+  // If only one exists, use it. If neither exists, leave empty.
+  const qParam = searchParams.get('q');
+  const supplementParam = searchParams.get('supplement');
+  
+  // Priority logic: supplement > q (supplement is more specific)
+  const query = supplementParam || qParam;
   const urlJobId = searchParams.get('id');
 
   // Generate jobId ONCE if not provided (for direct searches)
