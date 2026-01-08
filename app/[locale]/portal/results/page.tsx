@@ -943,7 +943,51 @@ function ResultsPageContent() {
               variants: data.variantDetection.variants.map((v: any) => v.displayName),
             });
             setVariantDetection(data.variantDetection);
-            
+
+            // CACHE: Save variant detection to localStorage (follows recommendation cache pattern)
+            if (data.variantDetection && typeof window !== 'undefined') {
+              try {
+                const normalizedName = data.variantDetection.baseSupplementName?.toLowerCase().trim();
+                const studyCount = data.variantDetection._cacheMetadata?.studyCount || 0;
+                const cacheKey = `variant_detection_${normalizedName}_${studyCount}`;
+                const timestamp = Date.now();
+                const ttl = 7 * 24 * 60 * 60 * 1000; // 7 days (same as recommendations)
+
+                const cacheData = {
+                  variantDetection: data.variantDetection,
+                  supplementName: data.variantDetection.baseSupplementName,
+                  studyCount: studyCount,
+                  timestamp,
+                  ttl
+                };
+
+                localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+                console.log('[Variant Cache] ✅ Cached variant detection:', {
+                  cacheKey,
+                  supplement: data.variantDetection.baseSupplementName,
+                  variantCount: data.variantDetection.variants?.length || 0,
+                  studyCount: studyCount,
+                  cacheHit: data.variantDetection._cacheMetadata?.hit,
+                  timestamp: new Date(timestamp).toISOString(),
+                  expiresAt: new Date(timestamp + ttl).toISOString(),
+                  ttlDays: 7
+                });
+
+                // Cleanup old cache entries for this supplement (remove previous versions)
+                Object.keys(localStorage)
+                  .filter(key => key.startsWith(`variant_detection_${normalizedName}_`) && key !== cacheKey)
+                  .forEach(oldKey => {
+                    localStorage.removeItem(oldKey);
+                    console.log(`[Variant Cache] 🗑️ Cleaned up old cache: ${oldKey}`);
+                  });
+
+              } catch (cacheError) {
+                console.error('[Variant Cache] ❌ Failed to cache variant detection:', cacheError);
+                // Don't fail the entire operation if caching fails
+              }
+            }
+
             // Show variant selector modal if there are meaningful variants
             if (data.variantDetection.hasVariants && data.variantDetection.variants.length > 1) {
               setShowVariantSelector(true);

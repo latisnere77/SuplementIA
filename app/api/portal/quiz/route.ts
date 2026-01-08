@@ -14,11 +14,22 @@ import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplem
 import { searchPubMed } from '@/lib/services/pubmed-search';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { detectVariants } from '@/lib/portal/variant-detector';
+import type { SupplementVariant, VariantDetectionResult } from '@/types/supplement-variants';
 
 import { searchSupplements } from '@/lib/search-service';
 
 // Initialize Lambda client for async enrichment
 const lambdaClient = new LambdaClient({ region: process.env.AWS_REGION || 'us-east-1' });
+
+// In-memory cache for variant detection results (24 hour TTL)
+interface CachedVariantDetection extends VariantDetectionResult {
+  _cachedAt: number;
+  _cacheKey: string;
+}
+
+const variantDetectionCache = new Map<string, CachedVariantDetection>();
+const VARIANT_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+const VARIANT_CACHE_MAX_SIZE = 1000;
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -765,10 +776,53 @@ export async function POST(request: NextRequest) {
             title: hit.title || '',
             abstract: hit.abstract || ''
           }));
-          const variantDetection = detectVariants(searchTerm, hitsForVariantDetection);
+
+          // CACHING: Check variant detection cache before running detection
+          const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+          const studyCountHash = hitsForVariantDetection.length.toString(36);
+          const variantCacheKey = `variant_${normalizedSearchTerm}_${studyCountHash}`;
+
+          let cachedResult = variantDetectionCache.get(variantCacheKey);
+          let variantCacheHit = false;
+
+          if (cachedResult) {
+            const age = Date.now() - cachedResult._cachedAt;
+            if (age < VARIANT_CACHE_TTL) {
+              variantCacheHit = true;
+              console.log(`🎯 [VARIANT_CACHE] HIT for "${searchTerm}" (age: ${Math.round(age / 1000 / 60)}min)`);
+            } else {
+              cachedResult = undefined; // Expired
+            }
+          }
+
+          let variantDetection: CachedVariantDetection;
+          if (!cachedResult) {
+            // Cache miss - detect variants
+            const newDetection = detectVariants(searchTerm, hitsForVariantDetection);
+            variantDetection = {
+              ...newDetection,
+              _cachedAt: Date.now(),
+              _cacheKey: variantCacheKey
+            };
+            variantDetectionCache.set(variantCacheKey, variantDetection);
+
+            console.log(
+              `💾 [VARIANT_CACHE] MISS for "${searchTerm}" - cached ${variantDetection.variants.length} variants`
+            );
+
+            // Cleanup old cache entries if > max size
+            if (variantDetectionCache.size > VARIANT_CACHE_MAX_SIZE) {
+              const oldestKey = Array.from(variantDetectionCache.keys())[0];
+              variantDetectionCache.delete(oldestKey);
+              console.log(`🗑️ [VARIANT_CACHE] Evicted oldest entry, cache size: ${variantDetectionCache.size}`);
+            }
+          } else {
+            variantDetection = cachedResult;
+          }
+
           if (variantDetection.hasVariants) {
             console.log(`🔍 [VARIANT_DETECTION] Found ${variantDetection.variants.length} variants for "${searchTerm}"`);
-            variantDetection.variants.forEach((v, i) => {
+            variantDetection.variants.forEach((v: SupplementVariant, i: number) => {
               console.log(`  ${i + 1}. ${v.displayName}: ${v.studyCount ?? 'N/A'} studies (confidence: ${v.confidence ? Math.round(v.confidence * 100) : 'N/A'}%)`);
             });
           }
@@ -845,7 +899,15 @@ export async function POST(request: NextRequest) {
               status: 'processing',
               message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
               recommendation: initialRecommendation, // Return initial recommendation WITH ranking data
-              variantDetection: variantDetection, // NEW: Include variant detection info
+              variantDetection: {
+                ...variantDetection,
+                _cacheMetadata: {
+                  hit: variantCacheHit,
+                  key: variantCacheKey,
+                  studyCount: hitsForVariantDetection.length,
+                  timestamp: Date.now()
+                }
+              },
               suggestVariantSelection: variantDetection.recommendedForGenericSearch, // NEW: True if should show selector
               source: 'lancedb_enriching_async'
             });
@@ -860,7 +922,15 @@ export async function POST(request: NextRequest) {
               recommendation: rec,
               jobId,
               status: 'completed',
-              variantDetection: variantDetection, // NEW: Include variant detection info
+              variantDetection: {
+                ...variantDetection,
+                _cacheMetadata: {
+                  hit: variantCacheHit,
+                  key: variantCacheKey,
+                  studyCount: hitsForVariantDetection.length,
+                  timestamp: Date.now()
+                }
+              },
               suggestVariantSelection: variantDetection.recommendedForGenericSearch, // NEW: True if should show selector
               source: rec.enriched ? 'lancedb_lambda_enriched' : 'lancedb_lambda_serverless'
             });
