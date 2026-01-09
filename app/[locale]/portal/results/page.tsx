@@ -25,6 +25,8 @@ import { StreamingResults as _StreamingResults } from '@/components/portal/Strea
 import ExamineStyleView from '@/components/portal/ExamineStyleView';
 import { ViewToggle, type ViewMode } from '@/components/portal/ViewToggle';
 import { ErrorState } from '@/components/portal/ErrorState';
+import VariantSelectorModal from '@/components/portal/VariantSelectorModal';
+import type { VariantDetectionResult, SupplementVariant } from '@/types/supplement-variants';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useAuth } from '@/lib/auth/useAuth';
 import { searchAnalytics } from '@/lib/portal/search-analytics';
@@ -356,30 +358,19 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     // Research span for evidence overview
     researchSpanYears: evidenceSummary.researchSpanYears || 0,
     // NEW: Include synergies from external DB or Claude fallback
-    // Check recommendation.synergies first (from quiz API), then fall back to supplement.synergies
-    synergies: Array.isArray((recommendation as any).synergies)
-      ? (recommendation as any).synergies
-      : (Array.isArray(supplement.synergies) ? supplement.synergies : []),
-    synergiesSource: (recommendation as any).synergiesSource
-      || supplement.synergiesSource
-      || ((supplement.synergies && supplement.synergies.length > 0) ? 'external_db' : undefined),
+    synergies: Array.isArray(supplement.synergies) ? supplement.synergies : [],
+    synergiesSource: supplement.synergiesSource || ((supplement.synergies && supplement.synergies.length > 0) ? 'external_db' : undefined),
   };
 
-  // DEBUG: Log final result summary (using console.error to survive production minification)
-  const debugInfo = {
+  // DEBUG: Log final result summary
+  console.log('[transformRecommendationToEvidence] Output summary:', {
     overallGrade: result.overallGrade,
     worksForCount: result.worksFor.length,
     hasDosage: !!result.dosage,
     ingredientsCount: result.ingredients.length,
     synergiesCount: result.synergies.length,
     synergiesSource: result.synergiesSource,
-    // Debug: check input
-    inputHadSynergies: Array.isArray((recommendation as any).synergies),
-    inputSynergiesCount: ((recommendation as any).synergies || []).length,
-    supplementHadSynergies: Array.isArray(supplement.synergies),
-    supplementSynergiesCount: (supplement.synergies || []).length,
-  };
-  console.error('[🔍 DEBUG transformRecommendationToEvidence] ' + JSON.stringify(debugInfo, null, 2));
+  });
 
   return result;
 }
@@ -503,11 +494,6 @@ function ResultsPageContent() {
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [conditionResult, setConditionResult] = useState<PubMedQueryResult | null>(null);
   const [searchType, setSearchType] = useState<'ingredient' | 'condition' | null>(null);
-  const [querySuggestions, setQuerySuggestions] = useState<Array<{
-    query: string;
-    displayName: string;
-    description?: string;
-  }> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | {
     type: 'insufficient_scientific_data' | 'system_error' | 'network_error' | 'generic';
@@ -540,6 +526,10 @@ function ResultsPageContent() {
   // Modal state for benefit-specific studies popup
   const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
   const [selectedBenefit, setSelectedBenefit] = useState<{ en: string; es: string } | null>(null);
+
+  // NEW: Variant selector state
+  const [variantDetection, setVariantDetection] = useState<VariantDetectionResult | null>(null);
+  const [showVariantSelector, setShowVariantSelector] = useState(false);
 
   // ====================================
   // LOGGING: State Change Tracking
@@ -596,7 +586,10 @@ function ResultsPageContent() {
   // Extract and normalize benefit query from URL (e.g., "magnesio para dormir")
   // This ensures benefit-specific searches work from the main search bar
   useEffect(() => {
-    const query = searchParams.get('q');
+    // PRIORITY: Check supplement parameter first, then fall back to q
+    const supplementParam = searchParams.get('supplement');
+    const qParam = searchParams.get('q');
+    const query = supplementParam || qParam; // Prioritize supplement over q
     if (!query) return;
 
     let benefitDetected = false;
@@ -656,14 +649,10 @@ function ResultsPageContent() {
 
   const isFreeUser = !subscription || subscription.plan_id === 'free';
 
-  // BUGFIX: If both q and supplement params exist and are different,
-  // prioritize 'supplement' since it's more specific.
-  // If only one exists, use it. If neither exists, leave empty.
-  const qParam = searchParams.get('q');
+  // PRIORITY: Check supplement parameter first, then fall back to q
   const supplementParam = searchParams.get('supplement');
-  
-  // Priority logic: supplement > q (supplement is more specific)
-  const query = supplementParam || qParam;
+  const qParam = searchParams.get('q');
+  const query = supplementParam || qParam; // Prioritize supplement over q
   const urlJobId = searchParams.get('id');
 
   // Generate jobId ONCE if not provided (for direct searches)
@@ -726,10 +715,6 @@ function ResultsPageContent() {
         (Array.isArray(transformed.interactions.supplements) && transformed.interactions.supplements.length > 0)
       ),
       hasContraindications: Array.isArray(transformed.contraindications) && transformed.contraindications.length > 0,
-      // DEBUG: Add synergies logging
-      hasSynergies: Array.isArray(transformed.synergies) && transformed.synergies.length > 0,
-      synergiesCount: transformed.synergies?.length || 0,
-      synergiesSource: transformed.synergiesSource,
     });
 
     // Log missing sections
@@ -949,30 +934,73 @@ function ResultsPageContent() {
 
           const data = await response.json();
 
-          // DEBUG: Log FULL quiz API response to diagnose synergies issue
-          console.error('[🔍 DEBUG Quiz API FULL Response] ' + JSON.stringify({
-            success: data.success,
-            status: data.status,
-            source: data.source,
-            hasRecommendation: !!data.recommendation,
-            // Log ALL top-level keys
-            responseKeys: Object.keys(data),
-            recommendationKeys: data.recommendation ? Object.keys(data.recommendation) : [],
-            // Synergies info
-            synergiesAtRoot: data.synergies ? data.synergies.length : 'undefined',
-            synergiesInRec: data.recommendation?.synergies ? data.recommendation.synergies.length : 'undefined',
-            synergiesSource: data.recommendation?.synergiesSource || data.synergiesSource,
-            // First synergy for inspection
-            firstSynergyAtRoot: data.synergies?.[0],
-            firstSynergyInRec: data.recommendation?.synergies?.[0],
-          }, null, 2));
+          // Handle variant detection data if present
+          if (data.variantDetection) {
+            console.log('[Variant Detection] Variants detected:', {
+              baseSupplementName: data.variantDetection.baseSupplementName,
+              variantCount: data.variantDetection.variants.length,
+              hasVariants: data.variantDetection.hasVariants,
+              variants: data.variantDetection.variants.map((v: any) => v.displayName),
+            });
+            setVariantDetection(data.variantDetection);
 
-          // Capture query suggestions if available
-          if (data.suggestions && Array.isArray(data.suggestions)) {
-            console.log('[Data Fetch] 📋 Query suggestions available:', data.suggestions);
-            setQuerySuggestions(data.suggestions);
-          } else {
-            setQuerySuggestions(null);
+            // CACHE: Save variant detection to localStorage (follows recommendation cache pattern)
+            if (data.variantDetection && typeof window !== 'undefined') {
+              try {
+                const normalizedName = data.variantDetection.baseSupplementName?.toLowerCase().trim();
+                const studyCount = data.variantDetection._cacheMetadata?.studyCount || 0;
+                const cacheKey = `variant_detection_${normalizedName}_${studyCount}`;
+                const timestamp = Date.now();
+                const ttl = 7 * 24 * 60 * 60 * 1000; // 7 days (same as recommendations)
+
+                const cacheData = {
+                  variantDetection: data.variantDetection,
+                  supplementName: data.variantDetection.baseSupplementName,
+                  studyCount: studyCount,
+                  timestamp,
+                  ttl
+                };
+
+                localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+                console.log('[Variant Cache] ✅ Cached variant detection:', {
+                  cacheKey,
+                  supplement: data.variantDetection.baseSupplementName,
+                  variantCount: data.variantDetection.variants?.length || 0,
+                  studyCount: studyCount,
+                  cacheHit: data.variantDetection._cacheMetadata?.hit,
+                  timestamp: new Date(timestamp).toISOString(),
+                  expiresAt: new Date(timestamp + ttl).toISOString(),
+                  ttlDays: 7
+                });
+
+                // Cleanup old cache entries for this supplement (remove previous versions)
+                Object.keys(localStorage)
+                  .filter(key => key.startsWith(`variant_detection_${normalizedName}_`) && key !== cacheKey)
+                  .forEach(oldKey => {
+                    localStorage.removeItem(oldKey);
+                    console.log(`[Variant Cache] 🗑️ Cleaned up old cache: ${oldKey}`);
+                  });
+
+              } catch (cacheError) {
+                console.error('[Variant Cache] ❌ Failed to cache variant detection:', cacheError);
+                // Don't fail the entire operation if caching fails
+              }
+            }
+
+            // Show variant selector modal if there are meaningful variants
+            // BUT only if a specific variant hasn't already been selected
+            const shouldShowVariantModal =
+              data.variantDetection.hasVariants &&
+              data.variantDetection.variants.length > 1 &&
+              !data.variantDetection._selectedVariant;
+
+            if (shouldShowVariantModal) {
+              console.log('[Variant Modal] Showing variant selector for:', data.recommendation?.supplement?.name);
+              setShowVariantSelector(true);
+            } else if (data.variantDetection._selectedVariant) {
+              console.log('[Variant Modal] Skipping - variant already selected:', data.variantDetection._selectedVariant.fullName);
+            }
           }
 
           if (data.searchType === 'condition') {
@@ -986,36 +1014,8 @@ function ResultsPageContent() {
             setRecommendation(data.recommendation);
             setConditionResult(null); // Clear other state
             setSearchType('ingredient');
-          } else if (data.recommendation && (typeof data.recommendation === 'object')) {
-            // FALLBACK: Handle API response with recommendation but without explicit success flag
-            // This handles cases where the quiz-orchestrator returns data in a slightly different format
-            console.log('[Data Fetch] ✅ Received INGREDIENT result (flexible format):', data.recommendation);
-            setRecommendation(data.recommendation);
-            setConditionResult(null); // Clear other state
-            setSearchType('ingredient');
-          } else if (!data.success && data.error) {
-            // Handle API errors (e.g., no_results, insufficient_data)
-            // Show the actual error message from the API instead of generic "Invalid API response format"
-            console.log('[Data Fetch] ⚠️ API returned error:', data.error, data.message);
-            
-            setRecommendation(null); // Clear recommendation before setting error
-            setError({
-              type: data.error === 'no_results' ? 'insufficient_scientific_data' : 'system_error',
-              message: data.message || `No encontramos información sobre "${normalizedQuery}".`,
-              searchedFor: normalizedQuery,
-              suggestions: [],
-              metadata: {
-                normalizedQuery: searchTerm,
-                errorType: data.error,
-                requestId: data.metadata?.requestId,
-                timestamp: new Date().toISOString(),
-              },
-            });
-            setIsLoading(false);
-            return;
           } else {
             // Handle cases where response is not in expected format
-            console.error('[Data Fetch] ❌ Invalid API response format. Response keys:', Object.keys(data), 'Data:', data);
             throw new Error('Invalid API response format');
           }
 
@@ -1262,6 +1262,30 @@ function ResultsPageContent() {
   // Note: routerRef is used instead of router to prevent infinite re-renders
   }, [query, jobId, submittedBenefitQuery]);
 
+  // ====================================
+  // VARIANT SELECTOR HANDLERS
+  // ====================================
+  const handleSelectVariant = (variant: SupplementVariant | null) => {
+    if (!variant) return;
+
+    console.log('[Variant Selection] User selected variant:', variant.displayName);
+    setShowVariantSelector(false);
+
+    // Trigger a new search with the specific variant type (avoids redundancy)
+    // variant.type is just the variant name (e.g., "citrate")
+    // baseSupplementName is the supplement (e.g., "Magnesium")
+    const baseSupplementName = variantDetection?.baseSupplementName || query;
+    const variantQuery = `${baseSupplementName} ${variant.type}`;
+    console.log('[Variant Selection] Constructed query:', variantQuery);
+    routerRef.current.push(`/portal/results?q=${encodeURIComponent(variantQuery)}`);
+  };
+
+  const handleSelectGeneric = () => {
+    console.log('[Variant Selection] User selected generic search for all variants');
+    setShowVariantSelector(false);
+    // Continue with the current recommendation (no variant filtering)
+  };
+
   const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; directLink?: string; affiliateLink?: string }) => {
     if (isFreeUser && product.tier !== 'budget') {
       setShowPaywall(true);
@@ -1464,53 +1488,6 @@ function ResultsPageContent() {
             </div>
           );
         })()}
-
-        {/* Query Suggestions Banner */}
-        {querySuggestions && querySuggestions.length > 0 && (
-          <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5 shadow-sm">
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-1">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-base font-semibold text-gray-900 mb-2">
-                  {language === 'es' ? '¿Buscas una variante específica?' : 'Looking for a specific variant?'}
-                </h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  {language === 'es'
-                    ? 'Mostrando información general. Prueba buscar una variante más específica:'
-                    : 'Showing general information. Try searching for a more specific variant:'}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {querySuggestions.map((suggestion, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        // Navigate to the suggested query
-                        router.push(`/portal/results?supplement=${encodeURIComponent(suggestion.query)}&q=${encodeURIComponent(suggestion.query)}`);
-                      }}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-blue-50 border-2 border-blue-300 hover:border-blue-400 rounded-lg transition-all duration-200 group"
-                    >
-                      <span className="font-medium text-blue-900 group-hover:text-blue-700">
-                        {suggestion.displayName}
-                      </span>
-                      {suggestion.description && (
-                        <span className="text-xs text-gray-500 hidden sm:inline">
-                          • {suggestion.description}
-                        </span>
-                      )}
-                      <svg className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Conditional Rendering: Condition View vs. Ingredient View */}
         <div className="mb-8">
@@ -1716,6 +1693,18 @@ function ResultsPageContent() {
           }
         }}
       />
+
+      {/* Variant Selector Modal */}
+      {variantDetection && (
+        <VariantSelectorModal
+          isOpen={showVariantSelector}
+          supplementName={variantDetection.baseSupplementName}
+          variantDetection={variantDetection}
+          onSelectVariant={handleSelectVariant}
+          onSelectGeneric={handleSelectGeneric}
+          _isLoading={false}
+        />
+      )}
 
       {/* Benefit Studies Modal */}
       {selectedBenefit && (

@@ -12,8 +12,24 @@ import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
+import { detectVariants } from '@/lib/portal/variant-detector';
+import type { SupplementVariant, VariantDetectionResult } from '@/types/supplement-variants';
 
 import { searchSupplements } from '@/lib/search-service';
+
+// Initialize Lambda client for async enrichment
+const lambdaClient = new LambdaClient({ region: process.env.AWS_REGION || 'us-east-1' });
+
+// In-memory cache for variant detection results (24 hour TTL)
+interface CachedVariantDetection extends VariantDetectionResult {
+  _cachedAt: number;
+  _cacheKey: string;
+}
+
+const variantDetectionCache = new Map<string, CachedVariantDetection>();
+const VARIANT_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+const VARIANT_CACHE_MAX_SIZE = 1000;
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -120,19 +136,17 @@ async function invokeLambdaEnrichmentAsync(
   ranking?: any
 ): Promise<void> {
   try {
-    const enricherUrl = process.env.ENRICHER_API_URL;
-    if (!enricherUrl) {
-      throw new Error('ENRICHER_API_URL environment variable not configured');
-    }
-
     const payload = {
-      supplementId: supplementName,
-      category: 'general',
-      forceRefresh,
-      jobId, // Pass jobId so Lambda can update the job store
-      ranking, // Pass ranking data to preserve in enrichment response
-      maxStudies: 5,
-      rctOnly: false,
+      httpMethod: 'POST',
+      body: JSON.stringify({
+        supplementId: supplementName,
+        category: 'general',
+        forceRefresh,
+        jobId, // Pass jobId so Lambda can update the job store
+        ranking, // Pass ranking data to preserve in enrichment response
+        maxStudies: 5,
+        rctOnly: false,
+      }),
     };
 
     // DEBUG: Log the exact payload being sent to Lambda
@@ -146,32 +160,19 @@ async function invokeLambdaEnrichmentAsync(
       fullRanking: ranking ? JSON.stringify(ranking).substring(0, 200) : 'null',
     }));
 
-    console.log(`🚀 [ENRICHER_INVOKE] Starting async invocation to ${enricherUrl}`);
+    // Invoke Lambda asynchronously (InvocationType: 'Event')
+    // This returns immediately without waiting for Lambda to complete
+    await lambdaClient.send(
+      new InvokeCommand({
+        FunctionName: process.env.ENRICHER_LAMBDA || 'production-content-enricher',
+        InvocationType: 'Event', // Async invocation - fire and forget
+        Payload: Buffer.from(JSON.stringify(payload)),
+      })
+    );
 
-    // Invoke Lambda via HTTP URL asynchronously - fire and forget
-    fetch(enricherUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Job-ID': jobId,
-        'X-Supplement': supplementName,
-      },
-      body: JSON.stringify(payload),
-    }).then(
-      (response) => {
-        if (!response.ok) {
-          console.error(`⚠️ [ENRICHER_RESPONSE] Non-200 status: ${response.status}`);
-        } else {
-          console.log(`✅ [ENRICHER_INVOKED] jobId=${jobId} status=${response.status}`);
-        }
-      }
-    ).catch((error) => {
-      console.error(`❌ [ENRICHER_FETCH_ERROR] jobId=${jobId}:`, error.message);
-    });
-
-    console.log(`🚀 [ENRICHER_QUEUED] jobId=${jobId} supplement="${supplementName}" queued for async processing`);
+    console.log(`🚀 [LAMBDA_INVOKED] jobId=${jobId} supplement="${supplementName}" forceRefresh=${forceRefresh} hasRanking=${!!ranking} invocationType=Event`);
   } catch (error: any) {
-    console.error(`❌ [ENRICHER_INVOKE_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
+    console.error(`❌ [LAMBDA_INVOKE_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
     // Mark job as failed if we can't even invoke the Lambda
     await storeJobResult(jobId, 'failed', {
       error: `Failed to invoke enrichment Lambda: ${error.message}`
@@ -219,37 +220,36 @@ async function invokeStudiesFetcher(
   }
 
   try {
-    const studiesUrl = process.env.STUDIES_API_URL;
-    if (!studiesUrl) {
-      throw new Error('STUDIES_API_URL environment variable not configured');
-    }
-
     const payload = {
-      supplementName,
-      maxResults: 100, // Maximum allowed by studies-fetcher Lambda
-      benefitQuery, // Pass benefit query if available
-      filters: {
-        rctOnly: false,
-        humanStudiesOnly: true,
-      },
+      httpMethod: 'POST',
+      body: JSON.stringify({
+        supplementName,
+        maxResults: 100, // Maximum allowed by studies-fetcher Lambda
+        benefitQuery, // Pass benefit query if available
+        filters: {
+          rctOnly: false,
+          humanStudiesOnly: true,
+        },
+      }),
     };
 
     console.log(`🔬 [STUDIES_FETCHER] Calling for "${supplementName}"...`);
 
-    const response = await fetch(studiesUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await lambdaClient.send(
+      new InvokeCommand({
+        FunctionName: process.env.STUDIES_FETCHER_LAMBDA || 'suplementia-studies-fetcher-prod',
+        InvocationType: 'RequestResponse', // Synchronous call - wait for response
+        Payload: Buffer.from(JSON.stringify(payload)),
+      })
+    );
 
-    if (!response.ok) {
-      console.error(`❌ [STUDIES_FETCHER] HTTP error: ${response.status}`);
+    if (!response.Payload) {
+      console.error(`❌ [STUDIES_FETCHER] No payload returned`);
       return null;
     }
 
-    const parsedBody = await response.json();
+    const result = JSON.parse(Buffer.from(response.Payload).toString());
+    const parsedBody = JSON.parse(result.body);
 
     // DEBUG: Log the entire response for debugging
     console.log(`🔍 [STUDIES_FETCHER_DEBUG] Response for "${supplementName}":`, {
@@ -406,18 +406,6 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
     recommendation.products = enrichedProducts;
   }
 
-  // **CRITICAL**: Add synergies support (from external DB or Claude fallback)
-  const enrichedSynergies = evidence.synergies || enrichedData?.data?.synergies || enrichedData?.synergies;
-  const synergiesSource = evidence.synergiesSource || enrichedData?.data?.synergiesSource || enrichedData?.synergiesSource;
-
-  if (enrichedSynergies) {
-    recommendation.synergies = Array.isArray(enrichedSynergies) ? enrichedSynergies : [];
-    recommendation.synergiesSource = synergiesSource;
-    console.log(`✅ [SYNERGIES_MERGED] Added ${recommendation.synergies.length} synergies from ${synergiesSource || 'unknown source'}`);
-  } else {
-    console.log(`⚠️ [SYNERGIES_MERGED] No synergies found in enrichment response`);
-  }
-
   // **CRITICAL**: Resolve and Copy studies.ranked data
   // Look in evidence.studies (some Lambdas might return it here)
   // or enrichedData.data.studies (where enrich/route.ts puts it)
@@ -543,7 +531,12 @@ function detectClimate(location: string): string {
 /**
  * Helper: Transform Weaviate hits to structured Recommendation object
  */
-function transformHitsToRecommendation(hits: any[], query: string, quizId: string): any {
+function transformHitsToRecommendation(
+  hits: any[],
+  query: string,
+  quizId: string,
+  parsedQuery?: ParsedQuery
+): any {
   // Use reported total if available (from LanceDB metadata)
   const totalStudies = hits.length === 1 ? (hits[0].study_count || hits.length) : hits.length;
   const ingredientsMap = new Map<string, number>();
@@ -609,8 +602,10 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
     category: query,
     // ESTRUCTURA PRINCIPAL QUE BUSCA EL FRONTEND
     supplement: {
-      name: query,
-      description: hits[0]?.abstract || `Suplemento analizado basado en ${totalStudies} estudios científicos recuperados.`,
+      name: parsedQuery?.isVariantSpecific ? parsedQuery.fullQuery : query,
+      description: parsedQuery?.isVariantSpecific
+        ? generateVariantDescription(parsedQuery, hits[0])
+        : (hits[0]?.abstract || `Suplemento analizado basado en ${totalStudies} estudios científicos recuperados.`),
       worksFor: worksFor,
       doesntWorkFor: doesntWorkFor,
       limitedEvidence: limitedEvidence,
@@ -657,6 +652,84 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
       sensitivities: []
     }
   };
+}
+
+// ====================================
+// QUERY PARSING - VARIANT DETECTION
+// ====================================
+
+interface ParsedQuery {
+  baseSupplement: string;
+  variantType: string | null;
+  fullQuery: string;
+  isVariantSpecific: boolean;
+}
+
+function parseSupplementQuery(query: string): ParsedQuery {
+  const normalized = query.toLowerCase().trim();
+
+  // Known variant keywords from VARIANT_PATTERNS
+  const variantKeywords = [
+    'glycinate', 'citrate', 'oxide', 'threonate', 'taurate', 'malate', 'chloride',
+    'epa', 'dha', 'ala', 'triglyceride', 'ethyl ester',
+    'd2', 'd3', 'ergocalciferol', 'cholecalciferol',
+    'standard', 'phytosome', 'liposomal', 'nanoparticle',
+    'ubiquinone', 'ubiquinol',
+    'ksm-66', 'sensoril', 'shoden'
+  ];
+
+  let detectedVariant: string | null = null;
+  let baseSupplement = query;
+
+  for (const variant of variantKeywords) {
+    if (normalized.includes(variant)) {
+      detectedVariant = variant;
+      baseSupplement = query.replace(new RegExp(variant, 'gi'), '').trim();
+      break;
+    }
+  }
+
+  return {
+    baseSupplement,
+    variantType: detectedVariant,
+    fullQuery: query,
+    isVariantSpecific: detectedVariant !== null
+  };
+}
+
+function generateVariantDescription(
+  parsedQuery: ParsedQuery,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  firstHit: any | undefined
+): string {
+  if (!parsedQuery.isVariantSpecific || !parsedQuery.variantType) {
+    return firstHit?.abstract || `${parsedQuery.fullQuery} es un suplemento dietético popular.`;
+  }
+
+  // Basic variant-specific descriptions
+  const variantDescriptions: Record<string, string> = {
+    citrate: 'Forma de citrato: mejor biodisponibilidad, apoya la digestión',
+    glycinate: 'Forma de glicinato: mejor absorción, suave con el sistema digestivo',
+    oxide: 'Forma de óxido: forma económica del suplemento',
+    threonate: 'Forma de treonato: atraviesa la barrera hematoencefálica',
+    taurate: 'Forma de taurato: enfocada en apoyo cardiovascular',
+    malate: 'Forma de malato: relacionada con producción de energía',
+    epa: 'EPA (ácido eicosapentaenoico): enfocado en salud del corazón',
+    dha: 'DHA (ácido docosahexaenoico): importante para la salud cerebral',
+    ala: 'ALA (ácido alfa-linolénico): forma vegetal de ácido graso omega-3',
+    d3: 'Vitamina D3: forma más activa y biodisponible',
+    d2: 'Vitamina D2: forma alternativa de vitamina D',
+    'ksm-66': 'KSM-66: extracto estandarizado de ashwagandha',
+    ubiquinol: 'Ubiquinol: forma reducida de CoQ10, más biodisponible',
+    ubiquinone: 'Ubiquinona: forma estándar de CoQ10'
+  };
+
+  const baseDescription = variantDescriptions[parsedQuery.variantType] ||
+    `Forma específica de ${parsedQuery.baseSupplement}`;
+
+  const studyContext = firstHit?.abstract ? ` ${firstHit.abstract.substring(0, 150)}...` : '';
+
+  return `${parsedQuery.fullQuery} es una forma específica de ${parsedQuery.baseSupplement}. ${baseDescription}.${studyContext}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -779,7 +852,74 @@ export async function POST(request: NextRequest) {
 
         if (finalHits.length > 0) {
           console.log(`[Search] LanceDB returned ${hits.length} hits, filtered to ${finalHits.length}.`);
-          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
+          
+          // NEW: Parse query to extract variant information
+          const parsedQuery = parseSupplementQuery(searchTerm);
+          console.log('[Query Parsing]', {
+            original: searchTerm,
+            parsed: parsedQuery,
+            isVariantSpecific: parsedQuery.isVariantSpecific
+          });
+          
+          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
+
+          // NEW: Detect supplement variants (e.g., Magnesium Glycinate, Citrate, etc.)
+          // Only detect variants if we have study data
+          // Ensure hits are properly shaped with title and abstract fields
+          const hitsForVariantDetection = finalHits.map((hit: any) => ({
+            title: hit.title || '',
+            abstract: hit.abstract || ''
+          }));
+
+          // CACHING: Check variant detection cache before running detection
+          const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+          const studyCountHash = hitsForVariantDetection.length.toString(36);
+          const variantCacheKey = `variant_${normalizedSearchTerm}_${studyCountHash}`;
+
+          let cachedResult = variantDetectionCache.get(variantCacheKey);
+          let variantCacheHit = false;
+
+          if (cachedResult) {
+            const age = Date.now() - cachedResult._cachedAt;
+            if (age < VARIANT_CACHE_TTL) {
+              variantCacheHit = true;
+              console.log(`🎯 [VARIANT_CACHE] HIT for "${searchTerm}" (age: ${Math.round(age / 1000 / 60)}min)`);
+            } else {
+              cachedResult = undefined; // Expired
+            }
+          }
+
+          let variantDetection: CachedVariantDetection;
+          if (!cachedResult) {
+            // Cache miss - detect variants
+            const newDetection = detectVariants(searchTerm, hitsForVariantDetection);
+            variantDetection = {
+              ...newDetection,
+              _cachedAt: Date.now(),
+              _cacheKey: variantCacheKey
+            };
+            variantDetectionCache.set(variantCacheKey, variantDetection);
+
+            console.log(
+              `💾 [VARIANT_CACHE] MISS for "${searchTerm}" - cached ${variantDetection.variants.length} variants`
+            );
+
+            // Cleanup old cache entries if > max size
+            if (variantDetectionCache.size > VARIANT_CACHE_MAX_SIZE) {
+              const oldestKey = Array.from(variantDetectionCache.keys())[0];
+              variantDetectionCache.delete(oldestKey);
+              console.log(`🗑️ [VARIANT_CACHE] Evicted oldest entry, cache size: ${variantDetectionCache.size}`);
+            }
+          } else {
+            variantDetection = cachedResult;
+          }
+
+          if (variantDetection.hasVariants) {
+            console.log(`🔍 [VARIANT_DETECTION] Found ${variantDetection.variants.length} variants for "${searchTerm}"`);
+            variantDetection.variants.forEach((v: SupplementVariant, i: number) => {
+              console.log(`  ${i + 1}. ${v.displayName}: ${v.studyCount ?? 'N/A'} studies (confidence: ${v.confidence ? Math.round(v.confidence * 100) : 'N/A'}%)`);
+            });
+          }
 
           // INLINE AUTO-ENRICHMENT: Check if metadata is poor and enrich if needed
           // 🔍🔍🔍 DEBUG: Log what LanceDB returned
@@ -788,11 +928,6 @@ export async function POST(request: NextRequest) {
             const r = rec.evidence_summary.studies.ranked;
             console.log(`🔍 [LANCEDB_RANKED] keys=${JSON.stringify(Object.keys(r))} hasMetadata=${!!r.metadata} confidence=${r.metadata?.confidenceScore || 0} positive=${r.positive?.length || 0} negative=${r.negative?.length || 0}`);
           }
-
-          // STEP 0: Synergies will be fetched by async enrichment Lambda
-          // The Lambda fetches synergies efficiently during enrichment (takes only ~150ms)
-          // No need to fetch them here - avoids timeout issues for uncached supplements
-          console.log(`🔗 [SYNERGIES] Synergies will be fetched during async enrichment`);
 
           if (needsEnrichment(rec)) {
             console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" jobId=${jobId}`);
@@ -811,9 +946,9 @@ export async function POST(request: NextRequest) {
               console.log(`⚠️ [STUDIES_RANKING] No ranking data - enrichment will proceed without it`);
             }
 
-            // STEP 1.5: Store initial recommendation with ranking data and synergies in DynamoDB IMMEDIATELY
-            // This ensures ranking and synergies are available even before async enrichment completes
-            // Note: synergies were already added to rec in STEP 0
+            // STEP 1.5: Store initial recommendation with ranking data in DynamoDB IMMEDIATELY
+            // This ensures ranking is preserved even if async enrichment has issues
+            // The initial recommendation will be enhanced further when enrichment completes
             const initialRecommendation = {
               ...rec,
               evidence_summary: {
@@ -830,8 +965,6 @@ export async function POST(request: NextRequest) {
               ...initialRecommendation._enrichment_metadata,
               hasRanking: !!rankingData,
               rankingSource: rankingData ? 'studies-fetcher' : 'none',
-              hasSynergies: (rec.synergies || []).length > 0,
-              synergiesDebug: rec._synergiesDebug, // Debug info for troubleshooting
               interim: true, // Will be enhanced by async enrichment
               storedAt: new Date().toISOString(),
             };
@@ -848,8 +981,8 @@ export async function POST(request: NextRequest) {
             }
 
             // STEP 2: ASYNC ENRICHMENT with ranking data
-            // Lambda will enrich content, fetch synergies, and preserve the ranking
-            // The enrichment Lambda will save all to cache for future requests
+            // Lambda will enrich content AND preserve the ranking we just generated
+            // The enrichment Lambda will save both to cache for future requests
             await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData);
 
             // Return immediately with processing status
@@ -860,6 +993,22 @@ export async function POST(request: NextRequest) {
               status: 'processing',
               message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
               recommendation: initialRecommendation, // Return initial recommendation WITH ranking data
+              variantDetection: {
+                ...variantDetection,
+                _cacheMetadata: {
+                  hit: variantCacheHit,
+                  key: variantCacheKey,
+                  studyCount: hitsForVariantDetection.length,
+                  timestamp: Date.now()
+                },
+                // NEW: Add selected variant info to signal frontend not to show modal
+                _selectedVariant: parsedQuery.isVariantSpecific ? {
+                  type: parsedQuery.variantType,
+                  baseSupplement: parsedQuery.baseSupplement,
+                  fullName: parsedQuery.fullQuery
+                } : null
+              },
+              suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific, // Only show if not already selected
               source: 'lancedb_enriching_async'
             });
           } else {
@@ -873,6 +1022,22 @@ export async function POST(request: NextRequest) {
               recommendation: rec,
               jobId,
               status: 'completed',
+              variantDetection: {
+                ...variantDetection,
+                _cacheMetadata: {
+                  hit: variantCacheHit,
+                  key: variantCacheKey,
+                  studyCount: hitsForVariantDetection.length,
+                  timestamp: Date.now()
+                },
+                // NEW: Add selected variant info to signal frontend not to show modal
+                _selectedVariant: parsedQuery.isVariantSpecific ? {
+                  type: parsedQuery.variantType,
+                  baseSupplement: parsedQuery.baseSupplement,
+                  fullName: parsedQuery.fullQuery
+                } : null
+              },
+              suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific, // Only show if not already selected
               source: rec.enriched ? 'lancedb_lambda_enriched' : 'lancedb_lambda_serverless'
             });
           }
