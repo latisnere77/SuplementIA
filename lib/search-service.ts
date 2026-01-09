@@ -40,11 +40,15 @@ export async function searchSupplements(query: string, limit: number = 5): Promi
 
   const body = await response.json();
 
-  // The LanceDB lambda returns { success: true, supplement: {...} }
+  // The LanceDB lambda returns { success: true, supplement: {...}, alternativeMatches: [...] }
   let hits: any[] = [];
 
   if (body.supplement) {
     hits = [body.supplement];
+    // Include alternativeMatches if available (for variant detection)
+    if (Array.isArray(body.alternativeMatches)) {
+      hits = hits.concat(body.alternativeMatches);
+    }
   } else if (Array.isArray(body.matches)) {
     hits = body.matches;
   } else if (Array.isArray(body.results)) {
