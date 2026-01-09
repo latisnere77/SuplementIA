@@ -864,12 +864,17 @@ export async function POST(request: NextRequest) {
           const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
 
           // NEW: Detect supplement variants (e.g., Magnesium Glycinate, Citrate, etc.)
-          // Only detect variants if we have study data
-          // Ensure hits are properly shaped with title and abstract fields
-          const hitsForVariantDetection = finalHits.map((hit: any) => ({
+          // For variant detection, we need MORE studies than the initial search
+          // Make a separate search with higher limit specifically for variant detection
+          console.log('[Variant Detection] Fetching additional studies for variant analysis...');
+          const variantSearchHits = await searchSupplements(searchTerm, 50); // Get 50 studies for better variant detection
+          
+          const hitsForVariantDetection = variantSearchHits.map((hit: any) => ({
             title: hit.title || '',
             abstract: hit.abstract || ''
           }));
+          
+          console.log(`[Variant Detection] Using ${hitsForVariantDetection.length} studies for variant analysis`);
 
           // CACHING: Check variant detection cache before running detection
           const normalizedSearchTerm = searchTerm.toLowerCase().trim();
