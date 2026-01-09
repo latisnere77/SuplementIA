@@ -531,7 +531,12 @@ function detectClimate(location: string): string {
 /**
  * Helper: Transform Weaviate hits to structured Recommendation object
  */
-function transformHitsToRecommendation(hits: any[], query: string, quizId: string): any {
+function transformHitsToRecommendation(
+  hits: any[],
+  query: string,
+  quizId: string,
+  parsedQuery?: ParsedQuery
+): any {
   // Use reported total if available (from LanceDB metadata)
   const totalStudies = hits.length === 1 ? (hits[0].study_count || hits.length) : hits.length;
   const ingredientsMap = new Map<string, number>();
@@ -597,8 +602,10 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
     category: query,
     // ESTRUCTURA PRINCIPAL QUE BUSCA EL FRONTEND
     supplement: {
-      name: query,
-      description: hits[0]?.abstract || `Suplemento analizado basado en ${totalStudies} estudios científicos recuperados.`,
+      name: parsedQuery?.isVariantSpecific ? parsedQuery.fullQuery : query,
+      description: parsedQuery?.isVariantSpecific
+        ? generateVariantDescription(parsedQuery, hits[0])
+        : (hits[0]?.abstract || `Suplemento analizado basado en ${totalStudies} estudios científicos recuperados.`),
       worksFor: worksFor,
       doesntWorkFor: doesntWorkFor,
       limitedEvidence: limitedEvidence,
@@ -645,6 +652,84 @@ function transformHitsToRecommendation(hits: any[], query: string, quizId: strin
       sensitivities: []
     }
   };
+}
+
+// ====================================
+// QUERY PARSING - VARIANT DETECTION
+// ====================================
+
+interface ParsedQuery {
+  baseSupplement: string;
+  variantType: string | null;
+  fullQuery: string;
+  isVariantSpecific: boolean;
+}
+
+function parseSupplementQuery(query: string): ParsedQuery {
+  const normalized = query.toLowerCase().trim();
+
+  // Known variant keywords from VARIANT_PATTERNS
+  const variantKeywords = [
+    'glycinate', 'citrate', 'oxide', 'threonate', 'taurate', 'malate', 'chloride',
+    'epa', 'dha', 'ala', 'triglyceride', 'ethyl ester',
+    'd2', 'd3', 'ergocalciferol', 'cholecalciferol',
+    'standard', 'phytosome', 'liposomal', 'nanoparticle',
+    'ubiquinone', 'ubiquinol',
+    'ksm-66', 'sensoril', 'shoden'
+  ];
+
+  let detectedVariant: string | null = null;
+  let baseSupplement = query;
+
+  for (const variant of variantKeywords) {
+    if (normalized.includes(variant)) {
+      detectedVariant = variant;
+      baseSupplement = query.replace(new RegExp(variant, 'gi'), '').trim();
+      break;
+    }
+  }
+
+  return {
+    baseSupplement,
+    variantType: detectedVariant,
+    fullQuery: query,
+    isVariantSpecific: detectedVariant !== null
+  };
+}
+
+function generateVariantDescription(
+  parsedQuery: ParsedQuery,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  firstHit: any | undefined
+): string {
+  if (!parsedQuery.isVariantSpecific || !parsedQuery.variantType) {
+    return firstHit?.abstract || `${parsedQuery.fullQuery} es un suplemento dietético popular.`;
+  }
+
+  // Basic variant-specific descriptions
+  const variantDescriptions: Record<string, string> = {
+    citrate: 'Forma de citrato: mejor biodisponibilidad, apoya la digestión',
+    glycinate: 'Forma de glicinato: mejor absorción, suave con el sistema digestivo',
+    oxide: 'Forma de óxido: forma económica del suplemento',
+    threonate: 'Forma de treonato: atraviesa la barrera hematoencefálica',
+    taurate: 'Forma de taurato: enfocada en apoyo cardiovascular',
+    malate: 'Forma de malato: relacionada con producción de energía',
+    epa: 'EPA (ácido eicosapentaenoico): enfocado en salud del corazón',
+    dha: 'DHA (ácido docosahexaenoico): importante para la salud cerebral',
+    ala: 'ALA (ácido alfa-linolénico): forma vegetal de ácido graso omega-3',
+    d3: 'Vitamina D3: forma más activa y biodisponible',
+    d2: 'Vitamina D2: forma alternativa de vitamina D',
+    'ksm-66': 'KSM-66: extracto estandarizado de ashwagandha',
+    ubiquinol: 'Ubiquinol: forma reducida de CoQ10, más biodisponible',
+    ubiquinone: 'Ubiquinona: forma estándar de CoQ10'
+  };
+
+  const baseDescription = variantDescriptions[parsedQuery.variantType] ||
+    `Forma específica de ${parsedQuery.baseSupplement}`;
+
+  const studyContext = firstHit?.abstract ? ` ${firstHit.abstract.substring(0, 150)}...` : '';
+
+  return `${parsedQuery.fullQuery} es una forma específica de ${parsedQuery.baseSupplement}. ${baseDescription}.${studyContext}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -767,7 +852,16 @@ export async function POST(request: NextRequest) {
 
         if (finalHits.length > 0) {
           console.log(`[Search] LanceDB returned ${hits.length} hits, filtered to ${finalHits.length}.`);
-          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId);
+          
+          // NEW: Parse query to extract variant information
+          const parsedQuery = parseSupplementQuery(searchTerm);
+          console.log('[Query Parsing]', {
+            original: searchTerm,
+            parsed: parsedQuery,
+            isVariantSpecific: parsedQuery.isVariantSpecific
+          });
+          
+          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
 
           // NEW: Detect supplement variants (e.g., Magnesium Glycinate, Citrate, etc.)
           // Only detect variants if we have study data
@@ -906,9 +1000,15 @@ export async function POST(request: NextRequest) {
                   key: variantCacheKey,
                   studyCount: hitsForVariantDetection.length,
                   timestamp: Date.now()
-                }
+                },
+                // NEW: Add selected variant info to signal frontend not to show modal
+                _selectedVariant: parsedQuery.isVariantSpecific ? {
+                  type: parsedQuery.variantType,
+                  baseSupplement: parsedQuery.baseSupplement,
+                  fullName: parsedQuery.fullQuery
+                } : null
               },
-              suggestVariantSelection: variantDetection.recommendedForGenericSearch, // NEW: True if should show selector
+              suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific, // Only show if not already selected
               source: 'lancedb_enriching_async'
             });
           } else {
@@ -929,9 +1029,15 @@ export async function POST(request: NextRequest) {
                   key: variantCacheKey,
                   studyCount: hitsForVariantDetection.length,
                   timestamp: Date.now()
-                }
+                },
+                // NEW: Add selected variant info to signal frontend not to show modal
+                _selectedVariant: parsedQuery.isVariantSpecific ? {
+                  type: parsedQuery.variantType,
+                  baseSupplement: parsedQuery.baseSupplement,
+                  fullName: parsedQuery.fullQuery
+                } : null
               },
-              suggestVariantSelection: variantDetection.recommendedForGenericSearch, // NEW: True if should show selector
+              suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific, // Only show if not already selected
               source: rec.enriched ? 'lancedb_lambda_enriched' : 'lancedb_lambda_serverless'
             });
           }

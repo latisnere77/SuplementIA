@@ -989,8 +989,17 @@ function ResultsPageContent() {
             }
 
             // Show variant selector modal if there are meaningful variants
-            if (data.variantDetection.hasVariants && data.variantDetection.variants.length > 1) {
+            // BUT only if a specific variant hasn't already been selected
+            const shouldShowVariantModal =
+              data.variantDetection.hasVariants &&
+              data.variantDetection.variants.length > 1 &&
+              !data.variantDetection._selectedVariant;
+
+            if (shouldShowVariantModal) {
+              console.log('[Variant Modal] Showing variant selector for:', data.recommendation?.supplement?.name);
               setShowVariantSelector(true);
+            } else if (data.variantDetection._selectedVariant) {
+              console.log('[Variant Modal] Skipping - variant already selected:', data.variantDetection._selectedVariant.fullName);
             }
           }
 
@@ -1258,12 +1267,16 @@ function ResultsPageContent() {
   // ====================================
   const handleSelectVariant = (variant: SupplementVariant | null) => {
     if (!variant) return;
-    
+
     console.log('[Variant Selection] User selected variant:', variant.displayName);
     setShowVariantSelector(false);
-    
-    // Trigger a new search with the specific variant name
-    const variantQuery = `${variantDetection?.baseSupplementName || query} ${variant.displayName}`;
+
+    // Trigger a new search with the specific variant type (avoids redundancy)
+    // variant.type is just the variant name (e.g., "citrate")
+    // baseSupplementName is the supplement (e.g., "Magnesium")
+    const baseSupplementName = variantDetection?.baseSupplementName || query;
+    const variantQuery = `${baseSupplementName} ${variant.type}`;
+    console.log('[Variant Selection] Constructed query:', variantQuery);
     routerRef.current.push(`/portal/results?q=${encodeURIComponent(variantQuery)}`);
   };
 
