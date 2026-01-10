@@ -1276,13 +1276,24 @@ function ResultsPageContent() {
     if (recommendation) {
       // Create a variant-specific version of the current recommendation
       const variantName = variant.displayName;
+
+      // Update evidence_summary with variant-specific study count
+      // Need to update both totalStudies AND studies.total (if it exists)
+      const updatedEvidenceSummary = {
+        ...recommendation.evidence_summary,
+        totalStudies: variant.studyCount,
+        ...(recommendation.evidence_summary.studies && {
+          studies: {
+            ...recommendation.evidence_summary.studies,
+            total: variant.studyCount,
+          },
+        }),
+      };
+
       const variantRecommendation = {
         ...recommendation,
         category: variantName, // Update supplement name
-        evidence_summary: {
-          ...recommendation.evidence_summary,
-          totalStudies: variant.studyCount, // Use variant-specific study count
-        },
+        evidence_summary: updatedEvidenceSummary,
         _variantInfo: {
           selectedVariant: variant,
           originalBaseSupplementName: variantDetection?.baseSupplementName,
