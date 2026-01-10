@@ -778,6 +778,19 @@ def lambda_handler(event, context):
         embedding = get_embedding_bedrock(query)
         store_cache(query_hash, supplement_data, embedding)
         
+        # Format alternative matches (all results except the first one)
+        alternative_matches = []
+        for result in results[1:]:  # Skip first result (already returned as supplement)
+            alt_similarity = 1 - result.get('_distance', 1)
+            alternative_matches.append({
+                'id': result.get('id'),
+                'name': result.get('name'),
+                'scientificName': result.get('scientific_name'),
+                'commonNames': result.get('common_names', []),
+                'metadata': result.get('metadata', {}),
+                'similarity': round(alt_similarity, 3)
+            })
+        
         return {
             'statusCode': 200,
             'headers': {'Content-Type': 'application/json'},
@@ -786,7 +799,7 @@ def lambda_handler(event, context):
                 'supplement': supplement_data,
                 'cacheHit': False,
                 'source': 'lancedb',
-                'alternativeMatches': len(results) - 1
+                'alternativeMatches': alternative_matches  # Now returns array instead of count
             })
         }
         

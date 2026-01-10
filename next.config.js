@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const withNextIntl = require('next-intl/plugin')();
 // Force redeploy with NEXT_PUBLIC_USE_INTELLIGENT_SEARCH env var
 const nextConfig = {
@@ -21,6 +22,21 @@ const nextConfig = {
       'lucide-react',
       'framer-motion',
     ],
+  },
+  // Webpack config for LanceDB native bindings
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Externalize LanceDB to prevent bundling native .node files
+      config.externals.push('@lancedb/lancedb');
+    }
+
+    // Handle .node files
+    config.module.rules.push({
+      test: /\.node$/,
+      use: 'node-loader',
+    });
+
+    return config;
   },
 }
 

@@ -1268,15 +1268,24 @@ function ResultsPageContent() {
   const handleSelectVariant = (variant: SupplementVariant | null) => {
     if (!variant) return;
 
-    console.log('[Variant Selection] User selected variant:', variant.displayName);
+    console.log('[Variant Selection] User selected variant:', variant);
     setShowVariantSelector(false);
 
     // Trigger a new search with the specific variant type (avoids redundancy)
     // variant.type is just the variant name (e.g., "citrate")
     // baseSupplementName is the supplement (e.g., "Magnesium")
     const baseSupplementName = variantDetection?.baseSupplementName || query;
-    const variantQuery = `${baseSupplementName} ${variant.type}`;
-    console.log('[Variant Selection] Constructed query:', variantQuery);
+
+    // Extract variant type from variant.type or variant.name or parse from displayName
+    let variantType = variant.type || variant.name;
+    if (!variantType && variant.displayName) {
+      // Fallback: extract from displayName (e.g., "Magnesium Citrate" -> "Citrate")
+      const parts = variant.displayName.split(' ');
+      variantType = parts[parts.length - 1].toLowerCase();
+    }
+
+    const variantQuery = `${baseSupplementName} ${variantType}`;
+    console.log('[Variant Selection] Constructed query:', variantQuery, '| variant object:', variant);
     routerRef.current.push(`/portal/results?q=${encodeURIComponent(variantQuery)}`);
   };
 

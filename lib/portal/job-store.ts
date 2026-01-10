@@ -290,6 +290,12 @@ export async function storeJobResult(
   status: 'completed' | 'failed',
   data?: { recommendation?: unknown; error?: string }
 ): Promise<void> {
+  // Development bypass: Skip DynamoDB if table doesn't exist (local dev)
+  if (process.env.SKIP_JOB_STORE === 'true') {
+    console.log('[JobStore] Skipping job result storage (SKIP_JOB_STORE=true)');
+    return;
+  }
+
   try {
     // Get existing job to preserve createdAt
     const existingJob = await getJob(jobId);
@@ -323,6 +329,11 @@ export async function storeJobResult(
     }
   } catch (error) {
     console.error('[JobStore] Error storing job result:', error);
+    // In development, log error but don't throw
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[JobStore] DynamoDB error in development - continuing without job storage');
+      return;
+    }
     throw error;
   }
 }
@@ -331,6 +342,12 @@ export async function storeJobResult(
  * Create job in DynamoDB
  */
 export async function createJob(jobId: string, retryCount: number = 0): Promise<void> {
+  // Development bypass: Skip DynamoDB if table doesn't exist (local dev)
+  if (process.env.SKIP_JOB_STORE === 'true') {
+    console.log('[JobStore] Skipping job storage (SKIP_JOB_STORE=true)');
+    return;
+  }
+
   try {
     const now = Date.now();
     const expiresAt = calculateExpirationTime('processing', now);
@@ -354,6 +371,11 @@ export async function createJob(jobId: string, retryCount: number = 0): Promise<
     jobMetrics.recordJobCreated();
   } catch (error) {
     console.error('[JobStore] Error creating job:', error);
+    // In development, log error but don't throw
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[JobStore] DynamoDB error in development - continuing without job storage');
+      return;
+    }
     throw error;
   }
 }
