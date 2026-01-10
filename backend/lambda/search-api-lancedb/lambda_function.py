@@ -683,7 +683,8 @@ def lambda_handler(event, context):
                 })
             }
         
-        limit = int(query_params.get('limit', 5))
+        # Accept both 'limit' and 'top_k' parameters (top_k takes precedence)
+        limit = int(query_params.get('top_k') or query_params.get('limit', 5))
         
         # Generate query hash for caching
         import hashlib

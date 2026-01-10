@@ -5,7 +5,7 @@
  * Fallback: Lambda Function URL (if LanceDB unavailable)
  */
 
-import { searchLanceDB, type LanceDBResult } from './lancedb-service';
+import type { LanceDBResult } from './lancedb-service';
 
 // Lambda Function URL for search (fallback only)
 const SEARCH_API_URL = process.env.SEARCH_API_URL ||
@@ -36,6 +36,8 @@ export async function searchSupplements(query: string, limit: number = 5): Promi
   if (USE_LANCEDB) {
     try {
       console.log(`[SearchService] 🚀 Using LanceDB (PRISTINE QUALITY) for: "${query}"`);
+      // Dynamic import to avoid loading LanceDB during build
+      const { searchLanceDB } = await import('./lancedb-service');
       const lanceResults = await searchLanceDB(query, limit);
 
       if (lanceResults && lanceResults.length > 0) {
