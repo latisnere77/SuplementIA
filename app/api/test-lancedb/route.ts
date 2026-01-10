@@ -3,7 +3,6 @@
  */
 
 import { NextResponse } from 'next/server';
-import { searchLanceDB, getLanceDBStats } from '@/lib/lancedb-service';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -11,6 +10,9 @@ export const runtime = 'nodejs';
 export async function GET() {
   try {
     console.log('[Test LanceDB] Starting test...');
+
+    // Dynamic import to avoid loading native bindings at build time
+    const { searchLanceDB, getLanceDBStats } = await import('@/lib/lancedb-service');
 
     // Test 1: Get stats
     const stats = await getLanceDBStats();
