@@ -1281,11 +1281,11 @@ function ResultsPageContent() {
       // Need to update both totalStudies AND studies.total (if it exists)
       const updatedEvidenceSummary = {
         ...recommendation.evidence_summary,
-        totalStudies: variant.studyCount,
+        totalStudies: variant.studyCount || 0,
         ...(recommendation.evidence_summary.studies && {
           studies: {
             ...recommendation.evidence_summary.studies,
-            total: variant.studyCount,
+            total: variant.studyCount || 0,
           },
         }),
       };
