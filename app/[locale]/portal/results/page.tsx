@@ -1271,22 +1271,37 @@ function ResultsPageContent() {
     console.log('[Variant Selection] User selected variant:', variant);
     setShowVariantSelector(false);
 
-    // Trigger a new search with the specific variant type (avoids redundancy)
-    // variant.type is just the variant name (e.g., "citrate")
-    // baseSupplementName is the supplement (e.g., "Magnesium")
-    const baseSupplementName = variantDetection?.baseSupplementName || query;
+    // FIX: Instead of triggering a new search (which fails for variants),
+    // update the current recommendation with variant-specific information
+    if (recommendation) {
+      // Create a variant-specific version of the current recommendation
+      const variantName = variant.fullName || variant.displayName;
+      const variantRecommendation = {
+        ...recommendation,
+        category: variantName, // Update supplement name
+        evidence_summary: {
+          ...recommendation.evidence_summary,
+          totalStudies: variant.studyCount, // Use variant-specific study count
+        },
+        _variantInfo: {
+          selectedVariant: variant,
+          originalBaseSupplementName: variantDetection?.baseSupplementName,
+        },
+      };
 
-    // Extract variant type from variant.type or variant.name or parse from displayName
-    let variantType = variant.type || variant.name;
-    if (!variantType && variant.displayName) {
-      // Fallback: extract from displayName (e.g., "Magnesium Citrate" -> "Citrate")
-      const parts = variant.displayName.split(' ');
-      variantType = parts[parts.length - 1].toLowerCase();
+      console.log('[Variant Selection] Updated recommendation with variant data:', {
+        variantName,
+        studyCount: variant.studyCount,
+        confidence: variant.confidence,
+      });
+
+      // Update state with variant-specific recommendation
+      setRecommendation(variantRecommendation);
+
+      // Update URL for sharing (but don't trigger new search)
+      const newUrl = `/portal/results?q=${encodeURIComponent(variantName)}&variant=selected`;
+      window.history.replaceState({}, '', newUrl);
     }
-
-    const variantQuery = `${baseSupplementName} ${variantType}`;
-    console.log('[Variant Selection] Constructed query:', variantQuery, '| variant object:', variant);
-    routerRef.current.push(`/portal/results?q=${encodeURIComponent(variantQuery)}`);
   };
 
   const handleSelectGeneric = () => {
