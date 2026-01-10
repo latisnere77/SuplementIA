@@ -1275,7 +1275,7 @@ function ResultsPageContent() {
     // update the current recommendation with variant-specific information
     if (recommendation) {
       // Create a variant-specific version of the current recommendation
-      const variantName = variant.fullName || variant.displayName;
+      const variantName = variant.displayName;
       const variantRecommendation = {
         ...recommendation,
         category: variantName, // Update supplement name
