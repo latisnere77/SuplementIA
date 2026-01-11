@@ -126,23 +126,26 @@ async function checkPubMedExists(query: string): Promise<boolean> {
 }
 
 /**
- * Get fuzzy autocomplete suggestions with PubMed fallback
+ * Get fuzzy autocomplete suggestions using LanceDB vector search
+ *
+ * Now uses LanceDB (156 PRISTINE QUALITY supplements, Grades A/B/C) for autocomplete
+ * instead of hardcoded database. Provides better coverage and accuracy.
  *
  * @param query - User's search query
- * @param lang - Language (en or es)
+ * @param lang - Language (en or es) - currently not used, LanceDB returns all languages
  * @param limit - Maximum number of suggestions to return
  * @returns Promise<Array> of suggestions with scores
  *
  * @example
  * ```typescript
- * // Typo tolerance (from local DB)
+ * // Vector search with typo tolerance
  * await getSuggestions('ashwaghanda', 'en', 5); // Returns "Ashwagandha"
  *
- * // PubMed fallback for unknown supplements
- * await getSuggestions('aloe vera', 'en', 5); // Checks PubMed, returns "Aloe Vera"
- *
- * // Partial match (from local DB)
+ * // Partial match
  * await getSuggestions('vitam', 'es', 5); // Returns vitamins
+ *
+ * // Multi-word queries
+ * await getSuggestions('magnesium glyc', 'en', 5); // Returns "Magnesium Glycinate"
  * ```
  */
 export async function getSuggestions(
@@ -154,26 +157,46 @@ export async function getSuggestions(
     return [];
   }
 
-  const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery = query.trim();
 
-  // FAST PATH: Optimized tokenized search (instant)
-  const results = searchInDatabase(normalizedQuery, lang, limit * 2);
+  try {
+    // Use LanceDB vector search for autocomplete
+    const { searchLanceDB } = await import('@/lib/lancedb-service');
+    const lanceResults = await searchLanceDB(normalizedQuery, limit * 2); // Get more results for better filtering
 
-  // Sort by score (descending) and return top results
-  results.sort((a, b) => b.score - a.score);
+    if (lanceResults && lanceResults.length > 0) {
+      const suggestions: AutocompleteSuggestion[] = lanceResults.map(result => {
+        // Convert similarity (0-1) to score (0-100)
+        const score = result.similarity * 100;
 
-  // Only use PubMed fallback if absolutely no results AND query is complete enough
-  // This happens AFTER user stops typing, not during autocomplete
-  if (results.length === 0 && normalizedQuery.length >= 5 && !normalizedQuery.includes(' ')) {
-    // Check PubMed asynchronously (won't block autocomplete)
-    checkPubMedExists(normalizedQuery).then(exists => {
-      if (exists) {
-        console.log(`[Autocomplete] Found in PubMed: ${normalizedQuery}`);
-      }
-    }).catch(() => {});
+        // Determine type based on evidence grade
+        let type: 'supplement' | 'condition' | 'category' = 'supplement';
+
+        return {
+          text: result.name,
+          type,
+          score,
+          category: result.metadata.evidence_grade,
+          healthConditions: [], // LanceDB doesn't have this field, could be added later
+        };
+      });
+
+      // Sort by score (descending) and return top results
+      suggestions.sort((a, b) => b.score - a.score);
+      return suggestions.slice(0, limit);
+    }
+
+    // Fallback to local database if LanceDB fails or returns no results
+    console.warn('[Autocomplete] LanceDB returned no results, falling back to local DB');
+    const fallbackResults = searchInDatabase(normalizedQuery.toLowerCase(), lang, limit);
+    return fallbackResults.slice(0, limit);
+
+  } catch (error) {
+    // Fallback to local database on error
+    console.error('[Autocomplete] LanceDB error, falling back to local DB:', error);
+    const fallbackResults = searchInDatabase(normalizedQuery.toLowerCase(), lang, limit);
+    return fallbackResults.slice(0, limit);
   }
-
-  return results.slice(0, limit);
 }
 
 /**
