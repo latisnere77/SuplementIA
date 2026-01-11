@@ -117,30 +117,130 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'epa': { canonical: 'Omega-3 EPA', category: 'fatty_acid' },
 
   // ========== VITAMINS ==========
-  'vitamina d': { canonical: 'Vitamin D', category: 'vitamin' },
-  'vitamin d': { canonical: 'Vitamin D', category: 'vitamin' },
-  'vitamina d3': { canonical: 'Vitamin D3', category: 'vitamin' },
-  'vitamin d3': { canonical: 'Vitamin D3', category: 'vitamin' },
-  'd3': { canonical: 'Vitamin D3', category: 'vitamin' },
-  'vit d': { canonical: 'Vitamin D', category: 'vitamin' },
-  'vit d3': { canonical: 'Vitamin D3', category: 'vitamin' },
+  
+  // Vitamin A
+  'vitamina a': { canonical: 'Vitamin A', category: 'vitamin' },
+  'vitamin a': { canonical: 'Vitamin A', category: 'vitamin' },
+  'vit a': { canonical: 'Vitamin A', category: 'vitamin' },
+  'retinol': { canonical: 'Vitamin A', category: 'vitamin' },
+  'beta caroteno': { canonical: 'Vitamin A', category: 'vitamin' },
+  'beta carotene': { canonical: 'Vitamin A', category: 'vitamin' },
 
+  // Vitamin B Complex (generic)
+  'vitamina b': { canonical: 'Vitamin B Complex', category: 'vitamin' },
+  'vitamin b': { canonical: 'Vitamin B Complex', category: 'vitamin' },
+  'vit b': { canonical: 'Vitamin B Complex', category: 'vitamin' },
+  'complejo b': { canonical: 'Vitamin B Complex', category: 'vitamin' },
+  'b complex': { canonical: 'Vitamin B Complex', category: 'vitamin' },
+  'vitamin b complex': { canonical: 'Vitamin B Complex', category: 'vitamin' },
+
+  // Vitamin B1 (Thiamine)
+  'vitamina b1': { canonical: 'Vitamin B1', category: 'vitamin' },
+  'vitamin b1': { canonical: 'Vitamin B1', category: 'vitamin' },
+  'b1': { canonical: 'Vitamin B1', category: 'vitamin' },
+  'tiamina': { canonical: 'Vitamin B1', category: 'vitamin' },
+  'thiamine': { canonical: 'Vitamin B1', category: 'vitamin' },
+
+  // Vitamin B2 (Riboflavin)
+  'vitamina b2': { canonical: 'Vitamin B2', category: 'vitamin' },
+  'vitamin b2': { canonical: 'Vitamin B2', category: 'vitamin' },
+  'b2': { canonical: 'Vitamin B2', category: 'vitamin' },
+  'riboflavina': { canonical: 'Vitamin B2', category: 'vitamin' },
+  'riboflavin': { canonical: 'Vitamin B2', category: 'vitamin' },
+
+  // Vitamin B3 (Niacin)
+  'vitamina b3': { canonical: 'Vitamin B3', category: 'vitamin' },
+  'vitamin b3': { canonical: 'Vitamin B3', category: 'vitamin' },
+  'b3': { canonical: 'Vitamin B3', category: 'vitamin' },
+  'niacina': { canonical: 'Vitamin B3', category: 'vitamin' },
+  'niacin': { canonical: 'Vitamin B3', category: 'vitamin' },
+  'nicotinamida': { canonical: 'Vitamin B3', category: 'vitamin' },
+  'nicotinamide': { canonical: 'Vitamin B3', category: 'vitamin' },
+
+  // Vitamin B5 (Pantothenic Acid)
+  'vitamina b5': { canonical: 'Vitamin B5', category: 'vitamin' },
+  'vitamin b5': { canonical: 'Vitamin B5', category: 'vitamin' },
+  'b5': { canonical: 'Vitamin B5', category: 'vitamin' },
+  'acido pantotenico': { canonical: 'Vitamin B5', category: 'vitamin' },
+  'pantothenic acid': { canonical: 'Vitamin B5', category: 'vitamin' },
+
+  // Vitamin B6 (Pyridoxine)
+  'vitamina b6': { canonical: 'Vitamin B6', category: 'vitamin' },
+  'vitamin b6': { canonical: 'Vitamin B6', category: 'vitamin' },
+  'b6': { canonical: 'Vitamin B6', category: 'vitamin' },
+  'piridoxina': { canonical: 'Vitamin B6', category: 'vitamin' },
+  'pyridoxine': { canonical: 'Vitamin B6', category: 'vitamin' },
+
+  // Vitamin B7 (Biotin)
+  'biotina': { canonical: 'Biotin', category: 'vitamin' },
+  'biotin': { canonical: 'Biotin', category: 'vitamin' },
+  'vitamina b7': { canonical: 'Biotin', category: 'vitamin' },
+  'vitamin b7': { canonical: 'Biotin', category: 'vitamin' },
+  'vitamina h': { canonical: 'Biotin', category: 'vitamin' },
+  'vitamin h': { canonical: 'Biotin', category: 'vitamin' },
+
+  // Vitamin B9 (Folate)
+  'vitamina b9': { canonical: 'Vitamin B9', category: 'vitamin' },
+  'vitamin b9': { canonical: 'Vitamin B9', category: 'vitamin' },
+  'b9': { canonical: 'Vitamin B9', category: 'vitamin' },
+  'acido folico': { canonical: 'Folic Acid', category: 'vitamin' },
+  'folic acid': { canonical: 'Folic Acid', category: 'vitamin' },
+  'folato': { canonical: 'Folate', category: 'vitamin' },
+  'folate': { canonical: 'Folate', category: 'vitamin' },
+
+  // Vitamin B12 (Cobalamin)
+  'vitamina b12': { canonical: 'Vitamin B12', category: 'vitamin' },
+  'vitamin b12': { canonical: 'Vitamin B12', category: 'vitamin' },
+  'b12': { canonical: 'Vitamin B12', category: 'vitamin' },
+  'cianocobalamina': { canonical: 'Vitamin B12', category: 'vitamin' },
+  'cyanocobalamin': { canonical: 'Vitamin B12', category: 'vitamin' },
+  'metilcobalamina': { canonical: 'Methylcobalamin', category: 'vitamin' },
+  'methylcobalamin': { canonical: 'Methylcobalamin', category: 'vitamin' },
+
+  // Vitamin C
   'vitamina c': { canonical: 'Vitamin C', category: 'vitamin' },
   'vitamin c': { canonical: 'Vitamin C', category: 'vitamin' },
   'vit c': { canonical: 'Vitamin C', category: 'vitamin' },
   'acido ascorbico': { canonical: 'Vitamin C', category: 'vitamin' },
   'ascorbic acid': { canonical: 'Vitamin C', category: 'vitamin' },
 
-  'vitamina b12': { canonical: 'Vitamin B12', category: 'vitamin' },
-  'vitamin b12': { canonical: 'Vitamin B12', category: 'vitamin' },
-  'b12': { canonical: 'Vitamin B12', category: 'vitamin' },
-  'cianocobalamina': { canonical: 'Vitamin B12', category: 'vitamin' },
-  'cyanocobalamin': { canonical: 'Vitamin B12', category: 'vitamin' },
+  // Vitamin D
+  'vitamina d': { canonical: 'Vitamin D', category: 'vitamin' },
+  'vitamin d': { canonical: 'Vitamin D', category: 'vitamin' },
+  'vit d': { canonical: 'Vitamin D', category: 'vitamin' },
+  'vitamina d2': { canonical: 'Vitamin D2', category: 'vitamin' },
+  'vitamin d2': { canonical: 'Vitamin D2', category: 'vitamin' },
+  'ergocalciferol': { canonical: 'Vitamin D2', category: 'vitamin' },
+  'vitamina d3': { canonical: 'Vitamin D3', category: 'vitamin' },
+  'vitamin d3': { canonical: 'Vitamin D3', category: 'vitamin' },
+  'd3': { canonical: 'Vitamin D3', category: 'vitamin' },
+  'vit d3': { canonical: 'Vitamin D3', category: 'vitamin' },
+  'colecalciferol': { canonical: 'Vitamin D3', category: 'vitamin' },
+  'cholecalciferol': { canonical: 'Vitamin D3', category: 'vitamin' },
 
-  'biotina': { canonical: 'Biotin', category: 'vitamin' },
-  'biotin': { canonical: 'Biotin', category: 'vitamin' },
-  'vitamina b7': { canonical: 'Biotin', category: 'vitamin' },
-  'vitamin b7': { canonical: 'Biotin', category: 'vitamin' },
+  // Vitamin E
+  'vitamina e': { canonical: 'Vitamin E', category: 'vitamin' },
+  'vitamin e': { canonical: 'Vitamin E', category: 'vitamin' },
+  'vit e': { canonical: 'Vitamin E', category: 'vitamin' },
+  'tocoferol': { canonical: 'Vitamin E', category: 'vitamin' },
+  'tocopherol': { canonical: 'Vitamin E', category: 'vitamin' },
+  'alfa tocoferol': { canonical: 'Vitamin E', category: 'vitamin' },
+  'alpha tocopherol': { canonical: 'Vitamin E', category: 'vitamin' },
+
+  // Vitamin K
+  'vitamina k': { canonical: 'Vitamin K', category: 'vitamin' },
+  'vitamin k': { canonical: 'Vitamin K', category: 'vitamin' },
+  'vit k': { canonical: 'Vitamin K', category: 'vitamin' },
+  'vitamina k1': { canonical: 'Vitamin K1', category: 'vitamin' },
+  'vitamin k1': { canonical: 'Vitamin K1', category: 'vitamin' },
+  'filoquinona': { canonical: 'Vitamin K1', category: 'vitamin' },
+  'phylloquinone': { canonical: 'Vitamin K1', category: 'vitamin' },
+  'vitamina k2': { canonical: 'Vitamin K2', category: 'vitamin' },
+  'vitamin k2': { canonical: 'Vitamin K2', category: 'vitamin' },
+  'menaquinona': { canonical: 'Vitamin K2', category: 'vitamin' },
+  'menaquinone': { canonical: 'Vitamin K2', category: 'vitamin' },
+  'mk-7': { canonical: 'Vitamin K2 MK-7', category: 'vitamin' },
+  'mk7': { canonical: 'Vitamin K2 MK-7', category: 'vitamin' },
 
   // ========== AMINO ACIDS ==========
   'creatina': { canonical: 'Creatine', category: 'amino_acid' },
@@ -263,12 +363,104 @@ const VARIATION_GENERATORS: Record<string, (canonical: string) => string[]> = {
     'n-3 PUFA',
     '(Omega-3 OR Fish Oil OR EPA OR DHA)',
   ],
+  'Vitamin A': () => [
+    'Vitamin A',
+    'Retinol',
+    'Beta Carotene',
+    'Vitamin A supplementation',
+    '(Vitamin A OR Retinol OR Beta Carotene)',
+  ],
+  'Vitamin B Complex': () => [
+    'Vitamin B Complex',
+    'B Complex',
+    'B Vitamins',
+    'Vitamin B supplementation',
+    '(Vitamin B Complex OR B Complex OR B Vitamins)',
+  ],
+  'Vitamin B1': () => [
+    'Vitamin B1',
+    'Thiamine',
+    'Thiamin',
+    'Vitamin B1 supplementation',
+    '(Vitamin B1 OR Thiamine)',
+  ],
+  'Vitamin B2': () => [
+    'Vitamin B2',
+    'Riboflavin',
+    'Vitamin B2 supplementation',
+    '(Vitamin B2 OR Riboflavin)',
+  ],
+  'Vitamin B3': () => [
+    'Vitamin B3',
+    'Niacin',
+    'Nicotinamide',
+    'Niacinamide',
+    'Vitamin B3 supplementation',
+    '(Vitamin B3 OR Niacin OR Nicotinamide)',
+  ],
+  'Vitamin B5': () => [
+    'Vitamin B5',
+    'Pantothenic Acid',
+    'Vitamin B5 supplementation',
+    '(Vitamin B5 OR Pantothenic Acid)',
+  ],
+  'Vitamin B6': () => [
+    'Vitamin B6',
+    'Pyridoxine',
+    'Vitamin B6 supplementation',
+    '(Vitamin B6 OR Pyridoxine)',
+  ],
+  'Vitamin B9': () => [
+    'Vitamin B9',
+    'Folate',
+    'Folic Acid',
+    'Vitamin B9 supplementation',
+    '(Vitamin B9 OR Folate OR Folic Acid)',
+  ],
+  'Vitamin B12': () => [
+    'Vitamin B12',
+    'Cobalamin',
+    'Cyanocobalamin',
+    'Methylcobalamin',
+    'Vitamin B12 supplementation',
+    '(Vitamin B12 OR Cobalamin OR Cyanocobalamin OR Methylcobalamin)',
+  ],
+  'Vitamin C': () => [
+    'Vitamin C',
+    'Ascorbic Acid',
+    'Vitamin C supplementation',
+    '(Vitamin C OR Ascorbic Acid)',
+  ],
   'Vitamin D': () => [
     'Vitamin D',
     'Cholecalciferol',
     'Vitamin D3',
     'Vitamin D supplementation',
     '(Vitamin D OR Cholecalciferol OR Vitamin D3)',
+  ],
+  'Vitamin E': () => [
+    'Vitamin E',
+    'Tocopherol',
+    'Alpha Tocopherol',
+    'Vitamin E supplementation',
+    '(Vitamin E OR Tocopherol OR Alpha Tocopherol)',
+  ],
+  'Vitamin K': () => [
+    'Vitamin K',
+    'Vitamin K1',
+    'Vitamin K2',
+    'Phylloquinone',
+    'Menaquinone',
+    'Vitamin K supplementation',
+    '(Vitamin K OR Vitamin K1 OR Vitamin K2)',
+  ],
+  'Vitamin K2': () => [
+    'Vitamin K2',
+    'Menaquinone',
+    'MK-7',
+    'MK-4',
+    'Vitamin K2 supplementation',
+    '(Vitamin K2 OR Menaquinone OR MK-7)',
   ],
   'Creatine': () => [
     'Creatine',
@@ -385,6 +577,25 @@ function findFuzzyMatch(
     if (key.length < 3) continue;
     const lengthDiff = Math.abs(query.length - key.length);
     if (lengthDiff > 3) continue; // Reject if length difference > 3
+
+    // SEMANTIC FILTERING: Prevent matching vitamins with different letters
+    // E.g., "vitamina b" should NOT match "vitamina d"
+    const vitaminPattern = /vitamin[ae]?\s*([a-k]|b\d{1,2}|d\d?|k\d?)/i;
+    const queryVitMatch = normalizedQuery.match(vitaminPattern);
+    const keyVitMatch = normalizedKey.match(vitaminPattern);
+    
+    if (queryVitMatch && keyVitMatch) {
+      // Both are vitamins - check if they have different identifiers
+      const queryVitId = queryVitMatch[1].toLowerCase();
+      const keyVitId = keyVitMatch[1].toLowerCase();
+      
+      // Reject if vitamin identifiers are different
+      // "vitamina b" (b) should NOT match "vitamina d" (d)
+      // "vitamina b12" (b12) should NOT match "vitamina b6" (b6)
+      if (queryVitId !== keyVitId) {
+        continue; // Skip this match - semantically different vitamins
+      }
+    }
 
     // Strategy 1: Exact Levenshtein on normalized strings
     const distance = levenshteinDistance(normalizedQuery, normalizedKey);
