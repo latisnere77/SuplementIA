@@ -1,0 +1,205 @@
+{
+  "Index": {
+    "title": "¡Hola, Mundo!",
+    "changeLanguage": "Cambiar Idioma"
+  },
+  "portal": {
+    "title": "Soluciones de Salud Basadas en Evidencia",
+    "subtitle": "Encuentra lo que dice la ciencia sobre suplementos e intervenciones para tus objetivos de salud. Potenciado por más de 240M de artículos científicos, analizados en tiempo real.",
+    "search": {
+      "placeholder": "Intenta buscar..."
+    },
+    "popular": {
+      "searches": "Búsquedas Populares"
+    },
+    "browse": {
+      "categories": "Explorar por Categoría",
+      "view_more": "{defaultMessage}"
+    },
+    "categories": {
+      "sleep": {
+        "name": "Sueño",
+        "desc": "Suplementos que pueden ayudar a mejorar la calidad y la duración del sueño, facilitando el descanso nocturno."
+      },
+      "energy": {
+        "name": "Energía y Fatiga",
+        "desc": "Compuestos que pueden ayudar a aumentar los niveles de energía, combatir la fatiga y mejorar el rendimiento físico y mental."
+      },
+      "anxiety": {
+        "name": "Ansiedad y Estrés",
+        "desc": "Suplementos y hierbas que pueden ayudar a reducir los síntomas de la ansiedad y a mejorar la respuesta del cuerpo al estrés."
+      },
+      "muscle-gain": {
+        "name": "Ganancia de Músculo y Ejercicio",
+        "desc": "Desarrolla músculo, mejora la fuerza y aumenta el rendimiento físico."
+      },
+      "cognitive-function": {
+        "name": "Memoria y Concentración",
+        "desc": "Mejora la función cognitiva, la memoria y la claridad mental."
+      },
+      "heart-health": {
+        "name": "Salud Cardíaca",
+        "desc": "Suplementos que apoyan la salud cardiovascular, la presión arterial y los niveles de colesterol."
+      },
+      "joint-bone-health": {
+        "name": "Salud Articular y Ósea",
+        "desc": "Suplementos para fortalecer los huesos, mejorar la flexibilidad y aliviar el dolor articular."
+      },
+      "gut-health": {
+        "name": "Salud Digestiva",
+        "desc": "Probióticos, enzimas y otros suplementos para una digestión saludable y un microbioma equilibrado."
+      },
+      "skin-hair-health": {
+        "name": "Salud de la Piel y Cabello",
+        "desc": "Nutrientes para una piel radiante, un cabello fuerte y uñas saludables."
+      },
+      "immunity": {
+        "name": "Inmunidad",
+        "desc": "Vitaminas y hierbas para fortalecer el sistema inmunológico y prevenir enfermedades."
+      },
+      "mens-health": {
+        "name": "Salud Masculina",
+        "desc": "Suplementos enfocados en la vitalidad, salud prostática y equilibrio hormonal masculino."
+      },
+      "womens-health": {
+        "name": "Salud Femenina",
+        "desc": "Apoyo para el equilibrio hormonal, el ciclo menstrual y la salud ósea en mujeres."
+      }
+    },
+    "value": {
+      "realtime": {
+        "title": "Análisis en Tiempo Real",
+        "desc": "Obtén recomendaciones basadas en la investigación más reciente, analizada en segundos"
+      },
+      "evidence": {
+        "title": "Grados de Evidencia",
+        "desc": "Mira conteos de estudios, calidad de evidencia (A/B/C) y ajustes personalizados"
+      },
+      "latam": {
+        "title": "Optimizado para LATAM",
+        "desc": "Personalizado para altitud, clima y disponibilidad local en América Latina"
+      }
+    }
+  },
+  "autocomplete": {
+    "loading": "Buscando...",
+    "no_results": "No se encontraron resultados. Intenta una búsqueda diferente.",
+    "categories": "Categoría"
+  },
+  "results": {
+    "products": {
+      "title": "Recomendaciones de Productos",
+      "desc": "Todas las opciones están respaldadas por la misma evidencia científica. Elige según tu presupuesto."
+    }
+  },
+  "product": {
+    "premium": "Opción Premium",
+    "budget": "Opción Económica",
+    "value": "Opción de Valor",
+    "contains": "Contiene:",
+    "available": "Disponible en:",
+    "buy": {
+      "amazon": "Comprar en Amazon",
+      "ankonere": "Comprar en ANKONERE"
+    },
+    "per": {
+      "month": "por mes"
+    },
+    "price": {
+      "consult": "Consultar"
+    },
+    "badges": {
+      "premium": {
+        "ankonere": "Fórmula Premium ANKONERE"
+      }
+    }
+  },
+  "share": {
+    "title": "Comparte Tu Recomendación",
+    "subtitle": "Ayuda a otros a descubrir soluciones basadas en evidencia",
+    "referral": {
+      "rewards": "Recompensas por Referidos",
+      "desc": "Gana 500 puntos ($5) cuando un amigo se suscriba a Pro. ¡Ellos obtienen 1 mes gratis!"
+    },
+    "link": {
+      "label": "Tu enlace de referido:"
+    },
+    "copied": "¡Copiado!"
+  },
+  "common": {
+    "option": "Opción",
+    "loading": "Cargando...",
+    "error": "Error",
+    "back": "Volver",
+    "close": "Cerrar"
+  },
+  "faq": {
+    "title": "Preguntas Frecuentes",
+    "subtitle": "Todo lo que necesitas saber sobre SuplementAI",
+    "categories": {
+      "all": "Todas",
+      "general": "General",
+      "science": "Ciencia",
+      "products": "Productos",
+      "safety": "Seguridad"
+    },
+    "questions": {
+      "what_is": {
+        "question": "¿Qué es SuplementAI?",
+        "answer": "SuplementAI es una plataforma que analiza estudios científicos de bases de datos globales para proporcionarte recomendaciones de suplementos basadas en evidencia real. No inventamos información, solo analizamos investigaciones publicadas y verificables."
+      },
+      "is_free": {
+        "question": "¿Es gratuito?",
+        "answer": "Sí, ofrecemos un plan gratuito que te permite realizar búsquedas básicas. El plan Pro ofrece acceso a todas las opciones de productos, análisis más profundos, y sin límites de búsqueda."
+      },
+      "source_studies": {
+        "question": "¿De dónde vienen los estudios científicos?",
+        "answer": "Todos los estudios provienen de bases de datos biomédicas globales, las fuentes de investigación más grandes del mundo, mantenidas por instituciones internacionales. Contiene más de 35 millones de artículos científicos revisados por pares."
+      },
+      "grades_meaning": {
+        "question": "¿Qué significan las calificaciones A, B, C?",
+        "answer": "Las calificaciones reflejan la calidad de la evidencia científica:\n\n• Grado A: Evidencia sólida de múltiples estudios RCT (ensayos controlados aleatorios) y meta-análisis\n• Grado B: Evidencia moderada de algunos estudios RCT\n• Grado C: Evidencia limitada, principalmente estudios observacionales\n\nBasamos estas calificaciones en el número, calidad y consistencia de los estudios disponibles."
+      },
+      "what_is_rct": {
+        "question": "¿Qué es un RCT (Randomized Controlled Trial)?",
+        "answer": "Un RCT (Ensayo Controlado Aleatorio) es el estándar de oro en investigación científica. Los participantes se asignan aleatoriamente a dos grupos: uno recibe el suplemento y otro recibe un placebo. Esto elimina sesgos y permite determinar si el suplemento realmente funciona."
+      },
+      "missing_info": {
+        "question": "¿Por qué algunos suplementos no tienen información?",
+        "answer": "Si no encontramos información sobre un suplemento, puede ser porque:\n\n1. El nombre está mal escrito (intenta con variaciones)\n2. Es un producto muy nuevo sin estudios publicados\n3. No existen estudios científicos en PubMed sobre ese compuesto\n4. Es un nombre comercial (intenta buscar con el nombre del ingrediente activo)\n\nNunca generamos información falsa. Si no hay estudios, te lo decimos claramente."
+      },
+      "why_products": {
+        "question": "¿Por qué recomiendan estos productos específicos?",
+        "answer": "Las recomendaciones de productos NO están basadas en publicidad o comisiones especiales. Mostramos:\n\n• Opción Económica: Productos básicos accesibles\n• Opción de Valor: Mejor relación calidad-precio\n• Opción Premium: Formulaciones optimizadas (como ANKONERE)\n\nTodas las opciones contienen los mismos ingredientes activos respaldados por la ciencia."
+      },
+      "affiliate_disclosure": {
+        "question": "¿Ganan dinero con los enlaces de productos?",
+        "answer": "Sí, somos transparentes al respecto. Algunos enlaces son de afiliados, lo que significa que podemos recibir una pequeña comisión si compras a través de ellos (sin costo adicional para ti). Esto nos permite mantener el servicio gratuito y seguir mejorando la plataforma."
+      },
+      "what_is_ankonere": {
+        "question": "¿Qué es ANKONERE?",
+        "answer": "ANKONERE es nuestra línea premium de suplementos formulados específicamente para el mercado latinoamericano, con dosificaciones optimizadas basadas en la evidencia científica que analizamos. Es una opción, no una obligación."
+      },
+      "trust_recommendations": {
+        "question": "¿Puedo confiar en las recomendaciones?",
+        "answer": "Nuestras recomendaciones están basadas EXCLUSIVAMENTE en estudios científicos publicados y revisados por pares. Sin embargo, NO somos un sustituto del consejo médico profesional. Siempre debes consultar con un médico o profesional de salud antes de tomar cualquier suplemento."
+      },
+      "safety_warning": {
+        "question": "¿Es seguro tomar estos suplementos?",
+        "answer": "Los suplementos que aparecen en nuestras recomendaciones han sido estudiados en investigaciones científicas y generalmente se consideran seguros para la mayoría de las personas en las dosis indicadas. Sin embargo:\n\n• Pueden interactuar con medicamentos\n• Pueden no ser seguros durante el embarazo/lactancia\n• Pueden tener efectos secundarios\n• Las dosis individuales varían\n\n¡SIEMPRE consulta con un profesional de salud antes de tomar suplementos!"
+      },
+      "adverse_reaction": {
+        "question": "¿Qué pasa si tengo una reacción adversa?",
+        "answer": "Si experimentas cualquier reacción adversa:\n\n1. Suspende inmediatamente el suplemento\n2. Consulta a un médico lo antes posible\n3. Reporta la reacción a las autoridades sanitarias de tu país\n\nNo somos responsables de reacciones adversas. Los suplementos, aunque naturales, pueden tener efectos secundarios."
+      },
+      "verify_products": {
+        "question": "¿Verifican la calidad de los productos que recomiendan?",
+        "answer": "No. No analizamos físicamente los productos ni verificamos su calidad en laboratorio. Recomendamos que compres suplementos de marcas reconocidas que:\n\n• Tengan certificaciones de terceros (USP, NSF, etc.)\n• Muestren transparencia en ingredientes\n• Tengan buena reputación en el mercado\n• Cumplan con regulaciones locales"
+      }
+    },
+    "contact": {
+      "text": "¿No encontraste lo que buscabas? Contáctanos en",
+      "help": "y te ayudaremos."
+    }
+  }
+}
