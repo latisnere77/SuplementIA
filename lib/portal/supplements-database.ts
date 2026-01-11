@@ -192,6 +192,14 @@ export const SUPPLEMENTS_DATABASE: SupplementEntry[] = [
     language: 'es',
   },
   {
+    id: 'vitamin-b-complex-es',
+    name: 'Complejo B',
+    aliases: ['vitamina b', 'vitamin b', 'vit b', 'b complex', 'complejo vitamina b', 'vitaminas b', 'b vitamins'],
+    category: 'vitamin',
+    healthConditions: ['energía', 'nervios', 'metabolismo', 'estrés', 'cognición'],
+    language: 'es',
+  },
+  {
     id: 'vitamin-k2-es',
     name: 'Vitamina K2',
     aliases: ['k2', 'menaquinona'],
@@ -542,6 +550,14 @@ export const SUPPLEMENTS_DATABASE: SupplementEntry[] = [
     aliases: ['b9', 'folic acid', 'folate'],
     category: 'vitamin',
     healthConditions: ['pregnancy', 'anemia', 'heart'],
+    language: 'en',
+  },
+  {
+    id: 'vitamin-b-complex-en',
+    name: 'Vitamin B Complex',
+    aliases: ['vitamin b', 'vitamina b', 'vit b', 'b complex', 'b vitamins', 'vitamin b complex'],
+    category: 'vitamin',
+    healthConditions: ['energy', 'nerves', 'metabolism', 'stress', 'cognition'],
     language: 'en',
   },
   {

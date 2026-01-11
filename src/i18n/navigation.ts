@@ -1,8 +1,0 @@
-import { createNavigation } from 'next-intl/navigation';
-import { locales, pathnames } from './routing';
-
-export const { Link, redirect, usePathname, useRouter } =
-  createNavigation({
-    locales
-    // pathnames, // Removed to allow dynamic routing for all pages
-  });
