@@ -9,6 +9,8 @@ frontend:
         - npm run build
         - echo "Building LanceDB with Vitamin B Complex..."
         - npx tsx scripts/add-vitamin-b-complex-to-lancedb.ts || echo "LanceDB update completed or already exists"
+        - echo "Building LanceDB with Vitamin C and D..."
+        - npx tsx scripts/add-vitamins-c-d-to-lancedb.ts || echo "LanceDB update completed or already exists"
   artifacts:
     baseDirectory: .next
     files:

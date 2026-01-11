@@ -98,7 +98,7 @@ export const SUPPLEMENTS_DATABASE: SupplementEntry[] = [
   {
     id: 'vitamin-d-es',
     name: 'Vitamina D',
-    aliases: ['vitamina d3', 'colecalciferol', 'vitamina del sol'],
+    aliases: ['vitamina d', 'vitamin d', 'vit d', 'vitamina d3', 'd3', 'colecalciferol', 'vitamina del sol', 'cholecalciferol'],
     category: 'vitamin',
     healthConditions: ['huesos', 'inmunidad', 'ánimo', 'deficiencia vitamina d'],
     language: 'es',
@@ -106,7 +106,7 @@ export const SUPPLEMENTS_DATABASE: SupplementEntry[] = [
   {
     id: 'vitamin-c-es',
     name: 'Vitamina C',
-    aliases: ['ácido ascórbico', 'acido ascorbico'],
+    aliases: ['vitamina c', 'vitamin c', 'vit c', 'ácido ascórbico', 'acido ascorbico', 'ascorbic acid', 'ascorbato'],
     category: 'vitamin',
     healthConditions: ['inmunidad', 'antioxidante', 'colágeno', 'resfriado'],
     language: 'es',
@@ -459,7 +459,7 @@ export const SUPPLEMENTS_DATABASE: SupplementEntry[] = [
   {
     id: 'vitamin-d-en',
     name: 'Vitamin D',
-    aliases: ['vitamin d3', 'cholecalciferol', 'sunshine vitamin'],
+    aliases: ['vitamin d', 'vitamina d', 'vit d', 'vitamin d3', 'd3', 'cholecalciferol', 'colecalciferol', 'sunshine vitamin'],
     category: 'vitamin',
     healthConditions: ['bones', 'immunity', 'mood', 'vitamin d deficiency'],
     language: 'en',
@@ -483,7 +483,7 @@ export const SUPPLEMENTS_DATABASE: SupplementEntry[] = [
   {
     id: 'vitamin-c-en',
     name: 'Vitamin C',
-    aliases: ['ascorbic acid'],
+    aliases: ['vitamin c', 'vitamina c', 'vit c', 'ascorbic acid', 'ácido ascórbico', 'ascorbato', 'ascorbate'],
     category: 'vitamin',
     healthConditions: ['immunity', 'antioxidant', 'collagen', 'cold'],
     language: 'en',

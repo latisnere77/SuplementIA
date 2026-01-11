@@ -20,8 +20,8 @@ const LANCEDB_PATH = process.env.LANCEDB_PATH || '/tmp/lancedb-pristine';
 // Mapping of supplement names to common aliases
 const ENRICHMENT_DATA: Record<string, string[]> = {
   // From hardcoded database - vitamins
-  'vitamin d': ['vitamin d3', 'cholecalciferol', 'colecalciferol', 'd3', 'vitamina d'],
-  'vitamin c': ['ascorbic acid', 'ácido ascórbico', 'acido ascorbico', 'vitamina c'],
+  'vitamin d': ['vitamin d3', 'cholecalciferol', 'colecalciferol', 'd3', 'vitamina d', 'vit d', 'vitamin d complex', 'vitamina d3'],
+  'vitamin c': ['ascorbic acid', 'ácido ascórbico', 'acido ascorbico', 'vitamina c', 'vit c', 'vitamin c complex', 'ascorbato'],
   'vitamin b12': ['b12', 'cobalamin', 'cyanocobalamin', 'cianocobalamina', 'vitamina b12'],
   'vitamin a': ['retinol', 'beta carotene', 'beta caroteno', 'vitamina a'],
   'vitamin e': ['tocopherol', 'tocoferol', 'vitamina e'],
