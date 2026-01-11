@@ -1,0 +1,18 @@
+{
+  "total": 39,
+  "withEmbeddings": 0,
+  "withoutEmbeddings": 39,
+  "byCategory": {
+    "mushroom": 7,
+    "vitamin": 9,
+    "mineral": 6,
+    "other": 5,
+    "amino-acid": 7,
+    "fatty-acid": 1,
+    "herb": 4
+  },
+  "byPopularity": {
+    "high": 31,
+    "medium": 8
+  }
+}

@@ -1,0 +1,271 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFront Distribution for Intelligent Supplement Search with Lambda@Edge'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Environment name
+
+  ApiGatewayDomain:
+    Type: String
+    Description: API Gateway domain name (origin)
+    Default: ''
+
+  CertificateArn:
+    Type: String
+    Description: ACM Certificate ARN for SSL (must be in us-east-1)
+    Default: ''
+
+Resources:
+  # CloudFront Origin Access Identity
+  CloudFrontOAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'OAI for ${Environment} supplement search'
+
+  # CloudFront Distribution
+  SupplementSearchDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub '${Environment} Intelligent Supplement Search'
+        Enabled: true
+        HttpVersion: http2and3
+        PriceClass: PriceClass_100  # Use only North America and Europe edge locations
+        
+        # Origins
+        Origins:
+          - Id: ApiGatewayOrigin
+            DomainName: !Ref ApiGatewayDomain
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
+              OriginReadTimeout: 30
+              OriginKeepaliveTimeout: 5
+
+        # Default Cache Behavior
+        DefaultCacheBehavior:
+          TargetOriginId: ApiGatewayOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - PATCH
+            - DELETE
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          
+          # Cache Policy
+          CachePolicyId: !Ref SupplementSearchCachePolicy
+          
+          # Origin Request Policy
+          OriginRequestPolicyId: !Ref SupplementSearchOriginRequestPolicy
+          
+          # Response Headers Policy
+          ResponseHeadersPolicyId: !Ref SupplementSearchResponseHeadersPolicy
+
+        # Custom Error Responses
+        CustomErrorResponses:
+          - ErrorCode: 500
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 502
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 503
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 504
+            ErrorCachingMinTTL: 0
+
+        # Logging
+        Logging:
+          Bucket: !GetAtt CloudFrontLogsBucket.DomainName
+          Prefix: !Sub '${Environment}/cloudfront/'
+          IncludeCookies: false
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: suplementia
+        - Key: Purpose
+          Value: edge-computing
+
+  # Cache Policy for Supplement Search
+  SupplementSearchCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub '${Environment}-supplement-search-cache-policy'
+        Comment: Cache policy for supplement search with query string support
+        DefaultTTL: 3600  # 1 hour
+        MaxTTL: 86400     # 24 hours
+        MinTTL: 0
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+          QueryStringsConfig:
+            QueryStringBehavior: whitelist
+            QueryStrings:
+              - q
+              - query
+              - language
+              - lang
+          HeadersConfig:
+            HeaderBehavior: whitelist
+            Headers:
+              - Accept-Language
+              - CloudFront-Viewer-Country
+          CookiesConfig:
+            CookieBehavior: none
+
+  # Origin Request Policy
+  SupplementSearchOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub '${Environment}-supplement-search-origin-policy'
+        Comment: Origin request policy for supplement search
+        QueryStringsConfig:
+          QueryStringBehavior: all
+        HeadersConfig:
+          HeaderBehavior: whitelist
+          Headers:
+            - Accept
+            - Accept-Language
+            - CloudFront-Viewer-Country
+            - User-Agent
+        CookiesConfig:
+          CookieBehavior: none
+
+  # Response Headers Policy
+  SupplementSearchResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub '${Environment}-supplement-search-response-headers'
+        Comment: Security and performance headers
+        SecurityHeadersConfig:
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 31536000
+            IncludeSubdomains: true
+            Override: true
+          ContentTypeOptions:
+            Override: true
+          FrameOptions:
+            FrameOption: DENY
+            Override: true
+          ReferrerPolicy:
+            ReferrerPolicy: strict-origin-when-cross-origin
+            Override: true
+          XSSProtection:
+            ModeBlock: true
+            Protection: true
+            Override: true
+        CorsConfig:
+          AccessControlAllowOrigins:
+            Items:
+              - '*'
+          AccessControlAllowHeaders:
+            Items:
+              - '*'
+          AccessControlAllowMethods:
+            Items:
+              - GET
+              - POST
+              - OPTIONS
+          AccessControlAllowCredentials: false
+          OriginOverride: true
+        CustomHeadersConfig:
+          Items:
+            - Header: X-Cache-Status
+              Value: CloudFront
+              Override: false
+
+  # S3 Bucket for CloudFront Logs
+  CloudFrontLogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${Environment}-supplement-search-cloudfront-logs'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldLogs
+            Status: Enabled
+            ExpirationInDays: 30
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: cloudfront-logs
+
+  # Bucket Policy for CloudFront Logs
+  CloudFrontLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CloudFrontLogsBucket
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub '${CloudFrontLogsBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                'aws:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${SupplementSearchDistribution}'
+
+Outputs:
+  DistributionId:
+    Description: CloudFront Distribution ID
+    Value: !Ref SupplementSearchDistribution
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchDistributionId'
+
+  DistributionDomainName:
+    Description: CloudFront Distribution Domain Name
+    Value: !GetAtt SupplementSearchDistribution.DomainName
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchDistributionDomain'
+
+  DistributionUrl:
+    Description: CloudFront Distribution URL
+    Value: !Sub 'https://${SupplementSearchDistribution.DomainName}'
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchDistributionUrl'
+
+  CachePolicyId:
+    Description: Cache Policy ID
+    Value: !Ref SupplementSearchCachePolicy
+    Export:
+      Name: !Sub '${Environment}-SupplementSearchCachePolicyId'
+
+  LogsBucketName:
+    Description: S3 Bucket for CloudFront Logs
+    Value: !Ref CloudFrontLogsBucket
+    Export:
+      Name: !Sub '${Environment}-CloudFrontLogsBucket'
