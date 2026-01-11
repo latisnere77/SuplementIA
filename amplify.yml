@@ -1,0 +1,19 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci --omit=optional --legacy-peer-deps
+    build:
+      commands:
+        - npm run build
+        - echo "Building LanceDB with Vitamin B Complex..."
+        - npx tsx scripts/add-vitamin-b-complex-to-lancedb.ts || echo "LanceDB update completed or already exists"
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
