@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: planning
-stopped_at: Completed 03-02-PLAN.md (slug corrections)
-last_updated: "2026-03-06T19:35:53.987Z"
+stopped_at: Completed 03-01-PLAN.md — Wave 0 test stubs
+last_updated: "2026-03-06T19:36:59.084Z"
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 8
-  completed_plans: 6
+  completed_plans: 7
 ---
 
 # Project State
@@ -50,6 +50,7 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 - Auto-generate lexicon from database rather than hardcoding (prevents desync)
 - [Phase 03]: Supplement slug in knowledge-base.ts must equal base ID (SUPPLEMENTS_DATABASE entry id stripped of -es/-en suffix)
 - [Phase 03]: KNOWN_MISSING slugs (lavender, caffeine, beta-alanine, bacopa-monnieri, fiber-psyllium, echinacea) flagged via it.todo only — no data added
+- [Phase 03]: Single test file covers all 4 phase-3 requirements (CAT-01, CAT-02, LINK-01, LINK-02) — Wave 0 RED stubs before any fixes applied
 
 ## Performance Metrics
 
@@ -58,6 +59,7 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 | 01    | 01   | 43min    | 2     | 8     |
 | 01    | 02   | 4min     | 2     | 5     |
 | Phase 03 P02 | 8 | 1 tasks | 2 files |
+| Phase 03 P01 | 5 | 1 tasks | 1 files |
 
 ## Forensic Audit Context
 
@@ -69,7 +71,7 @@ Key findings that inform Phase 1:
 
 ## Last Session
 
-- **Stopped at:** Completed 03-02-PLAN.md (slug corrections)
+- **Stopped at:** Completed 03-01-PLAN.md — Wave 0 test stubs
 - **Timestamp:** 2026-03-06T05:30:00Z
 
 ---
