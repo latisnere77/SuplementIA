@@ -39,7 +39,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Link href="/portal/search" className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 mb-6">
+      <Link href="/portal" className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Volver a Búsqueda
       </Link>
