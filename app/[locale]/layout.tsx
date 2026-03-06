@@ -11,6 +11,9 @@ export const metadata = {
     shortcut: '/icon.svg',
     apple: '/icon.svg',
   },
+  verification: {
+    google: 'PASTE_GSC_TOKEN_HERE', // Replace with token from Google Search Console → Settings → Ownership verification
+  },
 };
 
 export const viewport = {
