@@ -9,7 +9,7 @@
 
 **Key accomplishments:**
 - Spanish-to-English supplement resolver (`resolveToEnglishName`) — eliminated 500 errors on Spanish supplement names
-- SUPPLEMENT_LEXICON auto-generated from SUPPLEMENTS_DATABASE: 10 hardcoded entries → 90 auto-generated, proven by 633 exhaustive tests
+- SUPPLEMENT_LEXICON auto-generated from SUPPLEMENTS_DATABASE: 10 hardcoded entries → 90 auto-generated, proven by 611 exhaustive tests
 - Locale-consistent navigation: `useRouter` from `@/src/i18n/navigation` wired in all 4 portal client components
 - PortalHeader fully localized in ES: "Buscar", "Planes", "Iniciar sesion", "Cerrar sesion" via `useTranslations`
 - Knowledge-base slug corrections (5 mismatches fixed) + 0 broken hrefs in category/supplement navigation

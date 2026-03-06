@@ -8,7 +8,7 @@
 ### What Was Built
 
 - Spanish-to-English supplement resolver eliminating 500 errors on Spanish search terms
-- SUPPLEMENT_LEXICON auto-generated from SUPPLEMENTS_DATABASE (10 hardcoded → 90 auto-generated, 633 exhaustive tests)
+- SUPPLEMENT_LEXICON auto-generated from SUPPLEMENTS_DATABASE (10 hardcoded → 90 auto-generated, 611 exhaustive tests)
 - Locale-consistent search routing via `@/src/i18n/navigation` across all portal client components
 - PortalHeader fully localized in ES via `useTranslations` + `messages/es.json`
 - Knowledge-base slug corrections (5 mismatches) + zero broken hrefs in category/supplement navigation
