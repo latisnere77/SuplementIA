@@ -38,12 +38,12 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
   3. Searching a term with no PubMed studies shows a friendly "no encontramos datos científicos" message, not an error page
   4. The quiz/route.ts catch block no longer short-circuits on LanceDB failure — intent detection falls through to PubMed path (pre-condition: prior commit verified)
   5. The Spanish supplement term is translated to scientific/English name by Haiku before any PubMed API call is issued
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Verify PUB-05 pre-condition and wire Haiku ES→EN translation step (PUB-02) into enrich pipeline
-- [ ] 05-02: Route unknown supplements to PubMed with translated term (PUB-01) and run Bedrock analysis on returned studies (PUB-03)
-- [ ] 05-03: Implement graceful "no data" fallback for zero PubMed results (PUB-04) and run end-to-end validation
+- [ ] 05-01-PLAN.md — Export searchPubMedForSupplement with slim→rich type bridge + unit tests (PUB-01)
+- [ ] 05-02-PLAN.md — Replace broken condition branch in quiz/route.ts with translate→search→analyze pipeline (PUB-02, PUB-03, PUB-04)
+- [ ] 05-03-PLAN.md — Update route.test.ts: rewrite condition test, add PUB-05 / PUB-04 / PUB-02 / PUB-03 assertions (PUB-05, PUB-04, PUB-02, PUB-03)
 
 ### Phase 6: Category Slug Completion
 **Goal**: All 6 known-missing category slugs resolve to valid knowledge-base entries — no broken category links in navigation or SEO pages
