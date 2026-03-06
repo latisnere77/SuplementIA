@@ -82,7 +82,7 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
         name: 'Rhodiola Rosea',
         evidenceGrade: 'B',
         summary: 'Adaptógeno que ayuda al cuerpo a resistir el estrés físico y mental, reduciendo la sensación de fatiga.',
-        slug: 'rhodiola-rosea',
+        slug: 'rhodiola',
       },
       {
         name: 'Vitamina B12',
@@ -126,7 +126,7 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
         name: 'Proteína de Suero',
         evidenceGrade: 'A',
         summary: 'Fundamental para la reparación y crecimiento muscular post-entrenamiento. Alta biodisponibilidad y perfil completo de aminoácidos.',
-        slug: 'whey-protein',
+        slug: 'protein',
       },
       {
         name: 'Creatina',
@@ -151,7 +151,7 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
         name: 'Omega-3 (DHA)',
         evidenceGrade: 'A',
         summary: 'El DHA es un componente estructural clave del cerebro. Esencial para la función cognitiva y la salud neuronal.',
-        slug: 'omega-3',
+        slug: 'omega3',
       },
       {
         name: 'Bacopa Monnieri',
@@ -163,7 +163,7 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
         name: 'Ginkgo Biloba',
         evidenceGrade: 'C',
         summary: 'Puede mejorar el flujo sanguíneo al cerebro, pero la evidencia sobre una mejora cognitiva significativa es mixta.',
-        slug: 'ginkgo-biloba',
+        slug: 'ginkgo',
       },
     ],
   },
@@ -176,7 +176,7 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
         name: 'Omega-3 (EPA/DHA)',
         evidenceGrade: 'A',
         summary: 'Reducen los triglicéridos, la presión arterial y la inflamación, siendo claves para la salud del corazón.',
-        slug: 'omega-3',
+        slug: 'omega3',
       },
       {
         name: 'Coenzima Q10',
@@ -213,7 +213,7 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
         name: 'Colágeno Hidrolizado',
         evidenceGrade: 'B',
         summary: 'Puede ayudar a reducir el dolor articular y mejorar la salud de la piel y los tejidos conectivos.',
-        slug: 'hydrolyzed-collagen',
+        slug: 'collagen',
       },
     ],
   },
