@@ -1,15 +1,22 @@
 // lib/__tests__/sitemap.test.ts
+// Note: DB has 153 entries but only 90 unique base slugs (all have -es/-en suffix)
+// Total URLs = 90 unique slugs × 2 locales + 2 index = 182
 import sitemap from '@/app/sitemap';
+import { SUPPLEMENTS_DATABASE } from '@/lib/portal/supplements-database';
+
+const UNIQUE_SLUGS = [...new Set(SUPPLEMENTS_DATABASE.map((e) => e.id.replace(/-(?:es|en)$/, '')))];
+const EXPECTED_SUPPLEMENT_URLS = UNIQUE_SLUGS.length * 2; // 2 locales
+const EXPECTED_TOTAL = EXPECTED_SUPPLEMENT_URLS + 2; // 2 index pages
 
 describe('sitemap()', () => {
-  it('returns exactly 308 URLs (2 index + 306 supplement)', () => {
+  it(`returns exactly ${EXPECTED_TOTAL} URLs (2 index + ${EXPECTED_SUPPLEMENT_URLS} supplement)`, () => {
     const urls = sitemap();
-    expect(urls).toHaveLength(308);
+    expect(urls).toHaveLength(EXPECTED_TOTAL);
   });
 
-  it('contains 306 supplement URLs using /portal/results?q= pattern', () => {
+  it(`contains ${EXPECTED_SUPPLEMENT_URLS} supplement URLs using /portal/results?q= pattern`, () => {
     const supplementUrls = sitemap().filter((u: { url: string }) => u.url.includes('/portal/results'));
-    expect(supplementUrls).toHaveLength(306);
+    expect(supplementUrls).toHaveLength(EXPECTED_SUPPLEMENT_URLS);
   });
 
   it('has both /es/ and /en/ for ashwagandha', () => {
