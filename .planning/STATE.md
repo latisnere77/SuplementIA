@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: planning
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-03-06T20:07:48.598Z"
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-03-06T20:09:04.348Z"
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -60,6 +60,8 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 - [Phase 04]: All Vercel Analytics track() calls are flat objects (no nested props) in 'use client' components only
 - [Phase 04]: Server wrappers pass no props to client components — clients use useParams/useSearchParams internally
 - [Phase 04]: Next.js 14 server wrapper pattern: rename *page.tsx to *Client.tsx, create thin server wrapper exporting generateMetadata
+- [Phase 04]: Sitemap has 182 URLs (not 308): all 153 DB entries have -es/-en suffix, yielding 90 unique slugs
+- [Phase 04]: jest.config.js updated to transform next-intl/use-intl/next ESM packages and mock CSS for layout.tsx testing
 
 ## Performance Metrics
 
@@ -72,6 +74,7 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 | Phase 03 P03 | 15min | 3 tasks | 4 files |
 | Phase 04 P01 | 2min | 2 tasks | 4 files |
 | Phase 04 P02 | 3min | 2 tasks | 6 files |
+| Phase 04 P03 | 18min | 2 tasks | 7 files |
 
 ## Forensic Audit Context
 
@@ -83,7 +86,7 @@ Key findings that inform Phase 1:
 
 ## Last Session
 
-- **Stopped at:** Completed 04-02-PLAN.md
+- **Stopped at:** Completed 04-03-PLAN.md
 - **Timestamp:** 2026-03-06T05:30:00Z
 
 ---
