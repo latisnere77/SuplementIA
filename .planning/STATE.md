@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: planning
-stopped_at: Completed 03-01-PLAN.md — Wave 0 test stubs
-last_updated: "2026-03-06T19:36:59.084Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-03-06T19:37:29.427Z"
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -51,6 +51,8 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 - [Phase 03]: Supplement slug in knowledge-base.ts must equal base ID (SUPPLEMENTS_DATABASE entry id stripped of -es/-en suffix)
 - [Phase 03]: KNOWN_MISSING slugs (lavender, caffeine, beta-alanine, bacopa-monnieri, fiber-psyllium, echinacea) flagged via it.todo only — no data added
 - [Phase 03]: Single test file covers all 4 phase-3 requirements (CAT-01, CAT-02, LINK-01, LINK-02) — Wave 0 RED stubs before any fixes applied
+- [Phase 03]: Used getCategoryBySlug null-check (Option B) for supplement detail back-link — validates against known categories
+- [Phase 03]: GuidesCategories useRouter switched to @/src/i18n/navigation — all portal client components use locale-aware router
 
 ## Performance Metrics
 
@@ -60,6 +62,7 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 | 01    | 02   | 4min     | 2     | 5     |
 | Phase 03 P02 | 8 | 1 tasks | 2 files |
 | Phase 03 P01 | 5 | 1 tasks | 1 files |
+| Phase 03 P03 | 15min | 3 tasks | 4 files |
 
 ## Forensic Audit Context
 
@@ -71,7 +74,7 @@ Key findings that inform Phase 1:
 
 ## Last Session
 
-- **Stopped at:** Completed 03-01-PLAN.md — Wave 0 test stubs
+- **Stopped at:** Completed 03-03-PLAN.md
 - **Timestamp:** 2026-03-06T05:30:00Z
 
 ---
