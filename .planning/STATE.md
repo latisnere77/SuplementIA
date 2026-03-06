@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: planning
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-06T19:13:49.902Z"
+stopped_at: Completed 03-02-PLAN.md (slug corrections)
+last_updated: "2026-03-06T19:35:53.987Z"
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  total_plans: 8
+  completed_plans: 6
 ---
 
 # Project State
@@ -48,6 +48,8 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 - Lexicon groups supplements by base ID (strip -es/-en) and merges names+aliases into terms Set
 - Spanish name as display name for lexicon (primary market is LatAm)
 - Auto-generate lexicon from database rather than hardcoding (prevents desync)
+- [Phase 03]: Supplement slug in knowledge-base.ts must equal base ID (SUPPLEMENTS_DATABASE entry id stripped of -es/-en suffix)
+- [Phase 03]: KNOWN_MISSING slugs (lavender, caffeine, beta-alanine, bacopa-monnieri, fiber-psyllium, echinacea) flagged via it.todo only — no data added
 
 ## Performance Metrics
 
@@ -55,6 +57,7 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 |-------|------|----------|-------|-------|
 | 01    | 01   | 43min    | 2     | 8     |
 | 01    | 02   | 4min     | 2     | 5     |
+| Phase 03 P02 | 8 | 1 tasks | 2 files |
 
 ## Forensic Audit Context
 
@@ -66,7 +69,7 @@ Key findings that inform Phase 1:
 
 ## Last Session
 
-- **Stopped at:** Phase 3 context gathered
+- **Stopped at:** Completed 03-02-PLAN.md (slug corrections)
 - **Timestamp:** 2026-03-06T05:30:00Z
 
 ---

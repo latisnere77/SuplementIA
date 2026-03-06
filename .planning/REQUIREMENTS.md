@@ -23,7 +23,7 @@
 
 ### Categories
 
-- [ ] **CAT-01**: Health categories expanded and validated against SUPPLEMENTS_DATABASE
+- [x] **CAT-01**: Health categories expanded and validated against SUPPLEMENTS_DATABASE
 - [ ] **CAT-02**: Category pages functional with correct supplement mappings
 
 ### Links & Navigation
@@ -72,7 +72,7 @@
 | I18N-03 | Phase 2 | Pending |
 | I18N-04 | Phase 2 | Pending |
 | I18N-05 | Phase 2 | Pending |
-| CAT-01 | Phase 3 | Pending |
+| CAT-01 | Phase 3 | Complete |
 | CAT-02 | Phase 3 | Pending |
 | LINK-01 | Phase 3 | Pending |
 | LINK-02 | Phase 3 | Pending |
