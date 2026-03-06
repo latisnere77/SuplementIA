@@ -41,8 +41,10 @@ Users can search for ANY supplement in Spanish and get reliable, science-backed 
 
 ### Active
 
-- [ ] PUB-01: When SupplementsDB lacks data, PubMed API queried as fallback (v2.0)
-- [ ] PUB-02: PubMed results integrated into evidence display (v2.0)
+- [ ] PUB-01: When supplement is not in SUPPLEMENTS_DATABASE, Bedrock translates term (ES→scientific/EN) then queries PubMed API (v2.0)
+- [ ] PUB-02: PubMed studies analyzed by Bedrock → user sees evidence analysis equal in quality to curated DB results (v2.0)
+- [ ] PUB-03: Graceful fallback when PubMed also returns no results for a term (v2.0)
+- [ ] SLUG-01: 6 missing category slugs added to knowledge-base.ts (lavender, caffeine, beta-alanine, bacopa-monnieri, fiber-psyllium, echinacea) (v2.0)
 - [ ] ADS-01: Amazon Ads integration for supplement product recommendations
 - [ ] ADS-02: Affiliate link tracking and revenue reporting
 
@@ -94,5 +96,15 @@ Users can search for ANY supplement in Spanish and get reliable, science-backed 
 | Amazon Ads deferred | User explicit: "lo dejaria como una etapa posterior" | — Pending v2.0 |
 | Phase 5 (PubMed fallback) deferred to v2.0 | Production analytics needed to justify complexity | — Pending analytics data |
 
+## Current Milestone: v2.0 PubMed Expansion
+
+**Goal:** When a supplement isn't in SUPPLEMENTS_DATABASE, query PubMed via AI-powered ES→EN translation and deliver full evidence analysis to the user — zero dead ends.
+
+**Target features:**
+- PubMed API fallback with Bedrock-powered Spanish→scientific name translation
+- Full evidence analysis for unknown supplements (same quality as curated DB)
+- Graceful "no data found" handling when PubMed also has no studies
+- 6 missing category slugs fixed (SEO + navigation debt)
+
 ---
-*Last updated: 2026-03-06 after v1.0 milestone*
+*Last updated: 2026-03-06 after v2.0 milestone start*

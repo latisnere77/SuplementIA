@@ -1,28 +1,35 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Stabilization MVP
-current_plan: Complete
-status: milestone_complete
-stopped_at: v1.0 milestone archived
+milestone: v2.0
+milestone_name: PubMed Expansion
+current_plan: —
+status: defining_requirements
+stopped_at: —
 last_updated: "2026-03-06T00:00:00.000Z"
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 12
-  completed_plans: 12
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-06 after v1.0 milestone)
+See: .planning/PROJECT.md (updated 2026-03-06 after v2.0 milestone start)
 
 **Core value:** Users can search for ANY supplement in Spanish and get reliable evidence without errors
-**Current focus:** Planning next milestone (v2.0)
+**Current focus:** Defining requirements for v2.0
 
-## v1.0 Summary
+## Current Position
+
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-06 — Milestone v2.0 started
+
+## v1.0 Summary (Accumulated Context)
 
 Shipped 2026-03-06. All 17 in-scope v1.0 requirements satisfied:
 - Phase 1: Search backend — resolver, lexicon, error handling
@@ -32,12 +39,11 @@ Shipped 2026-03-06. All 17 in-scope v1.0 requirements satisfied:
 
 PUB-01/02 explicitly deferred to v2.0. Requires production data to justify.
 
-## Open Items for v2.0
+## Open Items Carried Forward
 
-- PUB-01/02: PubMed API fallback (Phase 5, deferred)
-- ADS-01/02: Amazon Ads integration (explicit user request, future milestone)
+- Bug fix applied 2026-03-06: catch block in quiz/route.ts no longer returns 500 on LanceDB failure — falls through to intent detection
 - GSC token: ops team inserts real token to activate indexing
-- 6 KNOWN_MISSING category slugs in knowledge-base.ts
+- 6 KNOWN_MISSING category slugs in knowledge-base.ts → entering v2.0 scope
 
 ## Key Decisions (Log)
 
@@ -46,3 +52,4 @@ All decisions logged in PROJECT.md Key Decisions table.
 ---
 *State initialized: 2026-03-05*
 *v1.0 milestone complete: 2026-03-06*
+*v2.0 milestone started: 2026-03-06*
