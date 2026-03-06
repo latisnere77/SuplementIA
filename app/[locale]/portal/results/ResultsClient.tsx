@@ -43,6 +43,7 @@ import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
 import type { GradeType } from '@/types/supplement-grade';
 import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } from '@/lib/services/pubmed-search';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
+import { track } from '@vercel/analytics';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -731,6 +732,11 @@ function ResultsPageContent() {
 
     setTransformedEvidence(transformed);
 
+    // Track supplement view event when data loads
+    if (query) {
+      track('supplement_view', { supplement: query, locale: language });
+    }
+
     // Also transform to Examine format
     const examineFormatted = transformToExamineFormat(recommendation);
     setExamineContent(examineFormatted);
@@ -1328,6 +1334,7 @@ function ResultsPageContent() {
     } else {
       const link = product.isAnkonere ? product.directLink : product.affiliateLink;
       if (link) {
+        track('result_click', { supplement: query || 'unknown', from: 'results_page' });
         window.open(link, '_blank', 'noopener,noreferrer');
       }
     }
