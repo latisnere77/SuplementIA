@@ -44,22 +44,20 @@
 
 ## Traceability
 
-Populated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | PUB-05 | Phase 5 | Pending |
-| PUB-01 | Phase 5 | Pending |
 | PUB-02 | Phase 5 | Pending |
+| PUB-01 | Phase 5 | Pending |
 | PUB-03 | Phase 5 | Pending |
 | PUB-04 | Phase 5 | Pending |
-| SLUG-01 | Phase 5 | Pending |
+| SLUG-01 | Phase 6 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 6 total
-- Mapped to phases: TBD (roadmapper to assign)
-- Unmapped: TBD
+- Mapped to phases: 6/6
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-06*
-*Last updated: 2026-03-06 after initial definition*
+*Last updated: 2026-03-06 — traceability populated by roadmapper*

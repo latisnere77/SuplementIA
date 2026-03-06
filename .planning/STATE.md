@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: PubMed Expansion
 current_plan: —
-status: defining_requirements
+status: ready_to_plan
 stopped_at: —
 last_updated: "2026-03-06T00:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
-  total_plans: 0
+  total_plans: 4
   completed_plans: 0
 ---
 
@@ -20,36 +20,59 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-06 after v2.0 milestone start)
 
 **Core value:** Users can search for ANY supplement in Spanish and get reliable evidence without errors
-**Current focus:** Defining requirements for v2.0
+**Current focus:** Phase 5 — PubMed Fallback Pipeline
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-06 — Milestone v2.0 started
+Phase: 5 of 6 (PubMed Fallback Pipeline)
+Plan: — (not yet started)
+Status: Ready to plan
+Last activity: 2026-03-06 — v2.0 roadmap created, phases 5-6 defined
 
-## v1.0 Summary (Accumulated Context)
+Progress: [░░░░░░░░░░] 0%
 
-Shipped 2026-03-06. All 17 in-scope v1.0 requirements satisfied:
-- Phase 1: Search backend — resolver, lexicon, error handling
-- Phase 2: i18n — locale-consistent routing, localized nav and suggestions
-- Phase 3: Categories & links — slug corrections, zero broken hrefs
-- Phase 4: SEO & analytics — generateMetadata, sitemap, GSC, Vercel Analytics
+## Performance Metrics
 
-PUB-01/02 explicitly deferred to v2.0. Requires production data to justify.
+**Velocity:**
+- Total plans completed: 0 (v2.0)
+- Average duration: — min
+- Total execution time: — hours
 
-## Open Items Carried Forward
+**By Phase:**
 
-- Bug fix applied 2026-03-06: catch block in quiz/route.ts no longer returns 500 on LanceDB failure — falls through to intent detection
-- GSC token: ops team inserts real token to activate indexing
-- 6 KNOWN_MISSING category slugs in knowledge-base.ts → entering v2.0 scope
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
 
-## Key Decisions (Log)
+**Recent Trend:**
+- Last 5 plans: (none yet)
+- Trend: —
 
-All decisions logged in PROJECT.md Key Decisions table.
+*Updated after each plan completion*
 
----
-*State initialized: 2026-03-05*
-*v1.0 milestone complete: 2026-03-06*
-*v2.0 milestone started: 2026-03-06*
+## Accumulated Context
+
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- Pre-v2.0: quiz/route.ts catch block bug fixed (PUB-05 pre-condition) — return statement that caused 500 on LanceDB failure removed, committed before milestone started
+- v1.0: resolveToEnglishName() is O(1) in-memory resolver — v2.0 translation via Haiku is a separate, complementary step for supplements not in DATABASE at all
+- v2.0: Translation strategy is Haiku dynamic translation, not a static ES→EN map (anti-pattern rejected)
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+- searchPubMed() exists in codebase — needs integration audit before Phase 5 planning
+- Bedrock evidence analysis pipeline exists — Phase 5 connects PubMed output to existing analysis flow
+- Phase 6 (SLUG-01) is independent of Phase 5 — can be executed in any order
+
+## Session Continuity
+
+Last session: 2026-03-06
+Stopped at: Roadmap created — ready to plan Phase 5
+Resume file: None
