@@ -7,7 +7,7 @@
 'use client';
 
 import { Brain, Heart, Zap, Moon, Dumbbell, ShieldCheck, Smile, Leaf, ArrowRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/src/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 
 export interface HealthCategory {
@@ -237,7 +237,7 @@ export default function GuidesCategories({
         {maxCategories && HEALTH_CATEGORIES.length > maxCategories && (
           <div className="text-center mt-12">
             <button
-              onClick={() => router.push('/portal/categories')}
+              onClick={() => router.push('/portal')}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
             >
               {language === 'es' ? 'Ver Todas las Categorías' : 'View All Categories'}

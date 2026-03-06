@@ -85,7 +85,8 @@ describe('LINK-01: No hardcoded broken hrefs', () => {
           scanDir(fullPath);
         } else if (entry.name.match(/\.(tsx?|jsx?)$/) && !entry.name.includes('.test.')) {
           const fileContent = fs.readFileSync(fullPath, 'utf-8');
-          if (fileContent.includes('/portal/search')) {
+          // Use word-boundary-like check: /portal/search not followed by '-' (avoids matching /portal/search-analytics imports)
+          if (/\/portal\/search(?![a-zA-Z0-9_-])/.test(fileContent)) {
             portalSearchRefs.push(fullPath);
           }
         }
