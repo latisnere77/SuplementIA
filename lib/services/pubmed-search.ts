@@ -57,20 +57,10 @@ export interface ESummaryResult {
 
 // --- Evidence Classification Configuration ---
 
-// A dictionary of supplements and their search terms.
-// Using a Set for efficient searching.
-const SUPPLEMENT_LEXICON: Record<string, { name: string; terms: Set<string> }> = {
-  TURMERIC:       { name: 'Cúrcuma', terms: new Set(['turmeric', 'curcumin', 'curcumina']) },
-  GLUCOSAMINE:    { name: 'Glucosamina', terms: new Set(['glucosamine', 'glucosamina']) },
-  MSM:            { name: 'MSM', terms: new Set(['msm', 'methylsulfonylmethane', 'metilsulfonilmetano']) },
-  COLLAGEN:       { name: 'Colágeno', terms: new Set(['collagen', 'colágeno']) },
-  MELATONIN:      { name: 'Melatonina', terms: new Set(['melatonin', 'melatonina']) },
-  MAGNESIUM:      { name: 'Magnesio', terms: new Set(['magnesium', 'magnesio']) },
-  VALERIAN:       { name: 'Valeriana', terms: new Set(['valerian', 'valeriana']) },
-  ASHWAGANDHA:    { name: 'Ashwagandha', terms: new Set(['ashwagandha', 'withania somnifera']) },
-  OMEGA3:         { name: 'Omega-3', terms: new Set(['omega-3', 'fish oil', 'epa', 'dha']) },
-  PROBIOTICS:     { name: 'Probióticos', terms: new Set(['probiotic', 'probiótico', 'lactobacillus', 'bifidobacterium']) },
-};
+// Auto-generated lexicon from SUPPLEMENTS_DATABASE (all 90 supplements, was 10 hardcoded)
+import { GENERATED_LEXICON } from './lexicon-generator';
+
+const SUPPLEMENT_LEXICON: Record<string, { name: string; terms: Set<string> }> = GENERATED_LEXICON;
 
 // NEW: A dictionary mapping general conditions to specific benefits for enrichment.
 const BENEFIT_LEXICON: Record<string, { name: string; benefits: Record<string, { name: string; terms: string[] }> }> = {
