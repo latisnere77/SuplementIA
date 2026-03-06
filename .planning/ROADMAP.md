@@ -92,16 +92,29 @@ Plans:
 
 **Requirements:** SEO-01, SEO-02, SEO-03
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Wave 0: Create 4 RED test stubs (sitemap, seo-meta, analytics-events, gsc)
+- [ ] 04-02-PLAN.md — Server wrapper + generateMetadata for results and supplement-detail pages (SEO-01)
+- [ ] 04-03-PLAN.md — Sitemap.ts (308 URLs) + robots.ts + GSC verification tag in layout (SEO-02, SEO-03)
+- [ ] 04-04-PLAN.md — Add 3 Vercel Analytics track() events to portal search and results pages (SEO-03)
+
 **Success Criteria:**
 1. Each supplement page has unique meta title, description, Open Graph tags
-2. sitemap.xml auto-generated from SUPPLEMENTS_DATABASE (158 URLs)
-3. Google Search Console connected and indexing verified
-4. Analytics dashboard shows page views, search queries, user journeys
+2. sitemap.xml auto-generated from SUPPLEMENTS_DATABASE (153 supplements, 306 supplement URLs + 2 index)
+3. Google Search Console verification tag present in layout (ops team inserts token)
+4. Analytics events: search_submitted, supplement_view, result_click tracked via Vercel Analytics
 
 **Key Files:**
-- `app/[locale]/portal/results/page.tsx` (meta tags)
-- `app/sitemap.ts` (new - sitemap generation)
-- Vercel Analytics (already installed) + enhanced tracking
+- `app/[locale]/portal/results/page.tsx` (server wrapper)
+- `app/[locale]/portal/results/ResultsClient.tsx` (renamed client component)
+- `app/[locale]/portal/supplement/[slug]/page.tsx` (server wrapper)
+- `app/[locale]/portal/supplement/[slug]/SupplementDetailClient.tsx` (renamed client component)
+- `app/sitemap.ts` (new — sitemap generation)
+- `app/robots.ts` (new — robots.txt)
+- `app/[locale]/layout.tsx` (GSC verification tag)
+- `app/[locale]/portal/page.tsx` (search_submitted event)
 
 ---
 
@@ -142,7 +155,7 @@ Phase 5 (PubMed Fallback) <- Enhancement, lowest priority
 ## Cleanup (Post-Roadmap)
 
 - Remove deprecated NORMALIZATION_MAP (`lib/portal/query-normalization/normalizer.ts`)
-- Investigate 156 vs 158 LanceDB discrepancy
+- Investigate 156 vs 153 LanceDB discrepancy
 - Sync LanceDB rebuild if DATABASE changes
 
 ---
