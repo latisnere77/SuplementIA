@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect, Fragment } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/src/i18n/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Milestone, Sparkles, Venus, Mars } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
@@ -21,6 +21,7 @@ import { normalizeQuery } from '@/lib/portal/query-normalization';
 import FAQSection from '@/components/portal/FAQSection';
 import { getAllCategories } from '@/lib/knowledge-base'; // Importar la fuente de la verdad
 import { useReducedMotion } from '@/lib/hooks/useReducedMotion';
+import { track } from '@vercel/analytics';
 
 // Mapeo de slugs a iconos para mantener la consistencia visual
 const categoryIcons: { [key: string]: React.ElementType } = {
@@ -177,6 +178,8 @@ export default function PortalPage() {
       confidence: normalized.confidence,
       finalSearchTerm: searchTerm,
     });
+
+    track('search_submitted', { query: searchTerm, locale: language });
 
     // Limpiar error previo y proceder
     setValidationError(null);
