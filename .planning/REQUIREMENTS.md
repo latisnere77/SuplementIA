@@ -7,11 +7,11 @@
 
 ### Search Backend
 
-- [ ] **SRCH-01**: SUPPLEMENT_LEXICON synchronized with SUPPLEMENTS_DATABASE (158 supplements with es/en terms)
-- [ ] **SRCH-02**: Search for "manzanilla" returns valid evidence results (no 500 error)
-- [ ] **SRCH-03**: All 158 supplements searchable in Spanish, English, and Latin American variants
-- [ ] **SRCH-04**: enrich-v2 handles unknown supplements gracefully (friendly 404, not 500)
-- [ ] **SRCH-05**: recommend/route.ts error handling differentiates "no data" vs "system error" correctly
+- [x] **SRCH-01**: SUPPLEMENT_LEXICON synchronized with SUPPLEMENTS_DATABASE (158 supplements with es/en terms)
+- [x] **SRCH-02**: Search for "manzanilla" returns valid evidence results (no 500 error)
+- [x] **SRCH-03**: All 158 supplements searchable in Spanish, English, and Latin American variants
+- [x] **SRCH-04**: enrich-v2 handles unknown supplements gracefully (friendly 404, not 500)
+- [x] **SRCH-05**: recommend/route.ts error handling differentiates "no data" vs "system error" correctly
 
 ### Internationalization (i18n)
 
@@ -62,11 +62,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SRCH-01 | Phase 1 | Pending |
-| SRCH-02 | Phase 1 | Pending |
-| SRCH-03 | Phase 1 | Pending |
-| SRCH-04 | Phase 1 | Pending |
-| SRCH-05 | Phase 1 | Pending |
+| SRCH-01 | Phase 1 | Complete |
+| SRCH-02 | Phase 1 | Complete |
+| SRCH-03 | Phase 1 | Complete |
+| SRCH-04 | Phase 1 | Complete |
+| SRCH-05 | Phase 1 | Complete |
 | I18N-01 | Phase 2 | Pending |
 | I18N-02 | Phase 2 | Pending |
 | I18N-03 | Phase 2 | Pending |
@@ -89,4 +89,4 @@
 
 ---
 *Requirements defined: 2026-03-05*
-*Last updated: 2026-03-05 after forensic audit*
+*Last updated: 2026-03-06 after plan 01-01 completion*

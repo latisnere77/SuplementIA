@@ -10,6 +10,13 @@
 
 **Requirements:** SRCH-01, SRCH-02, SRCH-03, SRCH-04, SRCH-05
 
+**Plans:** 1/2 complete
+
+| Plan | Name | Status |
+|------|------|--------|
+| 01-01 | Deduplicate DB + Spanish-to-English resolver + error handling | Complete |
+| 01-02 | TBD | Pending |
+
 **Success Criteria:**
 1. SUPPLEMENT_LEXICON contains all 158 supplements from SUPPLEMENTS_DATABASE with Spanish + English terms
 2. Searching "manzanilla" returns valid evidence (no 500 error)
