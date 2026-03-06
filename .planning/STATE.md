@@ -10,15 +10,15 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 ## Current Phase
 
 **Phase:** 1 - Search Backend Fix
-**Status:** In progress
-**Current Plan:** 2 of 2
+**Status:** Complete
+**Current Plan:** 2 of 2 (done)
 **Requirements:** SRCH-01, SRCH-02, SRCH-03, SRCH-04, SRCH-05
 
 ## Progress
 
 | Phase | Status | Requirements | Progress |
 |-------|--------|-------------|----------|
-| 1     | In progress | 5       | 50%      |
+| 1     | Complete    | 5       | 100%     |
 | 2     | Pending | 5           | 0%       |
 | 3     | Pending | 4           | 0%       |
 | 4     | Pending | 3           | 0%       |
@@ -30,12 +30,16 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 - Resolver uses in-memory Map built at module load (no async, no API calls)
 - Error responses use Spanish messages for user-facing text, English error codes for programmatic use
 - Work executed from ~/Developer/suplementAI due to iCloud eviction issues in ~/Documents
+- Lexicon groups supplements by base ID (strip -es/-en) and merges names+aliases into terms Set
+- Spanish name as display name for lexicon (primary market is LatAm)
+- Auto-generate lexicon from database rather than hardcoding (prevents desync)
 
 ## Performance Metrics
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | 01    | 01   | 43min    | 2     | 8     |
+| 01    | 02   | 4min     | 2     | 5     |
 
 ## Forensic Audit Context
 
@@ -47,8 +51,8 @@ Key findings that inform Phase 1:
 
 ## Last Session
 
-- **Stopped at:** Completed 01-01-PLAN.md
-- **Timestamp:** 2026-03-06T03:53:00Z
+- **Stopped at:** Completed 01-02-PLAN.md (Phase 1 complete)
+- **Timestamp:** 2026-03-06T04:00:00Z
 
 ---
 *State initialized: 2026-03-05*

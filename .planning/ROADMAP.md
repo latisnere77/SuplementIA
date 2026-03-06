@@ -10,12 +10,12 @@
 
 **Requirements:** SRCH-01, SRCH-02, SRCH-03, SRCH-04, SRCH-05
 
-**Plans:** 1/2 complete
+**Plans:** 2/2 complete
 
 | Plan | Name | Status |
 |------|------|--------|
 | 01-01 | Deduplicate DB + Spanish-to-English resolver + error handling | Complete |
-| 01-02 | TBD | Pending |
+| 01-02 | Lexicon expansion from 10 to 90 entries + exhaustive coverage tests | Complete |
 
 **Success Criteria:**
 1. SUPPLEMENT_LEXICON contains all 158 supplements from SUPPLEMENTS_DATABASE with Spanish + English terms
