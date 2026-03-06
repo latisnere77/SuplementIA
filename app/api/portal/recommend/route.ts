@@ -11,6 +11,7 @@ import { randomUUID } from 'crypto';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { normalizeQuery } from '@/lib/portal/query-normalization';
+import { resolveToEnglishName } from '@/lib/portal/resolve-supplement-name';
 // REMOVED: job-store doesn't work in serverless (memory not shared between instances)
 // import { createJob, markTimeout, createRetryJob, hasExceededRetryLimit, getJob } from '@/lib/portal/job-store';
 import {
@@ -133,6 +134,17 @@ export async function POST(request: NextRequest) {
     const normalized = normalizeQuery(sanitizedCategory);
     const searchTerm = normalized.normalized;
 
+    // Resolve Spanish name to English for Lambda (locked fix per CONTEXT)
+    const resolvedName = resolveToEnglishName(searchTerm);
+
+    logStructured('info', 'NAME_RESOLVED', {
+      requestId,
+      jobId,
+      searchTerm,
+      resolvedName,
+      wasTranslated: searchTerm !== resolvedName,
+    });
+
     logStructured('info', 'QUERY_NORMALIZED', {
       requestId,
       jobId,
@@ -161,7 +173,7 @@ export async function POST(request: NextRequest) {
           'X-Job-ID': jobId,
         },
         body: JSON.stringify({
-          supplementName: searchTerm,
+          supplementName: resolvedName,
           benefitQuery, // Pass it to the enrichment service
           category: searchTerm,
           forceRefresh: false, // Use cache when available (96% faster: 1s vs 30s)
@@ -189,7 +201,7 @@ export async function POST(request: NextRequest) {
             'X-Job-ID': jobId,
           },
           body: JSON.stringify({
-            supplementName: searchTerm,
+            supplementName: resolvedName,
             benefitQuery, // Pass benefit query in async mode too
             category: searchTerm,
             forceRefresh: false,
@@ -208,7 +220,7 @@ export async function POST(request: NextRequest) {
           status: 'processing',
           recommendation_id: jobId, // Quiz expects this field
           jobId, // Keep for backward compatibility
-          supplementName: searchTerm,
+          supplementName: resolvedName,
           originalQuery: category,
           message: 'Enrichment started in background',
           pollUrl: `/api/portal/enrichment-status/${jobId}?supplement=${encodeURIComponent(searchTerm)}`,
@@ -263,16 +275,38 @@ export async function POST(request: NextRequest) {
           },
           { status: 404 }
         );
+      } else if (enrichResponse.status === 502 || enrichResponse.status === 503) {
+        // UPSTREAM SERVICE ERROR: Lambda or downstream service unavailable
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'upstream_service_error',
+            message: 'El servicio de analisis no esta disponible temporalmente. Por favor, intenta de nuevo en unos segundos.',
+            retryable: true,
+            requestId,
+            category: sanitizedCategory,
+          },
+          { status: enrichResponse.status }
+        );
+      } else if (enrichResponse.status === 400) {
+        // BAD INPUT: passthrough
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'bad_request',
+            message: errorData.message || 'Solicitud invalida.',
+            requestId,
+            category: sanitizedCategory,
+          },
+          { status: 400 }
+        );
       } else {
-        // SYSTEM ERROR: Lambda failed, timeout, or other server error
-        // Return 500 so frontend shows system error (red) not "no data" (yellow)
+        // SYSTEM ERROR: Other server errors
         return NextResponse.json(
           {
             success: false,
             error: 'enrichment_failed',
-            message: `Hubo un error al procesar la información de "${sanitizedCategory}". Por favor, intenta de nuevo.`,
-            details: errorData.error || errorData.message || 'Enrichment service error',
-            statusCode: enrichResponse.status,
+            message: `Hubo un error al procesar la informacion de "${sanitizedCategory}". Por favor, intenta de nuevo.`,
             requestId,
             category: sanitizedCategory,
           },
@@ -448,12 +482,12 @@ export async function POST(request: NextRequest) {
     );
 
     // DO NOT generate fake data - return proper error instead
+    // DO NOT leak raw error.message to clients
     return NextResponse.json(
       {
         success: false,
         error: 'recommendation_generation_failed',
-        message: `Hubo un error al generar la recomendación. Por favor, intenta de nuevo.`,
-        details: error.message,
+        message: 'Hubo un error al generar la recomendacion. Por favor, intenta de nuevo.',
         requestId,
       },
       { status: 500 }

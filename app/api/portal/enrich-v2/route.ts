@@ -155,11 +155,56 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     const duration = Date.now() - startTime;
     console.error(`[enrich-v2] Error after ${duration}ms:`, error);
-    
+
+    // Differentiate error types for proper status codes
+    if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'service_unavailable',
+          message: 'El servicio esta temporalmente ocupado. Intenta de nuevo en unos segundos.',
+          retryable: true,
+          requestId,
+          duration,
+        },
+        { status: 503 }
+      );
+    }
+
+    if (error.message?.includes('Studies fetch failed')) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'studies_service_error',
+          message: 'No pudimos obtener los estudios cientificos. Intenta de nuevo.',
+          retryable: true,
+          requestId,
+          duration,
+        },
+        { status: 502 }
+      );
+    }
+
+    if (error.message?.includes('Enrichment failed')) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'enrichment_service_error',
+          message: 'El servicio de analisis no esta disponible. Intenta de nuevo.',
+          retryable: true,
+          requestId,
+          duration,
+        },
+        { status: 502 }
+      );
+    }
+
+    // Default: internal error (do NOT expose raw error.message)
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Internal server error',
+        error: 'internal_error',
+        message: 'Error inesperado. Por favor, intenta de nuevo.',
         requestId,
         duration,
       },
