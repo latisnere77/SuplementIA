@@ -1,4 +1,11 @@
 {
+  "nav": {
+    "search": "Search",
+    "plans": "Plans",
+    "sign_in": "Sign In",
+    "sign_out": "Sign Out",
+    "subscription": "Subscription"
+  },
   "Index": {
     "title": "Hello, World!",
     "changeLanguage": "Change Language"

@@ -1,163 +1,37 @@
-# Roadmap: SuplementAI Stabilization
+# Roadmap: SuplementAI
 
-**Created:** 2026-03-05
-**Phases:** 5
-**Requirements:** 19 mapped
+## Milestones
 
-## Phase 1: Search Backend Fix (CRITICAL)
+- [x] **v1.0 Stabilization MVP** — Phases 1-4 (shipped 2026-03-06)
+- [ ] **v2.0** — Phases 5+ (planned)
 
-**Goal:** All 158 supplements searchable without errors in Spanish and English
+## Phases
 
-**Requirements:** SRCH-01, SRCH-02, SRCH-03, SRCH-04, SRCH-05
+<details>
+<summary>v1.0 Stabilization MVP (Phases 1-4) — SHIPPED 2026-03-06</summary>
 
-**Plans:** 2/2 complete
+- [x] Phase 1: Search Backend Fix (2/2 plans) — completed 2026-03-06
+- [x] Phase 2: Internationalization Fix (3/3 plans) — completed 2026-03-06
+- [x] Phase 3: Categories & Links Audit (3/3 plans) — completed 2026-03-06
+- [x] Phase 4: SEO & Analytics (4/4 plans) — completed 2026-03-06
 
-| Plan | Name | Status |
-|------|------|--------|
-| 01-01 | Deduplicate DB + Spanish-to-English resolver + error handling | Complete |
-| 01-02 | Lexicon expansion from 10 to 90 entries + exhaustive coverage tests | Complete |
+Full details: `.planning/milestones/v1.0-ROADMAP.md`
 
-**Success Criteria:**
-1. SUPPLEMENT_LEXICON contains all 158 supplements from SUPPLEMENTS_DATABASE with Spanish + English terms
-2. Searching "manzanilla" returns valid evidence (no 500 error)
-3. recommend/route.ts returns friendly 404 for "no data" and 500 only for real system errors
-4. All 158 supplements tested via automated test suite
+</details>
 
-**Key Files:**
-- `lib/services/pubmed-search.ts` (SUPPLEMENT_LEXICON expansion)
-- `app/api/portal/recommend/route.ts` (error handling fix)
-- `app/api/portal/enrich-v2/route.ts` (graceful fallback)
-- `lib/portal/supplements-database.ts` (source of truth)
+### v2.0 (Planned)
 
----
+- [ ] Phase 5: PubMed API Fallback — deferred from v1.0; requires production analytics to justify
 
-## Phase 2: Internationalization Fix
+## Progress
 
-**Goal:** UI fully localized in Spanish when ES locale selected, no locale switching
-
-**Requirements:** I18N-01, I18N-02, I18N-03, I18N-04, I18N-05
-
-**Plans:** 3 plans
-
-Plans:
-- [x] 02-01-PLAN.md — Create failing test stubs for all i18n requirements (Wave 1)
-- [x] 02-02-PLAN.md — Fix useRouter imports in 3 files + wire PortalHeader translations + add nav message keys (Wave 2)
-- [x] 02-03-PLAN.md — Fix ErrorState: remove English tips + replace window.location.href with locale-aware router (Wave 2, parallel)
-
-**Success Criteria:**
-1. Searching from /es/portal stays in /es/portal/results (no redirect to /en/)
-2. Nav items show "Buscar" and "Planes" in ES locale
-3. Fallback suggestions show Spanish supplement names in ES locale
-4. "Usa terminos en ingles" advice removed from search tips
-5. Evidence results render in selected locale language
-
-**Key Files:**
-- `middleware.ts` (locale routing)
-- `app/[locale]/portal/results/page.tsx` (results page locale)
-- `components/portal/ErrorState.tsx` (localized suggestions)
-- `messages/es.json`, `messages/en.json` (translation files)
+| Phase                     | Milestone | Plans Complete | Status      | Completed  |
+| ------------------------- | --------- | -------------- | ----------- | ---------- |
+| 1. Search Backend Fix     | v1.0      | 2/2            | Complete    | 2026-03-06 |
+| 2. Internationalization   | v1.0      | 3/3            | Complete    | 2026-03-06 |
+| 3. Categories & Links     | v1.0      | 3/3            | Complete    | 2026-03-06 |
+| 4. SEO & Analytics        | v1.0      | 4/4            | Complete    | 2026-03-06 |
+| 5. PubMed Fallback        | v2.0      | 0/?            | Not started | -          |
 
 ---
-
-## Phase 3: Categories & Links Audit
-
-**Goal:** Categories expanded, validated, and all navigation links functional
-
-**Requirements:** CAT-01, CAT-02, LINK-01, LINK-02
-
-**Plans:** 3/3 plans complete
-
-Plans:
-- [ ] 03-01-PLAN.md — Create failing test stubs for all 4 requirements (Wave 0)
-- [ ] 03-02-PLAN.md — Fix 5 slug mismatches in knowledge-base.ts (Wave 1)
-- [ ] 03-03-PLAN.md — Fix 3 broken hrefs + useRouter import + benefit null-check (Wave 1, parallel)
-
-**Success Criteria:**
-1. Health categories cover all supplement categories from SUPPLEMENTS_DATABASE
-2. Category detail pages show correct supplements with evidence grades
-3. All hyperlinks audited (automated crawl) with 0 broken links
-4. Broken link attempts show proper 404 page
-
-**Key Files:**
-- `lib/knowledge-base.ts` (slug corrections)
-- `app/[locale]/portal/category/[slug]/page.tsx`
-- `components/portal/GuidesCategories.tsx`
-- `app/[locale]/portal/supplement/[slug]/page.tsx`
-
----
-
-## Phase 4: SEO & Analytics
-
-**Goal:** Site discoverable by search engines, visitor behavior tracked
-
-**Requirements:** SEO-01, SEO-02, SEO-03
-
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 04-01-PLAN.md — Wave 0: Create 4 RED test stubs (sitemap, seo-meta, analytics-events, gsc)
-- [ ] 04-02-PLAN.md — Server wrapper + generateMetadata for results and supplement-detail pages (SEO-01)
-- [ ] 04-03-PLAN.md — Sitemap.ts (308 URLs) + robots.ts + GSC verification tag in layout (SEO-02, SEO-03)
-- [ ] 04-04-PLAN.md — Add 3 Vercel Analytics track() events to portal search and results pages (SEO-03)
-
-**Success Criteria:**
-1. Each supplement page has unique meta title, description, Open Graph tags
-2. sitemap.xml auto-generated from SUPPLEMENTS_DATABASE (153 supplements, 306 supplement URLs + 2 index)
-3. Google Search Console verification tag present in layout (ops team inserts token)
-4. Analytics events: search_submitted, supplement_view, result_click tracked via Vercel Analytics
-
-**Key Files:**
-- `app/[locale]/portal/results/page.tsx` (server wrapper)
-- `app/[locale]/portal/results/ResultsClient.tsx` (renamed client component)
-- `app/[locale]/portal/supplement/[slug]/page.tsx` (server wrapper)
-- `app/[locale]/portal/supplement/[slug]/SupplementDetailClient.tsx` (renamed client component)
-- `app/sitemap.ts` (new — sitemap generation)
-- `app/robots.ts` (new — robots.txt)
-- `app/[locale]/layout.tsx` (GSC verification tag)
-- `app/[locale]/portal/page.tsx` (search_submitted event)
-
----
-
-## Phase 5: PubMed API Fallback
-
-**Goal:** When SupplementsDB lacks data, PubMed API provides fallback evidence
-
-**Requirements:** PUB-01, PUB-02
-
-**Success Criteria:**
-1. If enrich-v2 returns insufficient_data, PubMed E-utilities queried directly
-2. PubMed results formatted and displayed in same evidence panel format
-3. User sees "Fuente: PubMed" indicator for fallback results
-
-**Key Files:**
-- `lib/services/pubmed-search.ts` (direct PubMed query)
-- `app/api/portal/enrich-v2/route.ts` (fallback chain)
-- `components/portal/EvidenceAnalysisPanelNew.tsx` (source indicator)
-
----
-
-## Phase Dependencies
-
-```
-Phase 1 (Search Fix) <- BLOCKS everything
-    |
-    v
-Phase 2 (i18n) <- Independent after Phase 1
-Phase 3 (Categories/Links) <- Independent after Phase 1
-    |
-    v
-Phase 4 (SEO/Analytics) <- Needs working pages from Phase 2+3
-    |
-    v
-Phase 5 (PubMed Fallback) <- Enhancement, lowest priority
-```
-
-## Cleanup (Post-Roadmap)
-
-- Remove deprecated NORMALIZATION_MAP (`lib/portal/query-normalization/normalizer.ts`)
-- Investigate 156 vs 153 LanceDB discrepancy
-- Sync LanceDB rebuild if DATABASE changes
-
----
-*Roadmap created: 2026-03-05*
-*Based on forensic audit evidence*
+*v1.0 shipped: 2026-03-06*

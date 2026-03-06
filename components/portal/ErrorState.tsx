@@ -13,6 +13,7 @@
 import { AlertCircle, RefreshCw, Search, Microscope, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useRouter } from '@/src/i18n/navigation';
 
 export type ErrorType = 'insufficient_scientific_data' | 'system_error' | 'network_error' | 'generic';
 
@@ -40,12 +41,13 @@ interface ErrorStateProps {
   suggestions?: string[];
 }
 
-export function ErrorState({ 
-  error, 
-  supplementName, 
-  onRetry, 
-  suggestions: legacySuggestions = [] 
+export function ErrorState({
+  error,
+  supplementName,
+  onRetry,
+  suggestions: legacySuggestions = []
 }: ErrorStateProps) {
+  const router = useRouter();
   // Parse error object or string
   const errorData = typeof error === 'string' 
     ? { type: 'generic' as ErrorType, message: error, suggestions: [] }
@@ -142,7 +144,7 @@ export function ErrorState({
                       <button
                         key={i}
                         onClick={() => {
-                          window.location.href = `/portal/results?q=${encodeURIComponent(suggestion.name)}`;
+                          router.push(`/portal/results?q=${encodeURIComponent(suggestion.name)}`);
                         }}
                         className="group relative px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg text-left"
                       >
@@ -166,8 +168,8 @@ export function ErrorState({
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                <Button 
-                  onClick={() => window.location.href = '/portal'} 
+                <Button
+                  onClick={() => router.push('/portal')}
                   variant="default"
                   size="lg"
                   className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -194,7 +196,6 @@ export function ErrorState({
                 <ul className="text-xs text-blue-800 space-y-1.5">
                   <li>• <strong>Verifica la ortografía</strong> del nombre del suplemento</li>
                   <li>• <strong>Usa el nombre científico</strong> si lo conoces (ej: &ldquo;Withania somnifera&rdquo; en vez de &ldquo;ashwagandha&rdquo;)</li>
-                  <li>• <strong>Prueba con términos en inglés</strong> - la mayoría de estudios están en inglés</li>
                   <li>• <strong>Evita nombres comerciales</strong> - busca el ingrediente activo (ej: &ldquo;Creatine&rdquo; en vez de &ldquo;CreaPure&rdquo;)</li>
                   <li>• <strong>Busca por categoría</strong> - ej: &ldquo;adaptógeno&rdquo;, &ldquo;nootrópico&rdquo;, &ldquo;antioxidante&rdquo;</li>
                 </ul>
@@ -236,7 +237,7 @@ export function ErrorState({
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        window.location.href = `/portal/results?q=${encodeURIComponent(suggestion.name)}`;
+                        router.push(`/portal/results?q=${encodeURIComponent(suggestion.name)}`);
                       }}
                       className="bg-white hover:bg-red-100 border-red-300"
                     >
@@ -257,8 +258,8 @@ export function ErrorState({
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Intentar de Nuevo
               </Button>
-              <Button 
-                onClick={() => window.location.href = '/portal'} 
+              <Button
+                onClick={() => router.push('/portal')}
                 variant="outline"
                 className="border-red-300 hover:bg-red-100"
               >
@@ -273,7 +274,6 @@ export function ErrorState({
               <ul className="text-left space-y-1 max-w-md mx-auto">
                 <li>• Verifica la ortografía del suplemento</li>
                 <li>• Intenta con el nombre científico (ej: &ldquo;Withania somnifera&rdquo; en vez de &ldquo;ashwagandha&rdquo;)</li>
-                <li>• Usa términos en inglés si es posible</li>
                 <li>• Evita nombres comerciales o marcas</li>
               </ul>
             </div>

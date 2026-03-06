@@ -1,4 +1,11 @@
 {
+  "nav": {
+    "search": "Buscar",
+    "plans": "Planes",
+    "sign_in": "Iniciar sesión",
+    "sign_out": "Cerrar sesión",
+    "subscription": "Suscripción"
+  },
   "Index": {
     "title": "¡Hola, Mundo!",
     "changeLanguage": "Cambiar Idioma"

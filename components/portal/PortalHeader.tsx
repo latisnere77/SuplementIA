@@ -6,7 +6,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/src/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { User, LogOut, CreditCard, Menu, X } from 'lucide-react';
 import { useAuth } from '@/lib/auth/useAuth';
 import AuthModal from './AuthModal';
@@ -15,6 +16,7 @@ import { useReducedMotion } from '@/lib/hooks/useReducedMotion';
 
 export default function PortalHeader() {
   const router = useRouter();
+  const t = useTranslations('nav');
   const { user, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -49,13 +51,13 @@ export default function PortalHeader() {
                 onClick={() => router.push('/portal')}
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors min-h-[44px] px-2 py-3"
               >
-                Search
+                {t('search')}
               </button>
               <button
                 onClick={() => router.push('/portal/subscription')}
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors min-h-[44px] px-2 py-3"
               >
-                Plans
+                {t('plans')}
               </button>
             </nav>
 
@@ -81,7 +83,7 @@ export default function PortalHeader() {
                         className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
                       >
                         <CreditCard className="h-4 w-4" />
-                        Subscription
+                        {t('subscription')}
                       </button>
                       <button
                         onClick={() => {
@@ -91,7 +93,7 @@ export default function PortalHeader() {
                         className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
                       >
                         <LogOut className="h-4 w-4" />
-                        Sign Out
+                        {t('sign_out')}
                       </button>
                     </div>
                   )}
@@ -101,7 +103,7 @@ export default function PortalHeader() {
                   onClick={() => setShowAuthModal(true)}
                   className="hidden md:block px-4 py-3 min-h-[44px] bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all"
                 >
-                  Sign In
+                  {t('sign_in')}
                 </button>
               )}
 
@@ -139,7 +141,7 @@ export default function PortalHeader() {
                   }}
                   className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors"
                 >
-                  Search
+                  {t('search')}
                 </button>
                 <button
                   onClick={() => {
@@ -148,7 +150,7 @@ export default function PortalHeader() {
                   }}
                   className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors"
                 >
-                  Plans
+                  {t('plans')}
                 </button>
 
                 {/* Mobile Auth Section */}
@@ -166,7 +168,7 @@ export default function PortalHeader() {
                         className="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg flex items-center gap-2 transition-colors"
                       >
                         <CreditCard className="h-5 w-5" />
-                        Subscription
+                        {t('subscription')}
                       </button>
                       <button
                         onClick={() => {
@@ -176,7 +178,7 @@ export default function PortalHeader() {
                         className="w-full text-left px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg flex items-center gap-2 transition-colors"
                       >
                         <LogOut className="h-5 w-5" />
-                        Sign Out
+                        {t('sign_out')}
                       </button>
                     </>
                   ) : (
@@ -187,7 +189,7 @@ export default function PortalHeader() {
                       }}
                       className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all"
                     >
-                      Sign In
+                      {t('sign_in')}
                     </button>
                   )}
                 </div>
