@@ -1,4 +1,7 @@
 // components/portal/__tests__/seo-meta.test.ts
+// Mock ResultsClient to avoid next-intl ESM issues in Node test environment
+jest.mock('@/app/[locale]/portal/results/ResultsClient', () => ({ __esModule: true, default: () => null }));
+
 import { generateMetadata } from '@/app/[locale]/portal/results/page';
 
 describe('generateMetadata — results page', () => {
