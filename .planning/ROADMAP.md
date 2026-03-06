@@ -37,6 +37,13 @@
 
 **Requirements:** I18N-01, I18N-02, I18N-03, I18N-04, I18N-05
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Create failing test stubs for all i18n requirements (Wave 1)
+- [ ] 02-02-PLAN.md — Fix useRouter imports in 3 files + wire PortalHeader translations + add nav message keys (Wave 2)
+- [ ] 02-03-PLAN.md — Fix ErrorState: remove English tips + replace window.location.href with locale-aware router (Wave 2, parallel)
+
 **Success Criteria:**
 1. Searching from /es/portal stays in /es/portal/results (no redirect to /en/)
 2. Nav items show "Buscar" and "Planes" in ES locale
