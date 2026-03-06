@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: planning
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-06T19:40:52.596Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-06T20:06:57.310Z"
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 12
+  completed_plans: 9
 ---
 
 # Project State
@@ -53,6 +53,9 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 - [Phase 03]: Single test file covers all 4 phase-3 requirements (CAT-01, CAT-02, LINK-01, LINK-02) — Wave 0 RED stubs before any fixes applied
 - [Phase 03]: Used getCategoryBySlug null-check (Option B) for supplement detail back-link — validates against known categories
 - [Phase 03]: GuidesCategories useRouter switched to @/src/i18n/navigation — all portal client components use locale-aware router
+- [Phase 04]: gsc.test.ts accepts placeholder token as truthy — actual GSC token is an ops task, not code deliverable
+- [Phase 04]: analytics-events stubs use it.todo — full integration requires client component rendering mocks, deferred to post-implementation
+- [Phase 04]: sitemap test derives URL count dynamically from SUPPLEMENTS_DATABASE unique slugs (not hardcoded 308)
 
 ## Performance Metrics
 
@@ -63,6 +66,7 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 | Phase 03 P02 | 8 | 1 tasks | 2 files |
 | Phase 03 P01 | 5 | 1 tasks | 1 files |
 | Phase 03 P03 | 15min | 3 tasks | 4 files |
+| Phase 04 P01 | 2min | 2 tasks | 4 files |
 
 ## Forensic Audit Context
 
@@ -74,7 +78,7 @@ Key findings that inform Phase 1:
 
 ## Last Session
 
-- **Stopped at:** Completed 03-03-PLAN.md
+- **Stopped at:** Completed 04-01-PLAN.md
 - **Timestamp:** 2026-03-06T05:30:00Z
 
 ---
