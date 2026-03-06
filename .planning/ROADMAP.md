@@ -40,9 +40,9 @@
 **Plans:** 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Create failing test stubs for all i18n requirements (Wave 1)
-- [ ] 02-02-PLAN.md — Fix useRouter imports in 3 files + wire PortalHeader translations + add nav message keys (Wave 2)
-- [ ] 02-03-PLAN.md — Fix ErrorState: remove English tips + replace window.location.href with locale-aware router (Wave 2, parallel)
+- [x] 02-01-PLAN.md — Create failing test stubs for all i18n requirements (Wave 1)
+- [x] 02-02-PLAN.md — Fix useRouter imports in 3 files + wire PortalHeader translations + add nav message keys (Wave 2)
+- [x] 02-03-PLAN.md — Fix ErrorState: remove English tips + replace window.location.href with locale-aware router (Wave 2, parallel)
 
 **Success Criteria:**
 1. Searching from /es/portal stays in /es/portal/results (no redirect to /en/)
@@ -65,6 +65,13 @@ Plans:
 
 **Requirements:** CAT-01, CAT-02, LINK-01, LINK-02
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Create failing test stubs for all 4 requirements (Wave 0)
+- [ ] 03-02-PLAN.md — Fix 5 slug mismatches in knowledge-base.ts (Wave 1)
+- [ ] 03-03-PLAN.md — Fix 3 broken hrefs + useRouter import + benefit null-check (Wave 1, parallel)
+
 **Success Criteria:**
 1. Health categories cover all supplement categories from SUPPLEMENTS_DATABASE
 2. Category detail pages show correct supplements with evidence grades
@@ -72,9 +79,10 @@ Plans:
 4. Broken link attempts show proper 404 page
 
 **Key Files:**
-- `lib/knowledge-base.ts` (12 categories - expand)
+- `lib/knowledge-base.ts` (slug corrections)
 - `app/[locale]/portal/category/[slug]/page.tsx`
-- All navigation components
+- `components/portal/GuidesCategories.tsx`
+- `app/[locale]/portal/supplement/[slug]/page.tsx`
 
 ---
 
@@ -118,17 +126,17 @@ Plans:
 ## Phase Dependencies
 
 ```
-Phase 1 (Search Fix) ← BLOCKS everything
+Phase 1 (Search Fix) <- BLOCKS everything
     |
     v
-Phase 2 (i18n) ← Independent after Phase 1
-Phase 3 (Categories/Links) ← Independent after Phase 1
+Phase 2 (i18n) <- Independent after Phase 1
+Phase 3 (Categories/Links) <- Independent after Phase 1
     |
     v
-Phase 4 (SEO/Analytics) ← Needs working pages from Phase 2+3
+Phase 4 (SEO/Analytics) <- Needs working pages from Phase 2+3
     |
     v
-Phase 5 (PubMed Fallback) ← Enhancement, lowest priority
+Phase 5 (PubMed Fallback) <- Enhancement, lowest priority
 ```
 
 ## Cleanup (Post-Roadmap)
