@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: planning
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-06T20:06:57.310Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-06T20:07:48.598Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 12
-  completed_plans: 9
+  completed_plans: 11
 ---
 
 # Project State
@@ -56,6 +56,10 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 - [Phase 04]: gsc.test.ts accepts placeholder token as truthy — actual GSC token is an ops task, not code deliverable
 - [Phase 04]: analytics-events stubs use it.todo — full integration requires client component rendering mocks, deferred to post-implementation
 - [Phase 04]: sitemap test derives URL count dynamically from SUPPLEMENTS_DATABASE unique slugs (not hardcoded 308)
+- [Phase 04]: track('result_click') placed in handleBuyClick (product link open) — results page is a single-supplement detail view, product click is the primary result interaction
+- [Phase 04]: All Vercel Analytics track() calls are flat objects (no nested props) in 'use client' components only
+- [Phase 04]: Server wrappers pass no props to client components — clients use useParams/useSearchParams internally
+- [Phase 04]: Next.js 14 server wrapper pattern: rename *page.tsx to *Client.tsx, create thin server wrapper exporting generateMetadata
 
 ## Performance Metrics
 
@@ -67,6 +71,7 @@ See: .planning/PROJECT.md (updated 2026-03-05)
 | Phase 03 P01 | 5 | 1 tasks | 1 files |
 | Phase 03 P03 | 15min | 3 tasks | 4 files |
 | Phase 04 P01 | 2min | 2 tasks | 4 files |
+| Phase 04 P02 | 3min | 2 tasks | 6 files |
 
 ## Forensic Audit Context
 
@@ -78,7 +83,7 @@ Key findings that inform Phase 1:
 
 ## Last Session
 
-- **Stopped at:** Completed 04-01-PLAN.md
+- **Stopped at:** Completed 04-02-PLAN.md
 - **Timestamp:** 2026-03-06T05:30:00Z
 
 ---
