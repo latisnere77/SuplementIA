@@ -1,10 +1,11 @@
 ---
 phase: 5
 slug: pubmed-fallback-pipeline
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: compliant
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-06
+closed: 2026-03-06
 ---
 
 # Phase 5 — Validation Strategy
@@ -19,7 +20,7 @@ created: 2026-03-06
 |----------|-------|
 | **Framework** | jest 30.x |
 | **Config file** | jest.config.ts |
-| **Quick run command** | `npm test -- --testPathPattern="quiz/route"` |
+| **Quick run command** | `npx jest --testPathPatterns="quiz/route"` |
 | **Full suite command** | `npm test` |
 | **Estimated runtime** | ~30 seconds |
 
@@ -27,7 +28,7 @@ created: 2026-03-06
 
 ## Sampling Rate
 
-- **After every task commit:** Run `npm test -- --testPathPattern="quiz/route"`
+- **After every task commit:** Run `npx jest --testPathPatterns="quiz/route"`
 - **After every plan wave:** Run `npm test`
 - **Before `/gsd:verify-work`:** Full suite must be green
 - **Max feedback latency:** 30 seconds
@@ -38,12 +39,12 @@ created: 2026-03-06
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 5-01-01 | 01 | 1 | PUB-05 | unit | `npm test -- --testPathPattern="quiz/route" -t "catch block"` | ✅ | ⬜ pending |
-| 5-01-02 | 01 | 1 | PUB-02 | unit | `npm test -- --testPathPattern="quiz/route" -t "translate"` | ✅ | ⬜ pending |
-| 5-02-01 | 02 | 2 | PUB-01 | unit | `npm test -- --testPathPattern="pubmed-search"` | ❌ W0 | ⬜ pending |
-| 5-02-02 | 02 | 2 | PUB-03 | unit | `npm test -- --testPathPattern="quiz/route" -t "bedrock"` | ✅ | ⬜ pending |
-| 5-03-01 | 03 | 3 | PUB-04 | unit | `npm test -- --testPathPattern="quiz/route" -t "noData"` | ✅ | ⬜ pending |
-| 5-03-02 | 03 | 3 | E2E | manual | N/A | N/A | ⬜ pending |
+| 5-01-01 | 01 | 1 | PUB-05 | unit | `npx jest --testPathPatterns="quiz/route" -t "catch block"` | ✅ | ✅ green |
+| 5-01-02 | 01 | 1 | PUB-02 | unit | `npx jest --testPathPatterns="quiz/route" -t "translate"` | ✅ | ✅ green |
+| 5-02-01 | 02 | 2 | PUB-01 | unit | `npx jest --testPathPatterns="pubmed-search-supplement"` | ✅ | ✅ green |
+| 5-02-02 | 02 | 2 | PUB-03 | unit | `npx jest --testPathPatterns="quiz/route" -t "bedrock"` | ✅ | ✅ green |
+| 5-03-01 | 03 | 3 | PUB-04 | unit | `npx jest --testPathPatterns="quiz/route" -t "noData"` | ✅ | ✅ green |
+| 5-03-02 | 03 | 3 | E2E | manual | N/A | N/A | manual-only |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -51,9 +52,9 @@ created: 2026-03-06
 
 ## Wave 0 Requirements
 
-- [ ] `lib/services/__tests__/pubmed-search-supplement.test.ts` — unit tests for new `searchPubMedForSupplement` function (stub until function exists)
+- [x] `lib/services/__tests__/pubmed-search-supplement.test.ts` — unit tests for new `searchPubMedForSupplement` function (7 tests, all passing)
 
-*Existing `app/api/portal/quiz/route.test.ts` covers most test files — Wave 0 only needs stub for the new pubmed function.*
+*Wave 0 satisfied: file created during Phase 5 execution.*
 
 ---
 
@@ -68,11 +69,24 @@ created: 2026-03-06
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 30s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** compliant
+
+---
+
+## Validation Audit 2026-03-06
+
+| Metric | Count |
+|--------|-------|
+| Gaps found | 1 (5-02-01 Wave 0 file marked missing) |
+| Resolved | 1 (file existed — created during execution, not reflected in draft) |
+| Escalated | 0 |
+| Manual-only | 2 (live E2E — cannot automate) |
+
+*Audit: retroactive closure via `/gsd:validate-phase 5`. All 12 tests (7 unit + 5 route) confirmed green.*
