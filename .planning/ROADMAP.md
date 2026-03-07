@@ -68,7 +68,7 @@ Plans:
 | 2. Internationalization Fix | v1.0 | 3/3 | Complete | 2026-03-06 |
 | 3. Categories & Links Audit | v1.0 | 3/3 | Complete | 2026-03-06 |
 | 4. SEO & Analytics | v1.0 | 4/4 | Complete | 2026-03-06 |
-| 5. PubMed Fallback Pipeline | v2.0 | 0/3 | Not started | - |
+| 5. PubMed Fallback Pipeline | 1/3 | In Progress|  | - |
 | 6. Category Slug Completion | v2.0 | 0/1 | Not started | - |
 
 ---

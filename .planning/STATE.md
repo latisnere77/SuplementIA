@@ -2,15 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: PubMed Expansion
-current_plan: —
-status: ready_to_plan
-stopped_at: —
-last_updated: "2026-03-06T00:00:00.000Z"
+status: planning
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-07T02:38:07.805Z"
+last_activity: 2026-03-06 — v2.0 roadmap created, phases 5-6 defined
 progress:
   total_phases: 2
   completed_phases: 0
-  total_plans: 4
-  completed_plans: 0
+  total_plans: 3
+  completed_plans: 1
+  percent: 0
 ---
 
 # Project State
@@ -49,6 +50,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 05-pubmed-fallback-pipeline P01 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -60,6 +62,9 @@ Recent decisions affecting current work:
 - Pre-v2.0: quiz/route.ts catch block bug fixed (PUB-05 pre-condition) — return statement that caused 500 on LanceDB failure removed, committed before milestone started
 - v1.0: resolveToEnglishName() is O(1) in-memory resolver — v2.0 translation via Haiku is a separate, complementary step for supplements not in DATABASE at all
 - v2.0: Translation strategy is Haiku dynamic translation, not a static ES→EN map (anti-pattern rejected)
+- [Phase 05-pubmed-fallback-pipeline]: abstract defaults to 'No abstract available' — esummary API does not return abstracts (v1 intentional)
+- [Phase 05-pubmed-fallback-pipeline]: executePubMedSearch remains private — searchPubMedForSupplement is the only exported wrapper with rich type
+- [Phase 05-pubmed-fallback-pipeline]: year:0 when pubdate is empty — safe sentinel for Bedrock prompt builder
 
 ### Pending Todos
 
@@ -73,6 +78,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-06
-Stopped at: Roadmap created — ready to plan Phase 5
+Last session: 2026-03-07T02:38:07.803Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None

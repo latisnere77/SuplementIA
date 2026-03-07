@@ -8,7 +8,7 @@
 
 ### PubMed Fallback
 
-- [ ] **PUB-01**: Cuando el usuario busca un suplemento no en SUPPLEMENTS_DATABASE, el sistema lo detecta como "unknown" y enruta a PubMed en vez de retornar error
+- [x] **PUB-01**: Cuando el usuario busca un suplemento no en SUPPLEMENTS_DATABASE, el sistema lo detecta como "unknown" y enruta a PubMed en vez de retornar error
 - [ ] **PUB-02**: El término en español se traduce a nombre científico/inglés via Haiku antes de consultar PubMed
 - [ ] **PUB-03**: Los estudios de PubMed se analizan con Bedrock — el usuario ve análisis de evidencia completo (misma calidad que suplementos curados)
 - [ ] **PUB-04**: Cuando PubMed tampoco tiene datos, el usuario ve mensaje amigable "no encontramos datos científicos" (no 500)
@@ -48,7 +48,7 @@
 |-------------|-------|--------|
 | PUB-05 | Phase 5 | Pending |
 | PUB-02 | Phase 5 | Pending |
-| PUB-01 | Phase 5 | Pending |
+| PUB-01 | Phase 5 | Complete |
 | PUB-03 | Phase 5 | Pending |
 | PUB-04 | Phase 5 | Pending |
 | SLUG-01 | Phase 6 | Pending |
