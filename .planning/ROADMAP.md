@@ -24,7 +24,7 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 **Milestone Goal:** When a supplement is not in SUPPLEMENTS_DATABASE, the system translates the Spanish term to a scientific name via Haiku, queries PubMed, runs Bedrock analysis, and delivers a complete evidence response — no dead ends.
 
 - [x] **Phase 5: PubMed Fallback Pipeline** — Unknown supplements route through Haiku translation → PubMed query → Bedrock analysis → full evidence panel or friendly "no data" message (completed 2026-03-07)
-- [ ] **Phase 6: Category Slug Completion** — 6 missing category slugs added to knowledge-base.ts, eliminating all known broken category hrefs
+- [x] **Phase 6: Category Slug Completion** — 6 missing category slugs added to knowledge-base.ts, eliminating all known broken category hrefs (completed 2026-03-07)
 
 ## Phase Details
 
@@ -69,7 +69,7 @@ Plans:
 | 3. Categories & Links Audit | v1.0 | 3/3 | Complete | 2026-03-06 |
 | 4. SEO & Analytics | v1.0 | 4/4 | Complete | 2026-03-06 |
 | 5. PubMed Fallback Pipeline | 3/3 | Complete   | 2026-03-07 | - |
-| 6. Category Slug Completion | v2.0 | 0/1 | Not started | - |
+| 6. Category Slug Completion | 1/1 | Complete   | 2026-03-07 | - |
 
 ---
 *v1.0 shipped: 2026-03-06*

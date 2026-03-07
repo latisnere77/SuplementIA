@@ -16,7 +16,7 @@
 
 ### Category Slugs
 
-- [ ] **SLUG-01**: knowledge-base.ts incluye entradas para los 6 slugs faltantes: lavender, caffeine, beta-alanine, bacopa-monnieri, fiber-psyllium, echinacea
+- [x] **SLUG-01**: knowledge-base.ts incluye entradas para los 6 slugs faltantes: lavender, caffeine, beta-alanine, bacopa-monnieri, fiber-psyllium, echinacea
 
 ## Deferred (v3.0+)
 
@@ -51,7 +51,7 @@
 | PUB-01 | Phase 5 | Complete |
 | PUB-03 | Phase 5 | Complete |
 | PUB-04 | Phase 5 | Complete |
-| SLUG-01 | Phase 6 | Pending |
+| SLUG-01 | Phase 6 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 6 total
