@@ -51,12 +51,12 @@ Plans:
 **Requirements**: SLUG-01
 **Success Criteria** (what must be TRUE):
   1. Navigating to each of the 6 category pages (lavender, caffeine, beta-alanine, bacopa-monnieri, fiber-psyllium, echinacea) renders content, not a 404 or broken page
-  2. The KNOWN_MISSING list in knowledge-base.ts no longer contains these 6 slugs
+  2. The KNOWN_MISSING list in categories-links-audit.test.ts no longer contains these 6 slugs
   3. No new broken hrefs are introduced in category or supplement navigation after the additions
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 06-01: Add 6 missing slug entries to knowledge-base.ts with correct supplement mappings and verify zero broken hrefs
+- [ ] 06-01-PLAN.md — Add 12 SUPPLEMENTS_DATABASE entries (6 slugs × ES + EN) and clear KNOWN_MISSING to promote CAT-01 .todo stubs to real passing tests (SLUG-01)
 
 ## Progress
 
