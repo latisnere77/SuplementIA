@@ -11,7 +11,8 @@ import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-valid
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
-import { searchPubMed } from '@/lib/services/pubmed-search';
+import { searchPubMedForSupplement } from '@/lib/services/pubmed-search';
+import { analyzeStudiesWithBedrock } from '@/lib/services/bedrock-analyzer';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { detectVariants } from '@/lib/portal/variant-detector';
 import type { SupplementVariant, VariantDetectionResult } from '@/types/supplement-variants';
@@ -1051,15 +1052,7 @@ export async function POST(request: NextRequest) {
         }
       }
     } catch (wsErr: any) {
-      console.error('[Hybrid Search] Error:', wsErr);
-      // DEBUG: Stop swallowing errors. Return them to UI.
-      return NextResponse.json({
-        success: false,
-        source: 'hybrid_search_debug_fail',
-        error: 'Hybrid Search Failed',
-        details: wsErr.message,
-        stack: wsErr.stack
-      }, { status: 500 });
+      console.error('[Hybrid Search] Error, continuing to fallback:', wsErr);
     }
     // =================================================================
 
@@ -1078,8 +1071,33 @@ export async function POST(request: NextRequest) {
     }
 
     if (searchType === 'condition') {
-      const pubmedResults = await searchPubMed(sanitizedCategory);
-      return NextResponse.json(pubmedResults, { status: 200 });
+      const expansion = await expandAbbreviation(sanitizedCategory);
+      // CRITICAL: use alternatives[0], NOT expansion.expanded (doesn't exist)
+      const searchName = expansion.alternatives[0] || sanitizedCategory;
+      let articles;
+      try {
+        articles = await searchPubMedForSupplement(searchName);
+      } catch {
+        return NextResponse.json(
+          { success: false, error: 'PubMed API temporarily unavailable', retryable: true },
+          { status: 200 }
+        );
+      }
+      if (articles.length === 0) {
+        return NextResponse.json(
+          {
+            success: true,
+            noData: true,
+            message: 'no encontramos datos científicos sobre este suplemento en PubMed',
+          },
+          { status: 200 }
+        );
+      }
+      const analysis = await analyzeStudiesWithBedrock(searchName, articles);
+      return NextResponse.json(
+        { success: true, supplement: searchName, evidence: analysis },
+        { status: 200 }
+      );
     }
 
     // BENEFIT SEARCH LOGIC
