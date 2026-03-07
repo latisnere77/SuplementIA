@@ -8,10 +8,24 @@ import { searchSupplements } from '@/lib/search-service';
 
 // Mock the pubmed-search service
 jest.mock('@/lib/services/pubmed-search');
+// Mock the abbreviation expander (used in new condition branch)
+jest.mock('@/lib/services/abbreviation-expander', () => ({
+  expandAbbreviation: jest.fn().mockResolvedValue({
+    original: 'any condition',
+    isAbbreviation: false,
+    alternatives: ['any condition'],
+    confidence: 0,
+    source: 'none',
+  }),
+}));
+// Mock the bedrock analyzer (used in new condition branch)
+jest.mock('@/lib/services/bedrock-analyzer', () => ({
+  analyzeStudiesWithBedrock: jest.fn().mockResolvedValue({}),
+}));
 // Mock the supplements database to control intent detection
 jest.mock('@/lib/portal/supplements-database', () => ({
   SUPPLEMENTS_DATABASE: [
-    { name: 'Magnesium', aliases: [], category: 'ingredient' },
+    { id: 'magnesium-es', name: 'Magnesium', aliases: [], category: 'ingredient', language: 'es' },
   ],
 }));
 
@@ -21,9 +35,15 @@ jest.mock('@/lib/search-service', () => ({
 }));
 
 const mockedSearchPubMed = pubmedSearch.searchPubMed as jest.Mock;
+const mockedSearchPubMedForSupplement = pubmedSearch.searchPubMedForSupplement as jest.Mock;
 const mockedSearchSupplements = searchSupplements as jest.Mock;
 
 describe('/api/portal/quiz POST', () => {
+  beforeEach(() => {
+    // Default: searchPubMedForSupplement returns empty array (noData path)
+    mockedSearchPubMedForSupplement.mockResolvedValue([]);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
