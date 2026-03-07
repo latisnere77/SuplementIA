@@ -53,8 +53,59 @@
 
 ---
 
+## Milestone: v2.0 — PubMed Expansion
+
+**Shipped:** 2026-03-07
+**Phases:** 2 | **Plans:** 4
+
+### What Was Built
+
+- `searchPubMedForSupplement` exported with slim→rich type bridge — PubMed esummary shape connected to Bedrock's `PubMedArticle` interface
+- quiz/route.ts condition branch replaced: translate→search→analyze pipeline for unknown supplements (zero dead ends)
+- HTTP 200 `noData:true` guard — friendly "no encontramos datos científicos" when PubMed has no results
+- LanceDB catch block falling through to PubMed path (not 500)
+- 12 SupplementEntry objects for 6 missing category slugs — 40/40 CAT-01 tests pass, KNOWN_MISSING cleared
+- 20 automated tests: 7 unit (type bridge), 5 route (fallback pipeline), 8 route (enrich-simple slugs)
+
+### What Worked
+
+- **Slim→rich type bridge pattern:** Wrapping private `executePubMedSearch` in a typed public wrapper kept the interface clean and prevented callers from accidentally using the wrong type
+- **noData sentinel pattern:** HTTP 200 + `{ noData: true }` cleanly separates "valid no-data" from actual 500 errors — frontend can handle both without guessing
+- **Phase 6 independence:** Running slug completion (Phase 6) as independent-of-Phase-5 enabled clean parallelization of unrelated work
+- **Call-order assertions in tests:** Using `expect(expandAbbreviation).toHaveBeenCalledBefore(searchPubMedForSupplement)` in route tests proved PUB-02 pipeline order without brittle implementation coupling
+
+### What Was Inefficient
+
+- **VALIDATION.md not closed again:** Same pattern as v1.0 — Phase 5 VALIDATION.md has `nyquist_compliant: false`, all tasks `pending`, despite Phase 5 being fully executed. Phase 6 has no VALIDATION.md at all.
+- **Haiku LLM path disabled without tracking:** `expandWithLLM` silently returns `[]` — the infra dependency (AWS credentials in Amplify env) was known but not surfaced as a v2.0 blocker early enough. Result: PUB-02 is implemented but degraded.
+- **Human E2E verification deferred:** Browser tests (tejocote → panel, xyzunknownxyz → noData) were documented as pending but not scheduled. No mechanism to close this gap without manual ops involvement.
+
+### Patterns Established
+
+- Slim→rich type bridge: wrap private typed function, expose only the public typed wrapper
+- `noData` sentinel: HTTP 200 + `{ success: true, noData: true, message }` for valid empty states
+- `retryable` sentinel: HTTP 200 + `{ success: false, retryable: true }` for transient API failures
+- `expansion.alternatives[0] || fallback` as PubMed search name (not `.expanded` — field doesn't exist on AbbreviationExpansion)
+- `year: 0` as sentinel when `pubdate` is missing — safe default for Bedrock prompt builder
+
+### Key Lessons
+
+1. Close VALIDATION.md in the same commit that passes tests — do not leave `nyquist_compliant: false`
+2. Surface infra dependencies (Amplify env vars) as explicit blockers in the phase plan, not just as comments in code
+3. For "human E2E pending" verifications, add a tracking item with an explicit owner/step — don't let them accumulate
+4. `it.todo` stub pattern (Phase 6 KNOWN_MISSING) is effective at converting deferred debt to explicit tracked tests
+
+### Cost Observations
+
+- Sessions: ~2 focused sessions (one per phase)
+- Model: claude-sonnet-4-6 (balanced profile)
+- Notable: 2-day sprint. Plans were fast (2–18 min each). Main overhead was audit + milestone completion, not execution.
+
+---
+
 ## Cross-Milestone Trends
 
 | Milestone | Phases | Plans | Days | Key Win | Key Miss |
 | --------- | ------ | ----- | ---- | ------- | -------- |
 | v1.0      | 4      | 12    | 1    | TDD Wave 0 pattern | VERIFICATION.md gap |
+| v2.0      | 2      | 4     | 2    | Type bridge + noData sentinel | VALIDATION.md not closed (again) |

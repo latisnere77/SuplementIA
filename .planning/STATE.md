@@ -2,54 +2,46 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: PubMed Expansion
-status: planning
-stopped_at: Completed 06-category-slug-completion-01-PLAN.md
-last_updated: "2026-03-07T04:23:23.266Z"
-last_activity: 2026-03-06 — v2.0 roadmap created, phases 5-6 defined
+status: complete
+stopped_at: Milestone v2.0 complete — archived and tagged
+last_updated: "2026-03-07T00:00:00.000Z"
+last_activity: 2026-03-07 — v2.0 milestone archived, git tagged v2.0
 progress:
   total_phases: 2
   completed_phases: 2
   total_plans: 4
   completed_plans: 4
-  percent: 0
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-06 after v2.0 milestone start)
+See: .planning/PROJECT.md (updated 2026-03-07 after v2.0 milestone)
 
 **Core value:** Users can search for ANY supplement in Spanish and get reliable evidence without errors
-**Current focus:** Phase 5 — PubMed Fallback Pipeline
+**Current focus:** Planning next milestone — run `/gsd:new-milestone` to define v3.0
 
 ## Current Position
 
-Phase: 5 of 6 (PubMed Fallback Pipeline)
-Plan: — (not yet started)
-Status: Ready to plan
-Last activity: 2026-03-06 — v2.0 roadmap created, phases 5-6 defined
-
-Progress: [░░░░░░░░░░] 0%
+Milestone v2.0 PubMed Expansion — COMPLETE
+Last activity: 2026-03-07 — archived to .planning/milestones/, git tagged v2.0
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0 (v2.0)
-- Average duration: — min
-- Total execution time: — hours
+- Total plans completed: 4 (v2.0)
+- Average duration: ~6.5 min/plan
+- Total execution time: ~26 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 05-pubmed-fallback-pipeline | 3 | 23 min | 7.7 min |
+| 06-category-slug-completion | 1 | 3 min | 3 min |
 
-**Recent Trend:**
-- Last 5 plans: (none yet)
-- Trend: —
-
-*Updated after each plan completion*
 | Phase 05-pubmed-fallback-pipeline P01 | 2 | 2 tasks | 2 files |
 | Phase 05-pubmed-fallback-pipeline P02 | 18 | 2 tasks | 2 files |
 | Phase 05-pubmed-fallback-pipeline P03 | 3 | 2 tasks | 1 files |
@@ -59,34 +51,22 @@ Progress: [░░░░░░░░░░] 0%
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+All decisions logged in PROJECT.md Key Decisions table.
 
-- Pre-v2.0: quiz/route.ts catch block bug fixed (PUB-05 pre-condition) — return statement that caused 500 on LanceDB failure removed, committed before milestone started
-- v1.0: resolveToEnglishName() is O(1) in-memory resolver — v2.0 translation via Haiku is a separate, complementary step for supplements not in DATABASE at all
-- v2.0: Translation strategy is Haiku dynamic translation, not a static ES→EN map (anti-pattern rejected)
-- [Phase 05-pubmed-fallback-pipeline]: abstract defaults to 'No abstract available' — esummary API does not return abstracts (v1 intentional)
-- [Phase 05-pubmed-fallback-pipeline]: executePubMedSearch remains private — searchPubMedForSupplement is the only exported wrapper with rich type
-- [Phase 05-pubmed-fallback-pipeline]: year:0 when pubdate is empty — safe sentinel for Bedrock prompt builder
-- [Phase 05-pubmed-fallback-pipeline]: expansion.alternatives[0] used (not expansion.expanded) — AbbreviationExpansion type has no expanded field
-- [Phase 05-pubmed-fallback-pipeline]: PubMed API errors in condition branch return HTTP 200 + retryable:true — prevents frontend 500 error states for transient failures
-- [Phase 05-pubmed-fallback-pipeline]: Condition test + 500 test both test old branch behavior — intentionally failing, both to be updated in Plan 03
-- [Phase 05-pubmed-fallback-pipeline]: 500 test updated to trigger via analyzeStudiesWithBedrock throwing — searchPubMed no longer called in condition branch
-- [Phase 05-pubmed-fallback-pipeline]: PUB-02/PUB-03 verified via call order assertions in condition test; PUB-04/PUB-05 as separate explicit tests
-- [Phase 06-category-slug-completion]: Pre-existing LINK-02 failure not fixed — out of scope, predates Phase 6
+### Known Tech Debt (v3.0+)
 
-### Pending Todos
-
-None yet.
+- PUB-02 Haiku LLM translation disabled — AWS credentials not in Amplify env. `expandWithLLM` returns `[]` unconditionally. Fix: add credentials to Amplify env or use API Gateway proxy.
+- Phase 5 VALIDATION.md not closed (nyquist_compliant: false)
+- Phase 6 has no VALIDATION.md
+- LINK-02 pre-existing test failure (Phase 3 debt)
+- Human E2E browser verification pending for tejocote and xyzunknownxyz flows
 
 ### Blockers/Concerns
 
-- searchPubMed() exists in codebase — needs integration audit before Phase 5 planning
-- Bedrock evidence analysis pipeline exists — Phase 5 connects PubMed output to existing analysis flow
-- Phase 6 (SLUG-01) is independent of Phase 5 — can be executed in any order
+None — v2.0 complete. Ready for next milestone planning.
 
 ## Session Continuity
 
-Last session: 2026-03-07T04:19:59.342Z
-Stopped at: Completed 06-category-slug-completion-01-PLAN.md
-Resume file: None
+Last session: 2026-03-07
+Stopped at: v2.0 milestone completion
+Resume: Run `/gsd:new-milestone` to start v3.0
