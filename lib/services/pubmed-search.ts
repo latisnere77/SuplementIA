@@ -5,6 +5,8 @@
  * en PubMed relacionada con condiciones de salud y suplementos.
  */
 
+import type { PubMedArticle as RichPubMedArticle } from './medical-mcp-client';
+
 // Placeholder for the actual API URL. Should be configured with environment variables.
 const PUBMED_API_BASE_URL = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/';
 const TOOL_NAME = process.env.PUBMED_TOOL_NAME || 'SuplementiaSearch';
@@ -259,4 +261,27 @@ export async function searchPubMed(condition: string): Promise<PubMedQueryResult
     summary: `Análisis enriquecido completo. Se encontraron ${enrichedResults.length} suplementos relevantes.`,
     supplementsByEvidence,
   };
+}
+
+/**
+ * Search PubMed for a supplement by name and return articles in the rich PubMedArticle shape
+ * required by analyzeStudiesWithBedrock (medical-mcp-client type).
+ *
+ * Note: esummary does not return abstracts — 'No abstract available' is intentional for v1.
+ * publicationTypes are not provided by esummary — empty array is intentional for v1.
+ *
+ * @param name - Supplement name to search for
+ * @returns Promise resolving to array of rich PubMedArticle objects
+ */
+export async function searchPubMedForSupplement(name: string): Promise<RichPubMedArticle[]> {
+  const articles = await executePubMedSearch(name);
+  return articles.map(a => ({
+    pmid: a.uid,
+    title: a.title,
+    abstract: 'No abstract available',
+    authors: (a.authors || []).map(au => au.name),
+    journal: a.source,
+    year: a.pubdate ? parseInt(a.pubdate.substring(0, 4), 10) : 0,
+    publicationTypes: [],
+  }));
 }
