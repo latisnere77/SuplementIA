@@ -12,7 +12,7 @@
 - [x] **PUB-02**: El término en español se traduce a nombre científico/inglés via Haiku antes de consultar PubMed
 - [x] **PUB-03**: Los estudios de PubMed se analizan con Bedrock — el usuario ve análisis de evidencia completo (misma calidad que suplementos curados)
 - [x] **PUB-04**: Cuando PubMed tampoco tiene datos, el usuario ve mensaje amigable "no encontramos datos científicos" (no 500)
-- [ ] **PUB-05**: Bug fix del catch block en quiz/route.ts ya aplicado — el `return` de debug que causaba 500 fue eliminado (commit previo al milestone)
+- [x] **PUB-05**: Bug fix del catch block en quiz/route.ts ya aplicado — el `return` de debug que causaba 500 fue eliminado (commit previo al milestone)
 
 ### Category Slugs
 
@@ -46,7 +46,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PUB-05 | Phase 5 | Pending |
+| PUB-05 | Phase 5 | Complete |
 | PUB-02 | Phase 5 | Complete |
 | PUB-01 | Phase 5 | Complete |
 | PUB-03 | Phase 5 | Complete |
