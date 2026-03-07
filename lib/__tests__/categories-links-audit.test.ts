@@ -18,14 +18,7 @@ const baseIds = new Set(
 );
 
 // Known slugs not yet in SUPPLEMENTS_DATABASE — flagged, not silently skipped
-const KNOWN_MISSING = new Set([
-  'lavender',        // No DB entry — would need clinical content
-  'caffeine',        // No DB entry — would need clinical content
-  'beta-alanine',    // No DB entry — would need clinical content
-  'bacopa-monnieri', // No DB entry — would need clinical content
-  'fiber-psyllium',  // No DB entry — would need clinical content
-  'echinacea',       // No DB entry — would need clinical content
-]);
+const KNOWN_MISSING = new Set<string>([]);
 
 // =============================================================================
 // CAT-01: Supplement slugs in knowledge-base must resolve to SUPPLEMENTS_DATABASE
