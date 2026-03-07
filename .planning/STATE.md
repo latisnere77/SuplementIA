@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: PubMed Expansion
 status: planning
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-07T02:38:07.805Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-07T02:43:44.279Z"
 last_activity: 2026-03-06 — v2.0 roadmap created, phases 5-6 defined
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -51,6 +51,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 05-pubmed-fallback-pipeline P01 | 2 | 2 tasks | 2 files |
+| Phase 05-pubmed-fallback-pipeline P02 | 18 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,9 @@ Recent decisions affecting current work:
 - [Phase 05-pubmed-fallback-pipeline]: abstract defaults to 'No abstract available' — esummary API does not return abstracts (v1 intentional)
 - [Phase 05-pubmed-fallback-pipeline]: executePubMedSearch remains private — searchPubMedForSupplement is the only exported wrapper with rich type
 - [Phase 05-pubmed-fallback-pipeline]: year:0 when pubdate is empty — safe sentinel for Bedrock prompt builder
+- [Phase 05-pubmed-fallback-pipeline]: expansion.alternatives[0] used (not expansion.expanded) — AbbreviationExpansion type has no expanded field
+- [Phase 05-pubmed-fallback-pipeline]: PubMed API errors in condition branch return HTTP 200 + retryable:true — prevents frontend 500 error states for transient failures
+- [Phase 05-pubmed-fallback-pipeline]: Condition test + 500 test both test old branch behavior — intentionally failing, both to be updated in Plan 03
 
 ### Pending Todos
 
@@ -78,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T02:38:07.803Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-07T02:43:44.277Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

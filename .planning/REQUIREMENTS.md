@@ -9,9 +9,9 @@
 ### PubMed Fallback
 
 - [x] **PUB-01**: Cuando el usuario busca un suplemento no en SUPPLEMENTS_DATABASE, el sistema lo detecta como "unknown" y enruta a PubMed en vez de retornar error
-- [ ] **PUB-02**: El término en español se traduce a nombre científico/inglés via Haiku antes de consultar PubMed
-- [ ] **PUB-03**: Los estudios de PubMed se analizan con Bedrock — el usuario ve análisis de evidencia completo (misma calidad que suplementos curados)
-- [ ] **PUB-04**: Cuando PubMed tampoco tiene datos, el usuario ve mensaje amigable "no encontramos datos científicos" (no 500)
+- [x] **PUB-02**: El término en español se traduce a nombre científico/inglés via Haiku antes de consultar PubMed
+- [x] **PUB-03**: Los estudios de PubMed se analizan con Bedrock — el usuario ve análisis de evidencia completo (misma calidad que suplementos curados)
+- [x] **PUB-04**: Cuando PubMed tampoco tiene datos, el usuario ve mensaje amigable "no encontramos datos científicos" (no 500)
 - [ ] **PUB-05**: Bug fix del catch block en quiz/route.ts ya aplicado — el `return` de debug que causaba 500 fue eliminado (commit previo al milestone)
 
 ### Category Slugs
@@ -47,10 +47,10 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | PUB-05 | Phase 5 | Pending |
-| PUB-02 | Phase 5 | Pending |
+| PUB-02 | Phase 5 | Complete |
 | PUB-01 | Phase 5 | Complete |
-| PUB-03 | Phase 5 | Pending |
-| PUB-04 | Phase 5 | Pending |
+| PUB-03 | Phase 5 | Complete |
+| PUB-04 | Phase 5 | Complete |
 | SLUG-01 | Phase 6 | Pending |
 
 **Coverage:**
