@@ -6,6 +6,7 @@ const searchCases = [
   { query: 'Vitamin B Complex' },
   { query: 'Vitamin D' },
   { query: 'Omega-3' },
+  { query: 'Magnesium' },
   { query: 'Magnesium Glycinate' },
   { query: 'Creatine' },
   { query: 'Ashwagandha' },
@@ -113,6 +114,14 @@ test.describe('portal real supplement searches', () => {
       expect.soft(visibleText, `${searchCase.query} should render study summary`).toContain('studies');
       expect.soft(visibleText, `${searchCase.query} should render dosage section`).toContain('Dosificación según Estudios Clínicos');
       expect.soft(visibleText, `${searchCase.query} should render products`).toContain('Product Recommendations');
+      expect.soft(visibleText, `${searchCase.query} should not expose local catalog internals`).not.toContain('catálogo local');
+      expect.soft(visibleText, `${searchCase.query} should not expose local catalog internals`).not.toContain('catalogo local');
+      expect.soft(visibleText, `${searchCase.query} should not expose local catalog internals`).not.toContain('local catalog');
+
+      if (searchCase.query === 'Magnesium') {
+        expect.soft(visibleText, 'Magnesium definition should describe the mineral').toContain('essential mineral');
+        expect.soft(visibleText, 'Magnesium definition should not expose condition tags').not.toContain('sleep, muscles, cramps, stress, energy');
+      }
     });
   }
 });

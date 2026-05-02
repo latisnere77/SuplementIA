@@ -46,6 +46,37 @@ describe('search service fallback chain', () => {
     expect(result.ingredients?.length).toBeGreaterThan(0);
   });
 
+  it('uses an ingredient definition for magnesium instead of internal catalog tags', async () => {
+    const { searchLocalCatalog } = await import('./search-service');
+
+    const [result] = searchLocalCatalog('Magnesium', 3);
+
+    expect(result).toMatchObject({
+      name: 'Magnesium',
+      source: 'local_catalog',
+    });
+    expect(result.abstract).toContain('essential mineral');
+    expect(result.description).toBe(result.abstract);
+    expect(result.abstract).not.toContain('catálogo local');
+    expect(result.abstract).not.toContain('local catalog');
+    expect(result.abstract).not.toContain('sleep, muscles, cramps');
+  });
+
+  it.each([
+    ['sabila', 'Aloe Vera', 'Aloe barbadensis'],
+    ['withania somnifera', 'Ashwagandha', 'Withania somnifera'],
+    ['panax ginseng', 'Ginseng', 'Panax'],
+  ])('uses curated definitions for alias and scientific-name lookup: %s', async (query, expectedName, expectedDefinitionTerm) => {
+    const { searchLocalCatalog } = await import('./search-service');
+
+    const [result] = searchLocalCatalog(query, 3);
+
+    expect(result.name).toBe(expectedName);
+    expect(result.abstract).toContain(expectedDefinitionTerm);
+    expect(result.abstract).not.toContain('catálogo local');
+    expect(result.abstract).not.toContain('local catalog');
+  });
+
   it('falls back to the local catalog when Lambda is forbidden', async () => {
     process.env.SEARCH_BACKEND = 'auto';
     process.env.USE_LANCEDB = 'false';
