@@ -35,6 +35,21 @@ const MODEL_ID = 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
 // Lazy-initialize Bedrock client to avoid credentials errors at module load time
 let bedrockClient: any | null = null;
 let bedrockInitAttempted = false;
+const DEBUG_ABBREVIATION = process.env.DEBUG_ABBREVIATION === 'true' || process.env.NEXT_PUBLIC_DEBUG_PORTAL === 'true';
+
+function debugAbbreviation(message: string, details?: unknown): void {
+  if (!DEBUG_ABBREVIATION) return;
+  if (details === undefined) {
+    console.info(message);
+    return;
+  }
+  console.info(message, details);
+}
+
+function debugAbbreviationEvent(event: Record<string, unknown>): void {
+  if (!DEBUG_ABBREVIATION) return;
+  console.info(JSON.stringify(event));
+}
 
 async function getBedrockClient(): Promise<any | null> {
   if (bedrockInitAttempted) {
@@ -50,10 +65,10 @@ async function getBedrockClient(): Promise<any | null> {
     bedrockClient = new BedrockRuntimeClient({
       region: (process.env.AWS_REGION || 'us-east-1').trim(),
     });
-    console.log('[BEDROCK] Bedrock client initialized successfully');
+    debugAbbreviation('[BEDROCK] Bedrock client initialized successfully');
     return bedrockClient;
   } catch (error) {
-    console.warn('[BEDROCK] Bedrock client initialization failed - LLM expansion disabled:', error instanceof Error ? error.message : 'Unknown error');
+    debugAbbreviation('[BEDROCK] Bedrock client initialization failed - LLM expansion disabled:', error instanceof Error ? error.message : 'Unknown error');
     bedrockClient = null;
     return null;
   }
@@ -223,7 +238,7 @@ function translateSpanishProgrammatically(term: string): string | null {
 async function expandWithLLM(term: string): Promise<string[]> {
   // TEMPORARILY DISABLED: LLM expansion causes credentials errors in Amplify environment
   // TODO: Re-enable once AWS credentials are properly configured in Amplify
-  console.log(`[ABBREVIATION] LLM expansion temporarily disabled - skipping for "${term}"`);
+  debugAbbreviation(`[ABBREVIATION] LLM expansion temporarily disabled - skipping for "${term}"`);
   return [];
 
   /* COMMENTED OUT - Re-enable when credentials are available
@@ -266,37 +281,31 @@ export async function expandAbbreviation(
   const trimmed = term.trim();
   const startTime = Date.now();
 
-  console.log(
-    JSON.stringify({
-      event: 'ABBREVIATION_EXPANSION_START',
-      term: trimmed,
-      timestamp: new Date().toISOString(),
-    })
-  );
+  debugAbbreviationEvent({
+    event: 'ABBREVIATION_EXPANSION_START',
+    term: trimmed,
+    timestamp: new Date().toISOString(),
+  });
 
   // 1. Check if it's an abbreviation
   const isAbbr = isLikelyAbbreviation(trimmed);
 
-  console.log(
-    JSON.stringify({
-      event: 'ABBREVIATION_ANALYSIS',
-      term: trimmed,
-      isAbbreviation: isAbbr,
-      timestamp: new Date().toISOString(),
-    })
-  );
+  debugAbbreviationEvent({
+    event: 'ABBREVIATION_ANALYSIS',
+    term: trimmed,
+    isAbbreviation: isAbbr,
+    timestamp: new Date().toISOString(),
+  });
 
   // 2. Detect if term is Spanish BEFORE calling LLM (fallback safety net)
   const isSpanish = detectSpanishTerm(trimmed);
 
-  console.log(
-    JSON.stringify({
-      event: 'SPANISH_DETECTION',
-      term: trimmed,
-      isSpanish,
-      timestamp: new Date().toISOString(),
-    })
-  );
+  debugAbbreviationEvent({
+    event: 'SPANISH_DETECTION',
+    term: trimmed,
+    isSpanish,
+    timestamp: new Date().toISOString(),
+  });
 
   // 3. ALWAYS try LLM expansion (handles both abbreviations AND Spanish translation)
   // The LLM will return empty array if no expansion/translation needed
@@ -313,49 +322,43 @@ export async function expandAbbreviation(
       ),
     ]);
   } catch (error) {
-    console.warn(
-      JSON.stringify({
-        event: 'ABBREVIATION_LLM_TIMEOUT',
-        term: trimmed,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timeout: LLM_TIMEOUT,
-        fallback: 'using_original_term',
-        timestamp: new Date().toISOString(),
-      })
-    );
+    debugAbbreviationEvent({
+      event: 'ABBREVIATION_LLM_TIMEOUT',
+      term: trimmed,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timeout: LLM_TIMEOUT,
+      fallback: 'using_original_term',
+      timestamp: new Date().toISOString(),
+    });
     llmAlternatives = [];
   }
 
   const llmDuration = Date.now() - llmStartTime;
 
-  console.log(
-    JSON.stringify({
-      event: 'ABBREVIATION_LLM_COMPLETE',
-      term: trimmed,
-      isAbbreviation: isAbbr,
-      isSpanish,
-      alternativesCount: llmAlternatives.length,
-      alternatives: llmAlternatives,
-      llmDuration,
-      timestamp: new Date().toISOString(),
-    })
-  );
+  debugAbbreviationEvent({
+    event: 'ABBREVIATION_LLM_COMPLETE',
+    term: trimmed,
+    isAbbreviation: isAbbr,
+    isSpanish,
+    alternativesCount: llmAlternatives.length,
+    alternatives: llmAlternatives,
+    llmDuration,
+    timestamp: new Date().toISOString(),
+  });
 
   // 4. If LLM returned results, use them
   if (llmAlternatives.length > 0) {
     const totalDuration = Date.now() - startTime;
-    console.log(
-      JSON.stringify({
-        event: 'ABBREVIATION_EXPANSION_SUCCESS',
-        term: trimmed,
-        expandedTo: llmAlternatives[0],
-        alternatives: llmAlternatives,
-        source: 'llm',
-        confidence: 0.9,
-        totalDuration,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    debugAbbreviationEvent({
+      event: 'ABBREVIATION_EXPANSION_SUCCESS',
+      term: trimmed,
+      expandedTo: llmAlternatives[0],
+      alternatives: llmAlternatives,
+      source: 'llm',
+      confidence: 0.9,
+      totalDuration,
+      timestamp: new Date().toISOString(),
+    });
 
     return {
       original: trimmed,
@@ -369,31 +372,27 @@ export async function expandAbbreviation(
   // 5. CRITICAL FALLBACK: If Spanish term detected but LLM returned empty, use programmatic translation
   // This is a safety net for when Claude Haiku fails to translate Spanish terms
   if (isSpanish && llmAlternatives.length === 0) {
-    console.warn(
-      JSON.stringify({
-        event: 'SPANISH_LLM_FAILURE_FALLBACK',
-        term: trimmed,
-        reason: 'llm_failed_to_translate_spanish_term',
-        action: 'using_programmatic_translation',
-        timestamp: new Date().toISOString(),
-      })
-    );
+    debugAbbreviationEvent({
+      event: 'SPANISH_LLM_FAILURE_FALLBACK',
+      term: trimmed,
+      reason: 'llm_failed_to_translate_spanish_term',
+      action: 'using_programmatic_translation',
+      timestamp: new Date().toISOString(),
+    });
 
     // Simple programmatic Spanish→English translation for common patterns
     const programmaticTranslation = translateSpanishProgrammatically(trimmed);
 
     if (programmaticTranslation) {
       const totalDuration = Date.now() - startTime;
-      console.log(
-        JSON.stringify({
-          event: 'SPANISH_FALLBACK_SUCCESS',
-          term: trimmed,
-          translatedTo: programmaticTranslation,
-          source: 'programmatic_fallback',
-          totalDuration,
-          timestamp: new Date().toISOString(),
-        })
-      );
+      debugAbbreviationEvent({
+        event: 'SPANISH_FALLBACK_SUCCESS',
+        term: trimmed,
+        translatedTo: programmaticTranslation,
+        source: 'programmatic_fallback',
+        totalDuration,
+        timestamp: new Date().toISOString(),
+      });
 
       return {
         original: trimmed,
@@ -407,19 +406,17 @@ export async function expandAbbreviation(
 
   // 6. Final fallback: use original term (no expansion needed)
   const totalDuration = Date.now() - startTime;
-  console.log(
-    JSON.stringify({
-      event: 'ABBREVIATION_NO_EXPANSION',
-      term: trimmed,
-      isAbbreviation: isAbbr,
-      isSpanish,
-      reason: isSpanish ? 'spanish_term_but_no_translation_available' : 'llm_returned_empty_or_no_expansion_needed',
-      source: isAbbr ? 'heuristic' : 'none',
-      confidence: 1.0,
-      totalDuration,
-      timestamp: new Date().toISOString(),
-    })
-  );
+  debugAbbreviationEvent({
+    event: 'ABBREVIATION_NO_EXPANSION',
+    term: trimmed,
+    isAbbreviation: isAbbr,
+    isSpanish,
+    reason: isSpanish ? 'spanish_term_but_no_translation_available' : 'llm_returned_empty_or_no_expansion_needed',
+    source: isAbbr ? 'heuristic' : 'none',
+    confidence: 1.0,
+    totalDuration,
+    timestamp: new Date().toISOString(),
+  });
 
   return {
     original: trimmed,
@@ -450,7 +447,7 @@ export async function generateSearchVariations(term: string): Promise<string[]> 
 
   // TEMPORARILY DISABLED: LLM expansion causes credentials errors in Amplify environment
   // TODO: Re-enable once AWS credentials are properly configured in Amplify
-  console.log(`[SEARCH_VARIATIONS] LLM expansion temporarily disabled - skipping for "${trimmed}"`);
+  debugAbbreviation(`[SEARCH_VARIATIONS] LLM expansion temporarily disabled - skipping for "${trimmed}"`);
   return [];
 
   /* COMMENTED OUT - Re-enable when credentials are available

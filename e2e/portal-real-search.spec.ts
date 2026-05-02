@@ -2,23 +2,46 @@ import { expect, test } from '@playwright/test';
 
 const runRealSearches = process.env.RUN_REAL_SEARCHES === '1';
 
-const supplements = [
-  'Vitamin B Complex',
-  'Vitamin D',
-  'Omega-3',
-  'Magnesium Glycinate',
-  'Creatine',
-  'Ashwagandha',
-  'Zinc',
-  'Collagen',
+const searchCases = [
+  { query: 'Vitamin B Complex' },
+  { query: 'Vitamin D' },
+  { query: 'Omega-3' },
+  { query: 'Magnesium Glycinate' },
+  { query: 'Creatine' },
+  { query: 'Ashwagandha' },
+  { query: 'Zinc' },
+  { query: 'Collagen' },
+
+  // Spanish common names, accented names, and aliases.
+  { query: 'sabila', expectedSearchTerm: 'Aloe Vera' },
+  { query: 'sábila', expectedSearchTerm: 'Aloe Vera' },
+  { query: 'curcuma', expectedSearchTerm: 'Turmeric' },
+  { query: 'cúrcuma', expectedSearchTerm: 'Turmeric' },
+  { query: 'coenzima q10', expectedSearchTerm: 'Coenzyme Q10' },
+  { query: 'melena de león' },
+  { query: 'cardo mariano' },
+  { query: 'valeriana' },
+
+  // Scientific names and English common aliases.
+  { query: 'aloe barbadensis' },
+  { query: 'withania', expectedSearchTerm: 'Ashwagandha' },
+  { query: 'withania somnifera' },
+  { query: 'panax ginseng', expectedSearchTerm: 'Ginseng' },
+  { query: 'korean ginseng', expectedSearchTerm: 'Ginseng' },
+  { query: 'valeriana officinalis' },
+  { query: 'hericium erinaceus' },
+  { query: 'ginkgo biloba' },
+  { query: 'silybum marianum' },
+  { query: 'resveratrol', expectedSearchTerm: 'Resveratrol' },
 ];
 
 test.describe('portal real supplement searches', () => {
   test.skip(!runRealSearches, 'Set RUN_REAL_SEARCHES=1 to run live backend search diagnostics.');
 
-  for (const supplement of supplements) {
-    test(`live result quality for ${supplement}`, async ({ page }) => {
+  for (const searchCase of searchCases) {
+    test(`live result quality for ${searchCase.query}`, async ({ page }) => {
       test.setTimeout(120_000);
+      const expectedSearchTerm = searchCase.expectedSearchTerm ?? searchCase.query;
 
       const apiResponses: Array<{ status: number; url: string; body?: any }> = [];
       page.on('response', async (response) => {
@@ -42,13 +65,13 @@ test.describe('portal real supplement searches', () => {
       });
 
       await page.goto('/en/portal');
-      await page.getByLabel('Search supplements').fill(supplement);
+      await page.getByLabel('Search supplements').fill(searchCase.query);
       await page.getByRole('button', { name: 'Go' }).click();
 
       await expect(page).toHaveURL(/\/en\/portal\/results\?/);
       const resultUrl = new URL(page.url());
-      expect(resultUrl.searchParams.get('q')).toBe(supplement);
-      expect(resultUrl.searchParams.get('supplement')).toBe(supplement);
+      expect(resultUrl.searchParams.get('q')).toBe(expectedSearchTerm);
+      expect(resultUrl.searchParams.get('supplement')).toBe(expectedSearchTerm);
 
       await expect(
         page.getByTestId('recommendation-display').or(page.getByTestId('error-state'))
@@ -61,7 +84,8 @@ test.describe('portal real supplement searches', () => {
       test.info().annotations.push({
         type: 'diagnostic',
         description: JSON.stringify({
-          supplement,
+          query: searchCase.query,
+          expectedSearchTerm,
           isError,
           apiStatus: latestApiResponse?.status,
           apiUrl: latestApiResponse?.url,
@@ -81,14 +105,14 @@ test.describe('portal real supplement searches', () => {
         }),
       });
 
-      expect.soft(isError, `${supplement} should not render the no-data/system error state`).toBe(false);
-      expect.soft(apiResponses.length, `${supplement} should submit one quiz request from the browser flow`).toBe(1);
-      expect.soft(latestApiResponse?.status, `${supplement} quiz API status`).toBe(200);
-      expect.soft(latestApiResponse?.body?.success, `${supplement} API success flag`).toBe(true);
-      expect.soft(latestApiResponse?.body?.recommendation?.evidence_summary?.totalStudies ?? 0, `${supplement} should include study count`).toBeGreaterThan(0);
-      expect.soft(visibleText, `${supplement} should render study summary`).toContain('studies');
-      expect.soft(visibleText, `${supplement} should render dosage section`).toContain('Dosificación según Estudios Clínicos');
-      expect.soft(visibleText, `${supplement} should render products`).toContain('Product Recommendations');
+      expect.soft(isError, `${searchCase.query} should not render the no-data/system error state`).toBe(false);
+      expect.soft(apiResponses.length, `${searchCase.query} should submit one quiz request from the browser flow`).toBe(1);
+      expect.soft(latestApiResponse?.status, `${searchCase.query} quiz API status`).toBe(200);
+      expect.soft(latestApiResponse?.body?.success, `${searchCase.query} API success flag`).toBe(true);
+      expect.soft(latestApiResponse?.body?.recommendation?.evidence_summary?.totalStudies ?? 0, `${searchCase.query} should include study count`).toBeGreaterThan(0);
+      expect.soft(visibleText, `${searchCase.query} should render study summary`).toContain('studies');
+      expect.soft(visibleText, `${searchCase.query} should render dosage section`).toContain('Dosificación según Estudios Clínicos');
+      expect.soft(visibleText, `${searchCase.query} should render products`).toContain('Product Recommendations');
     });
   }
 });
