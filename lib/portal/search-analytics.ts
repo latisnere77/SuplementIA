@@ -92,10 +92,11 @@ class SearchAnalyticsStore {
       });
     }
 
-    // Log to console for immediate visibility
-    console.warn(`⚠️ [Analytics] Failed search: "${query}" → "${normalizedQuery}"`, {
-      suggestions: suggestions.length > 0 ? suggestions : 'none',
-    });
+    if (process.env.NEXT_PUBLIC_DEBUG_PORTAL === 'true') {
+      console.info(`[Analytics] Failed search: "${query}" -> "${normalizedQuery}"`, {
+        suggestions: suggestions.length > 0 ? suggestions : 'none',
+      });
+    }
   }
 
   /**

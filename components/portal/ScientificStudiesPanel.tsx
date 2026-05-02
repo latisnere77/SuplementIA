@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ExternalLink, Beaker, Users, Calendar, FileText, AlertCircle } from 'lucide-react';
 
 interface Study {
@@ -37,6 +37,8 @@ interface ScientificStudiesPanelProps {
   autoLoad?: boolean;
 }
 
+const DEFAULT_FILTERS: NonNullable<ScientificStudiesPanelProps['filters']> = {};
+
 const STUDY_TYPE_COLORS: Record<string, string> = {
   'randomized controlled trial': 'bg-green-100 text-green-800 border-green-200',
   'meta-analysis': 'bg-purple-100 text-purple-800 border-purple-200',
@@ -56,7 +58,7 @@ const STUDY_TYPE_LABELS: Record<string, string> = {
 export default function ScientificStudiesPanel({
   supplementName,
   maxStudies = 5,
-  filters = {},
+  filters = DEFAULT_FILTERS,
   autoLoad = false,
 }: ScientificStudiesPanelProps) {
   const [studies, setStudies] = useState<StudiesData | null>(null);
@@ -64,7 +66,7 @@ export default function ScientificStudiesPanel({
   const [error, setError] = useState<string | null>(null);
   const [expandedStudy, setExpandedStudy] = useState<string | null>(null);
 
-  const loadStudies = async () => {
+  const loadStudies = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -101,13 +103,13 @@ export default function ScientificStudiesPanel({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters, maxStudies, supplementName]);
 
   useEffect(() => {
     if (autoLoad) {
       loadStudies();
     }
-  }, [supplementName, autoLoad]);
+  }, [autoLoad, loadStudies]);
 
   const toggleStudy = (pmid: string) => {
     setExpandedStudy(expandedStudy === pmid ? null : pmid);

@@ -739,7 +739,7 @@ function ResultsPageContent() {
     let isMounted = true;
 
     // Handle different scenarios
-    if (jobId && !query) {
+    if (urlJobId) {
       // CASE 1: User has jobId in URL (from cache/sharing) - check cache only
       if (typeof window !== 'undefined') {
         try {
@@ -1260,7 +1260,7 @@ function ResultsPageContent() {
       isMounted = false;
     };
   // Note: routerRef is used instead of router to prevent infinite re-renders
-  }, [query, jobId, submittedBenefitQuery]);
+  }, [query, jobId, submittedBenefitQuery, urlJobId]);
 
   // ====================================
   // VARIANT SELECTOR HANDLERS
@@ -1773,4 +1773,3 @@ export default function ResultsPage() {
     </Suspense>
   );
 }
-

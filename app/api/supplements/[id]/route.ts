@@ -34,12 +34,13 @@ const SupplementUpdateSchema = z.object({
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const startTime = Date.now();
   
   try {
-    const supplementId = parseInt(params.id);
+    const { id } = await params;
+    const supplementId = parseInt(id);
     
     if (isNaN(supplementId)) {
       return NextResponse.json({

@@ -862,6 +862,39 @@ export async function POST(request: NextRequest) {
           });
           
           const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
+          const usesLocalCatalog = finalHits.every((hit: any) => hit.source === 'local_catalog');
+
+          if (usesLocalCatalog) {
+            const hitsForVariantDetection = finalHits.map((hit: any) => ({
+              title: hit.title || '',
+              abstract: hit.abstract || ''
+            }));
+            const variantDetection = detectVariants(searchTerm, hitsForVariantDetection);
+
+            return NextResponse.json({
+              success: true,
+              quiz_id: quizId,
+              recommendation: rec,
+              jobId,
+              status: 'completed',
+              variantDetection: {
+                ...variantDetection,
+                _cacheMetadata: {
+                  hit: false,
+                  key: `variant_${searchTerm.toLowerCase().trim()}_${hitsForVariantDetection.length.toString(36)}`,
+                  studyCount: hitsForVariantDetection.length,
+                  timestamp: Date.now()
+                },
+                _selectedVariant: parsedQuery.isVariantSpecific ? {
+                  type: parsedQuery.variantType,
+                  baseSupplement: parsedQuery.baseSupplement,
+                  fullName: parsedQuery.fullQuery
+                } : null
+              },
+              suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific,
+              source: 'local_catalog_fallback'
+            });
+          }
 
           // NEW: Detect supplement variants (e.g., Magnesium Glycinate, Citrate, etc.)
           // For variant detection, we need MORE studies than the initial search

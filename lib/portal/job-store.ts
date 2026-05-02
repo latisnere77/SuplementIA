@@ -20,10 +20,10 @@ export interface Job {
 
 // Expiration times in milliseconds
 const EXPIRATION_TIMES = {
-  processing: 5 * 60 * 1000,  // 5 minutes (increased for Lambda enrichment time)
-  completed: 10 * 60 * 1000,  // 10 minutes
-  failed: 5 * 60 * 1000,      // 5 minutes
-  timeout: 5 * 60 * 1000,     // 5 minutes
+  processing: 2 * 60 * 1000,  // 2 minutes
+  completed: 5 * 60 * 1000,   // 5 minutes
+  failed: 2 * 60 * 1000,      // 2 minutes
+  timeout: 2 * 60 * 1000,     // 2 minutes
 };
 
 // DynamoDB configuration
@@ -48,6 +48,56 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient, {
   },
 });
 
+const USE_MEMORY_STORE = process.env.NODE_ENV === 'test' || process.env.JOB_STORE_DRIVER === 'memory';
+const memoryStore = new Map<string, Job>();
+
+function updateMemoryStoreSize(): void {
+  jobMetrics.updateStoreSize(memoryStore.size);
+}
+
+function evictMemoryJobsOverLimit(): number {
+  let evictedCount = 0;
+
+  while (memoryStore.size > MAX_STORE_SIZE) {
+    let oldestJobId: string | undefined;
+    let oldestAccessTime = Number.POSITIVE_INFINITY;
+
+    for (const [jobId, job] of memoryStore.entries()) {
+      if (job.lastAccessedAt < oldestAccessTime) {
+        oldestJobId = jobId;
+        oldestAccessTime = job.lastAccessedAt;
+      }
+    }
+
+    if (!oldestJobId) break;
+    memoryStore.delete(oldestJobId);
+    evictedCount++;
+  }
+
+  if (evictedCount > 0) {
+    jobMetrics.recordEviction(evictedCount);
+  }
+
+  return evictedCount;
+}
+
+function createMemoryJob(jobId: string, retryCount: number = 0): void {
+  const now = Date.now();
+  const expiresAt = calculateExpirationTime('processing', now);
+
+  memoryStore.set(jobId, {
+    status: 'processing',
+    createdAt: now,
+    expiresAt,
+    lastAccessedAt: now,
+    retryCount,
+  });
+
+  jobMetrics.recordJobCreated();
+  evictMemoryJobsOverLimit();
+  updateMemoryStoreSize();
+}
+
 /**
  * Calculate expiration time based on job status
  */
@@ -67,28 +117,56 @@ function calculateTTL(expiresAt: number): number {
 /**
  * Check if a job has exceeded its expiration time
  */
-export async function isExpired(jobId: string): Promise<boolean> {
-  const job = await getJob(jobId);
-  if (!job) return false;
+export function isExpired(jobId: string) {
+  if (USE_MEMORY_STORE) {
+    const job = memoryStore.get(jobId);
+    if (!job) return false;
+    return Date.now() > job.expiresAt;
+  }
 
-  return Date.now() > job.expiresAt;
+  return (async (): Promise<boolean> => {
+    const job = await getJob(jobId);
+    if (!job) return false;
+
+    return Date.now() > job.expiresAt;
+  })();
 }
 
 /**
  * Get the age of a job in milliseconds
  */
-export async function getJobAge(jobId: string): Promise<number | undefined> {
-  const job = await getJob(jobId);
-  if (!job) return undefined;
+export function getJobAge(jobId: string) {
+  if (USE_MEMORY_STORE) {
+    const job = memoryStore.get(jobId);
+    if (!job) return undefined;
+    return Date.now() - job.createdAt;
+  }
 
-  return Date.now() - job.createdAt;
+  return (async (): Promise<number | undefined> => {
+    const job = await getJob(jobId);
+    if (!job) return undefined;
+
+    return Date.now() - job.createdAt;
+  })();
 }
 
 /**
  * Clean up old jobs (called periodically)
  * Scans for expired jobs and deletes them
  */
-export async function cleanupOldJobs(): Promise<void> {
+export function cleanupOldJobs() {
+  if (USE_MEMORY_STORE) {
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    for (const [jobId, job] of memoryStore.entries()) {
+      if (job.createdAt < oneHourAgo) {
+        memoryStore.delete(jobId);
+      }
+    }
+    updateMemoryStoreSize();
+    return;
+  }
+
+  return (async (): Promise<void> => {
   const oneHourAgo = Date.now() - 60 * 60 * 1000;
 
   try {
@@ -111,16 +189,32 @@ export async function cleanupOldJobs(): Promise<void> {
   } catch (error) {
     console.error('[JobStore] Error cleaning up old jobs:', error);
   }
+  })();
 }
 
 /**
  * Clean up expired jobs from the store
  * Returns the number of jobs removed for metrics
  */
-export async function cleanupExpired(): Promise<number> {
-  // DynamoDB TTL will automatically delete expired items
-  // This function is kept for API compatibility but doesn't need to do anything
-  // TTL cleanup happens automatically within 48 hours of expiration
+export function cleanupExpired() {
+  if (USE_MEMORY_STORE) {
+    const now = Date.now();
+    let removedCount = 0;
+
+    for (const [jobId, job] of memoryStore.entries()) {
+      if (now > job.expiresAt) {
+        memoryStore.delete(jobId);
+        removedCount++;
+      }
+    }
+
+    jobMetrics.recordCleanup(removedCount);
+    updateMemoryStoreSize();
+    return removedCount;
+  }
+
+  // DynamoDB TTL will automatically delete expired items.
+  jobMetrics.recordCleanup(0);
   return 0;
 }
 
@@ -128,7 +222,12 @@ export async function cleanupExpired(): Promise<number> {
  * Get the current size of the job store
  * Note: This is an expensive operation in DynamoDB, use sparingly
  */
-export async function getStoreSize(): Promise<number> {
+export function getStoreSize() {
+  if (USE_MEMORY_STORE) {
+    return memoryStore.size;
+  }
+
+  return (async (): Promise<number> => {
   try {
     const response = await docClient.send(new ScanCommand({
       TableName: TABLE_NAME,
@@ -139,13 +238,21 @@ export async function getStoreSize(): Promise<number> {
     console.error('[JobStore] Error getting store size:', error);
     return 0;
   }
+  })();
 }
 
 /**
  * Clear all jobs from the store (for testing purposes)
  * WARNING: This is a dangerous operation and should only be used in testing
  */
-export async function clearStore(): Promise<void> {
+export function clearStore() {
+  if (USE_MEMORY_STORE) {
+    memoryStore.clear();
+    updateMemoryStoreSize();
+    return;
+  }
+
+  return (async (): Promise<void> => {
   console.warn('[JobStore] clearStore called - scanning all items for deletion');
 
   try {
@@ -164,12 +271,26 @@ export async function clearStore(): Promise<void> {
   } catch (error) {
     console.error('[JobStore] Error clearing store:', error);
   }
+  })();
 }
 
 /**
  * Get the oldest (least recently accessed) job from the store
  */
-export async function getOldestJob(): Promise<{ jobId: string; job: Job } | undefined> {
+export function getOldestJob() {
+  if (USE_MEMORY_STORE) {
+    let oldest: { jobId: string; job: Job } | undefined;
+
+    for (const [jobId, job] of memoryStore.entries()) {
+      if (!oldest || job.lastAccessedAt < oldest.job.lastAccessedAt) {
+        oldest = { jobId, job };
+      }
+    }
+
+    return oldest;
+  }
+
+  return (async (): Promise<{ jobId: string; job: Job } | undefined> => {
   try {
     const response = await docClient.send(new ScanCommand({
       TableName: TABLE_NAME,
@@ -197,13 +318,21 @@ export async function getOldestJob(): Promise<{ jobId: string; job: Job } | unde
     console.error('[JobStore] Error getting oldest job:', error);
     return undefined;
   }
+  })();
 }
 
 /**
  * Enforce store size limit by removing oldest jobs when size exceeds MAX_STORE_SIZE
  * Returns the number of jobs evicted
  */
-export async function enforceSizeLimit(): Promise<number> {
+export function enforceSizeLimit() {
+  if (USE_MEMORY_STORE) {
+    const evictedCount = evictMemoryJobsOverLimit();
+    updateMemoryStoreSize();
+    return evictedCount;
+  }
+
+  return (async (): Promise<number> => {
   let evictedCount = 0;
 
   try {
@@ -230,12 +359,21 @@ export async function enforceSizeLimit(): Promise<number> {
   }
 
   return evictedCount;
+  })();
 }
 
 /**
  * Get job from DynamoDB
  */
-export async function getJob(jobId: string): Promise<Job | undefined> {
+export function getJob(jobId: string) {
+  if (USE_MEMORY_STORE) {
+    const job = memoryStore.get(jobId);
+    if (!job) return undefined;
+    job.lastAccessedAt = Date.now();
+    return job;
+  }
+
+  return (async (): Promise<Job | undefined> => {
   try {
     const response = await docClient.send(new GetCommand({
       TableName: TABLE_NAME,
@@ -280,16 +418,44 @@ export async function getJob(jobId: string): Promise<Job | undefined> {
     console.error('[JobStore] Error getting job:', error);
     return undefined;
   }
+  })();
 }
 
 /**
  * Store job result in DynamoDB
  */
-export async function storeJobResult(
+export function storeJobResult(
   jobId: string,
   status: 'completed' | 'failed',
   data?: { recommendation?: unknown; error?: string }
-): Promise<void> {
+) {
+  if (USE_MEMORY_STORE) {
+    const now = Date.now();
+    const existingJob = memoryStore.get(jobId);
+    const createdAt = existingJob?.createdAt || now;
+    const expiresAt = calculateExpirationTime(status, createdAt, now);
+
+    memoryStore.set(jobId, {
+      status,
+      recommendation: data?.recommendation,
+      error: data?.error,
+      createdAt,
+      expiresAt,
+      completedAt: now,
+      lastAccessedAt: now,
+      retryCount: existingJob?.retryCount || 0,
+    });
+
+    if (status === 'completed') {
+      jobMetrics.recordJobCompleted();
+    } else {
+      jobMetrics.recordJobFailed();
+    }
+    updateMemoryStoreSize();
+    return;
+  }
+
+  return (async (): Promise<void> => {
   // Development bypass: Skip DynamoDB if table doesn't exist (local dev)
   if (process.env.SKIP_JOB_STORE === 'true') {
     console.log('[JobStore] Skipping job result storage (SKIP_JOB_STORE=true)');
@@ -336,12 +502,19 @@ export async function storeJobResult(
     }
     throw error;
   }
+  })();
 }
 
 /**
  * Create job in DynamoDB
  */
-export async function createJob(jobId: string, retryCount: number = 0): Promise<void> {
+export function createJob(jobId: string, retryCount: number = 0) {
+  if (USE_MEMORY_STORE) {
+    createMemoryJob(jobId, retryCount);
+    return;
+  }
+
+  return (async (): Promise<void> => {
   // Development bypass: Skip DynamoDB if table doesn't exist (local dev)
   if (process.env.SKIP_JOB_STORE === 'true') {
     console.log('[JobStore] Skipping job storage (SKIP_JOB_STORE=true)');
@@ -378,13 +551,26 @@ export async function createJob(jobId: string, retryCount: number = 0): Promise<
     }
     throw error;
   }
+  })();
 }
 
 /**
  * Create a new job for a retry attempt
  * Generates a new job ID and increments retry count
  */
-export async function createRetryJob(previousJobId: string): Promise<{ newJobId: string; retryCount: number }> {
+export function createRetryJob(previousJobId: string) {
+  if (USE_MEMORY_STORE) {
+    const previousJob = memoryStore.get(previousJobId);
+    const previousRetryCount = previousJob?.retryCount || 0;
+    const newRetryCount = previousRetryCount + 1;
+    const newJobId = `job_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
+    createMemoryJob(newJobId, newRetryCount);
+
+    return { newJobId, retryCount: newRetryCount };
+  }
+
+  return (async (): Promise<{ newJobId: string; retryCount: number }> => {
   const previousJob = await getJob(previousJobId);
   const previousRetryCount = previousJob?.retryCount || 0;
   const newRetryCount = previousRetryCount + 1;
@@ -396,22 +582,52 @@ export async function createRetryJob(previousJobId: string): Promise<{ newJobId:
   await createJob(newJobId, newRetryCount);
 
   return { newJobId, retryCount: newRetryCount };
+  })();
 }
 
 /**
  * Check if a job has exceeded the retry limit
  */
-export async function hasExceededRetryLimit(jobId: string, maxRetries: number = 5): Promise<boolean> {
-  const job = await getJob(jobId);
-  if (!job) return false;
+export function hasExceededRetryLimit(jobId: string, maxRetries: number = 5) {
+  if (USE_MEMORY_STORE) {
+    const job = memoryStore.get(jobId);
+    if (!job) return false;
+    return (job.retryCount || 0) > maxRetries;
+  }
 
-  return (job.retryCount || 0) > maxRetries;
+  return (async (): Promise<boolean> => {
+    const job = await getJob(jobId);
+    if (!job) return false;
+
+    return (job.retryCount || 0) > maxRetries;
+  })();
 }
 
 /**
  * Mark job as timed out
  */
-export async function markTimeout(jobId: string): Promise<void> {
+export function markTimeout(jobId: string) {
+  if (USE_MEMORY_STORE) {
+    const existingJob = memoryStore.get(jobId);
+    if (!existingJob) return;
+
+    const now = Date.now();
+    const expiresAt = calculateExpirationTime('timeout', existingJob.createdAt, now);
+
+    memoryStore.set(jobId, {
+      ...existingJob,
+      status: 'timeout',
+      completedAt: now,
+      expiresAt,
+      lastAccessedAt: now,
+    });
+
+    jobMetrics.recordJobTimedOut();
+    updateMemoryStoreSize();
+    return;
+  }
+
+  return (async (): Promise<void> => {
   try {
     const existingJob = await getJob(jobId);
     if (!existingJob) {
@@ -440,4 +656,5 @@ export async function markTimeout(jobId: string): Promise<void> {
     console.error('[JobStore] Error marking timeout:', error);
     throw error;
   }
+  })();
 }
