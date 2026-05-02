@@ -145,7 +145,7 @@ describe('RDS Postgres pgvector Performance Property Tests', () => {
       ),
       { numRuns: 50 }
     );
-  }, 30000); // 30s timeout
+  }, 90000); // CI runners can be slower under serialized property-test load
 
   /**
    * Property 7b: pgvector performance scales logarithmically

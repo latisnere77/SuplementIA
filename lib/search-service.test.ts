@@ -47,6 +47,7 @@ describe('search service fallback chain', () => {
   });
 
   it('falls back to the local catalog when Lambda is forbidden', async () => {
+    process.env.SEARCH_BACKEND = 'auto';
     process.env.USE_LANCEDB = 'false';
     process.env.SEARCH_API_URL = 'https://search.example.test/';
     global.fetch = jest.fn(async () => ({
