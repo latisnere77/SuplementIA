@@ -41,7 +41,14 @@ test.describe('portal real supplement searches', () => {
         });
       });
 
-      await page.goto(`/en/portal/results?q=${encodeURIComponent(supplement)}&supplement=${encodeURIComponent(supplement)}`);
+      await page.goto('/en/portal');
+      await page.getByLabel('Search supplements').fill(supplement);
+      await page.getByRole('button', { name: 'Go' }).click();
+
+      await expect(page).toHaveURL(/\/en\/portal\/results\?/);
+      const resultUrl = new URL(page.url());
+      expect(resultUrl.searchParams.get('q')).toBe(supplement);
+      expect(resultUrl.searchParams.get('supplement')).toBe(supplement);
 
       await expect(
         page.getByTestId('recommendation-display').or(page.getByTestId('error-state'))
@@ -75,6 +82,7 @@ test.describe('portal real supplement searches', () => {
       });
 
       expect.soft(isError, `${supplement} should not render the no-data/system error state`).toBe(false);
+      expect.soft(apiResponses.length, `${supplement} should submit one quiz request from the browser flow`).toBe(1);
       expect.soft(latestApiResponse?.status, `${supplement} quiz API status`).toBe(200);
       expect.soft(latestApiResponse?.body?.success, `${supplement} API success flag`).toBe(true);
       expect.soft(latestApiResponse?.body?.recommendation?.evidence_summary?.totalStudies ?? 0, `${supplement} should include study count`).toBeGreaterThan(0);

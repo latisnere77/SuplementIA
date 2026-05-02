@@ -20,6 +20,8 @@ const PUBMED_API_URL = process.env.STUDIES_API_URL || 'https://ctl2qa3wji.execut
 const FALLBACK_SCORE_THRESHOLD = 75; // Use PubMed if local score < 75% (increased from 60)
 const PUBMED_CACHE_TTL = 3600000; // 1 hour cache
 const PUBMED_MIN_RESULTS = 3; // Try PubMed if we have fewer than 3 good matches
+const useLanceDBAutocomplete = process.env.USE_LANCEDB === 'true';
+const debugPortal = process.env.NEXT_PUBLIC_DEBUG_PORTAL === 'true';
 
 // In-memory cache for PubMed lookups
 interface CacheEntry {
@@ -159,6 +161,12 @@ export async function getSuggestions(
 
   const normalizedQuery = query.trim();
 
+  const localResults = () => searchInDatabase(normalizedQuery.toLowerCase(), lang, limit).slice(0, limit);
+
+  if (!useLanceDBAutocomplete) {
+    return localResults();
+  }
+
   try {
     // Use LanceDB vector search for autocomplete
     const { searchLanceDB } = await import('@/lib/lancedb-service');
@@ -187,15 +195,17 @@ export async function getSuggestions(
     }
 
     // Fallback to local database if LanceDB fails or returns no results
-    console.warn('[Autocomplete] LanceDB returned no results, falling back to local DB');
-    const fallbackResults = searchInDatabase(normalizedQuery.toLowerCase(), lang, limit);
-    return fallbackResults.slice(0, limit);
+    if (debugPortal) {
+      console.info('[Autocomplete] LanceDB returned no results, falling back to local DB');
+    }
+    return localResults();
 
   } catch (error) {
     // Fallback to local database on error
-    console.error('[Autocomplete] LanceDB error, falling back to local DB:', error);
-    const fallbackResults = searchInDatabase(normalizedQuery.toLowerCase(), lang, limit);
-    return fallbackResults.slice(0, limit);
+    if (debugPortal) {
+      console.info('[Autocomplete] LanceDB error, falling back to local DB:', error);
+    }
+    return localResults();
   }
 }
 

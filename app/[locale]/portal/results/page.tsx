@@ -774,6 +774,8 @@ function ResultsPageContent() {
       }
     } else if (query) {
       // Generate new recommendation from search query
+      const abortController = new AbortController();
+
       const generateRecommendation = async () => {
         try {
           // Smart detection: ingredient vs category
@@ -843,9 +845,9 @@ function ResultsPageContent() {
           const searchTerm = normalizedQuery;
           const category = searchTerm;
 
-          // Generate Job ID for complete traceability
-          const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-          console.log(`🔖 Job ID: ${jobId} - Query: "${normalizedQuery}" → "${category}"`);
+          // Use the stable page job ID for complete traceability.
+          const requestJobId = jobId;
+          console.log(`🔖 Job ID: ${requestJobId} - Query: "${normalizedQuery}" → "${category}"`);
 
           // Use Lambda quiz-orchestrator for all searches (ingredients and categories)
           // This bypasses the Amplify 30s SSR timeout limit by calling Lambda directly
@@ -861,16 +863,17 @@ function ResultsPageContent() {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'X-Job-ID': jobId,
+              'X-Job-ID': requestJobId,
             },
             body: JSON.stringify({
               category,
               age: 35, // Default - in production, get from user profile
               gender: 'male', // Default
               location: 'CDMX', // Default
-              jobId, // Include in body for backend logging
+              jobId: requestJobId, // Include in body for backend logging
               benefitQuery: submittedBenefitQuery, // Pass the benefit query
             }),
+            signal: abortController.signal,
           });
 
           if (!response.ok) {
@@ -1123,7 +1126,7 @@ function ResultsPageContent() {
           if (data.success && data.recommendation) {
             // Validate recommendation structure - use jobId for consistency
             if (!data.recommendation.recommendation_id) {
-              data.recommendation.recommendation_id = jobId; // Use existing jobId instead of generating rec_*
+              data.recommendation.recommendation_id = requestJobId; // Use existing jobId instead of generating rec_*
             }
             if (!data.recommendation.quiz_id) {
               data.recommendation.quiz_id = data.quiz_id || `quiz_${Date.now()}`;
@@ -1170,7 +1173,7 @@ function ResultsPageContent() {
             // CACHE: Save to localStorage for later retrieval
             // Only cache recommendations with real data (validated)
             // Use jobId for cache key to match job-store
-            const cacheJobId = data.jobId || data.recommendation.recommendation_id || jobId;
+            const cacheJobId = data.jobId || data.recommendation.recommendation_id || requestJobId;
             if (cacheJobId && typeof window !== 'undefined') {
               console.log('[Cache Storage] Evaluating cache eligibility for:', {
                 jobId: cacheJobId,
@@ -1235,6 +1238,10 @@ function ResultsPageContent() {
             }
           }
         } catch (err: any) {
+          if (err?.name === 'AbortError') {
+            return;
+          }
+
           console.error('Fetch error:', err);
           if (isMounted) {
             console.log('[State Update] Setting error - clearing recommendation first');
@@ -1246,6 +1253,11 @@ function ResultsPageContent() {
       };
 
       generateRecommendation();
+
+      return () => {
+        isMounted = false;
+        abortController.abort();
+      };
     } else {
       if (isMounted) {
         console.log('[State Update] Setting error - clearing recommendation first');
