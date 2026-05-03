@@ -7,10 +7,9 @@ frontend:
     build:
       commands:
         - NEXT_PUBLIC_GA_MEASUREMENT_ID=${NEXT_PUBLIC_GA_MEASUREMENT_ID:-G-MN7H9XRCNS} npm run build
-        - echo "Building LanceDB with Vitamin B Complex..."
-        - npx tsx scripts/add-vitamin-b-complex-to-lancedb.ts || echo "LanceDB update completed or already exists"
-        - echo "Building LanceDB with Vitamin C and D..."
-        - npx tsx scripts/add-vitamins-c-d-to-lancedb.ts || echo "LanceDB update completed or already exists"
+        - if [ -d "${LANCEDB_PATH:-/tmp/lancedb-pristine}/supplements.lance" ]; then npx tsx scripts/add-vitamin-b-complex-to-lancedb.ts; else echo "Skipping LanceDB Vitamin B update; local table not present"; fi
+        - if [ -d "${LANCEDB_PATH:-/tmp/lancedb-pristine}/supplements.lance" ]; then npx tsx scripts/add-vitamins-c-d-to-lancedb.ts; else echo "Skipping LanceDB Vitamin C/D update; local table not present"; fi
+        - rm -rf .next/cache
   artifacts:
     baseDirectory: .next
     files:
