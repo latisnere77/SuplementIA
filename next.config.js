@@ -4,11 +4,6 @@ const withNextIntl = require('next-intl/plugin')();
 // Force redeploy with NEXT_PUBLIC_USE_INTELLIGENT_SEARCH env var
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  eslint: {
-    // Allow production builds to succeed even with ESLint warnings
-    ignoreDuringBuilds: true,
-  },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
@@ -24,10 +19,22 @@ const nextConfig = {
     ],
   },
   // Webpack config for LanceDB native bindings
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Externalize LanceDB to prevent bundling native .node files
+  webpack: (config, { isServer, nextRuntime }) => {
+    if (isServer && nextRuntime !== 'edge') {
+      // Externalize server-only SDKs to prevent bundling native files and AWS SDK ESM subpath issues.
       config.externals.push('@lancedb/lancedb');
+      config.externals.push(({ request }, callback) => {
+        if (
+          /^@aws-sdk\//.test(request) ||
+          /^@smithy\//.test(request) ||
+          /^@opentelemetry\//.test(request) ||
+          /^@sentry\//.test(request)
+        ) {
+          return callback(null, `commonjs ${request}`);
+        }
+
+        callback();
+      });
     }
 
     // Handle .node files

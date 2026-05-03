@@ -271,10 +271,10 @@ export function validateSupplementQuery(query: string): ValidationResult {
  */
 export function sanitizeQuery(query: string): string {
   return query
-    .trim()
     .slice(0, 100) // Max 100 caracteres
     .replace(/[<>]/g, '') // Eliminar caracteres potencialmente peligrosos
-    .replace(/\s+/g, ' '); // Normalizar espacios
+    .replace(/\s+/g, ' ') // Normalizar espacios
+    .trim();
 }
 
 /**

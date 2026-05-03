@@ -27,15 +27,12 @@ class MockRDSPostgres {
     queryEmbedding: number[],
     options: { minSimilarity?: number; limit?: number } = {}
   ): Promise<{ results: any[]; latency: number }> {
-    const startTime = Date.now();
     const { minSimilarity = 0.85, limit = 5 } = options;
 
     // Simulate HNSW index lookup latency
     // Latency increases slightly with database size (logarithmic)
     const sizeLatency = Math.log(this.supplements.length + 1) * 2;
     const totalLatency = this.baseQueryLatency + sizeLatency;
-    
-    await this.sleep(totalLatency);
 
     // Calculate cosine similarity for all supplements
     const results = this.supplements
@@ -51,9 +48,7 @@ class MockRDSPostgres {
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, limit);
 
-    const latency = Date.now() - startTime;
-
-    return { results, latency };
+    return { results, latency: totalLatency };
   }
 
   getSupplementCount(): number {
@@ -83,10 +78,6 @@ class MockRDSPostgres {
     }
 
     return dotProduct / (normA * normB);
-  }
-
-  private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   clear(): void {
@@ -145,7 +136,7 @@ describe('RDS Postgres pgvector Performance Property Tests', () => {
       ),
       { numRuns: 50 }
     );
-  }, 30000); // 30s timeout
+  }, 90000); // CI runners can be slower under serialized property-test load
 
   /**
    * Property 7b: pgvector performance scales logarithmically

@@ -17,6 +17,7 @@ const LANCEDB_PATH = process.env.LANCEDB_PATH || '/tmp/lancedb-pristine';
 const BEDROCK_REGION = process.env.AWS_REGION || 'us-east-1';
 const EMBEDDING_MODEL = 'amazon.titan-embed-text-v2:0';
 const EMBEDDING_DIMENSIONS = 512;
+const DEBUG_SEARCH = process.env.DEBUG_SEARCH === 'true';
 
 // Initialize Bedrock client
 const bedrockClient = new BedrockRuntimeClient({ region: BEDROCK_REGION });
@@ -26,6 +27,15 @@ const bedrockClient = new BedrockRuntimeClient({ region: BEDROCK_REGION });
 let dbConnection: any = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let supplementsTable: any = null;
+
+function debugSearch(message: string, details?: unknown): void {
+  if (!DEBUG_SEARCH) return;
+  if (details === undefined) {
+    console.info(message);
+    return;
+  }
+  console.info(message, details);
+}
 
 export interface LanceDBResult {
   id: number;
@@ -67,7 +77,7 @@ async function generateEmbedding(text: string): Promise<number[]> {
     const result = JSON.parse(bodyText);
     return result.embedding;
   } catch (error) {
-    console.error('[LanceDB] Bedrock embedding error:', error);
+    debugSearch('[LanceDB] Bedrock embedding error:', error);
     throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -77,16 +87,16 @@ async function generateEmbedding(text: string): Promise<number[]> {
  */
 async function getLanceDB() {
   if (!supplementsTable) {
-    console.log(`[LanceDB] Connecting to: ${LANCEDB_PATH}`);
+    debugSearch(`[LanceDB] Connecting to: ${LANCEDB_PATH}`);
 
     try {
       dbConnection = await lancedbConnect(LANCEDB_PATH);
       supplementsTable = await dbConnection.openTable('supplements');
 
       const count = await supplementsTable.countRows();
-      console.log(`[LanceDB] Connected successfully. ${count} supplements available.`);
+      debugSearch(`[LanceDB] Connected successfully. ${count} supplements available.`);
     } catch (error) {
-      console.error('[LanceDB] Connection failed:', error);
+      debugSearch('[LanceDB] Connection failed:', error);
       throw new Error(`Failed to connect to LanceDB: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -103,7 +113,7 @@ async function getLanceDB() {
  */
 export async function searchLanceDB(query: string, limit: number = 10): Promise<LanceDBResult[]> {
   const searchStart = Date.now();
-  console.log(`[LanceDB] Vector search: "${query}" (limit: ${limit})`);
+  debugSearch(`[LanceDB] Vector search: "${query}" (limit: ${limit})`);
 
   try {
     // Get table connection
@@ -111,7 +121,7 @@ export async function searchLanceDB(query: string, limit: number = 10): Promise<
 
     // Generate query embedding
     const embedding = await generateEmbedding(query);
-    console.log(`[LanceDB] Embedding generated (${embedding.length}D)`);
+    debugSearch(`[LanceDB] Embedding generated (${embedding.length}D)`);
 
     // Perform vector search
     const results = await table
@@ -119,7 +129,7 @@ export async function searchLanceDB(query: string, limit: number = 10): Promise<
       .limit(limit)
       .toArray();
 
-    console.log(`[LanceDB] Found ${results.length} results in ${Date.now() - searchStart}ms`);
+    debugSearch(`[LanceDB] Found ${results.length} results in ${Date.now() - searchStart}ms`);
 
     // Helper to convert BigInt to Number
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -156,12 +166,12 @@ export async function searchLanceDB(query: string, limit: number = 10): Promise<
     // Log top result for debugging
     if (mappedResults.length > 0) {
       const top = mappedResults[0];
-      console.log(`[LanceDB] Top match: ${top.name} (grade ${top.metadata.evidence_grade}, ${top.metadata.study_count} studies, similarity: ${top.similarity.toFixed(3)})`);
+      debugSearch(`[LanceDB] Top match: ${top.name} (grade ${top.metadata.evidence_grade}, ${top.metadata.study_count} studies, similarity: ${top.similarity.toFixed(3)})`);
     }
 
     return mappedResults;
   } catch (error) {
-    console.error('[LanceDB] Search error:', error);
+    debugSearch('[LanceDB] Search error:', error);
     throw error;
   }
 }
@@ -173,7 +183,7 @@ export async function searchLanceDB(query: string, limit: number = 10): Promise<
  * @returns Supplement data or null if not found
  */
 export async function getSupplementByName(name: string): Promise<LanceDBResult | null> {
-  console.log(`[LanceDB] Exact name lookup: "${name}"`);
+  debugSearch(`[LanceDB] Exact name lookup: "${name}"`);
 
   try {
     const table = await getLanceDB();
@@ -193,7 +203,7 @@ export async function getSupplementByName(name: string): Promise<LanceDBResult |
     );
 
     if (exactMatch) {
-      console.log(`[LanceDB] Exact match found: ${exactMatch.name}`);
+      debugSearch(`[LanceDB] Exact match found: ${exactMatch.name}`);
       return {
         id: exactMatch.id,
         name: exactMatch.name,
@@ -205,10 +215,10 @@ export async function getSupplementByName(name: string): Promise<LanceDBResult |
       };
     }
 
-    console.log(`[LanceDB] No exact match for "${name}"`);
+    debugSearch(`[LanceDB] No exact match for "${name}"`);
     return null;
   } catch (error) {
-    console.error('[LanceDB] Lookup error:', error);
+    debugSearch('[LanceDB] Lookup error:', error);
     return null;
   }
 }

@@ -11,7 +11,7 @@
 'use client';
 
 import { useSearchParams, useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, LoaderCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import EvidenceAnalysisPanelNew from '@/components/portal/EvidenceAnalysisPanelNew';
@@ -72,53 +72,8 @@ export default function SupplementDetailPage() {
   const supplementName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   const benefitName = benefit.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
-  const fetchEnrichedEvidence = async (forceRefresh = false) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Call the simplified enrichment API that bypasses TDZ errors
-      const response = await fetch('/api/portal/enrich-simple', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          supplementName: slug,
-          category: benefit,
-          forceRefresh,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error al obtener evidencia: ${errorText}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success && data.evidence) {
-        // Transform enrichment response to EvidenceAnalysisPanelNew format
-        const evidence = transformEnrichmentResponse(data);
-        setEvidenceSummary(evidence);
-      } else if (data.success && data.data) {
-        // Alternative response format
-        const evidence = transformEnrichmentResponse(data);
-        setEvidenceSummary(evidence);
-      } else {
-        throw new Error(data.error || 'Formato de datos inválido');
-      }
-
-    } catch (err: any) {
-      setError(err.message || 'Error desconocido al obtener la evidencia.');
-      console.error("Enrichment error:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Transform enrichment API response to component format
-  const transformEnrichmentResponse = (data: any): EvidenceSummary => {
+  const transformEnrichmentResponse = useCallback((data: any): EvidenceSummary => {
     const evidence = data.evidence || data.data || {};
 
     // Map grade string to GradeType
@@ -174,12 +129,57 @@ export default function SupplementDetailPage() {
         searchTerm: data.metadata?.searchTerm,
       },
     };
-  };
+  }, [supplementName]);
+
+  const fetchEnrichedEvidence = useCallback(async (forceRefresh = false) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Call the simplified enrichment API that bypasses TDZ errors
+      const response = await fetch('/api/portal/enrich-simple', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          supplementName: slug,
+          category: benefit,
+          forceRefresh,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al obtener evidencia: ${errorText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.evidence) {
+        // Transform enrichment response to EvidenceAnalysisPanelNew format
+        const evidence = transformEnrichmentResponse(data);
+        setEvidenceSummary(evidence);
+      } else if (data.success && data.data) {
+        // Alternative response format
+        const evidence = transformEnrichmentResponse(data);
+        setEvidenceSummary(evidence);
+      } else {
+        throw new Error(data.error || 'Formato de datos inválido');
+      }
+
+    } catch (err: any) {
+      setError(err.message || 'Error desconocido al obtener la evidencia.');
+      console.error("Enrichment error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [benefit, slug, transformEnrichmentResponse]);
 
   useEffect(() => {
     if (!slug) return;
     fetchEnrichedEvidence();
-  }, [slug, benefit]);
+  }, [fetchEnrichedEvidence, slug]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -261,7 +261,7 @@ export default function SupplementDetailPage() {
         <div className="text-center py-16 bg-gray-50 rounded-xl">
           <h3 className="text-xl font-semibold text-gray-800">No se encontró evidencia</h3>
           <p className="text-gray-500 mt-2">
-            No pudimos encontrar estudios para "{supplementName}".
+            No pudimos encontrar estudios para &quot;{supplementName}&quot;.
           </p>
           <button
             onClick={() => fetchEnrichedEvidence(true)}

@@ -486,8 +486,8 @@ const VARIATION_GENERATORS: Record<string, (canonical: string) => string[]> = {
  */
 export function normalizeQuery(query: string): NormalizedQuery {
   // Deprecation warning (only in development)
-  if (process.env.NODE_ENV === 'development') {
-    console.warn(
+  if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_PORTAL === 'true') {
+    console.info(
       '[DEPRECATED] normalizeQuery() is deprecated. ' +
       'Use intelligent search API (/api/portal/search) or useIntelligentSearch() hook instead. ' +
       'This function will be removed in v2.0.0.'

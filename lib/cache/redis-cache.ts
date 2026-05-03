@@ -17,8 +17,18 @@ const REDIS_ENDPOINT = process.env.ELASTICACHE_REDIS_ENDPOINT;
 const REDIS_PORT = parseInt(process.env.ELASTICACHE_REDIS_PORT || '6379');
 const REDIS_AUTH_TOKEN = process.env.ELASTICACHE_REDIS_AUTH_TOKEN;
 const REDIS_TLS = process.env.ELASTICACHE_REDIS_TLS === 'true';
+const DEBUG_CACHE = process.env.DEBUG_CACHE === 'true';
 
 let redisClient: Redis | null = null;
+
+function debugCache(message: string, details?: unknown): void {
+  if (!DEBUG_CACHE) return;
+  if (details === undefined) {
+    console.info(message);
+    return;
+  }
+  console.info(message, details);
+}
 
 /**
  * Initialize Redis client
@@ -29,7 +39,6 @@ function getRedisClient(): Redis | null {
   }
   
   if (!REDIS_ENDPOINT) {
-    console.warn('[Redis Cache] ELASTICACHE_REDIS_ENDPOINT not configured');
     return null;
   }
   
@@ -62,21 +71,21 @@ function getRedisClient(): Redis | null {
     redisClient = new Redis(options);
     
     redisClient.on('connect', () => {
-      console.log(`[Redis Cache] Connected to Redis: ${REDIS_ENDPOINT}:${REDIS_PORT}`);
+      debugCache(`[Redis Cache] Connected to Redis: ${REDIS_ENDPOINT}:${REDIS_PORT}`);
     });
     
     redisClient.on('error', (error) => {
-      console.error('[Redis Cache] Redis error:', error);
+      debugCache('[Redis Cache] Redis error:', error);
     });
     
     redisClient.on('close', () => {
-      console.log('[Redis Cache] Redis connection closed');
+      debugCache('[Redis Cache] Redis connection closed');
     });
     
     return redisClient;
     
   } catch (error) {
-    console.error('[Redis Cache] Failed to initialize Redis client:', error);
+    debugCache('[Redis Cache] Failed to initialize Redis client:', error);
     return null;
   }
 }
@@ -110,15 +119,15 @@ export class RedisCache {
       const latency = performance.now() - startTime;
       
       if (!data) {
-        console.log(`[Redis Cache] MISS - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
+        debugCache(`[Redis Cache] MISS - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
         return null;
       }
       
-      console.log(`[Redis Cache] HIT - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
+      debugCache(`[Redis Cache] HIT - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
       return JSON.parse(data) as CacheItem;
       
     } catch (error) {
-      console.error('[Redis Cache] Error getting item:', error);
+      debugCache('[Redis Cache] Error getting item:', error);
       return null;
     }
   }
@@ -149,10 +158,10 @@ export class RedisCache {
       await this.client.ltrim(CACHE_KEYS.recent(), 0, 99);
       
       const latency = performance.now() - startTime;
-      console.log(`[Redis Cache] SET - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
+      debugCache(`[Redis Cache] SET - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
       
     } catch (error) {
-      console.error('[Redis Cache] Error setting item:', error);
+      debugCache('[Redis Cache] Error setting item:', error);
       throw error;
     }
   }
@@ -172,10 +181,10 @@ export class RedisCache {
       // Remove from popular supplements
       await this.client.zrem(CACHE_KEYS.popular(), query);
       
-      console.log(`[Redis Cache] DELETE - Query: ${query}`);
+      debugCache(`[Redis Cache] DELETE - Query: ${query}`);
       
     } catch (error) {
-      console.error('[Redis Cache] Error deleting item:', error);
+      debugCache('[Redis Cache] Error deleting item:', error);
       throw error;
     }
   }
@@ -199,7 +208,7 @@ export class RedisCache {
       return JSON.parse(data) as number[];
       
     } catch (error) {
-      console.error('[Redis Cache] Error getting embedding:', error);
+      debugCache('[Redis Cache] Error getting embedding:', error);
       return null;
     }
   }
@@ -219,7 +228,7 @@ export class RedisCache {
       await this.client.setex(key, ttl, value);
       
     } catch (error) {
-      console.error('[Redis Cache] Error setting embedding:', error);
+      debugCache('[Redis Cache] Error setting embedding:', error);
       throw error;
     }
   }
@@ -237,7 +246,7 @@ export class RedisCache {
       return await this.client.zrevrange(CACHE_KEYS.popular(), 0, limit - 1);
       
     } catch (error) {
-      console.error('[Redis Cache] Error getting popular supplements:', error);
+      debugCache('[Redis Cache] Error getting popular supplements:', error);
       return [];
     }
   }
@@ -254,7 +263,7 @@ export class RedisCache {
       return await this.client.lrange(CACHE_KEYS.recent(), 0, limit - 1);
       
     } catch (error) {
-      console.error('[Redis Cache] Error getting recent searches:', error);
+      debugCache('[Redis Cache] Error getting recent searches:', error);
       return [];
     }
   }
@@ -272,7 +281,7 @@ export class RedisCache {
       await this.client.incr(key);
       
     } catch (error) {
-      console.error('[Redis Cache] Error incrementing search count:', error);
+      debugCache('[Redis Cache] Error incrementing search count:', error);
     }
   }
   
@@ -316,7 +325,7 @@ export class RedisCache {
       };
       
     } catch (error) {
-      console.error('[Redis Cache] Error getting stats:', error);
+      debugCache('[Redis Cache] Error getting stats:', error);
       return {
         hits: 0,
         misses: 0,
@@ -337,10 +346,10 @@ export class RedisCache {
     
     try {
       await this.client.flushdb();
-      console.log('[Redis Cache] Cache flushed');
+      debugCache('[Redis Cache] Cache flushed');
       
     } catch (error) {
-      console.error('[Redis Cache] Error flushing cache:', error);
+      debugCache('[Redis Cache] Error flushing cache:', error);
       throw error;
     }
   }

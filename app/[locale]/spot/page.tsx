@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 
 interface ServiceStatus {
@@ -42,7 +42,7 @@ export default function AdminControlPanel() {
     const [seedingProgress, setSeedingProgress] = useState<SeedingProgress | null>(null);
     const [dbStats, setDbStats] = useState<{ total: number, items: any[] } | null>(null);
 
-    const fetchStatus = async () => {
+    const fetchStatus = useCallback(async () => {
         if (!session?.idToken) {
             console.warn('[fetchStatus] No idToken in session');
             if (session) {
@@ -76,9 +76,9 @@ export default function AdminControlPanel() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [session]);
 
-    const fetchSeedingStatus = async () => {
+    const fetchSeedingStatus = useCallback(async () => {
         if (!session?.idToken) return;
 
         try {
@@ -98,9 +98,9 @@ export default function AdminControlPanel() {
         } catch (error) {
             console.error('Error fetching seeding status:', error);
         }
-    };
+    }, [session]);
 
-    const fetchDbData = async () => {
+    const fetchDbData = useCallback(async () => {
         if (!session?.idToken) return;
         try {
             const res = await fetch('/api/admin/weaviate-data', {
@@ -116,9 +116,9 @@ export default function AdminControlPanel() {
         } catch (e) {
             console.error("Failed to fetch DB data", e);
         }
-    };
+    }, [session]);
 
-    const executeAction = async (action: 'start' | 'stop') => {
+    const executeAction = useCallback(async (action: 'start' | 'stop') => {
         if (!session?.idToken) return;
 
         setLoading(true);
@@ -145,7 +145,7 @@ export default function AdminControlPanel() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchStatus, session]);
 
     const startService = () => executeAction('start');
     const stopService = () => executeAction('stop');
@@ -198,7 +198,7 @@ export default function AdminControlPanel() {
             }, 30000);
             return () => clearInterval(interval);
         }
-    }, [session]);
+    }, [fetchDbData, fetchSeedingStatus, fetchStatus, session]);
 
     // Refresh DB data periodically if seeding is active
     useEffect(() => {
@@ -209,7 +209,7 @@ export default function AdminControlPanel() {
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [seedingProgress?.isRunning]);
+    }, [fetchDbData, seedingProgress?.isRunning]);
 
     // Auth Loading State
     if (authStatus === 'loading') {

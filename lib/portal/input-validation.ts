@@ -59,13 +59,13 @@ export function sanitizeQuery(query: string): string {
   }
 
   return query
-    .trim()
     // Remove potentially dangerous characters
     .replace(/[<>]/g, '')
     // Remove control characters
     .replace(/[\x00-\x1F\x7F]/g, '')
     // Normalize multiple spaces to single space
     .replace(/\s+/g, ' ')
+    .trim()
     // Limit length to prevent abuse
     .slice(0, 100);
 }

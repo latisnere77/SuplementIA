@@ -7,15 +7,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCategoryBySlug } from '@/lib/knowledge-base';
 
 interface CategoryApiProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function GET(request: NextRequest, { params }: CategoryApiProps) {
+  const { slug } = await params;
+
   try {
-    const { slug } = params;
-    
     if (!slug) {
       return NextResponse.json({ success: false, error: 'Category slug is required' }, { status: 400 });
     }
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest, { params }: CategoryApiProps) {
     });
 
   } catch (error: any) {
-    console.error(`Error fetching category data for slug: ${params.slug}`, error);
+    console.error(`Error fetching category data for slug: ${slug}`, error);
     return NextResponse.json({ success: false, error: error.message || 'Internal server error' }, { status: 500 });
   }
 }

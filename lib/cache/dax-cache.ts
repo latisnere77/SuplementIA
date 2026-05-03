@@ -5,7 +5,6 @@
  * DAX provides in-memory caching for DynamoDB with automatic cache management.
  */
 
-import AmazonDaxClient from 'amazon-dax-client';
 import { DynamoDBDocumentClient, GetCommand, PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { generateSupplementPK, calculateTTL, type CacheItem } from '../../infrastructure/dynamodb-dax-config';
 
@@ -16,8 +15,18 @@ import { generateSupplementPK, calculateTTL, type CacheItem } from '../../infras
 const DAX_ENDPOINT = process.env.DAX_ENDPOINT;
 const DAX_PORT = parseInt(process.env.DAX_PORT || '8111');
 const TABLE_NAME = process.env.DYNAMODB_CACHE_TABLE || 'supplement-cache';
+const DEBUG_CACHE = process.env.DEBUG_CACHE === 'true';
 
 let daxClient: DynamoDBDocumentClient | null = null;
+
+function debugCache(message: string, details?: unknown): void {
+  if (!DEBUG_CACHE) return;
+  if (details === undefined) {
+    console.info(message);
+    return;
+  }
+  console.info(message, details);
+}
 
 /**
  * Initialize DAX client
@@ -29,7 +38,6 @@ function getDaxClient(): DynamoDBDocumentClient {
   }
 
   if (!DAX_ENDPOINT) {
-    console.warn('[DAX Cache] DAX_ENDPOINT not configured, using regular DynamoDB');
     // Fallback to regular DynamoDB
     const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
     const dynamoClient = new DynamoDBClient({
@@ -39,33 +47,13 @@ function getDaxClient(): DynamoDBDocumentClient {
     return daxClient;
   }
 
-  try {
-    // Create DAX client
-    const dax = new AmazonDaxClient({
-      endpoints: [`${DAX_ENDPOINT}:${DAX_PORT}`],
-      region: (process.env.AWS_REGION || 'us-east-1').trim(),
-    });
-
-    daxClient = DynamoDBDocumentClient.from(dax, {
-      marshallOptions: {
-        removeUndefinedValues: true,
-        convertClassInstanceToMap: true,
-      },
-    });
-
-    console.log(`[DAX Cache] Connected to DAX cluster: ${DAX_ENDPOINT}:${DAX_PORT}`);
-    return daxClient;
-
-  } catch (error) {
-    console.error('[DAX Cache] Failed to initialize DAX client:', error);
-    // Fallback to regular DynamoDB
-    const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-    const dynamoClient = new DynamoDBClient({
-      region: (process.env.AWS_REGION || 'us-east-1').trim(),
-    });
-    daxClient = DynamoDBDocumentClient.from(dynamoClient);
-    return daxClient;
-  }
+  debugCache(`[DAX Cache] DAX endpoint configured (${DAX_ENDPOINT}:${DAX_PORT}), using DynamoDB SDK client fallback`);
+  const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+  const dynamoClient = new DynamoDBClient({
+    region: (process.env.AWS_REGION || 'us-east-1').trim(),
+  });
+  daxClient = DynamoDBDocumentClient.from(dynamoClient);
+  return daxClient;
 }
 
 // ====================================
@@ -101,15 +89,15 @@ export class DAXCache {
       const latency = performance.now() - startTime;
 
       if (!result.Item) {
-        console.log(`[DAX Cache] MISS - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
+        debugCache(`[DAX Cache] MISS - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
         return null;
       }
 
-      console.log(`[DAX Cache] HIT - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
+      debugCache(`[DAX Cache] HIT - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
       return result.Item as CacheItem;
 
     } catch (error) {
-      console.error('[DAX Cache] Error getting item:', error);
+      debugCache('[DAX Cache] Error getting item:', error);
       return null;
     }
   }
@@ -139,10 +127,10 @@ export class DAXCache {
       }));
 
       const latency = performance.now() - startTime;
-      console.log(`[DAX Cache] SET - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
+      debugCache(`[DAX Cache] SET - Query: ${query}, Latency: ${latency.toFixed(2)}ms`);
 
     } catch (error) {
-      console.error('[DAX Cache] Error setting item:', error);
+      debugCache('[DAX Cache] Error setting item:', error);
       throw error;
     }
   }
@@ -163,10 +151,10 @@ export class DAXCache {
         },
       }));
 
-      console.log(`[DAX Cache] DELETE - Query: ${query}`);
+      debugCache(`[DAX Cache] DELETE - Query: ${query}`);
 
     } catch (error) {
-      console.error('[DAX Cache] Error deleting item:', error);
+      debugCache('[DAX Cache] Error deleting item:', error);
       throw error;
     }
   }
@@ -194,14 +182,14 @@ export class DAXCache {
    * Check if DAX is available
    */
   isDAXAvailable(): boolean {
-    return !!DAX_ENDPOINT;
+    return false;
   }
 
   /**
    * Get cache source (DAX or DynamoDB)
    */
   getCacheSource(): 'dax' | 'dynamodb' {
-    return DAX_ENDPOINT ? 'dax' : 'dynamodb';
+    return 'dynamodb';
   }
 }
 

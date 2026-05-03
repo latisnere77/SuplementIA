@@ -42,6 +42,7 @@ import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
 import type { GradeType } from '@/types/supplement-grade';
 import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } from '@/lib/services/pubmed-search';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
+import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -163,14 +164,22 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     metadataStudiesKeys: enrichmentMetadata.studies ? Object.keys(enrichmentMetadata.studies) : []
   });
 
-  // ✅ USE STRUCTURED DATA - No string parsing needed!
-  const worksFor = Array.isArray(supplement.worksFor) ? supplement.worksFor.map((item: any) => ({
-    condition: item.condition || item.use || item.benefit || '',
-    grade: item.evidenceGrade || item.grade || 'C',
-    description: item.notes || item.effectSize || item.magnitude || '',
-    studyCount: item.studyCount || 0,
-    metaAnalysis: item.metaAnalysis || false,
-  })) : [];
+  const rawWorksFor = Array.isArray(supplement.worksFor) ? supplement.worksFor.map((item: any) => {
+    const grade = normalizeEvidenceGrade(item.evidenceGrade || item.grade);
+    return {
+      condition: item.condition || item.use || item.benefit || '',
+      grade,
+      description: item.notes || item.effectSize || item.magnitude || '',
+      studyCount: item.studyCount || 0,
+      metaAnalysis: item.metaAnalysis || false,
+    };
+  }) : [];
+
+  // Only grade A/B evidence is allowed in "Funciona para".
+  // Lower or missing grades must not be promoted from catalog/search metadata.
+  const worksFor = rawWorksFor
+    .filter((item: any) => isStrongEvidenceGrade(item.grade))
+    .sort((a: any, b: any) => compareEvidenceGrades(a.grade, b.grade) || ((b.studyCount || 0) - (a.studyCount || 0)));
 
   const doesntWorkFor = Array.isArray(supplement.doesntWorkFor) ? supplement.doesntWorkFor.map((item: any) => ({
     condition: item.condition || item.use || '',
@@ -180,16 +189,8 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   })) : [];
 
   const limitedEvidence = Array.isArray(supplement.limitedEvidence) ? supplement.limitedEvidence.map((item: any) => {
-    // CONSISTENCY FIX: Force items in limitedEvidence to have grade C or lower
-    // Items with grade A/B should be in worksFor, not limitedEvidence
-    // This prevents showing "Evidencia Limitada" with "Grado A" which is contradictory
-    //
-    // TODO(backend): Backend should properly categorize items by evidence strength:
-    // - Grade A/B → worksFor
-    // - Grade C → limitedEvidence or worksFor (depending on confidence)
-    // - Grade D/E/F → doesntWorkFor or limitedEvidence
-    const rawGrade = item.evidenceGrade || item.grade || 'C';
-    const adjustedGrade = (rawGrade === 'A' || rawGrade === 'B') ? 'C' : rawGrade;
+    const rawGrade = normalizeEvidenceGrade(item.evidenceGrade || item.grade);
+    const adjustedGrade = isStrongEvidenceGrade(rawGrade) ? 'C' : rawGrade;
 
     return {
       condition: item.condition || item.use || '',
@@ -381,6 +382,14 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
  */
 function transformToExamineFormat(recommendation: Recommendation): any {
   const supplement = (recommendation as any).supplement || {};
+  const strongWorksFor = Array.isArray(supplement.worksFor)
+    ? supplement.worksFor
+      .map((item: any) => ({
+        ...item,
+        grade: normalizeEvidenceGrade(item.evidenceGrade || item.grade),
+      }))
+      .filter((item: any) => isStrongEvidenceGrade(item.grade))
+    : [];
 
   return {
     overview: {
@@ -388,7 +397,7 @@ function transformToExamineFormat(recommendation: Recommendation): any {
       functions: supplement.primaryUses || supplement.functions || [],
       sources: supplement.sources || [],
     },
-    benefitsByCondition: (supplement.worksFor || []).map((item: any) => ({
+    benefitsByCondition: strongWorksFor.map((item: any) => ({
       condition: item.condition || '',
       effect: item.magnitude || item.effectSize || 'Moderate',
       quantitativeData: item.quantitativeData || item.notes || 'Ver estudios para detalles',
@@ -717,17 +726,6 @@ function ResultsPageContent() {
       hasContraindications: Array.isArray(transformed.contraindications) && transformed.contraindications.length > 0,
     });
 
-    // Log missing sections
-    if (!transformed.worksFor || transformed.worksFor.length === 0) {
-      console.warn('[Recommendation Sections] ⚠️ Missing worksFor section for:', recommendation.category);
-    }
-    if (!transformed.dosage) {
-      console.warn('[Recommendation Sections] ⚠️ Missing dosage section for:', recommendation.category);
-    }
-    if (!transformed.sideEffects || transformed.sideEffects.length === 0) {
-      console.warn('[Recommendation Sections] ⚠️ Missing sideEffects section for:', recommendation.category);
-    }
-
     setTransformedEvidence(transformed);
 
     // Also transform to Examine format
@@ -739,7 +737,7 @@ function ResultsPageContent() {
     let isMounted = true;
 
     // Handle different scenarios
-    if (jobId && !query) {
+    if (urlJobId) {
       // CASE 1: User has jobId in URL (from cache/sharing) - check cache only
       if (typeof window !== 'undefined') {
         try {
@@ -774,6 +772,8 @@ function ResultsPageContent() {
       }
     } else if (query) {
       // Generate new recommendation from search query
+      const abortController = new AbortController();
+
       const generateRecommendation = async () => {
         try {
           // Smart detection: ingredient vs category
@@ -843,9 +843,9 @@ function ResultsPageContent() {
           const searchTerm = normalizedQuery;
           const category = searchTerm;
 
-          // Generate Job ID for complete traceability
-          const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-          console.log(`🔖 Job ID: ${jobId} - Query: "${normalizedQuery}" → "${category}"`);
+          // Use the stable page job ID for complete traceability.
+          const requestJobId = jobId;
+          console.log(`🔖 Job ID: ${requestJobId} - Query: "${normalizedQuery}" → "${category}"`);
 
           // Use Lambda quiz-orchestrator for all searches (ingredients and categories)
           // This bypasses the Amplify 30s SSR timeout limit by calling Lambda directly
@@ -861,16 +861,17 @@ function ResultsPageContent() {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'X-Job-ID': jobId,
+              'X-Job-ID': requestJobId,
             },
             body: JSON.stringify({
               category,
               age: 35, // Default - in production, get from user profile
               gender: 'male', // Default
               location: 'CDMX', // Default
-              jobId, // Include in body for backend logging
+              jobId: requestJobId, // Include in body for backend logging
               benefitQuery: submittedBenefitQuery, // Pass the benefit query
             }),
+            signal: abortController.signal,
           });
 
           if (!response.ok) {
@@ -1003,6 +1004,75 @@ function ResultsPageContent() {
             }
           }
 
+          if (data.success && data.status === 'processing' && (data.jobId || data.recommendation_id)) {
+            const pollJobId = data.jobId || data.recommendation_id;
+            const pollInterval = parseInt(data.pollInterval || '3') * 1000;
+            const maxPollTime = 180000;
+            const startTime = Date.now();
+            const statusUrl = `/api/portal/status/${pollJobId}`;
+
+            console.log('[Async Polling] Backend is still enriching recommendation:', {
+              jobId: pollJobId,
+              hasInitialRecommendation: !!data.recommendation,
+            });
+
+            const pollStatus = async () => {
+              try {
+                console.log('[Async Polling] Fetching status:', statusUrl);
+                const statusResponse = await fetch(statusUrl);
+                const statusData = await statusResponse.json();
+
+                console.log('[Async Polling] Status update:', {
+                  status: statusData.status,
+                  hasRecommendation: !!statusData.recommendation,
+                });
+
+                if (statusData.status === 'completed' && statusData.recommendation) {
+                  const finalRecommendation = submittedBenefitQuery
+                    ? filterByBenefit(statusData.recommendation, submittedBenefitQuery)
+                    : statusData.recommendation;
+
+                  setError(null);
+                  setRecommendation(finalRecommendation);
+                  setConditionResult(null);
+                  setSearchType('ingredient');
+                  setIsLoading(false);
+                  return;
+                }
+
+                if (statusData.status === 'failed') {
+                  setRecommendation(null);
+                  setError(statusData.error || 'Failed to generate recommendation');
+                  setIsLoading(false);
+                  return;
+                }
+
+                if (Date.now() - startTime < maxPollTime) {
+                  setTimeout(pollStatus, pollInterval);
+                  return;
+                }
+
+                setRecommendation(null);
+                setError('La recomendación está tardando más de lo esperado. Por favor, intenta de nuevo.');
+                setIsLoading(false);
+              } catch (pollError: any) {
+                console.error('[Async Polling] ❌ Polling error:', pollError);
+
+                if (Date.now() - startTime < maxPollTime) {
+                  setTimeout(pollStatus, pollInterval);
+                  return;
+                }
+
+                setRecommendation(null);
+                setError('Error al verificar el estado de la recomendación');
+                setIsLoading(false);
+              }
+            };
+
+            setTimeout(pollStatus, pollInterval);
+            return;
+          }
+
           if (data.searchType === 'condition') {
             console.log('[Data Fetch] ✅ Received CONDITION result:', data);
             setConditionResult(data);
@@ -1123,7 +1193,7 @@ function ResultsPageContent() {
           if (data.success && data.recommendation) {
             // Validate recommendation structure - use jobId for consistency
             if (!data.recommendation.recommendation_id) {
-              data.recommendation.recommendation_id = jobId; // Use existing jobId instead of generating rec_*
+              data.recommendation.recommendation_id = requestJobId; // Use existing jobId instead of generating rec_*
             }
             if (!data.recommendation.quiz_id) {
               data.recommendation.quiz_id = data.quiz_id || `quiz_${Date.now()}`;
@@ -1170,7 +1240,7 @@ function ResultsPageContent() {
             // CACHE: Save to localStorage for later retrieval
             // Only cache recommendations with real data (validated)
             // Use jobId for cache key to match job-store
-            const cacheJobId = data.jobId || data.recommendation.recommendation_id || jobId;
+            const cacheJobId = data.jobId || data.recommendation.recommendation_id || requestJobId;
             if (cacheJobId && typeof window !== 'undefined') {
               console.log('[Cache Storage] Evaluating cache eligibility for:', {
                 jobId: cacheJobId,
@@ -1235,6 +1305,10 @@ function ResultsPageContent() {
             }
           }
         } catch (err: any) {
+          if (err?.name === 'AbortError') {
+            return;
+          }
+
           console.error('Fetch error:', err);
           if (isMounted) {
             console.log('[State Update] Setting error - clearing recommendation first');
@@ -1246,6 +1320,11 @@ function ResultsPageContent() {
       };
 
       generateRecommendation();
+
+      return () => {
+        isMounted = false;
+        abortController.abort();
+      };
     } else {
       if (isMounted) {
         console.log('[State Update] Setting error - clearing recommendation first');
@@ -1260,7 +1339,7 @@ function ResultsPageContent() {
       isMounted = false;
     };
   // Note: routerRef is used instead of router to prevent infinite re-renders
-  }, [query, jobId, submittedBenefitQuery]);
+  }, [query, jobId, submittedBenefitQuery, urlJobId]);
 
   // ====================================
   // VARIANT SELECTOR HANDLERS
@@ -1773,4 +1852,3 @@ export default function ResultsPage() {
     </Suspense>
   );
 }
-

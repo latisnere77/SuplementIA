@@ -10,6 +10,8 @@ import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
+import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
+import { getSupplementEvidenceFromCache } from '@/lib/portal/supplements-evidence-data';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
@@ -322,17 +324,33 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
 
   console.log(`[MERGE_DEBUG] Found evidence via path. worksFor: ${evidence.worksFor?.length || 0}, doesntWorkFor: ${evidence.doesntWorkFor?.length || 0}`);
 
-  // Update worksFor with real conditions from enrichment
+  // Update worksFor only with strong, explicit evidence from enrichment.
+  // Catalog/search conditions are not enough to claim that a supplement "funciona para" a condition.
   if (evidence.worksFor && evidence.worksFor.length > 0) {
-    recommendation.supplement.worksFor = evidence.worksFor.map((item: any) => ({
-      condition: item.condition || item.name,
-      grade: item.evidenceGrade || item.grade || 'B',
-      evidenceGrade: item.evidenceGrade || item.grade || 'B',
-      studyCount: item.studyCount || 1,
-      notes: item.summary || item.notes || '',
-      magnitude: item.magnitude || 'Moderada',
-      confidence: item.confidence || 75,
-    }));
+    const enrichedWorksFor = evidence.worksFor.map((item: any) => {
+      const grade = normalizeEvidenceGrade(item.evidenceGrade || item.grade);
+      return {
+        condition: item.condition || item.name,
+        grade,
+        evidenceGrade: grade,
+        studyCount: item.studyCount || 1,
+        notes: item.summary || item.notes || '',
+        magnitude: item.magnitude || 'Moderada',
+        confidence: item.confidence || 75,
+      };
+    });
+
+    recommendation.supplement.worksFor = enrichedWorksFor
+      .filter((item: any) => isStrongEvidenceGrade(item.evidenceGrade))
+      .sort((a: any, b: any) => compareEvidenceGrades(a.evidenceGrade, b.evidenceGrade) || ((b.studyCount || 0) - (a.studyCount || 0)));
+
+    const weakerWorksFor = enrichedWorksFor.filter((item: any) => !isStrongEvidenceGrade(item.evidenceGrade));
+    if (weakerWorksFor.length > 0) {
+      recommendation.supplement.limitedEvidence = [
+        ...weakerWorksFor,
+        ...(Array.isArray(recommendation.supplement.limitedEvidence) ? recommendation.supplement.limitedEvidence : []),
+      ];
+    }
   }
 
   // Update description (handle both formats)
@@ -488,6 +506,72 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
   return recommendation;
 }
 
+function applyCachedPubMedEvidence(recommendation: any, supplementName: string): any {
+  const cachedEvidence = getSupplementEvidenceFromCache(supplementName);
+
+  if (!cachedEvidence) {
+    return recommendation;
+  }
+
+  const strongWorksFor = cachedEvidence.worksFor
+    .map((item: any) => {
+      const grade = normalizeEvidenceGrade(item.grade);
+      return {
+        condition: item.condition,
+        grade,
+        evidenceGrade: grade,
+        notes: item.description || '',
+        studyCount: item.studyCount || 0,
+      };
+    })
+    .filter((item: any) => isStrongEvidenceGrade(item.evidenceGrade))
+    .sort((a: any, b: any) => compareEvidenceGrades(a.evidenceGrade, b.evidenceGrade));
+
+  if (strongWorksFor.length === 0) {
+    return recommendation;
+  }
+
+  return {
+    ...recommendation,
+    supplement: {
+      ...recommendation.supplement,
+      worksFor: strongWorksFor,
+      doesntWorkFor: Array.isArray(cachedEvidence.doesntWorkFor)
+        ? cachedEvidence.doesntWorkFor.map((item: any) => ({
+          condition: item.condition,
+          grade: normalizeEvidenceGrade(item.grade, 'D'),
+          evidenceGrade: normalizeEvidenceGrade(item.grade, 'D'),
+          notes: item.description || '',
+        }))
+        : recommendation.supplement?.doesntWorkFor || [],
+      limitedEvidence: Array.isArray(cachedEvidence.limitedEvidence)
+        ? cachedEvidence.limitedEvidence.map((item: any) => ({
+          condition: item.condition,
+          grade: normalizeEvidenceGrade(item.grade),
+          evidenceGrade: normalizeEvidenceGrade(item.grade),
+          notes: item.description || '',
+        }))
+        : recommendation.supplement?.limitedEvidence || [],
+    },
+    evidence_summary: {
+      ...recommendation.evidence_summary,
+      overallGrade: cachedEvidence.overallGrade || recommendation.evidence_summary?.overallGrade,
+      ingredients: cachedEvidence.ingredients?.length
+        ? cachedEvidence.ingredients
+        : recommendation.evidence_summary?.ingredients,
+      qualityBadges: cachedEvidence.qualityBadges || recommendation.evidence_summary?.qualityBadges,
+    },
+  };
+}
+
+function hasStrongWorksForEvidence(recommendation: any): boolean {
+  const worksFor = recommendation?.supplement?.worksFor;
+
+  return Array.isArray(worksFor) && worksFor.some((item: any) =>
+    isStrongEvidenceGrade(item.evidenceGrade || item.grade)
+  );
+}
+
 /**
  * Get the base URL for internal API calls
  * Auto-detects production URL from Vercel environment
@@ -541,9 +625,6 @@ function transformHitsToRecommendation(
   const totalStudies = hits.length === 1 ? (hits[0].study_count || hits.length) : hits.length;
   const ingredientsMap = new Map<string, number>();
 
-  // Analizar condiciones y asignarles "fuerza" basada en frecuencia
-  const conditionsStats = new Map<string, { count: number, papers: string[] }>();
-
   hits.forEach(hit => {
     // Ingredientes
     const rawIng = hit.ingredients;
@@ -551,37 +632,11 @@ function transformHitsToRecommendation(
     ingArray.forEach((ing: string) => {
       ingredientsMap.set(ing, (ingredientsMap.get(ing) || 0) + 1);
     });
-
-    // Condiciones (Works For)
-    const rawCond = hit.conditions;
-    const condArray = Array.isArray(rawCond) ? rawCond : (typeof rawCond === 'string' ? rawCond.split(',').map((s: string) => s.trim()) : []);
-    condArray.forEach((cond: string) => {
-      const current = conditionsStats.get(cond) || { count: 0, papers: [] };
-      current.count++;
-      if (hit.title) current.papers.push(hit.title);
-      conditionsStats.set(cond, current);
-    });
   });
 
-  // Convertir condiciones a estructura worksFor (Grados A/B)
-  // Si pocas condiciones, dividir para poblar UI
-  const sortedConditions = Array.from(conditionsStats.entries())
-    .sort((a, b) => b[1].count - a[1].count);
-
-  const worksFor = sortedConditions.map(([cond, stats], index) => ({
-    condition: cond,
-    evidenceGrade: 'C', // Default to 'Limited/Suggesting' until LLM confirms hierarchy
-    grade: 'C',
-    magnitude: 'Moderada',
-    effectSize: 'Por determinar',
-    studyCount: stats.count,
-    notes: `Evidencia preliminar encontrada en ${stats.count} estudios. Pendiente de análisis detallado.`,
-    quantitativeData: "Análisis en tiempo real de PubMed en progreso...",
-    confidence: 60 - (index * 5)
-  }));
-
-  // No longer generating DoesntWorkFor/LimitedEvidence placeholders.
-  // We prefer showing only facts found in PubMed.
+  // Do not generate worksFor placeholders from search/catalog tags.
+  // "Funciona para" must be backed by explicit PubMed enrichment evidence (A/B).
+  const worksFor: any[] = [];
   const doesntWorkFor: any[] = [];
   const limitedEvidence: any[] = [];
 
@@ -861,7 +916,51 @@ export async function POST(request: NextRequest) {
             isVariantSpecific: parsedQuery.isVariantSpecific
           });
           
-          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
+          let rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
+          const usesLocalCatalog = finalHits.every((hit: any) => hit.source === 'local_catalog');
+
+          if (usesLocalCatalog) {
+            const recWithCachedEvidence = applyCachedPubMedEvidence(rec, searchTerm);
+            rec = recWithCachedEvidence;
+
+            const shouldReturnLocalFallback =
+              hasStrongWorksForEvidence(recWithCachedEvidence) ||
+              process.env.SEARCH_BACKEND === 'local';
+
+            if (shouldReturnLocalFallback) {
+              const hitsForVariantDetection = finalHits.map((hit: any) => ({
+                title: hit.title || '',
+                abstract: hit.abstract || ''
+              }));
+              const variantDetection = detectVariants(searchTerm, hitsForVariantDetection);
+
+              return NextResponse.json({
+                success: true,
+                quiz_id: quizId,
+                recommendation: recWithCachedEvidence,
+                jobId,
+                status: 'completed',
+                variantDetection: {
+                  ...variantDetection,
+                  _cacheMetadata: {
+                    hit: false,
+                    key: `variant_${searchTerm.toLowerCase().trim()}_${hitsForVariantDetection.length.toString(36)}`,
+                    studyCount: hitsForVariantDetection.length,
+                    timestamp: Date.now()
+                  },
+                  _selectedVariant: parsedQuery.isVariantSpecific ? {
+                    type: parsedQuery.variantType,
+                    baseSupplement: parsedQuery.baseSupplement,
+                    fullName: parsedQuery.fullQuery
+                  } : null
+                },
+                suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific,
+                source: 'local_catalog_fallback'
+              });
+            }
+
+            console.log(`[Local Catalog] "${searchTerm}" has no cached PubMed A/B worksFor evidence; continuing to remote enrichment.`);
+          }
 
           // NEW: Detect supplement variants (e.g., Magnesium Glycinate, Citrate, etc.)
           // For variant detection, we need MORE studies than the initial search
@@ -951,9 +1050,9 @@ export async function POST(request: NextRequest) {
               console.log(`⚠️ [STUDIES_RANKING] No ranking data - enrichment will proceed without it`);
             }
 
-            // STEP 1.5: Store initial recommendation with ranking data in DynamoDB IMMEDIATELY
-            // This ensures ranking is preserved even if async enrichment has issues
-            // The initial recommendation will be enhanced further when enrichment completes
+            // STEP 1.5: Build initial recommendation with ranking data for the immediate response.
+            // Do not store it as completed: it has ranking studies but not final A/B benefit
+            // extraction yet, and the UI must keep polling until enrichment writes the final job.
             const initialRecommendation = {
               ...rec,
               evidence_summary: {
@@ -974,16 +1073,7 @@ export async function POST(request: NextRequest) {
               storedAt: new Date().toISOString(),
             };
 
-            // Update job with initial recommendation including ranking data
-            // Use storeJobResult with 'completed' status to save the recommendation
-            // (Note: this changes status from 'processing' to 'completed', but frontend will poll for final enriched version)
-            try {
-              await storeJobResult(jobId, 'completed', { recommendation: initialRecommendation });
-              console.log(`✅ [JOB_STORED] Initial recommendation with ranking stored for jobId=${jobId}`);
-            } catch (storeError) {
-              console.error(`⚠️ [JOB_STORE_ERROR] Failed to store initial recommendation:`, storeError);
-              // Don't block enrichment if this fails, just log it
-            }
+            console.log(`✅ [INITIAL_RECOMMENDATION_READY] Ranking attached for immediate response; job remains processing until final enrichment. jobId=${jobId}`);
 
             // STEP 2: ASYNC ENRICHMENT with ranking data
             // Lambda will enrich content AND preserve the ranking we just generated
@@ -1052,14 +1142,9 @@ export async function POST(request: NextRequest) {
       }
     } catch (wsErr: any) {
       console.error('[Hybrid Search] Error:', wsErr);
-      // DEBUG: Stop swallowing errors. Return them to UI.
-      return NextResponse.json({
-        success: false,
-        source: 'hybrid_search_debug_fail',
-        error: 'Hybrid Search Failed',
-        details: wsErr.message,
-        stack: wsErr.stack
-      }, { status: 500 });
+      console.warn('[Hybrid Search] Continuing with recommendation/PubMed fallback after search failure.', {
+        message: wsErr?.message,
+      });
     }
     // =================================================================
 

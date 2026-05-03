@@ -24,11 +24,11 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const startTime = Date.now();
   
-  const jobId = params.id;
+  const { id: jobId } = await params;
   const searchParams = request.nextUrl.searchParams;
   const supplement = searchParams.get('supplement');
   
