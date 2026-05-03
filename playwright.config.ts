@@ -18,7 +18,7 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: `env -u FORCE_COLOR NO_COLOR=1 AWS_SDK_JS_NODE_VERSION_SUPPORT_WARNING_DISABLED=true SEARCH_BACKEND=local USE_LANCEDB=false npm run dev -- --hostname 127.0.0.1 --port ${PORT}`,
+    command: `env -u FORCE_COLOR NO_COLOR=1 AWS_SDK_JS_NODE_VERSION_SUPPORT_WARNING_DISABLED=true JOB_STORE_DRIVER=memory SEARCH_BACKEND=local USE_LANCEDB=false npm run dev -- --hostname 127.0.0.1 --port ${PORT}`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

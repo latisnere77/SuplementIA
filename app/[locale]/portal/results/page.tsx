@@ -1004,6 +1004,75 @@ function ResultsPageContent() {
             }
           }
 
+          if (data.success && data.status === 'processing' && (data.jobId || data.recommendation_id)) {
+            const pollJobId = data.jobId || data.recommendation_id;
+            const pollInterval = parseInt(data.pollInterval || '3') * 1000;
+            const maxPollTime = 180000;
+            const startTime = Date.now();
+            const statusUrl = `/api/portal/status/${pollJobId}`;
+
+            console.log('[Async Polling] Backend is still enriching recommendation:', {
+              jobId: pollJobId,
+              hasInitialRecommendation: !!data.recommendation,
+            });
+
+            const pollStatus = async () => {
+              try {
+                console.log('[Async Polling] Fetching status:', statusUrl);
+                const statusResponse = await fetch(statusUrl);
+                const statusData = await statusResponse.json();
+
+                console.log('[Async Polling] Status update:', {
+                  status: statusData.status,
+                  hasRecommendation: !!statusData.recommendation,
+                });
+
+                if (statusData.status === 'completed' && statusData.recommendation) {
+                  const finalRecommendation = submittedBenefitQuery
+                    ? filterByBenefit(statusData.recommendation, submittedBenefitQuery)
+                    : statusData.recommendation;
+
+                  setError(null);
+                  setRecommendation(finalRecommendation);
+                  setConditionResult(null);
+                  setSearchType('ingredient');
+                  setIsLoading(false);
+                  return;
+                }
+
+                if (statusData.status === 'failed') {
+                  setRecommendation(null);
+                  setError(statusData.error || 'Failed to generate recommendation');
+                  setIsLoading(false);
+                  return;
+                }
+
+                if (Date.now() - startTime < maxPollTime) {
+                  setTimeout(pollStatus, pollInterval);
+                  return;
+                }
+
+                setRecommendation(null);
+                setError('La recomendación está tardando más de lo esperado. Por favor, intenta de nuevo.');
+                setIsLoading(false);
+              } catch (pollError: any) {
+                console.error('[Async Polling] ❌ Polling error:', pollError);
+
+                if (Date.now() - startTime < maxPollTime) {
+                  setTimeout(pollStatus, pollInterval);
+                  return;
+                }
+
+                setRecommendation(null);
+                setError('Error al verificar el estado de la recomendación');
+                setIsLoading(false);
+              }
+            };
+
+            setTimeout(pollStatus, pollInterval);
+            return;
+          }
+
           if (data.searchType === 'condition') {
             console.log('[Data Fetch] ✅ Received CONDITION result:', data);
             setConditionResult(data);

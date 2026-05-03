@@ -307,6 +307,15 @@ export default function PortalPage() {
                       onChange={(e) => {
                         setSearchQuery(e.target.value);
                       }}
+                      onInput={(e) => {
+                        setSearchQuery(e.currentTarget.value);
+                      }}
+                      onChangeCapture={(e) => {
+                        setSearchQuery(e.currentTarget.value);
+                      }}
+                      onInputCapture={(e) => {
+                        setSearchQuery(e.currentTarget.value);
+                      }}
                       displayValue={() => searchQuery}
                       placeholder=""
                       autoComplete="off"

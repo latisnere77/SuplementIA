@@ -48,6 +48,10 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient, {
   },
 });
 
+export function closeJobStoreClientsForTests(): void {
+  dynamoClient.destroy();
+}
+
 const USE_MEMORY_STORE = process.env.NODE_ENV === 'test' || process.env.JOB_STORE_DRIVER === 'memory';
 const memoryStore = new Map<string, Job>();
 

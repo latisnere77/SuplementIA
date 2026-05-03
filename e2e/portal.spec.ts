@@ -238,6 +238,62 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Magnesium Glycinate Basic')).toBeVisible();
   });
 
+  test('search submission polls until async enrichment returns final evidence', async ({ page }) => {
+    const quizRequests: QuizRequest[] = [];
+    let statusCalls = 0;
+
+    await mockAutocomplete(page);
+    await page.route('**/api/portal/quiz**', async (route) => {
+      const body = route.request().postDataJSON() as QuizRequest;
+      quizRequests.push(body);
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          status: 'processing',
+          jobId: body.jobId,
+          recommendation: {
+            ...recommendation,
+            supplement: {
+              ...recommendation.supplement,
+              worksFor: [],
+            },
+          },
+        }),
+      });
+    });
+
+    await page.route('**/api/portal/status/**', async (route) => {
+      statusCalls += 1;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          status: statusCalls === 1 ? 'processing' : 'completed',
+          recommendation: statusCalls === 1 ? undefined : recommendation,
+        }),
+      });
+    });
+
+    await page.goto('/en/portal');
+    const searchInput = page.getByLabel('Search supplements');
+    await searchInput.fill('Magnesium');
+    await searchInput.press('Escape');
+    await page.getByRole('button', { name: 'Go' }).click();
+
+    await expect(page.getByTestId('loading-spinner')).toBeVisible();
+    await expect(page.getByTestId('recommendation-display')).toBeVisible({ timeout: 15_000 });
+
+    expect(quizRequests.length).toBeGreaterThanOrEqual(1);
+    expect(quizRequests.every((request) => request.jobId === quizRequests[0].jobId)).toBe(true);
+    expect(statusCalls).toBeGreaterThanOrEqual(2);
+    await expect(page.getByText('Sleep quality').first()).toBeVisible();
+    await expect(page.getByText('No hay beneficios con evidencia clínica A/B confirmada en PubMed')).not.toBeVisible();
+  });
+
   test('blocked searches show validation feedback without calling backend', async ({ page }) => {
     let quizCalls = 0;
     await mockAutocomplete(page);

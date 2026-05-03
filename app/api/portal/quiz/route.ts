@@ -564,6 +564,14 @@ function applyCachedPubMedEvidence(recommendation: any, supplementName: string):
   };
 }
 
+function hasStrongWorksForEvidence(recommendation: any): boolean {
+  const worksFor = recommendation?.supplement?.worksFor;
+
+  return Array.isArray(worksFor) && worksFor.some((item: any) =>
+    isStrongEvidenceGrade(item.evidenceGrade || item.grade)
+  );
+}
+
 /**
  * Get the base URL for internal API calls
  * Auto-detects production URL from Vercel environment
@@ -908,40 +916,50 @@ export async function POST(request: NextRequest) {
             isVariantSpecific: parsedQuery.isVariantSpecific
           });
           
-          const rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
+          let rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
           const usesLocalCatalog = finalHits.every((hit: any) => hit.source === 'local_catalog');
 
           if (usesLocalCatalog) {
             const recWithCachedEvidence = applyCachedPubMedEvidence(rec, searchTerm);
-            const hitsForVariantDetection = finalHits.map((hit: any) => ({
-              title: hit.title || '',
-              abstract: hit.abstract || ''
-            }));
-            const variantDetection = detectVariants(searchTerm, hitsForVariantDetection);
+            rec = recWithCachedEvidence;
 
-            return NextResponse.json({
-              success: true,
-              quiz_id: quizId,
-              recommendation: recWithCachedEvidence,
-              jobId,
-              status: 'completed',
-              variantDetection: {
-                ...variantDetection,
-                _cacheMetadata: {
-                  hit: false,
-                  key: `variant_${searchTerm.toLowerCase().trim()}_${hitsForVariantDetection.length.toString(36)}`,
-                  studyCount: hitsForVariantDetection.length,
-                  timestamp: Date.now()
+            const shouldReturnLocalFallback =
+              hasStrongWorksForEvidence(recWithCachedEvidence) ||
+              process.env.SEARCH_BACKEND === 'local';
+
+            if (shouldReturnLocalFallback) {
+              const hitsForVariantDetection = finalHits.map((hit: any) => ({
+                title: hit.title || '',
+                abstract: hit.abstract || ''
+              }));
+              const variantDetection = detectVariants(searchTerm, hitsForVariantDetection);
+
+              return NextResponse.json({
+                success: true,
+                quiz_id: quizId,
+                recommendation: recWithCachedEvidence,
+                jobId,
+                status: 'completed',
+                variantDetection: {
+                  ...variantDetection,
+                  _cacheMetadata: {
+                    hit: false,
+                    key: `variant_${searchTerm.toLowerCase().trim()}_${hitsForVariantDetection.length.toString(36)}`,
+                    studyCount: hitsForVariantDetection.length,
+                    timestamp: Date.now()
+                  },
+                  _selectedVariant: parsedQuery.isVariantSpecific ? {
+                    type: parsedQuery.variantType,
+                    baseSupplement: parsedQuery.baseSupplement,
+                    fullName: parsedQuery.fullQuery
+                  } : null
                 },
-                _selectedVariant: parsedQuery.isVariantSpecific ? {
-                  type: parsedQuery.variantType,
-                  baseSupplement: parsedQuery.baseSupplement,
-                  fullName: parsedQuery.fullQuery
-                } : null
-              },
-              suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific,
-              source: 'local_catalog_fallback'
-            });
+                suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific,
+                source: 'local_catalog_fallback'
+              });
+            }
+
+            console.log(`[Local Catalog] "${searchTerm}" has no cached PubMed A/B worksFor evidence; continuing to remote enrichment.`);
           }
 
           // NEW: Detect supplement variants (e.g., Magnesium Glycinate, Citrate, etc.)
@@ -1032,9 +1050,9 @@ export async function POST(request: NextRequest) {
               console.log(`⚠️ [STUDIES_RANKING] No ranking data - enrichment will proceed without it`);
             }
 
-            // STEP 1.5: Store initial recommendation with ranking data in DynamoDB IMMEDIATELY
-            // This ensures ranking is preserved even if async enrichment has issues
-            // The initial recommendation will be enhanced further when enrichment completes
+            // STEP 1.5: Build initial recommendation with ranking data for the immediate response.
+            // Do not store it as completed: it has ranking studies but not final A/B benefit
+            // extraction yet, and the UI must keep polling until enrichment writes the final job.
             const initialRecommendation = {
               ...rec,
               evidence_summary: {
@@ -1055,16 +1073,7 @@ export async function POST(request: NextRequest) {
               storedAt: new Date().toISOString(),
             };
 
-            // Update job with initial recommendation including ranking data
-            // Use storeJobResult with 'completed' status to save the recommendation
-            // (Note: this changes status from 'processing' to 'completed', but frontend will poll for final enriched version)
-            try {
-              await storeJobResult(jobId, 'completed', { recommendation: initialRecommendation });
-              console.log(`✅ [JOB_STORED] Initial recommendation with ranking stored for jobId=${jobId}`);
-            } catch (storeError) {
-              console.error(`⚠️ [JOB_STORE_ERROR] Failed to store initial recommendation:`, storeError);
-              // Don't block enrichment if this fails, just log it
-            }
+            console.log(`✅ [INITIAL_RECOMMENDATION_READY] Ranking attached for immediate response; job remains processing until final enrichment. jobId=${jobId}`);
 
             // STEP 2: ASYNC ENRICHMENT with ranking data
             // Lambda will enrich content AND preserve the ranking we just generated
@@ -1133,14 +1142,9 @@ export async function POST(request: NextRequest) {
       }
     } catch (wsErr: any) {
       console.error('[Hybrid Search] Error:', wsErr);
-      // DEBUG: Stop swallowing errors. Return them to UI.
-      return NextResponse.json({
-        success: false,
-        source: 'hybrid_search_debug_fail',
-        error: 'Hybrid Search Failed',
-        details: wsErr.message,
-        stack: wsErr.stack
-      }, { status: 500 });
+      console.warn('[Hybrid Search] Continuing with recommendation/PubMed fallback after search failure.', {
+        message: wsErr?.message,
+      });
     }
     // =================================================================
 

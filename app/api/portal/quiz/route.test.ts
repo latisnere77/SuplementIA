@@ -5,9 +5,41 @@ import { POST } from './route';
 import * as pubmedSearch from '@/lib/services/pubmed-search';
 import { NextRequest } from 'next/server';
 import { searchSupplements } from '@/lib/search-service';
+import { closeJobStoreClientsForTests } from '@/lib/portal/job-store';
 
 // Mock the pubmed-search service
 jest.mock('@/lib/services/pubmed-search');
+jest.mock('@/lib/services/abbreviation-expander', () => ({
+  expandAbbreviation: jest.fn(async (term: string) => ({
+    original: term,
+    expanded: term,
+    alternatives: [term],
+    confidence: 1,
+  })),
+}));
+// Mock Lambda client so route tests do not keep AWS SDK sockets open.
+jest.mock('@aws-sdk/client-lambda', () => ({
+  LambdaClient: jest.fn().mockImplementation(() => ({
+    send: jest.fn(),
+    destroy: jest.fn(),
+  })),
+  InvokeCommand: jest.fn().mockImplementation((input) => input),
+}));
+jest.mock('@aws-sdk/client-dynamodb', () => ({
+  DynamoDBClient: jest.fn().mockImplementation(() => ({
+    send: jest.fn(),
+    destroy: jest.fn(),
+  })),
+}));
+jest.mock('@aws-sdk/lib-dynamodb', () => ({
+  DynamoDBDocumentClient: {
+    from: jest.fn().mockImplementation((client) => client),
+  },
+  DeleteCommand: jest.fn().mockImplementation((input) => input),
+  GetCommand: jest.fn().mockImplementation((input) => input),
+  PutCommand: jest.fn().mockImplementation((input) => input),
+  ScanCommand: jest.fn().mockImplementation((input) => input),
+}));
 // Mock the supplements database to control intent detection
 jest.mock('@/lib/portal/supplements-database', () => ({
   SUPPLEMENTS_DATABASE: [
@@ -24,6 +56,11 @@ const mockedSearchPubMed = pubmedSearch.searchPubMed as jest.Mock;
 const mockedSearchSupplements = searchSupplements as jest.Mock;
 
 describe('/api/portal/quiz POST', () => {
+  afterAll(async () => {
+    closeJobStoreClientsForTests();
+    await new Promise(resolve => setImmediate(resolve));
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -65,6 +102,36 @@ describe('/api/portal/quiz POST', () => {
     expect(body).toEqual(mockResult);
     expect(mockedSearchPubMed).toHaveBeenCalledWith('joint pain');
     expect(mockedSearchPubMed).toHaveBeenCalledTimes(1);
+  });
+
+  it('should continue to the PubMed fallback when hybrid supplement search fails', async () => {
+    const mockResult: pubmedSearch.PubMedQueryResult = {
+      searchType: 'condition',
+      condition: 'joint pain',
+      summary: 'Fallback analysis complete.',
+      supplementsByEvidence: {
+        gradeA: [],
+        gradeB: [],
+        gradeC: [],
+        gradeD: [],
+      },
+    };
+
+    mockedSearchSupplements.mockRejectedValueOnce(new Error('Search API error (403): {"Message":"Forbidden"}'));
+    mockedSearchPubMed.mockResolvedValueOnce(mockResult);
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'joint pain' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual(mockResult);
+    expect(mockedSearchPubMed).toHaveBeenCalledWith('joint pain');
   });
 
   it('should return a 400 Bad Request if the category field is missing', async () => {
