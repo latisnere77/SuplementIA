@@ -135,6 +135,8 @@ describe('Input Validation - Property-Based Tests', () => {
     });
 
     it('should trim leading and trailing whitespace', () => {
+      expect(sanitizeQuery('! <')).toBe('!');
+
       fc.assert(
         fc.property(
           fc.string({ minLength: 1, maxLength: 50 }),
