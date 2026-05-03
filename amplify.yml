@@ -6,7 +6,7 @@ frontend:
         - npm ci --omit=optional --legacy-peer-deps
     build:
       commands:
-        - npm run build
+        - NEXT_PUBLIC_GA_MEASUREMENT_ID=${NEXT_PUBLIC_GA_MEASUREMENT_ID:-G-MN7H9XRCNS} npm run build
         - echo "Building LanceDB with Vitamin B Complex..."
         - npx tsx scripts/add-vitamin-b-complex-to-lancedb.ts || echo "LanceDB update completed or already exists"
         - echo "Building LanceDB with Vitamin C and D..."

@@ -2,6 +2,7 @@ import "./globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 export const metadata = {
   title: "SuplementIA - Evidence-Based Health Solutions",
@@ -35,6 +36,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
+        <GoogleAnalytics />
         <Analytics />
       </body>
     </html>
