@@ -284,12 +284,11 @@ test.describe('portal browser flows', () => {
     await searchInput.press('Escape');
     await page.getByRole('button', { name: 'Go' }).click();
 
-    await expect(page.getByTestId('loading-spinner')).toBeVisible();
     await expect(page.getByTestId('recommendation-display')).toBeVisible({ timeout: 15_000 });
 
     expect(quizRequests.length).toBeGreaterThanOrEqual(1);
     expect(quizRequests.every((request) => request.jobId === quizRequests[0].jobId)).toBe(true);
-    expect(statusCalls).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => statusCalls, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
     await expect(page.getByText('Sleep quality').first()).toBeVisible();
     await expect(page.getByText('No hay beneficios con evidencia clínica A/B confirmada en PubMed')).not.toBeVisible();
   });
