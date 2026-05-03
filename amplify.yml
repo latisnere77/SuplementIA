@@ -10,11 +10,14 @@ frontend:
         - if [ -d "${LANCEDB_PATH:-/tmp/lancedb-pristine}/supplements.lance" ]; then npx tsx scripts/add-vitamin-b-complex-to-lancedb.ts; else echo "Skipping LanceDB Vitamin B update; local table not present"; fi
         - if [ -d "${LANCEDB_PATH:-/tmp/lancedb-pristine}/supplements.lance" ]; then npx tsx scripts/add-vitamins-c-d-to-lancedb.ts; else echo "Skipping LanceDB Vitamin C/D update; local table not present"; fi
         - rm -rf .next/cache
+        - rm -rf amplify-artifact
+        - mkdir -p amplify-artifact
+        - cp -R .next/. amplify-artifact/
+        - rm -rf amplify-artifact/cache
   artifacts:
-    baseDirectory: .next
+    baseDirectory: amplify-artifact
     files:
       - '**/*'
-      - '!cache/**/*'
   cache:
     paths:
       - node_modules/**/*
