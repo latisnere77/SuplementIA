@@ -42,6 +42,7 @@ import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
 import type { GradeType } from '@/types/supplement-grade';
 import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } from '@/lib/services/pubmed-search';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
+import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -163,14 +164,22 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     metadataStudiesKeys: enrichmentMetadata.studies ? Object.keys(enrichmentMetadata.studies) : []
   });
 
-  // ✅ USE STRUCTURED DATA - No string parsing needed!
-  const worksFor = Array.isArray(supplement.worksFor) ? supplement.worksFor.map((item: any) => ({
-    condition: item.condition || item.use || item.benefit || '',
-    grade: item.evidenceGrade || item.grade || 'C',
-    description: item.notes || item.effectSize || item.magnitude || '',
-    studyCount: item.studyCount || 0,
-    metaAnalysis: item.metaAnalysis || false,
-  })) : [];
+  const rawWorksFor = Array.isArray(supplement.worksFor) ? supplement.worksFor.map((item: any) => {
+    const grade = normalizeEvidenceGrade(item.evidenceGrade || item.grade);
+    return {
+      condition: item.condition || item.use || item.benefit || '',
+      grade,
+      description: item.notes || item.effectSize || item.magnitude || '',
+      studyCount: item.studyCount || 0,
+      metaAnalysis: item.metaAnalysis || false,
+    };
+  }) : [];
+
+  // Only grade A/B evidence is allowed in "Funciona para".
+  // Lower or missing grades must not be promoted from catalog/search metadata.
+  const worksFor = rawWorksFor
+    .filter((item: any) => isStrongEvidenceGrade(item.grade))
+    .sort((a: any, b: any) => compareEvidenceGrades(a.grade, b.grade) || ((b.studyCount || 0) - (a.studyCount || 0)));
 
   const doesntWorkFor = Array.isArray(supplement.doesntWorkFor) ? supplement.doesntWorkFor.map((item: any) => ({
     condition: item.condition || item.use || '',
@@ -180,16 +189,8 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
   })) : [];
 
   const limitedEvidence = Array.isArray(supplement.limitedEvidence) ? supplement.limitedEvidence.map((item: any) => {
-    // CONSISTENCY FIX: Force items in limitedEvidence to have grade C or lower
-    // Items with grade A/B should be in worksFor, not limitedEvidence
-    // This prevents showing "Evidencia Limitada" with "Grado A" which is contradictory
-    //
-    // TODO(backend): Backend should properly categorize items by evidence strength:
-    // - Grade A/B → worksFor
-    // - Grade C → limitedEvidence or worksFor (depending on confidence)
-    // - Grade D/E/F → doesntWorkFor or limitedEvidence
-    const rawGrade = item.evidenceGrade || item.grade || 'C';
-    const adjustedGrade = (rawGrade === 'A' || rawGrade === 'B') ? 'C' : rawGrade;
+    const rawGrade = normalizeEvidenceGrade(item.evidenceGrade || item.grade);
+    const adjustedGrade = isStrongEvidenceGrade(rawGrade) ? 'C' : rawGrade;
 
     return {
       condition: item.condition || item.use || '',
@@ -381,6 +382,14 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
  */
 function transformToExamineFormat(recommendation: Recommendation): any {
   const supplement = (recommendation as any).supplement || {};
+  const strongWorksFor = Array.isArray(supplement.worksFor)
+    ? supplement.worksFor
+      .map((item: any) => ({
+        ...item,
+        grade: normalizeEvidenceGrade(item.evidenceGrade || item.grade),
+      }))
+      .filter((item: any) => isStrongEvidenceGrade(item.grade))
+    : [];
 
   return {
     overview: {
@@ -388,7 +397,7 @@ function transformToExamineFormat(recommendation: Recommendation): any {
       functions: supplement.primaryUses || supplement.functions || [],
       sources: supplement.sources || [],
     },
-    benefitsByCondition: (supplement.worksFor || []).map((item: any) => ({
+    benefitsByCondition: strongWorksFor.map((item: any) => ({
       condition: item.condition || '',
       effect: item.magnitude || item.effectSize || 'Moderate',
       quantitativeData: item.quantitativeData || item.notes || 'Ver estudios para detalles',
@@ -716,17 +725,6 @@ function ResultsPageContent() {
       ),
       hasContraindications: Array.isArray(transformed.contraindications) && transformed.contraindications.length > 0,
     });
-
-    // Log missing sections
-    if (!transformed.worksFor || transformed.worksFor.length === 0) {
-      console.warn('[Recommendation Sections] ⚠️ Missing worksFor section for:', recommendation.category);
-    }
-    if (!transformed.dosage) {
-      console.warn('[Recommendation Sections] ⚠️ Missing dosage section for:', recommendation.category);
-    }
-    if (!transformed.sideEffects || transformed.sideEffects.length === 0) {
-      console.warn('[Recommendation Sections] ⚠️ Missing sideEffects section for:', recommendation.category);
-    }
 
     setTransformedEvidence(transformed);
 

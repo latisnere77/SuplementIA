@@ -10,7 +10,7 @@ import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
-import { formatConditionLabel } from '@/lib/portal/condition-labels';
+import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
@@ -323,17 +323,33 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
 
   console.log(`[MERGE_DEBUG] Found evidence via path. worksFor: ${evidence.worksFor?.length || 0}, doesntWorkFor: ${evidence.doesntWorkFor?.length || 0}`);
 
-  // Update worksFor with real conditions from enrichment
+  // Update worksFor only with strong, explicit evidence from enrichment.
+  // Catalog/search conditions are not enough to claim that a supplement "funciona para" a condition.
   if (evidence.worksFor && evidence.worksFor.length > 0) {
-    recommendation.supplement.worksFor = evidence.worksFor.map((item: any) => ({
-      condition: item.condition || item.name,
-      grade: item.evidenceGrade || item.grade || 'B',
-      evidenceGrade: item.evidenceGrade || item.grade || 'B',
-      studyCount: item.studyCount || 1,
-      notes: item.summary || item.notes || '',
-      magnitude: item.magnitude || 'Moderada',
-      confidence: item.confidence || 75,
-    }));
+    const enrichedWorksFor = evidence.worksFor.map((item: any) => {
+      const grade = normalizeEvidenceGrade(item.evidenceGrade || item.grade);
+      return {
+        condition: item.condition || item.name,
+        grade,
+        evidenceGrade: grade,
+        studyCount: item.studyCount || 1,
+        notes: item.summary || item.notes || '',
+        magnitude: item.magnitude || 'Moderada',
+        confidence: item.confidence || 75,
+      };
+    });
+
+    recommendation.supplement.worksFor = enrichedWorksFor
+      .filter((item: any) => isStrongEvidenceGrade(item.evidenceGrade))
+      .sort((a: any, b: any) => compareEvidenceGrades(a.evidenceGrade, b.evidenceGrade) || ((b.studyCount || 0) - (a.studyCount || 0)));
+
+    const weakerWorksFor = enrichedWorksFor.filter((item: any) => !isStrongEvidenceGrade(item.evidenceGrade));
+    if (weakerWorksFor.length > 0) {
+      recommendation.supplement.limitedEvidence = [
+        ...weakerWorksFor,
+        ...(Array.isArray(recommendation.supplement.limitedEvidence) ? recommendation.supplement.limitedEvidence : []),
+      ];
+    }
   }
 
   // Update description (handle both formats)
@@ -542,9 +558,6 @@ function transformHitsToRecommendation(
   const totalStudies = hits.length === 1 ? (hits[0].study_count || hits.length) : hits.length;
   const ingredientsMap = new Map<string, number>();
 
-  // Analizar condiciones y asignarles "fuerza" basada en frecuencia
-  const conditionsStats = new Map<string, { count: number, papers: string[] }>();
-
   hits.forEach(hit => {
     // Ingredientes
     const rawIng = hit.ingredients;
@@ -552,38 +565,11 @@ function transformHitsToRecommendation(
     ingArray.forEach((ing: string) => {
       ingredientsMap.set(ing, (ingredientsMap.get(ing) || 0) + 1);
     });
-
-    // Condiciones (Works For)
-    const rawCond = hit.conditions;
-    const condArray = Array.isArray(rawCond) ? rawCond : (typeof rawCond === 'string' ? rawCond.split(',').map((s: string) => s.trim()) : []);
-    condArray.forEach((cond: string) => {
-      const conditionLabel = formatConditionLabel(cond);
-      const current = conditionsStats.get(conditionLabel) || { count: 0, papers: [] };
-      current.count++;
-      if (hit.title) current.papers.push(hit.title);
-      conditionsStats.set(conditionLabel, current);
-    });
   });
 
-  // Convertir condiciones a estructura worksFor (Grados A/B)
-  // Si pocas condiciones, dividir para poblar UI
-  const sortedConditions = Array.from(conditionsStats.entries())
-    .sort((a, b) => b[1].count - a[1].count);
-
-  const worksFor = sortedConditions.map(([cond, stats], index) => ({
-    condition: cond,
-    evidenceGrade: 'C', // Default to 'Limited/Suggesting' until LLM confirms hierarchy
-    grade: 'C',
-    magnitude: 'Moderada',
-    effectSize: 'Por determinar',
-    studyCount: stats.count,
-    notes: `Evidencia preliminar encontrada en ${stats.count} estudios. Pendiente de análisis detallado.`,
-    quantitativeData: "Análisis en tiempo real de PubMed en progreso...",
-    confidence: 60 - (index * 5)
-  }));
-
-  // No longer generating DoesntWorkFor/LimitedEvidence placeholders.
-  // We prefer showing only facts found in PubMed.
+  // Do not generate worksFor placeholders from search/catalog tags.
+  // "Funciona para" must be backed by explicit PubMed enrichment evidence (A/B).
+  const worksFor: any[] = [];
   const doesntWorkFor: any[] = [];
   const limitedEvidence: any[] = [];
 

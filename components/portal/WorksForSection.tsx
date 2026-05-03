@@ -209,6 +209,14 @@ export default function WorksForSection({
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
+        {sortedWorksFor.length === 0 && sortedDoesntWorkFor.length === 0 && sortedLimitedEvidence.length === 0 && (
+          <div className="md:col-span-2 bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+            <p className="text-sm text-gray-700">
+              No hay beneficios con evidencia clínica A/B confirmada en PubMed para mostrar como funciona.
+            </p>
+          </div>
+        )}
+
         {/* FUNCIONA PARA */}
         {sortedWorksFor.length > 0 && (
           <div className="space-y-4">
