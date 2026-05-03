@@ -190,7 +190,10 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Popular Searches')).toBeVisible();
     await expect(page.getByText('Browse by Category')).toBeVisible();
 
-    await page.getByLabel('Search supplements').fill('mag');
+    const searchInput = page.getByLabel('Search supplements');
+    await searchInput.click();
+    await searchInput.fill('');
+    await searchInput.pressSequentially('mag');
 
     await expect(page.getByRole('option', { name: /Magnesium$/ })).toBeVisible();
     await expect(page.getByRole('option', { name: /Magnesium glycinate/ })).toBeVisible();
@@ -202,8 +205,13 @@ test.describe('portal browser flows', () => {
     await mockSuccessfulQuiz(page, quizRequests);
 
     await page.goto('/en/portal');
-    await page.getByLabel('Search supplements').fill('Magnesium');
-    await page.getByRole('button', { name: 'Go' }).click();
+    const searchInput = page.getByLabel('Search supplements');
+    const goButton = page.getByRole('button', { name: 'Go' });
+    await searchInput.click();
+    await searchInput.fill('');
+    await searchInput.pressSequentially('Magnesium');
+    await expect(goButton).toBeEnabled();
+    await goButton.click();
 
     await expect(page).toHaveURL(/\/(?:en\/)?portal\/results\?q=Magnesium&supplement=Magnesium/);
     await expect(page.getByTestId('recommendation-display')).toBeVisible();

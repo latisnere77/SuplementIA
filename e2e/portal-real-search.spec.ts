@@ -66,8 +66,14 @@ test.describe('portal real supplement searches', () => {
       });
 
       await page.goto('/en/portal');
-      await page.getByLabel('Search supplements').fill(searchCase.query);
-      await page.getByRole('button', { name: 'Go' }).click();
+      const searchInput = page.getByLabel('Search supplements');
+      const goButton = page.getByRole('button', { name: 'Go' });
+
+      await searchInput.click();
+      await searchInput.fill('');
+      await searchInput.pressSequentially(searchCase.query);
+      await expect(goButton).toBeEnabled();
+      await goButton.click();
 
       await expect(page).toHaveURL(/\/en\/portal\/results\?/);
       const resultUrl = new URL(page.url());
@@ -121,6 +127,8 @@ test.describe('portal real supplement searches', () => {
       if (searchCase.query === 'Magnesium') {
         expect.soft(visibleText, 'Magnesium definition should describe the mineral').toContain('essential mineral');
         expect.soft(visibleText, 'Magnesium definition should not expose condition tags').not.toContain('sleep, muscles, cramps, stress, energy');
+        expect.soft(visibleText, 'Magnesium overview should not expose raw condition tags').not.toContain('Más estudiado para: sleep');
+        expect.soft(visibleText, 'Magnesium benefit list should not expose raw condition tags').not.toContain('\nsleep\n');
       }
     });
   }

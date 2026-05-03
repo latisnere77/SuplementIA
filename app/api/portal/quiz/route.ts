@@ -10,6 +10,7 @@ import { portalLogger } from '@/lib/portal/api-logger';
 import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-validator';
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
+import { formatConditionLabel } from '@/lib/portal/condition-labels';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
@@ -556,10 +557,11 @@ function transformHitsToRecommendation(
     const rawCond = hit.conditions;
     const condArray = Array.isArray(rawCond) ? rawCond : (typeof rawCond === 'string' ? rawCond.split(',').map((s: string) => s.trim()) : []);
     condArray.forEach((cond: string) => {
-      const current = conditionsStats.get(cond) || { count: 0, papers: [] };
+      const conditionLabel = formatConditionLabel(cond);
+      const current = conditionsStats.get(conditionLabel) || { count: 0, papers: [] };
       current.count++;
       if (hit.title) current.papers.push(hit.title);
-      conditionsStats.set(cond, current);
+      conditionsStats.set(conditionLabel, current);
     });
   });
 
