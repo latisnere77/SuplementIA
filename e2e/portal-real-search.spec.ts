@@ -133,6 +133,8 @@ test.describe('portal real supplement searches', () => {
         expect.soft(visibleText, 'Magnesium benefit list should not expose raw condition tags').not.toContain('\nsleep\n');
         expect.soft(visibleText, 'Magnesium worksFor should not show catalog-derived preliminary claims').not.toContain('Evidencia preliminar encontrada');
         expect.soft(visibleText, 'Magnesium worksFor should not promote grade C placeholders').not.toContain('Sleep quality\n🟡\nC');
+        expect.soft(visibleText, 'Magnesium should render cached PubMed-backed grade B benefits').toContain('Reducir calambres musculares');
+        expect.soft(visibleText, 'Magnesium should render grade B worksFor evidence').toContain('Mejorar el sueño');
       }
     });
   }

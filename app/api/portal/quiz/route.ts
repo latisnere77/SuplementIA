@@ -11,6 +11,7 @@ import { validateSupplementQuery, sanitizeQuery } from '@/lib/portal/query-valid
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import { createJob, storeJobResult, getJob } from '@/lib/portal/job-store';
 import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
+import { getSupplementEvidenceFromCache } from '@/lib/portal/supplements-evidence-data';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
@@ -505,6 +506,64 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
   return recommendation;
 }
 
+function applyCachedPubMedEvidence(recommendation: any, supplementName: string): any {
+  const cachedEvidence = getSupplementEvidenceFromCache(supplementName);
+
+  if (!cachedEvidence) {
+    return recommendation;
+  }
+
+  const strongWorksFor = cachedEvidence.worksFor
+    .map((item: any) => {
+      const grade = normalizeEvidenceGrade(item.grade);
+      return {
+        condition: item.condition,
+        grade,
+        evidenceGrade: grade,
+        notes: item.description || '',
+        studyCount: item.studyCount || 0,
+      };
+    })
+    .filter((item: any) => isStrongEvidenceGrade(item.evidenceGrade))
+    .sort((a: any, b: any) => compareEvidenceGrades(a.evidenceGrade, b.evidenceGrade));
+
+  if (strongWorksFor.length === 0) {
+    return recommendation;
+  }
+
+  return {
+    ...recommendation,
+    supplement: {
+      ...recommendation.supplement,
+      worksFor: strongWorksFor,
+      doesntWorkFor: Array.isArray(cachedEvidence.doesntWorkFor)
+        ? cachedEvidence.doesntWorkFor.map((item: any) => ({
+          condition: item.condition,
+          grade: normalizeEvidenceGrade(item.grade, 'D'),
+          evidenceGrade: normalizeEvidenceGrade(item.grade, 'D'),
+          notes: item.description || '',
+        }))
+        : recommendation.supplement?.doesntWorkFor || [],
+      limitedEvidence: Array.isArray(cachedEvidence.limitedEvidence)
+        ? cachedEvidence.limitedEvidence.map((item: any) => ({
+          condition: item.condition,
+          grade: normalizeEvidenceGrade(item.grade),
+          evidenceGrade: normalizeEvidenceGrade(item.grade),
+          notes: item.description || '',
+        }))
+        : recommendation.supplement?.limitedEvidence || [],
+    },
+    evidence_summary: {
+      ...recommendation.evidence_summary,
+      overallGrade: cachedEvidence.overallGrade || recommendation.evidence_summary?.overallGrade,
+      ingredients: cachedEvidence.ingredients?.length
+        ? cachedEvidence.ingredients
+        : recommendation.evidence_summary?.ingredients,
+      qualityBadges: cachedEvidence.qualityBadges || recommendation.evidence_summary?.qualityBadges,
+    },
+  };
+}
+
 /**
  * Get the base URL for internal API calls
  * Auto-detects production URL from Vercel environment
@@ -853,6 +912,7 @@ export async function POST(request: NextRequest) {
           const usesLocalCatalog = finalHits.every((hit: any) => hit.source === 'local_catalog');
 
           if (usesLocalCatalog) {
+            const recWithCachedEvidence = applyCachedPubMedEvidence(rec, searchTerm);
             const hitsForVariantDetection = finalHits.map((hit: any) => ({
               title: hit.title || '',
               abstract: hit.abstract || ''
@@ -862,7 +922,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
               success: true,
               quiz_id: quizId,
-              recommendation: rec,
+              recommendation: recWithCachedEvidence,
               jobId,
               status: 'completed',
               variantDetection: {

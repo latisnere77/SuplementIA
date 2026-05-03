@@ -82,6 +82,48 @@ describe('/api/portal/quiz POST', () => {
     expect(mockedSearchPubMed).not.toHaveBeenCalled();
   });
 
+  it('should populate local catalog supplement benefits from cached PubMed evidence, not catalog tags', async () => {
+    mockedSearchSupplements.mockResolvedValueOnce([
+      {
+        source: 'local_catalog',
+        name: 'Magnesium',
+        title: 'Magnesium',
+        abstract: 'Magnesium is an essential mineral involved in nerve signaling and muscle contraction.',
+        ingredients: ['Magnesium'],
+        conditions: ['sleep', 'muscles', 'cramps'],
+        study_count: 1,
+      },
+    ]);
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'Magnesium' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.source).toBe('local_catalog_fallback');
+    expect(body.recommendation.supplement.worksFor).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          condition: 'Reducir calambres musculares',
+          evidenceGrade: 'B',
+        }),
+      ])
+    );
+    expect(body.recommendation.supplement.worksFor).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          condition: 'Sleep quality',
+          evidenceGrade: 'C',
+        }),
+      ])
+    );
+  });
+
   it('should return a 500 Internal Server Error if the searchPubMed service fails', async () => {
     const errorMessage = 'PubMed API is down';
     mockedSearchPubMed.mockRejectedValue(new Error(errorMessage));
