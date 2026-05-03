@@ -14,10 +14,8 @@ frontend:
         - mkdir -p amplify-artifact
         - cp -R .next/. amplify-artifact/
         - rm -rf amplify-artifact/cache
+        - rm -rf node_modules
   artifacts:
     baseDirectory: amplify-artifact
     files:
       - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
