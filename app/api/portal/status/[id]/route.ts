@@ -10,6 +10,68 @@ import { getJob, cleanupExpired } from '@/lib/portal/job-store';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+function normalizeLambdaRecommendation(recommendation: any): any {
+  if (!recommendation?.data || recommendation.supplement) {
+    return recommendation;
+  }
+
+  const data = recommendation.data;
+  const metadata = recommendation.metadata || {};
+  const supplementName = data.name || metadata.supplementId || 'Supplement';
+  const safety = data.safety || {};
+  const worksFor = Array.isArray(data.worksFor) ? data.worksFor : [];
+  const limitedEvidence = Array.isArray(data.limitedEvidence) ? data.limitedEvidence : [];
+
+  return {
+    ...recommendation,
+    category: recommendation.category || supplementName,
+    enriched: true,
+    enrichmentSource: 'lambda_async',
+    supplement: {
+      name: supplementName,
+      description: data.whatIsIt || data.description || '',
+      dosage: data.dosage,
+      worksFor,
+      doesntWorkFor: Array.isArray(data.doesntWorkFor) ? data.doesntWorkFor : [],
+      limitedEvidence,
+      mechanisms: Array.isArray(data.mechanisms) ? data.mechanisms : [],
+      safety,
+      sideEffects: Array.isArray(safety.sideEffects) ? safety.sideEffects : [],
+      contraindications: Array.isArray(safety.contraindications) ? safety.contraindications : [],
+      interactions: Array.isArray(safety.interactions) ? safety.interactions : [],
+      primaryUses: Array.isArray(data.primaryUses) ? data.primaryUses : [],
+      keyStudies: Array.isArray(data.keyStudies) ? data.keyStudies : [],
+      practicalRecommendations: Array.isArray(data.practicalRecommendations) ? data.practicalRecommendations : [],
+      buyingGuidance: data.buyingGuidance,
+      totalStudies: data.totalStudies,
+      totalParticipants: worksFor.reduce((sum: number, item: any) => sum + (Number(item.totalParticipants) || 0), 0),
+    },
+    evidence_summary: {
+      totalStudies: data.totalStudies || metadata.studiesUsed || 0,
+      totalParticipants: worksFor.reduce((sum: number, item: any) => sum + (Number(item.totalParticipants) || 0), 0),
+      efficacyPercentage: data.efficacyPercentage || 0,
+      researchSpanYears: data.researchSpanYears || 0,
+      ingredients: [{
+        name: supplementName,
+        grade: worksFor[0]?.evidenceGrade || worksFor[0]?.grade || limitedEvidence[0]?.evidenceGrade || 'C',
+        studyCount: data.totalStudies || metadata.studiesUsed || 0,
+        rctCount: worksFor.reduce((sum: number, item: any) => sum + (Number(item.rctCount) || 0), 0),
+        description: data.whatIsIt || '',
+      }],
+      studies: metadata.studies || null,
+    },
+    evidence_by_benefit: Array.isArray(data.evidenceByBenefit) ? data.evidenceByBenefit : recommendation.evidence_by_benefit,
+    products: Array.isArray(data.products) ? data.products : recommendation.products,
+    synergies: recommendation.synergies || data.synergies || [],
+    synergiesSource: recommendation.synergiesSource || data.synergiesSource,
+    _enrichment_metadata: {
+      ...metadata,
+      source: 'lambda_async',
+      normalizedAt: new Date().toISOString(),
+    },
+  };
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -89,7 +151,7 @@ export async function GET(
     };
 
     if (job.recommendation) {
-      response.recommendation = job.recommendation;
+      response.recommendation = normalizeLambdaRecommendation(job.recommendation);
     }
     if (job.error) {
       response.error = job.error;
@@ -129,4 +191,3 @@ export async function GET(
     );
   }
 }
-
