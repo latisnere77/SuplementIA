@@ -77,6 +77,39 @@ describe('search service fallback chain', () => {
     expect(result.abstract).not.toContain('local catalog');
   });
 
+  it.each([
+    ['tongkat ali', 'Tongkat Ali', 'Eurycoma longifolia'],
+    ['fadogia agrestis', 'Fadogia Agrestis', 'human clinical evidence remains limited'],
+    ['sea moss', 'Sea Moss', 'Chondrus crispus'],
+    ['musgo marino', 'Musgo Marino', 'Chondrus crispus'],
+    ['shilajit', 'Shilajit', 'fulvic acids'],
+    ['black seed oil', 'Black Seed Oil', 'Nigella sativa'],
+    ['aceite de comino negro', 'Aceite de Comino Negro', 'Nigella sativa'],
+    ['bacopa monnieri', 'Bacopa', 'Bacopa monnieri'],
+  ])('resolves uncommon/trendy supplement query without returning an unrelated catalog item: %s', async (query, expectedName, expectedDefinitionTerm) => {
+    const { searchLocalCatalog } = await import('./search-service');
+
+    const [result] = searchLocalCatalog(query, 3);
+
+    expect(result).toMatchObject({
+      name: expectedName,
+      source: 'local_catalog',
+    });
+    expect(result.abstract).toContain(expectedDefinitionTerm);
+    expect(result.abstract).not.toContain('Valerian');
+    expect(result.abstract).not.toContain('Rhodiola');
+    expect(result.abstract).not.toContain('Flaxseed');
+    expect(result.abstract).not.toContain('Coconut Oil');
+  });
+
+  it('does not match a multi-word unknown query from a single weak substring token', async () => {
+    const { searchLocalCatalog } = await import('./search-service');
+
+    const results = searchLocalCatalog('notareal ali', 3);
+
+    expect(results).toHaveLength(0);
+  });
+
   it('falls back to the local catalog when Lambda is forbidden', async () => {
     process.env.SEARCH_BACKEND = 'auto';
     process.env.USE_LANCEDB = 'false';

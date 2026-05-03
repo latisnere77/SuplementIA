@@ -34,6 +34,18 @@ const searchCases = [
   { query: 'ginkgo biloba' },
   { query: 'silybum marianum' },
   { query: 'resveratrol', expectedSearchTerm: 'Resveratrol' },
+
+  // Less common/trendy supplement names that should not fall through to unrelated catalog entries.
+  { query: 'berberine', expectedSearchTerm: 'Berberine' },
+  { query: 'berberina', expectedSearchTerm: 'Berberine' },
+  { query: 'tongkat ali' },
+  { query: 'fadogia agrestis' },
+  { query: 'sea moss' },
+  { query: 'musgo marino' },
+  { query: 'shilajit' },
+  { query: 'black seed oil' },
+  { query: 'aceite de comino negro' },
+  { query: 'bacopa monnieri' },
 ];
 
 test.describe('portal real supplement searches', () => {
@@ -135,6 +147,18 @@ test.describe('portal real supplement searches', () => {
         expect.soft(visibleText, 'Magnesium worksFor should not promote grade C placeholders').not.toContain('Sleep quality\n🟡\nC');
         expect.soft(visibleText, 'Magnesium should render cached PubMed-backed grade B benefits').toContain('Reducir calambres musculares');
         expect.soft(visibleText, 'Magnesium should render grade B worksFor evidence').toContain('Mejorar el sueño');
+      }
+
+      const unrelatedCatalogTerms: Record<string, string[]> = {
+        'tongkat ali': ['Valerian', 'Valeriana'],
+        'sea moss': ['Rhodiola'],
+        'musgo marino': ['Rhodiola'],
+        'black seed oil': ['Flaxseed'],
+        'aceite de comino negro': ['Aceite de Coco', 'Coconut Oil'],
+      };
+
+      for (const unrelatedTerm of unrelatedCatalogTerms[searchCase.query] || []) {
+        expect.soft(visibleText, `${searchCase.query} should not render unrelated ${unrelatedTerm} catalog text`).not.toContain(unrelatedTerm);
       }
     });
   }

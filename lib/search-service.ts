@@ -183,11 +183,33 @@ function entrySearchText(entry: SupplementEntry): string {
   ].join(' '));
 }
 
+function tokenizeSearchText(value: string): string[] {
+  return normalizeSearchText(value).split(/\s+/).filter(Boolean);
+}
+
+function entrySearchTokens(entry: SupplementEntry): Set<string> {
+  return new Set(tokenizeSearchText([
+    entry.name,
+    entry.id,
+    entry.category,
+    ...entry.aliases,
+    ...(entry.healthConditions || []),
+  ].join(' ')));
+}
+
+function tokenMatchesEntry(token: string, entryTokens: Set<string>): boolean {
+  if (entryTokens.has(token)) return true;
+  if (token.length < 4) return false;
+  return Array.from(entryTokens).some(entryToken =>
+    entryToken.length >= 4 && (entryToken.startsWith(token) || token.startsWith(entryToken))
+  );
+}
+
 function scoreLocalEntry(query: string, entry: SupplementEntry): number {
   const normalizedQuery = normalizeSearchText(query);
   const normalizedName = normalizeSearchText(entry.name);
   const normalizedAliases = entry.aliases.map(normalizeSearchText);
-  const haystack = entrySearchText(entry);
+  const haystackTokens = entrySearchTokens(entry);
 
   if (!normalizedQuery) return 0;
   if (normalizedName === normalizedQuery) return 1;
@@ -198,8 +220,9 @@ function scoreLocalEntry(query: string, entry: SupplementEntry): number {
   const tokens = normalizedQuery.split(/\s+/).filter(token => token.length > 1);
   if (tokens.length === 0) return 0;
 
-  const matches = tokens.filter(token => haystack.includes(token)).length;
+  const matches = tokens.filter(token => tokenMatchesEntry(token, haystackTokens)).length;
   if (matches === 0) return 0;
+  if (tokens.length > 1 && matches < tokens.length) return 0;
 
   return 0.55 + (matches / tokens.length) * 0.25;
 }
@@ -231,6 +254,17 @@ const LOCAL_SUPPLEMENT_DESCRIPTIONS: Record<string, string> = {
   ginseng: 'Ginseng refers to Panax species such as Panax ginseng, which contain ginsenosides studied for fatigue, cognition, physical performance, and stress resilience.',
   'ginkgo biloba': 'Ginkgo biloba is a standardized leaf extract rich in flavone glycosides and terpene lactones, studied mainly for circulation, cognition, and age-related cognitive symptoms.',
   resveratrol: 'Resveratrol is a plant polyphenol found in grapes and other botanicals, studied for cardiometabolic signaling, oxidative stress, and healthy aging pathways.',
+  berberina: 'Berberine is an isoquinoline alkaloid found in Berberis species and other botanicals, studied mainly for glucose metabolism, lipid markers, and cardiometabolic health.',
+  berberine: 'Berberine is an isoquinoline alkaloid found in Berberis species and other botanicals, studied mainly for glucose metabolism, lipid markers, and cardiometabolic health.',
+  'tongkat ali': 'Tongkat Ali (Eurycoma longifolia) is a Southeast Asian botanical root extract studied for male reproductive hormones, stress physiology, body composition, and physical performance.',
+  'fadogia agrestis': 'Fadogia agrestis is a West African botanical promoted for male vitality, but human clinical evidence remains limited and safety data are not well established.',
+  'sea moss': 'Sea moss refers to edible red seaweeds such as Chondrus crispus or Gracilaria species, used as mineral-rich algae supplements and studied mainly for nutrient composition.',
+  'musgo marino': 'Sea moss refers to edible red seaweeds such as Chondrus crispus or Gracilaria species, used as mineral-rich algae supplements and studied mainly for nutrient composition.',
+  shilajit: 'Shilajit is a mineral-rich resinous exudate containing fulvic acids and humic substances, studied for fatigue, fertility markers, and mitochondrial or metabolic outcomes.',
+  'black seed oil': 'Black seed oil is extracted from Nigella sativa seeds and contains thymoquinone-rich compounds studied for inflammatory, respiratory, metabolic, and immune-related outcomes.',
+  'aceite de comino negro': 'Black seed oil is extracted from Nigella sativa seeds and contains thymoquinone-rich compounds studied for inflammatory, respiratory, metabolic, and immune-related outcomes.',
+  bacopa: 'Bacopa monnieri is an Ayurvedic herb containing bacosides and studied mainly for memory, attention, learning, and cognitive processing over repeated use.',
+  'bacopa monnieri': 'Bacopa monnieri is an Ayurvedic herb containing bacosides and studied mainly for memory, attention, learning, and cognitive processing over repeated use.',
 };
 
 function getLocalSupplementDescription(entry: SupplementEntry): string {
