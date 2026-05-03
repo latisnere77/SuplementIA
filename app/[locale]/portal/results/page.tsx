@@ -847,13 +847,9 @@ function ResultsPageContent() {
           const requestJobId = jobId;
           console.log(`🔖 Job ID: ${requestJobId} - Query: "${normalizedQuery}" → "${category}"`);
 
-          // Use Lambda quiz-orchestrator for all searches (ingredients and categories)
-          // This bypasses the Amplify 30s SSR timeout limit by calling Lambda directly
-          // The Lambda has 300s timeout and handles search + enrichment
-          const quizApiUrl = process.env.NEXT_PUBLIC_QUIZ_API_URL || '/api/portal/quiz';
-          const apiUrl = quizApiUrl.startsWith('http')
-            ? quizApiUrl
-            : `${quizApiUrl}?t=${Date.now()}`;
+          // Always call the app route. It owns search fallback, async polling,
+          // and Lambda orchestration without exposing stale public Lambda URLs.
+          const apiUrl = `/api/portal/quiz?t=${Date.now()}`;
 
           console.log(`🚀 Calling quiz API: ${apiUrl}`);
 
