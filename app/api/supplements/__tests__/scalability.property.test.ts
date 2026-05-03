@@ -24,6 +24,7 @@ class MockEmbeddingService {
 class MockVectorSearchService {
   private supplements: Map<number, any> = new Map();
   private nextId = 1;
+  private similarityComparisons = 0;
 
   async insertSupplement(supplement: any): Promise<any> {
     const id = this.nextId++;
@@ -40,6 +41,7 @@ class MockVectorSearchService {
 
   async searchByEmbedding(embedding: number[], options: any = {}): Promise<any[]> {
     const startTime = performance.now();
+    this.similarityComparisons = 0;
 
     const { minSimilarity = 0.85, limit = 5 } = options;
 
@@ -63,6 +65,8 @@ class MockVectorSearchService {
   }
 
   private cosineSimilarity(a: number[], b: number[]): number {
+    this.similarityComparisons += 1;
+
     let dotProduct = 0;
     let normA = 0;
     let normB = 0;
@@ -85,6 +89,10 @@ class MockVectorSearchService {
 
   getCount(): number {
     return this.supplements.size;
+  }
+
+  getSimilarityComparisons(): number {
+    return this.similarityComparisons;
   }
 
   clear() {
@@ -172,7 +180,7 @@ describe('Scalability Property Tests', () => {
     const embeddingService = new MockEmbeddingService();
 
     const testSizes = [100, 500, 1000];
-    const latencies: number[] = [];
+    const comparisonCounts: number[] = [];
 
     for (const size of testSizes) {
       const vectorSearchService = new MockVectorSearchService();
@@ -195,27 +203,20 @@ describe('Scalability Property Tests', () => {
         });
       }
 
-      // Measure search time
+      // Measure deterministic algorithmic work instead of wall-clock time.
       const queryEmbedding = await embeddingService.generateEmbedding('test query');
-      const startTime = performance.now();
       await vectorSearchService.searchByEmbedding(queryEmbedding, {
         minSimilarity: 0.85,
         limit: 5,
       });
-      const endTime = performance.now();
 
-      latencies.push(endTime - startTime);
+      comparisonCounts.push(vectorSearchService.getSimilarityComparisons());
     }
 
-    // Verify: All search times are < 200ms
-    const allUnder200ms = latencies.every(lat => lat < 200);
+    // Verify: one similarity comparison per supplement means linear O(n) scan.
+    const expectedLinearWork = comparisonCounts.every((count, index) => count === testSizes[index]);
 
-    // Verify: Growth is not exponential (10x data should not cause 100x slowdown)
-    const ratio = latencies[2] / latencies[0]; // 1000 vs 100
-    const linearGrowth = ratio < 20; // Allow some overhead, but not exponential
-
-    expect(allUnder200ms).toBe(true);
-    expect(linearGrowth).toBe(true);
+    expect(expectedLinearWork).toBe(true);
   }, 60000);
 
   /**
