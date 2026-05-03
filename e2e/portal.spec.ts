@@ -210,6 +210,8 @@ test.describe('portal browser flows', () => {
     await searchInput.click();
     await searchInput.fill('');
     await searchInput.pressSequentially('Magnesium');
+    await expect(searchInput).toHaveValue('Magnesium');
+    await searchInput.press('Escape');
     await expect(goButton).toBeEnabled();
     await goButton.click();
 

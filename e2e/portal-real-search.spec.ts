@@ -72,6 +72,8 @@ test.describe('portal real supplement searches', () => {
       await searchInput.click();
       await searchInput.fill('');
       await searchInput.pressSequentially(searchCase.query);
+      await expect(searchInput).toHaveValue(searchCase.query);
+      await searchInput.press('Escape');
       await expect(goButton).toBeEnabled();
       await goButton.click();
 
