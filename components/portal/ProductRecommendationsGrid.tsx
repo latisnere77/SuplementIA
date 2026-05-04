@@ -20,6 +20,7 @@ interface Product {
   directLink?: string;
   description: string;
   isAnkonere?: boolean;
+  isAffiliate?: boolean;
 }
 
 interface ProductRecommendationsGridProps {
@@ -80,12 +81,18 @@ export default function ProductRecommendationsGrid({
       <p className="text-sm md:text-base text-gray-600 mb-6">
         {t('results.products.desc')}
       </p>
+      {safeProducts.some(product => product.isAffiliate || product.affiliateLink) && (
+        <p className="text-xs text-gray-500 mb-6">
+          {t('product.affiliate.disclosure')}
+        </p>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
         {safeProducts.map((product) => {
           const config = TIER_CONFIG[product.tier];
-          const isHighlighted = product.tier === 'premium';
+          const isHighlighted = product.tier === 'premium' && !product.isAffiliate;
           const contains = Array.isArray(product.contains) ? product.contains : [];
+          const badge = product.isAffiliate && product.tier === 'premium' ? 'Premium' : config.badge;
 
           return (
             <div
@@ -99,7 +106,7 @@ export default function ProductRecommendationsGrid({
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r ${config.color} text-white`}
                 >
-                  {config.badge}
+                  {badge}
                 </span>
               </div>
 
@@ -117,12 +124,18 @@ export default function ProductRecommendationsGrid({
                 <div className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {product.price > 0 ? (
                     `${product.currency} ${product.price.toLocaleString()}`
+                  ) : product.isAffiliate ? (
+                    t('product.price.amazon')
                   ) : (
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     t('product.price.consult' as any)
                   )}
                 </div>
-                <div className="text-sm text-gray-600">{t('product.per.month')}</div>
+                {product.price > 0 ? (
+                  <div className="text-sm text-gray-600">{t('product.per.month')}</div>
+                ) : (
+                  <div className="text-sm text-gray-600">{product.whereToBuy}</div>
+                )}
               </div>
 
               {/* Contains */}
