@@ -8,7 +8,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Milestone, Sparkles, Venus, Mars } from 'lucide-react';
+import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Milestone, Sparkles, Venus, Mars, Gauge, Flame, Trophy, Activity, Pill } from 'lucide-react';
 import { Combobox, Transition } from '@headlessui/react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +36,13 @@ const categoryIcons: { [key: string]: React.ElementType } = {
   immunity: Shield, // Re-usando Shield para inmunidad
   'mens-health': Mars, // Icono de reemplazo para 'User'
   'womens-health': Venus, // Icono de reemplazo para 'Woman'
+  'blood-sugar': Gauge,
+  'cholesterol-triglycerides': Heart,
+  inflammation: Flame,
+  'sports-performance': Trophy,
+  'hormonal-health': Activity,
+  'migraine-headache': Brain,
+  'common-deficiencies': Pill,
 };
 
 export default function PortalPage() {
@@ -96,6 +103,13 @@ export default function PortalPage() {
       immunity: 'from-teal-500/20 to-cyan-500/20',
       'mens-health': 'from-sky-500/20 to-sky-600/20',
       'womens-health': 'from-fuchsia-500/20 to-fuchsia-600/20',
+      'blood-sugar': 'from-emerald-500/20 to-green-600/20',
+      'cholesterol-triglycerides': 'from-rose-500/20 to-red-600/20',
+      inflammation: 'from-amber-500/20 to-orange-600/20',
+      'sports-performance': 'from-cyan-500/20 to-blue-600/20',
+      'hormonal-health': 'from-violet-500/20 to-purple-600/20',
+      'migraine-headache': 'from-slate-500/20 to-indigo-600/20',
+      'common-deficiencies': 'from-yellow-500/20 to-lime-600/20',
     }[category.slug] || 'from-gray-500/20 to-gray-600/20',
   }));
 

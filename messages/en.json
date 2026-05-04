@@ -64,6 +64,34 @@
       "womens-health": {
         "name": "Women's Health",
         "desc": "Support for hormonal balance and bone health."
+      },
+      "blood-sugar": {
+        "name": "Blood Sugar Control",
+        "desc": "Supplements that may support glucose metabolism, insulin sensitivity, and metabolic health habits."
+      },
+      "cholesterol-triglycerides": {
+        "name": "Cholesterol & Triglycerides",
+        "desc": "Options studied for lipid profiles, triglycerides, and cardiovascular health alongside diet and medical follow-up."
+      },
+      "inflammation": {
+        "name": "Inflammation",
+        "desc": "Supplements researched for inflammatory markers, pain, and recovery without replacing medical diagnosis or treatment."
+      },
+      "sports-performance": {
+        "name": "Sports Performance",
+        "desc": "Evidence-based supplements for strength, power, endurance, recovery, and physical performance."
+      },
+      "hormonal-health": {
+        "name": "Hormonal Health",
+        "desc": "Nutrients and compounds related to hormonal balance, menstrual cycle, metabolism, and general wellbeing."
+      },
+      "migraine-headache": {
+        "name": "Migraine & Headache",
+        "desc": "Supplements researched for migraine prevention and neurological support."
+      },
+      "common-deficiencies": {
+        "name": "Common Deficiencies",
+        "desc": "Nutrients often evaluated by labs or dietary context, where supplementation depends on levels, diet, and life stage."
       }
     },
     "value": {

@@ -30,6 +30,14 @@ export const mexicanSeoKeywords = [
   'berberina para glucosa',
   'probioticos para salud digestiva',
   'ashwagandha para estres',
+  'suplementos para controlar glucosa',
+  'suplementos para colesterol y trigliceridos',
+  'suplementos para inflamacion',
+  'suplementos para rendimiento deportivo',
+  'suplementos para salud hormonal',
+  'suplementos para migraña',
+  'deficiencia de vitamina d',
+  'deficiencia de hierro',
   'Mexico',
 ];
 

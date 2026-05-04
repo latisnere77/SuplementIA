@@ -64,6 +64,34 @@
       "womens-health": {
         "name": "Salud Femenina",
         "desc": "Apoyo para el equilibrio hormonal, el ciclo menstrual y la salud ósea en mujeres."
+      },
+      "blood-sugar": {
+        "name": "Control de Glucosa",
+        "desc": "Suplementos que pueden apoyar el metabolismo de la glucosa, la sensibilidad a la insulina y hábitos de salud metabólica."
+      },
+      "cholesterol-triglycerides": {
+        "name": "Colesterol y Triglicéridos",
+        "desc": "Opciones estudiadas para apoyar perfiles de lípidos, triglicéridos y salud cardiovascular junto con dieta y seguimiento médico."
+      },
+      "inflammation": {
+        "name": "Inflamación",
+        "desc": "Suplementos con investigación sobre marcadores inflamatorios, dolor y recuperación, sin sustituir diagnóstico o tratamiento médico."
+      },
+      "sports-performance": {
+        "name": "Rendimiento Deportivo",
+        "desc": "Suplementos con evidencia para fuerza, potencia, resistencia, recuperación y desempeño físico."
+      },
+      "hormonal-health": {
+        "name": "Salud Hormonal",
+        "desc": "Nutrientes y compuestos relacionados con equilibrio hormonal, ciclo menstrual, metabolismo y bienestar general."
+      },
+      "migraine-headache": {
+        "name": "Migraña y Dolor de Cabeza",
+        "desc": "Suplementos investigados para prevención de migraña y apoyo neurológico."
+      },
+      "common-deficiencies": {
+        "name": "Deficiencias Comunes",
+        "desc": "Nutrientes que suelen evaluarse por laboratorio o contexto dietario y cuya suplementación depende de niveles, dieta y etapa de vida."
       }
     },
     "value": {

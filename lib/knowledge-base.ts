@@ -324,6 +324,229 @@ const KNOWLEDGE_BASE: HealthCategory[] = [
       },
     ],
   },
+  {
+    slug: 'blood-sugar',
+    name: 'Control de Glucosa',
+    description: 'Suplementos que pueden apoyar el metabolismo de la glucosa, la sensibilidad a la insulina y hábitos de salud metabólica.',
+    supplements: [
+      {
+        name: 'Berberina',
+        evidenceGrade: 'B',
+        summary: 'Alcaloide vegetal estudiado por sus efectos en glucosa, lípidos y sensibilidad a la insulina. Puede interactuar con medicamentos para diabetes.',
+        slug: 'berberine',
+      },
+      {
+        name: 'Fibra (Psyllium)',
+        evidenceGrade: 'A',
+        summary: 'Fibra soluble que puede reducir picos de glucosa postprandial y apoyar saciedad y salud digestiva.',
+        slug: 'fiber-psyllium',
+      },
+      {
+        name: 'Canela',
+        evidenceGrade: 'C',
+        summary: 'Puede tener efectos modestos en glucosa en algunos estudios, pero la evidencia es variable y depende del extracto usado.',
+        slug: 'cinnamon',
+      },
+      {
+        name: 'Magnesio',
+        evidenceGrade: 'C',
+        summary: 'Mineral relacionado con metabolismo de glucosa. La suplementación es más relevante cuando existe ingesta baja o deficiencia.',
+        slug: 'magnesium',
+      },
+    ],
+  },
+  {
+    slug: 'cholesterol-triglycerides',
+    name: 'Colesterol y Triglicéridos',
+    description: 'Opciones estudiadas para apoyar perfiles de lípidos, triglicéridos y salud cardiovascular junto con dieta y seguimiento médico.',
+    supplements: [
+      {
+        name: 'Omega-3 (EPA/DHA)',
+        evidenceGrade: 'A',
+        summary: 'Ácidos grasos con evidencia sólida para reducir triglicéridos, especialmente en dosis clínicas y bajo supervisión profesional.',
+        slug: 'omega-3',
+      },
+      {
+        name: 'Fibra (Psyllium)',
+        evidenceGrade: 'A',
+        summary: 'Fibra soluble con evidencia para reducir colesterol LDL de forma modesta cuando se usa de manera constante.',
+        slug: 'fiber-psyllium',
+      },
+      {
+        name: 'Esteroles Vegetales',
+        evidenceGrade: 'B',
+        summary: 'Compuestos que pueden disminuir la absorción intestinal de colesterol y apoyar reducciones moderadas de LDL.',
+        slug: 'plant-sterols',
+      },
+      {
+        name: 'Ajo',
+        evidenceGrade: 'B',
+        summary: 'Puede tener efectos modestos sobre colesterol y presión arterial, con resultados variables según preparación y dosis.',
+        slug: 'garlic',
+      },
+    ],
+  },
+  {
+    slug: 'inflammation',
+    name: 'Inflamación',
+    description: 'Suplementos con investigación sobre marcadores inflamatorios, dolor y recuperación, sin sustituir diagnóstico o tratamiento médico.',
+    supplements: [
+      {
+        name: 'Curcumina',
+        evidenceGrade: 'B',
+        summary: 'Compuesto activo de la cúrcuma estudiado por efectos antiinflamatorios. Su absorción mejora con formulaciones especializadas.',
+        slug: 'curcumin',
+      },
+      {
+        name: 'Omega-3 (EPA/DHA)',
+        evidenceGrade: 'B',
+        summary: 'Puede modular procesos inflamatorios y apoyar salud cardiovascular, aunque los efectos varían por dosis y contexto.',
+        slug: 'omega-3',
+      },
+      {
+        name: 'Jengibre',
+        evidenceGrade: 'B',
+        summary: 'Raíz con compuestos bioactivos estudiados para dolor, náusea e inflamación leve.',
+        slug: 'ginger',
+      },
+      {
+        name: 'Boswellia Serrata',
+        evidenceGrade: 'B',
+        summary: 'Extracto herbal investigado principalmente en dolor articular y osteoartritis, con evidencia moderada.',
+        slug: 'boswellia-serrata',
+      },
+    ],
+  },
+  {
+    slug: 'sports-performance',
+    name: 'Rendimiento Deportivo',
+    description: 'Suplementos con evidencia para fuerza, potencia, resistencia, recuperación y desempeño físico.',
+    supplements: [
+      {
+        name: 'Creatina',
+        evidenceGrade: 'A',
+        summary: 'Uno de los suplementos más estudiados para fuerza, potencia y masa muscular, con buen perfil de seguridad en adultos sanos.',
+        slug: 'creatine',
+      },
+      {
+        name: 'Cafeína',
+        evidenceGrade: 'A',
+        summary: 'Estimulante con evidencia fuerte para mejorar alerta, potencia y resistencia en dosis adecuadas.',
+        slug: 'caffeine',
+      },
+      {
+        name: 'Beta-Alanina',
+        evidenceGrade: 'B',
+        summary: 'Puede mejorar rendimiento en esfuerzos intensos de corta a mediana duración al elevar carnosina muscular.',
+        slug: 'beta-alanine',
+      },
+      {
+        name: 'Citrulina',
+        evidenceGrade: 'B',
+        summary: 'Aminoácido precursor de óxido nítrico estudiado por posibles beneficios en flujo sanguíneo y rendimiento.',
+        slug: 'citrulline',
+      },
+    ],
+  },
+  {
+    slug: 'hormonal-health',
+    name: 'Salud Hormonal',
+    description: 'Nutrientes y compuestos relacionados con equilibrio hormonal, ciclo menstrual, metabolismo y bienestar general.',
+    supplements: [
+      {
+        name: 'Inositol',
+        evidenceGrade: 'B',
+        summary: 'Compuesto estudiado en sensibilidad a la insulina y salud ovárica, especialmente en contextos como SOP.',
+        slug: 'inositol',
+      },
+      {
+        name: 'Vitamina D',
+        evidenceGrade: 'C',
+        summary: 'Hormona-secoesteroide esencial para huesos e inmunidad; su suplementación es más clara cuando hay deficiencia.',
+        slug: 'vitamin-d',
+      },
+      {
+        name: 'Zinc',
+        evidenceGrade: 'B',
+        summary: 'Mineral relevante para función reproductiva, inmunidad y síntesis hormonal, especialmente si la ingesta es baja.',
+        slug: 'zinc',
+      },
+      {
+        name: 'Magnesio',
+        evidenceGrade: 'C',
+        summary: 'Puede apoyar sueño, estrés y síntomas premenstruales en algunas personas, con mayor relevancia ante ingesta insuficiente.',
+        slug: 'magnesium',
+      },
+    ],
+  },
+  {
+    slug: 'migraine-headache',
+    name: 'Migraña y Dolor de Cabeza',
+    description: 'Suplementos investigados para prevención de migraña y apoyo neurológico, especialmente cuando existen deficiencias o desencadenantes claros.',
+    supplements: [
+      {
+        name: 'Magnesio',
+        evidenceGrade: 'B',
+        summary: 'Mineral estudiado para prevención de migraña, especialmente en personas con niveles bajos o síntomas compatibles.',
+        slug: 'magnesium',
+      },
+      {
+        name: 'Riboflavina (Vitamina B2)',
+        evidenceGrade: 'B',
+        summary: 'Vitamina B investigada para reducir frecuencia de migraña en protocolos preventivos.',
+        slug: 'riboflavin',
+      },
+      {
+        name: 'Coenzima Q10',
+        evidenceGrade: 'B',
+        summary: 'Compuesto mitocondrial estudiado en prevención de migraña y energía celular.',
+        slug: 'coenzyme-q10',
+      },
+      {
+        name: 'Melatonina',
+        evidenceGrade: 'C',
+        summary: 'Puede ser útil cuando la migraña se relaciona con sueño irregular, aunque la evidencia es más limitada.',
+        slug: 'melatonin',
+      },
+    ],
+  },
+  {
+    slug: 'common-deficiencies',
+    name: 'Deficiencias Comunes',
+    description: 'Nutrientes que suelen evaluarse por laboratorio o contexto dietario y cuya suplementación depende de niveles, dieta y etapa de vida.',
+    supplements: [
+      {
+        name: 'Vitamina D',
+        evidenceGrade: 'A',
+        summary: 'Deficiencia frecuente en muchas poblaciones. Es clave para salud ósea, inmunidad y función muscular.',
+        slug: 'vitamin-d',
+      },
+      {
+        name: 'Hierro',
+        evidenceGrade: 'A',
+        summary: 'Esencial para transportar oxígeno. La suplementación debe guiarse por análisis, especialmente ferritina y hemoglobina.',
+        slug: 'iron',
+      },
+      {
+        name: 'Vitamina B12',
+        evidenceGrade: 'A',
+        summary: 'Crítica para sistema nervioso y glóbulos rojos. Es especialmente relevante en dietas veganas, vegetarianas o malabsorción.',
+        slug: 'vitamin-b12',
+      },
+      {
+        name: 'Folato',
+        evidenceGrade: 'A',
+        summary: 'Importante para división celular y embarazo. Su uso es clave antes y durante etapas tempranas de gestación.',
+        slug: 'folic-acid',
+      },
+      {
+        name: 'Zinc',
+        evidenceGrade: 'B',
+        summary: 'Mineral importante para inmunidad, piel y función reproductiva. La suplementación depende de dieta y contexto clínico.',
+        slug: 'zinc',
+      },
+    ],
+  },
 ];
 
 // --- Accessor Functions ---
