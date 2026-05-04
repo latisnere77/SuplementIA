@@ -280,9 +280,14 @@ test.describe('portal browser flows', () => {
 
     await page.goto('/en/portal');
     const searchInput = page.getByLabel('Search supplements');
-    await searchInput.fill('Magnesium');
+    const goButton = page.getByRole('button', { name: 'Go' });
+    await searchInput.click();
+    await searchInput.fill('');
+    await searchInput.pressSequentially('Magnesium');
+    await expect(searchInput).toHaveValue('Magnesium');
     await searchInput.press('Escape');
-    await page.getByRole('button', { name: 'Go' }).click();
+    await expect(goButton).toBeEnabled();
+    await goButton.click();
 
     await expect(page.getByTestId('recommendation-display')).toBeVisible({ timeout: 15_000 });
 
