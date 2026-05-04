@@ -20,10 +20,10 @@ export interface Job {
 
 // Expiration times in milliseconds
 const EXPIRATION_TIMES = {
-  processing: 2 * 60 * 1000,  // 2 minutes
-  completed: 5 * 60 * 1000,   // 5 minutes
-  failed: 2 * 60 * 1000,      // 2 minutes
-  timeout: 2 * 60 * 1000,     // 2 minutes
+  processing: 6 * 60 * 1000,  // Bedrock enrichment can take 3+ minutes on cache misses
+  completed: 15 * 60 * 1000,
+  failed: 5 * 60 * 1000,
+  timeout: 5 * 60 * 1000,
 };
 
 // DynamoDB configuration

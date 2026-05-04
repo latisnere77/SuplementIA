@@ -134,6 +134,28 @@ export default function SupplementDetailPage() {
     };
   }, [supplementName]);
 
+  const pollEnrichmentStatus = useCallback(async (pollUrl: string): Promise<any> => {
+    const maxPolls = 140;
+    const pollIntervalMs = 3000;
+
+    for (let pollCount = 0; pollCount < maxPolls; pollCount++) {
+      await new Promise(resolve => setTimeout(resolve, pollCount === 0 ? 2000 : pollIntervalMs));
+
+      const statusResponse = await fetch(pollUrl);
+      const statusData = await statusResponse.json();
+
+      if (statusResponse.status === 200 && statusData.status === 'completed' && statusData.recommendation) {
+        return statusData.recommendation;
+      }
+
+      if (statusResponse.status !== 202 || statusData.status !== 'processing') {
+        throw new Error(statusData.message || statusData.error || 'No pudimos completar el enriquecimiento.');
+      }
+    }
+
+    throw new Error('El análisis está tomando más tiempo del esperado. Intenta de nuevo en unos minutos.');
+  }, []);
+
   const fetchEnrichedEvidence = useCallback(async (forceRefresh = false) => {
     setIsLoading(true);
     setError(null);
@@ -152,23 +174,28 @@ export default function SupplementDetailPage() {
         }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error al obtener evidencia: ${errorText}`);
+      const data = await response.json();
+      let enrichmentData = data;
+
+      if (response.status === 202 && data.status === 'processing' && data.pollUrl) {
+        enrichmentData = await pollEnrichmentStatus(data.pollUrl);
+      } else if (!response.ok) {
+        throw new Error(`Error al obtener evidencia: ${data.error || JSON.stringify(data)}`);
       }
 
-      const data = await response.json();
-
-      if (data.success && data.evidence) {
+      if (enrichmentData.success && enrichmentData.evidence) {
         // Transform enrichment response to EvidenceAnalysisPanelNew format
-        const evidence = transformEnrichmentResponse(data);
+        const evidence = transformEnrichmentResponse(enrichmentData);
         setEvidenceSummary(evidence);
-      } else if (data.success && data.data) {
+      } else if (enrichmentData.success && enrichmentData.data) {
         // Alternative response format
-        const evidence = transformEnrichmentResponse(data);
+        const evidence = transformEnrichmentResponse(enrichmentData);
+        setEvidenceSummary(evidence);
+      } else if (enrichmentData.evidence || enrichmentData.data) {
+        const evidence = transformEnrichmentResponse(enrichmentData);
         setEvidenceSummary(evidence);
       } else {
-        throw new Error(data.error || 'Formato de datos inválido');
+        throw new Error(enrichmentData.error || 'Formato de datos inválido');
       }
 
     } catch (err: any) {
@@ -177,7 +204,7 @@ export default function SupplementDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [benefit, slug, transformEnrichmentResponse]);
+  }, [benefit, pollEnrichmentStatus, slug, transformEnrichmentResponse]);
 
   useEffect(() => {
     if (!slug) return;

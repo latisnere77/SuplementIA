@@ -6,8 +6,9 @@
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { NextRequest, NextResponse } from 'next/server';
+import { createJob } from '@/lib/portal/job-store';
 
-export const maxDuration = 240;
+export const maxDuration = 30;
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -15,7 +16,7 @@ const lambdaClient = new LambdaClient({
     region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1',
     requestHandler: new NodeHttpHandler({
         connectionTimeout: 5000,
-        requestTimeout: 230000,
+        requestTimeout: 25000,
     }),
 });
 
@@ -23,26 +24,9 @@ function getContentEnricherFunctionName() {
     return process.env.ENRICHER_LAMBDA || 'production-content-enricher';
 }
 
-function parseLambdaPayload(payload?: Uint8Array) {
-    if (!payload) {
-        throw new Error('Content enricher returned an empty response');
-    }
-
-    const rawPayload = Buffer.from(payload).toString('utf-8');
-    const lambdaResult = JSON.parse(rawPayload);
-    const responseBody = typeof lambdaResult.body === 'string'
-        ? JSON.parse(lambdaResult.body)
-        : lambdaResult.body || lambdaResult;
-
-    return {
-        statusCode: lambdaResult.statusCode || 200,
-        body: responseBody,
-    };
-}
-
 export async function POST(request: NextRequest) {
     try {
-        const { supplementName, category, forceRefresh = false } = await request.json();
+        const { supplementName, category, forceRefresh = false, jobId: requestedJobId } = await request.json();
 
         if (!supplementName) {
             return NextResponse.json(
@@ -51,9 +35,12 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const jobId = requestedJobId || `supplement_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+        await createJob(jobId);
+
         const command = new InvokeCommand({
             FunctionName: getContentEnricherFunctionName(),
-            InvocationType: 'RequestResponse',
+            InvocationType: 'Event',
             Payload: Buffer.from(JSON.stringify({
                 httpMethod: 'POST',
                 headers: {
@@ -63,45 +50,34 @@ export async function POST(request: NextRequest) {
                     supplementId: supplementName,
                     category: category || 'general',
                     forceRefresh,
+                    jobId,
                 }),
             })),
         });
 
         const lambdaResponse = await lambdaClient.send(command);
 
-        if (lambdaResponse.FunctionError) {
+        if ((lambdaResponse.StatusCode || 0) < 200 || (lambdaResponse.StatusCode || 0) >= 300) {
             return NextResponse.json(
                 {
                     success: false,
-                    error: 'Content enricher execution failed',
-                    details: lambdaResponse.FunctionError,
+                    error: 'Content enricher invocation failed',
+                    details: {
+                        statusCode: lambdaResponse.StatusCode,
+                    },
                 },
                 { status: 502 }
             );
         }
 
-        const { statusCode, body } = parseLambdaPayload(lambdaResponse.Payload);
-
-        if (statusCode < 200 || statusCode >= 300 || body?.success === false) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: body?.error || 'Content enricher failed',
-                    details: body,
-                },
-                { status: statusCode >= 400 ? statusCode : 502 }
-            );
-        }
-
         return NextResponse.json({
             success: true,
-            ...body,
-            metadata: {
-                ...body?.metadata,
-                functionName: getContentEnricherFunctionName(),
-                invocationType: 'RequestResponse',
-            },
-        });
+            status: 'processing',
+            jobId,
+            supplementName,
+            pollUrl: `/api/portal/enrichment-status/${jobId}?supplement=${encodeURIComponent(supplementName)}`,
+            pollInterval: 3000,
+        }, { status: 202 });
     } catch (error: any) {
         console.error('Simple enrich error:', error);
         return NextResponse.json(
