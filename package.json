@@ -37,7 +37,6 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@sentry/nextjs": "^10.25.0",
     "@types/pg": "^8.15.6",
-    "@vercel/analytics": "^1.6.1",
     "@vercel/oidc-aws-credentials-provider": "^3.0.5",
     "amazon-cognito-identity-js": "^6.3.10",
     "apache-arrow": "^15.0.0",

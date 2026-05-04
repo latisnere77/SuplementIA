@@ -2,7 +2,6 @@ import "./globals.css";
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { Analytics } from '@vercel/analytics/next';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import SeoStructuredData from '@/components/SeoStructuredData';
 import { globalSeo, localeAlternates, mexicanSeoKeywords, siteUrl } from '@/lib/seo';
@@ -111,7 +110,6 @@ export default async function RootLayout({
         </NextIntlClientProvider>
         <SeoStructuredData locale={locale} />
         <GoogleAnalytics />
-        <Analytics />
       </body>
     </html>
   );
