@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect, Fragment } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Heart, Shield, TrendingUp, BookOpen, Globe, ChevronRight, Dumbbell, Brain, Moon, Bone, Milestone, Sparkles, Venus, Mars, Gauge, Flame, Trophy, Activity, Pill } from 'lucide-react';
@@ -230,7 +231,6 @@ export default function PortalPage() {
       language,
       source: 'popular_search',
     });
-    router.push(`/portal/results?q=${encodeURIComponent(queryTerm)}&supplement=${encodeURIComponent(queryTerm)}`);
   };
 
   return (
@@ -512,23 +512,27 @@ export default function PortalPage() {
           </h2>
           <div className="flex flex-wrap justify-center gap-3">
             {popularSearches.map((search, index) => (
-              <motion.button
+              <motion.div
                 key={index}
                 initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.9 }}
                 whileInView={prefersReducedMotion ? {} : { opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: index * 0.1 }}
                 whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
-                onClick={() => handlePopularSearch(search.term, search.query)}
-                className="group px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all shadow-sm"
               >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{search.term}</span>
-                  <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300">
-                    {search.category}
-                  </Badge>
-                </div>
-              </motion.button>
+                <Link
+                  href={`/${language}/portal/results?q=${encodeURIComponent(search.query)}&supplement=${encodeURIComponent(search.query)}`}
+                  onClick={() => handlePopularSearch(search.term, search.query)}
+                  className="group block px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all shadow-sm"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{search.term}</span>
+                    <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300">
+                      {search.category}
+                    </Badge>
+                  </span>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </motion.div>

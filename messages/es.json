@@ -127,7 +127,8 @@
     "contains": "Contiene:",
     "available": "Disponible en:",
     "buy": {
-      "amazon": "Comprar en Amazon",
+      "affiliate": "Ver opción",
+      "iherb": "Ver en iHerb",
       "ankonere": "Comprar en ANKONERE"
     },
     "per": {
@@ -135,10 +136,11 @@
     },
     "price": {
       "consult": "Consultar",
-      "amazon": "Ver precio en Amazon"
+      "affiliate": "Ver precio",
+      "iherb": "Ver en iHerb"
     },
     "affiliate": {
-      "disclosure": "Como Asociado de Amazon, SuplementAI puede recibir comisiones por compras que califican, sin costo adicional para ti."
+      "disclosure": "SuplementAI puede recibir comisiones por compras que califican a través de enlaces de afiliado, sin costo adicional para ti."
     },
     "badges": {
       "premium": {
