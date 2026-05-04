@@ -11,11 +11,12 @@
 'use client';
 
 import { useSearchParams, useParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, LoaderCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import EvidenceAnalysisPanelNew from '@/components/portal/EvidenceAnalysisPanelNew';
 import type { GradeType } from '@/types/supplement-grade';
+import { trackGAEvent } from '@/lib/analytics/ga4';
 
 // Evidence summary structure from enrichment API
 interface EvidenceSummary {
@@ -63,11 +64,13 @@ export default function SupplementDetailPage() {
   const searchParams = useSearchParams();
 
   const slug = params.slug as string;
+  const locale = params.locale as string;
   const benefit = searchParams.get('benefit') || '';
 
   const [evidenceSummary, setEvidenceSummary] = useState<EvidenceSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const trackedViewRef = useRef<string | null>(null);
 
   const supplementName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   const benefitName = benefit.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -180,6 +183,24 @@ export default function SupplementDetailPage() {
     if (!slug) return;
     fetchEnrichedEvidence();
   }, [fetchEnrichedEvidence, slug]);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    const viewKey = `${locale}:${slug}:${benefit || 'general'}`;
+    if (trackedViewRef.current === viewKey) {
+      return;
+    }
+
+    trackedViewRef.current = viewKey;
+    trackGAEvent('supplement_viewed', {
+      supplement_slug: slug,
+      supplement_name: supplementName,
+      benefit: benefit || 'general',
+      language: locale,
+      source: 'supplement_detail',
+    });
+  }, [benefit, locale, slug, supplementName]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">

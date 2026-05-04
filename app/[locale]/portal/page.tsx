@@ -21,6 +21,7 @@ import { normalizeQuery } from '@/lib/portal/query-normalization';
 import FAQSection from '@/components/portal/FAQSection';
 import { getAllCategories } from '@/lib/knowledge-base'; // Importar la fuente de la verdad
 import { useReducedMotion } from '@/lib/hooks/useReducedMotion';
+import { trackGAEvent } from '@/lib/analytics/ga4';
 
 // Mapeo de slugs a iconos para mantener la consistencia visual
 const categoryIcons: { [key: string]: React.ElementType } = {
@@ -195,6 +196,14 @@ export default function PortalPage() {
     // Limpiar error previo y proceder
     setValidationError(null);
     setIsLoading(true);
+    trackGAEvent('search_started', {
+      search_term: searchTerm,
+      original_search_term: query.trim(),
+      normalized: normalized.normalized,
+      normalization_confidence: Number(normalized.confidence.toFixed(2)),
+      language,
+      source: 'portal_search',
+    });
 
     const targetUrl = `/portal/results?q=${encodeURIComponent(searchTerm)}&supplement=${encodeURIComponent(searchTerm)}`;
     console.log('[handleSearch] 🚀 Navigating to:', targetUrl);
@@ -203,11 +212,24 @@ export default function PortalPage() {
   };
 
   const handleCategoryClick = (categoryId: string) => {
+    const category = categories.find(item => item.slug === categoryId);
+    trackGAEvent('category_clicked', {
+      category_slug: categoryId,
+      category_name: category?.name,
+      language,
+      source: 'portal_category_grid',
+    });
     router.push(`/portal/category/${encodeURIComponent(categoryId)}`);
   };
 
   const handlePopularSearch = (displayTerm: string, queryTerm: string = displayTerm) => {
     setSearchQuery(displayTerm);
+    trackGAEvent('search_started', {
+      search_term: queryTerm,
+      display_term: displayTerm,
+      language,
+      source: 'popular_search',
+    });
     router.push(`/portal/results?q=${encodeURIComponent(queryTerm)}&supplement=${encodeURIComponent(queryTerm)}`);
   };
 
