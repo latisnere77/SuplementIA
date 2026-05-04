@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -55,6 +55,7 @@ export default function PortalPage() {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
 
   // Hook de autocomplete con debouncing
@@ -220,7 +221,6 @@ export default function PortalPage() {
       language,
       source: 'portal_category_grid',
     });
-    router.push(`/portal/category/${encodeURIComponent(categoryId)}`);
   };
 
   const handlePopularSearch = (displayTerm: string, queryTerm: string = displayTerm) => {
@@ -231,6 +231,16 @@ export default function PortalPage() {
       language,
       source: 'popular_search',
     });
+  };
+
+  const handleExploreNow = () => {
+    trackGAEvent('cta_clicked', {
+      language,
+      source: 'portal_final_cta',
+    });
+
+    searchInputRef.current?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' });
+    searchInputRef.current?.focus();
   };
 
   return (
@@ -338,6 +348,7 @@ export default function PortalPage() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400 z-10 pointer-events-none" />
 
                     <Combobox.Input
+                      ref={searchInputRef}
                       className="h-14 w-full pl-12 pr-24 text-base bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-lg"
                       aria-label={language === 'es' ? 'Buscar suplementos' : 'Search supplements'}
                       onChange={(e) => {
@@ -568,27 +579,30 @@ export default function PortalPage() {
                 viewport={{ once: true }}
                 transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.1 }}
               >
-                <Card
-                  className="group h-full hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800"
+                <Link
+                  href={`/${language}/portal/category/${encodeURIComponent(category.slug)}`}
                   onClick={() => handleCategoryClick(category.slug)}
+                  className="group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
-                  <CardHeader>
-                    <div className={cn('w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center mb-4', category.color)}>
-                      <Icon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
-                    </div>
-                    <CardTitle className="text-xl text-gray-900 dark:text-gray-100">{category.name}</CardTitle>
-                    <CardDescription className="text-gray-600 dark:text-gray-300">{category.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
-                      <span className="text-sm font-medium">
-                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        {t('portal.browse.view_more' as any, { defaultMessage: language === 'es' ? 'Ver más' : 'Learn more' })}
-                      </span>
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </div>
-                  </CardContent>
-                </Card>
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800">
+                    <CardHeader>
+                      <div className={cn('w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center mb-4', category.color)}>
+                        <Icon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                      </div>
+                      <CardTitle className="text-xl text-gray-900 dark:text-gray-100">{category.name}</CardTitle>
+                      <CardDescription className="text-gray-600 dark:text-gray-300">{category.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
+                        <span className="text-sm font-medium">
+                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                          {t('portal.browse.view_more' as any, { defaultMessage: language === 'es' ? 'Ver más' : 'Learn more' })}
+                        </span>
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               </motion.div>
             );
           })}
@@ -666,7 +680,7 @@ export default function PortalPage() {
               ? 'Únete a miles de personas que ya confían en nuestra información'
               : 'Join thousands of people who already trust our information'}
           </p>
-          <Button size="lg" className="text-base px-8" onClick={() => router.push('/portal')}>
+          <Button size="lg" className="text-base px-8" onClick={handleExploreNow}>
             {language === 'es' ? 'Explorar Ahora' : 'Explore Now'}
             <ChevronRight className="ml-2 h-5 w-5" />
           </Button>

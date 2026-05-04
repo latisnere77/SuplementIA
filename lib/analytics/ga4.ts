@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-export type GAEventName = 'search_started' | 'category_clicked' | 'supplement_viewed';
+export type GAEventName = 'search_started' | 'category_clicked' | 'supplement_viewed' | 'cta_clicked';
 
 export function trackGAEvent(eventName: GAEventName, params: GAEventParams = {}) {
   if (typeof window === 'undefined') {

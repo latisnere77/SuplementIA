@@ -199,6 +199,24 @@ test.describe('portal browser flows', () => {
     await expect(page.getByRole('option', { name: /Magnesium glycinate/ })).toBeVisible();
   });
 
+  test('Spanish FAQ filters expand answers and final CTA focuses search', async ({ page }) => {
+    await page.goto('/es/portal');
+
+    await page.getByRole('button', { name: '🔬 Ciencia', exact: true }).click();
+    await expect(page.getByRole('button', { name: /¿De dónde vienen los estudios científicos?/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /¿Qué es SuplementAI?/ })).not.toBeVisible();
+
+    await page.getByRole('button', { name: /¿De dónde vienen los estudios científicos?/ }).click();
+    await expect(page.getByText('Todos los estudios provienen de bases de datos biomédicas globales')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Todas' }).click();
+    await expect(page.getByRole('button', { name: /¿Qué es SuplementAI?/ })).toBeVisible();
+
+    await page.getByRole('button', { name: 'Explorar Ahora' }).click();
+    await expect(page.getByLabel('Buscar suplementos')).toBeFocused();
+    await expect(page).toHaveURL(/\/es\/portal$/);
+  });
+
   test('Spanish popular searches keep localized labels but navigate to canonical supplement queries', async ({ page }) => {
     await mockAutocomplete(page);
     await mockSuccessfulQuiz(page);
