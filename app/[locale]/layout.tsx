@@ -81,6 +81,7 @@ export async function generateMetadata({
       'geo.placename': 'Mexico',
       'content-language': seoLocale === 'es' ? 'es-MX' : 'en',
       audience: seoLocale === 'es' ? 'Mexico' : 'Global',
+      'affiliate-network': 'Awin',
     },
   };
 }
