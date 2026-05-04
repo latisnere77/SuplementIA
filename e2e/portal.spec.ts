@@ -199,6 +199,29 @@ test.describe('portal browser flows', () => {
     await expect(page.getByRole('option', { name: /Magnesium glycinate/ })).toBeVisible();
   });
 
+  test('Spanish popular searches keep localized labels but navigate to canonical supplement queries', async ({ page }) => {
+    await mockAutocomplete(page);
+    await mockSuccessfulQuiz(page);
+
+    const popularSearches = [
+      { button: 'Vitamina D Vitaminas', expectedQuery: 'Vitamin(?:%20|\\+)D' },
+      { button: 'Omega-3 Ácidos Grasos', expectedQuery: 'Omega-3' },
+      { button: 'Magnesio Minerales', expectedQuery: 'Magnesium' },
+      { button: 'Proteína Whey Proteínas', expectedQuery: 'Whey(?:%20|\\+)Protein' },
+      { button: 'Creatina Rendimiento', expectedQuery: 'Creatine' },
+      { button: 'Colágeno Piel y Articulaciones', expectedQuery: 'Collagen' },
+    ];
+
+    for (const search of popularSearches) {
+      await page.goto('/es/portal');
+      const button = page.getByRole('button', { name: search.button });
+      await expect(button).toBeVisible();
+      await button.click();
+
+      await expect(page).toHaveURL(new RegExp(`/es/portal/results\\?q=${search.expectedQuery}&supplement=${search.expectedQuery}`));
+    }
+  });
+
   test('search submission posts to quiz API and renders evidence-backed results', async ({ page }) => {
     const quizRequests: QuizRequest[] = [];
     await mockAutocomplete(page);
