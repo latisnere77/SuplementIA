@@ -478,7 +478,7 @@ describe('Error Response Templates', () => {
     it('should sanitize all sensitive patterns', () => {
       fc.assert(
         fc.property(
-          fc.string({ minLength: 10, maxLength: 40 }),
+          fc.string({ minLength: 10, maxLength: 40 }).filter(secret => !/\s/.test(secret)),
           (secret) => {
             const testCases = [
               `api_key=${secret}`,

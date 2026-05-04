@@ -222,6 +222,55 @@ test.describe('portal browser flows', () => {
     }
   });
 
+  test('Spanish category cards open localized category pages and supplement results', async ({ page }) => {
+    test.setTimeout(90_000);
+    await mockAutocomplete(page);
+    await mockSuccessfulQuiz(page);
+
+    await page.goto('/es/portal');
+
+    const categoryCards = [
+      { name: 'Sueño', slug: 'sleep', supplement: 'Melatonina', expectedQuery: 'Melatonin' },
+      { name: 'Energía y Fatiga', slug: 'energy', supplement: 'Cafeína', expectedQuery: 'Caffeine' },
+      { name: 'Ansiedad y Estrés', slug: 'anxiety', supplement: 'Ashwagandha', expectedQuery: 'Ashwagandha' },
+      { name: 'Ganancia de Músculo y Ejercicio', slug: 'muscle-gain', supplement: 'Proteína de Suero', expectedQuery: 'Whey Protein' },
+      { name: 'Memoria y Concentración', slug: 'cognitive-function', supplement: 'Omega-3 (DHA)', expectedQuery: 'Omega-3' },
+      { name: 'Salud Cardíaca', slug: 'heart-health', supplement: 'Omega-3 (EPA/DHA)', expectedQuery: 'Omega-3' },
+      { name: 'Salud Articular y Ósea', slug: 'joint-bone-health', supplement: 'Vitamina D', expectedQuery: 'Vitamin D' },
+      { name: 'Salud Digestiva', slug: 'gut-health', supplement: 'Probióticos', expectedQuery: 'Probiotics' },
+      { name: 'Salud de la Piel y Cabello', slug: 'skin-hair-health', supplement: 'Colágeno', expectedQuery: 'Collagen' },
+      { name: 'Inmunidad', slug: 'immunity', supplement: 'Vitamina C', expectedQuery: 'Vitamin C' },
+      { name: 'Salud Masculina', slug: 'mens-health', supplement: 'Zinc', expectedQuery: 'Zinc' },
+      { name: 'Salud Femenina', slug: 'womens-health', supplement: 'Ácido Fólico (Folato)', expectedQuery: 'Folic Acid' },
+    ];
+
+    for (const category of categoryCards) {
+      await page.goto('/es/portal');
+      await page.getByText(category.name, { exact: true }).click();
+      await expect(page).toHaveURL(`/es/portal/category/${category.slug}`);
+      await expect(page.getByRole('heading', { name: category.name })).toBeVisible();
+
+      const backLink = page.getByRole('link', { name: 'Volver a Búsqueda' });
+      await expect(backLink).toHaveAttribute('href', '/es/portal');
+
+      await page.locator('a').filter({ hasText: category.supplement }).first().click();
+      await expect(page).toHaveURL(/\/es\/portal\/results\?/);
+
+      const resultUrl = new URL(page.url());
+      expect(resultUrl.searchParams.get('q')).toBe(category.expectedQuery);
+      expect(resultUrl.searchParams.get('supplement')).toBe(category.expectedQuery);
+      expect(resultUrl.searchParams.get('benefit')).toBe(category.slug);
+    }
+  });
+
+  test('English category pages render localized category headings', async ({ page }) => {
+    await page.goto('/en/portal/category/sleep');
+
+    await expect(page.getByRole('heading', { name: 'Sleep' })).toBeVisible();
+    await expect(page.getByText('Supplements regarding sleep quality and duration.')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Back to Search' })).toHaveAttribute('href', '/en/portal');
+  });
+
   test('search submission posts to quiz API and renders evidence-backed results', async ({ page }) => {
     const quizRequests: QuizRequest[] = [];
     await mockAutocomplete(page);
