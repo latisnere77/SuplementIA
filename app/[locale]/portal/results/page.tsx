@@ -382,6 +382,8 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
  */
 function transformToExamineFormat(recommendation: Recommendation): any {
   const supplement = (recommendation as any).supplement || {};
+  const sideEffects = Array.isArray(supplement.sideEffects) ? supplement.sideEffects : [];
+  const interactions = Array.isArray(supplement.interactions) ? supplement.interactions : [];
   const strongWorksFor = Array.isArray(supplement.worksFor)
     ? supplement.worksFor
       .map((item: any) => ({
@@ -418,16 +420,16 @@ function transformToExamineFormat(recommendation: Recommendation): any {
     },
     safety: {
       sideEffects: {
-        common: (supplement.sideEffects || [])
+        common: sideEffects
           .filter((e: any) => typeof e === 'string' || e.frequency === 'Common')
           .map((e: any) => typeof e === 'string' ? e : e.effect),
-        rare: (supplement.sideEffects || [])
+        rare: sideEffects
           .filter((e: any) => typeof e === 'object' && e.frequency === 'Rare')
           .map((e: any) => e.effect),
         severity: supplement.safety?.overallRating || 'Generally mild',
       },
       interactions: {
-        medications: (supplement.interactions || []).map((i: any) => ({
+        medications: interactions.map((i: any) => ({
           medication: typeof i === 'string' ? i : i.medication,
           severity: typeof i === 'object' ? i.severity : 'Moderate',
           description: typeof i === 'object' ? i.description : '',

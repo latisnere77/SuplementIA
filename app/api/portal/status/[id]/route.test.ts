@@ -82,6 +82,8 @@ describe('Portal status route', () => {
     expect(body.recommendation.supplement.worksFor).toHaveLength(1);
     expect(body.recommendation.supplement.dosage.standard).toBe('1500 mg/day');
     expect(body.recommendation.supplement.sideEffects).toHaveLength(1);
+    expect(body.recommendation.products).toEqual([]);
+    expect(body.recommendation.recommendation_id).toBeTruthy();
     expect(body.recommendation.evidence_summary.totalStudies).toBe(12);
     expect(body.recommendation.evidence_summary.ingredients[0].grade).toBe('B');
     expect(body.recommendation._enrichment_metadata.source).toBe('lambda_async');

@@ -21,9 +21,14 @@ function normalizeLambdaRecommendation(recommendation: any): any {
   const safety = data.safety || {};
   const worksFor = Array.isArray(data.worksFor) ? data.worksFor : [];
   const limitedEvidence = Array.isArray(data.limitedEvidence) ? data.limitedEvidence : [];
+  const products = Array.isArray(data.products)
+    ? data.products
+    : (Array.isArray(recommendation.products) ? recommendation.products : []);
 
   return {
     ...recommendation,
+    recommendation_id: recommendation.recommendation_id || `rec_${metadata.requestId || supplementName}`,
+    quiz_id: recommendation.quiz_id || metadata.requestId || `quiz_${supplementName}`,
     category: recommendation.category || supplementName,
     enriched: true,
     enrichmentSource: 'lambda_async',
@@ -61,7 +66,7 @@ function normalizeLambdaRecommendation(recommendation: any): any {
       studies: metadata.studies || null,
     },
     evidence_by_benefit: Array.isArray(data.evidenceByBenefit) ? data.evidenceByBenefit : recommendation.evidence_by_benefit,
-    products: Array.isArray(data.products) ? data.products : recommendation.products,
+    products,
     synergies: recommendation.synergies || data.synergies || [],
     synergiesSource: recommendation.synergiesSource || data.synergiesSource,
     _enrichment_metadata: {

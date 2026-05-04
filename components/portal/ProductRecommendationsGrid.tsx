@@ -23,7 +23,7 @@ interface Product {
 }
 
 interface ProductRecommendationsGridProps {
-  products: Product[];
+  products?: Product[];
   onBuyClick?: (product: Product) => void;
 }
 
@@ -56,6 +56,12 @@ export default function ProductRecommendationsGrid({
   onBuyClick,
 }: ProductRecommendationsGridProps) {
   const t = useTranslations();
+  const safeProducts = Array.isArray(products) ? products.filter(Boolean) : [];
+
+  if (safeProducts.length === 0) {
+    return null;
+  }
+
   const handleBuyClick = (product: Product) => {
     if (onBuyClick) {
       onBuyClick(product);
@@ -76,9 +82,10 @@ export default function ProductRecommendationsGrid({
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-        {products.map((product) => {
+        {safeProducts.map((product) => {
           const config = TIER_CONFIG[product.tier];
           const isHighlighted = product.tier === 'premium';
+          const contains = Array.isArray(product.contains) ? product.contains : [];
 
           return (
             <div
@@ -122,7 +129,7 @@ export default function ProductRecommendationsGrid({
               <div className="mb-4">
                 <p className="text-sm font-medium text-gray-700 mb-2">{t('product.contains')}</p>
                 <ul className="space-y-1">
-                  {product.contains.map((ingredient, index) => (
+                  {contains.map((ingredient, index) => (
                     <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
                       <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
                       <span>{ingredient}</span>
@@ -165,4 +172,3 @@ export default function ProductRecommendationsGrid({
     </div>
   );
 }
-
