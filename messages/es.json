@@ -89,7 +89,7 @@
   "results": {
     "products": {
       "title": "Recomendaciones de Productos",
-      "desc": "Todas las opciones están respaldadas por la misma evidencia científica. Elige según tu presupuesto."
+      "desc": "Te mostramos opciones de búsqueda para el ingrediente analizado. La evidencia respalda el ingrediente, no marcas específicas; revisa etiqueta, dosis y certificaciones."
     }
   },
   "product": {
@@ -106,7 +106,11 @@
       "month": "por mes"
     },
     "price": {
-      "consult": "Consultar"
+      "consult": "Consultar",
+      "amazon": "Ver precio en Amazon"
+    },
+    "affiliate": {
+      "disclosure": "Como Asociado de Amazon, SuplementAI puede recibir comisiones por compras que califican, sin costo adicional para ti."
     },
     "badges": {
       "premium": {

@@ -310,6 +310,53 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Magnesium Glycinate Basic')).toBeVisible();
   });
 
+  test('results render Amazon affiliate fallback products when backend has no product matches', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, '__openedUrls', {
+        value: [],
+        writable: true,
+      });
+
+      window.open = (url?: string | URL) => {
+        (window as typeof window & { __openedUrls: string[] }).__openedUrls.push(String(url));
+        return null;
+      };
+    });
+
+    await page.route('**/api/portal/quiz**', async (route) => {
+      const body = route.request().postDataJSON() as QuizRequest;
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          searchType: 'ingredient',
+          jobId: body.jobId,
+          recommendation: {
+            ...recommendation,
+            products: [],
+          },
+        }),
+      });
+    });
+
+    await page.goto('/en/portal/results?q=Magnesium&supplement=Magnesium');
+
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByText('Product Recommendations')).toBeVisible();
+    await expect(page.getByText('As an Amazon Associate, SuplementAI may earn from qualifying purchases')).toBeVisible();
+    await expect(page.getByText('Search Magnesium Glycinate on Amazon Mexico')).toBeVisible();
+    await expect(page.getByText('See price on Amazon')).toHaveCount(3);
+
+    await page.getByRole('button', { name: /Buy on Amazon/i }).nth(1).click();
+
+    await expect(page.getByText('Unlock Pro Features')).not.toBeVisible();
+    const openedUrls = await page.evaluate(() => (window as typeof window & { __openedUrls: string[] }).__openedUrls);
+    expect(openedUrls[0]).toContain('https://www.amazon.com.mx/s?');
+    expect(openedUrls[0]).toContain('Magnesium+Glycinate');
+  });
+
   test('search submission polls until async enrichment returns final evidence', async ({ page }) => {
     const quizRequests: QuizRequest[] = [];
     let statusCalls = 0;

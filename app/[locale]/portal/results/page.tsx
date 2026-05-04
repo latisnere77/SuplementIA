@@ -43,6 +43,7 @@ import type { GradeType } from '@/types/supplement-grade';
 import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } from '@/lib/services/pubmed-search';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
 import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
+import { addAmazonAssociateTag, buildAmazonAffiliateSearchUrl } from '@/lib/portal/amazon-affiliate';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -479,6 +480,7 @@ interface Recommendation {
     directLink?: string;
     description: string;
     isAnkonere?: boolean;
+    isAffiliate?: boolean;
   }>;
   personalization_factors: {
     altitude?: number;
@@ -494,6 +496,69 @@ interface Recommendation {
     total_participants: number;
     summary: string;
   }>;
+}
+
+type RecommendationProduct = Recommendation['products'][number];
+
+function buildFallbackAffiliateProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
+  const supplementName = recommendation?.category || query || 'suplemento';
+  const ingredientNames = recommendation?.evidence_summary?.ingredients
+    ?.map(ingredient => ingredient.name)
+    .filter(Boolean) || [supplementName];
+  const primaryIngredient = ingredientNames[0] || supplementName;
+  const isSpanish = language === 'es';
+
+  return [
+    {
+      tier: 'budget',
+      name: isSpanish ? `Buscar ${primaryIngredient} en Amazon México` : `Search ${primaryIngredient} on Amazon Mexico`,
+      price: 0,
+      currency: 'MXN',
+      contains: [primaryIngredient],
+      whereToBuy: 'Amazon México',
+      affiliateLink: buildAmazonAffiliateSearchUrl(`${primaryIngredient} suplemento`, process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG),
+      description: isSpanish
+        ? 'Compara opciones disponibles y revisa etiqueta, dosis por porción, certificaciones y reputación del vendedor.'
+        : 'Compare available options and review the label, dose per serving, certifications, and seller reputation.',
+      isAffiliate: true,
+    },
+    {
+      tier: 'value',
+      name: isSpanish ? `Comparar ${primaryIngredient} con buena relación valor` : `Compare value options for ${primaryIngredient}`,
+      price: 0,
+      currency: 'MXN',
+      contains: ingredientNames.slice(0, 3),
+      whereToBuy: 'Amazon México',
+      affiliateLink: buildAmazonAffiliateSearchUrl(`${primaryIngredient} suplemento alta calidad`, process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG),
+      description: isSpanish
+        ? 'Busca productos con ingredientes claros, dosis alineada con la evidencia y reseñas verificables.'
+        : 'Look for products with clear ingredients, evidence-aligned dosing, and verifiable reviews.',
+      isAffiliate: true,
+    },
+    {
+      tier: 'premium',
+      name: isSpanish ? `Ver opciones premium de ${primaryIngredient}` : `View premium options for ${primaryIngredient}`,
+      price: 0,
+      currency: 'MXN',
+      contains: ingredientNames.slice(0, 3),
+      whereToBuy: 'Amazon México',
+      affiliateLink: buildAmazonAffiliateSearchUrl(`${primaryIngredient} suplemento premium certificado`, process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG),
+      description: isSpanish
+        ? 'Prioriza marcas con pruebas de terceros, lote visible, buenas prácticas de manufactura y fórmula transparente.'
+        : 'Prioritize brands with third-party testing, visible lot details, good manufacturing practices, and transparent formulas.',
+      isAffiliate: true,
+    },
+  ];
+}
+
+function buildAffiliateAwareProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
+  const configuredProducts = recommendation?.products?.length ? recommendation.products : buildFallbackAffiliateProducts(recommendation, query, language);
+
+  return configuredProducts.map(product => ({
+    ...product,
+    affiliateLink: addAmazonAssociateTag(product.affiliateLink, process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG),
+    isAffiliate: product.isAffiliate || Boolean(product.affiliateLink && !product.isAnkonere),
+  }));
 }
 
 function ResultsPageContent() {
@@ -1398,8 +1463,8 @@ function ResultsPageContent() {
     // Continue with the current recommendation (no variant filtering)
   };
 
-  const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; directLink?: string; affiliateLink?: string }) => {
-    if (isFreeUser && product.tier !== 'budget') {
+  const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; isAffiliate?: boolean; directLink?: string; affiliateLink?: string }) => {
+    if (isFreeUser && product.tier !== 'budget' && product.isAnkonere && !product.isAffiliate) {
       setShowPaywall(true);
     } else {
       const link = product.isAnkonere ? product.directLink : product.affiliateLink;
@@ -1765,7 +1830,10 @@ function ResultsPageContent() {
             </div>
 
             <div className="mb-8">
-              <ProductRecommendationsGrid products={recommendation.products} onBuyClick={handleBuyClick} />
+              <ProductRecommendationsGrid
+                products={buildAffiliateAwareProducts(recommendation, query, language)}
+                onBuyClick={handleBuyClick}
+              />
             </div>
             <div className="mb-8">
               <ShareReferralCard recommendationId={recommendation.recommendation_id} />
