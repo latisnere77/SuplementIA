@@ -90,11 +90,18 @@ export function buildIHerbAffiliateUrl(searchQuery: string, affiliateTemplate?: 
   const directUrl = buildIHerbSearchUrl(searchQuery);
   const template = affiliateTemplate?.trim();
 
-  if (!template) {
+  if (!template || !template.includes('{url}')) {
     return directUrl;
   }
 
-  return template
+  const affiliateUrl = template
     .replaceAll('{url}', encodeURIComponent(directUrl))
     .replaceAll('{query}', encodeURIComponent(searchQuery));
+
+  try {
+    const parsedUrl = new URL(affiliateUrl);
+    return parsedUrl.protocol === 'https:' ? affiliateUrl : directUrl;
+  } catch {
+    return directUrl;
+  }
 }
