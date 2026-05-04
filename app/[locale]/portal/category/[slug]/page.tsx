@@ -4,7 +4,7 @@
  * Renders a curated list of supplements for a specific health category,
  * ordered by evidence level.
  */
-import { getCategoryBySlug, getAllCategories } from '@/lib/knowledge-base';
+import { getCategoryBySlug, getAllCategories, getLocalizedCategorySupplements } from '@/lib/knowledge-base';
 import { SupplementEvidenceCard } from '@/components/portal/SupplementEvidenceCard';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -102,7 +102,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         '@type': 'WebSite',
         '@id': `${siteUrl}/#website`,
       },
-      about: category.supplements.map((supplement) => ({
+      about: getLocalizedCategorySupplements(category, seoLocale).map((supplement) => ({
         '@type': 'DietarySupplement',
         name: supplement.name,
         description: supplement.summary,
@@ -135,7 +135,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   ];
 
   // Sort supplements by evidence grade (A -> F)
-  const sortedSupplements = [...category.supplements].sort((a, b) => 
+  const sortedSupplements = getLocalizedCategorySupplements(category, seoLocale).sort((a, b) =>
     a.evidenceGrade.localeCompare(b.evidenceGrade)
   );
 

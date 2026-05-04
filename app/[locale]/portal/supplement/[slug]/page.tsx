@@ -11,12 +11,15 @@
 'use client';
 
 import { useSearchParams, useParams } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, LoaderCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import EvidenceAnalysisPanelNew from '@/components/portal/EvidenceAnalysisPanelNew';
 import type { GradeType } from '@/types/supplement-grade';
 import { trackGAEvent } from '@/lib/analytics/ga4';
+import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
+import { useTranslations } from 'next-intl';
+import { getCanonicalSupplementQuery } from '@/lib/knowledge-base';
 
 // Evidence summary structure from enrichment API
 interface EvidenceSummary {
@@ -62,9 +65,11 @@ interface EvidenceSummary {
 export default function SupplementDetailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const t = useTranslations();
 
   const slug = params.slug as string;
   const locale = params.locale as string;
+  const language = locale === 'en' ? 'en' : 'es';
   const benefit = searchParams.get('benefit') || '';
 
   const [evidenceSummary, setEvidenceSummary] = useState<EvidenceSummary | null>(null);
@@ -72,8 +77,51 @@ export default function SupplementDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const trackedViewRef = useRef<string | null>(null);
 
-  const supplementName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  const benefitName = benefit.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const fallbackSupplementName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const canonicalSupplementName = getCanonicalSupplementQuery(slug, fallbackSupplementName);
+  const supplementName = getLocalizedSupplementName(canonicalSupplementName, language);
+  const fallbackBenefitName = benefit.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const benefitName = benefit
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ? t(`portal.categories.${benefit}.name` as any, { defaultMessage: fallbackBenefitName })
+    : '';
+  const labels = useMemo(() => language === 'es'
+    ? ({
+      fallbackDescription: `${supplementName} es un suplemento con evidencia científica para diversos beneficios de salud.`,
+      enrichmentIncomplete: 'No pudimos completar el enriquecimiento.',
+      timeout: 'El análisis está tomando más tiempo del esperado. Intenta de nuevo en unos minutos.',
+      fetchEvidenceError: 'Error al obtener evidencia',
+      invalidFormat: 'Formato de datos inválido',
+      unknownError: 'Error desconocido al obtener la evidencia.',
+      backTo: 'Volver a',
+      backToSearch: 'Volver a Búsqueda',
+      evidenceFor: 'Evidencia Científica para',
+      focusedOn: 'Enfocado en:',
+      refreshTitle: 'Actualizar datos',
+      refresh: 'Actualizar',
+      analyzing: 'Analizando literatura científica...',
+      analyzingHint: 'Esto puede tomar unos segundos',
+      errorTitle: 'Error al Obtener Evidencia',
+      retry: 'Reintentar',
+    })
+    : ({
+      fallbackDescription: `${supplementName} is a supplement with scientific evidence for different health benefits.`,
+      enrichmentIncomplete: 'We could not complete the enrichment.',
+      timeout: 'The analysis is taking longer than expected. Try again in a few minutes.',
+      fetchEvidenceError: 'Error fetching evidence',
+      invalidFormat: 'Invalid data format',
+      unknownError: 'Unknown error while fetching evidence.',
+      backTo: 'Back to',
+      backToSearch: 'Back to Search',
+      evidenceFor: 'Scientific Evidence for',
+      focusedOn: 'Focused on:',
+      refreshTitle: 'Refresh data',
+      refresh: 'Refresh',
+      analyzing: 'Analyzing scientific literature...',
+      analyzingHint: 'This may take a few seconds',
+      errorTitle: 'Error Fetching Evidence',
+      retry: 'Retry',
+    }), [language, supplementName]);
 
   // Transform enrichment API response to component format
   const transformEnrichmentResponse = useCallback((data: any): EvidenceSummary => {
@@ -96,7 +144,7 @@ export default function SupplementDetailPage() {
     return {
       overallGrade: mapGrade(evidence.overallGrade || evidence.grade || 'C'),
       whatIsItFor: evidence.whatIsItFor || evidence.description || evidence.summary ||
-        `${supplementName} es un suplemento con evidencia científica para diversos beneficios de salud.`,
+        labels.fallbackDescription,
       summary: evidence.summary || evidence.description,
       worksFor: (worksFor || []).map((item: any) => ({
         condition: item.condition || item.benefit || item.name,
@@ -132,7 +180,7 @@ export default function SupplementDetailPage() {
         searchTerm: data.metadata?.searchTerm,
       },
     };
-  }, [supplementName]);
+  }, [labels.fallbackDescription, supplementName]);
 
   const pollEnrichmentStatus = useCallback(async (pollUrl: string): Promise<any> => {
     const maxPolls = 140;
@@ -149,12 +197,12 @@ export default function SupplementDetailPage() {
       }
 
       if (statusResponse.status !== 202 || statusData.status !== 'processing') {
-        throw new Error(statusData.message || statusData.error || 'No pudimos completar el enriquecimiento.');
+        throw new Error(statusData.message || statusData.error || labels.enrichmentIncomplete);
       }
     }
 
-    throw new Error('El análisis está tomando más tiempo del esperado. Intenta de nuevo en unos minutos.');
-  }, []);
+    throw new Error(labels.timeout);
+  }, [labels.enrichmentIncomplete, labels.timeout]);
 
   const fetchEnrichedEvidence = useCallback(async (forceRefresh = false) => {
     setIsLoading(true);
@@ -180,7 +228,7 @@ export default function SupplementDetailPage() {
       if (response.status === 202 && data.status === 'processing' && data.pollUrl) {
         enrichmentData = await pollEnrichmentStatus(data.pollUrl);
       } else if (!response.ok) {
-        throw new Error(`Error al obtener evidencia: ${data.error || JSON.stringify(data)}`);
+        throw new Error(`${labels.fetchEvidenceError}: ${data.error || JSON.stringify(data)}`);
       }
 
       if (enrichmentData.success && enrichmentData.evidence) {
@@ -195,16 +243,16 @@ export default function SupplementDetailPage() {
         const evidence = transformEnrichmentResponse(enrichmentData);
         setEvidenceSummary(evidence);
       } else {
-        throw new Error(enrichmentData.error || 'Formato de datos inválido');
+        throw new Error(enrichmentData.error || labels.invalidFormat);
       }
 
     } catch (err: any) {
-      setError(err.message || 'Error desconocido al obtener la evidencia.');
+      setError(err.message || labels.unknownError);
       console.error("Enrichment error:", err);
     } finally {
       setIsLoading(false);
     }
-  }, [benefit, pollEnrichmentStatus, slug, transformEnrichmentResponse]);
+  }, [benefit, labels.fetchEvidenceError, labels.invalidFormat, labels.unknownError, pollEnrichmentStatus, slug, transformEnrichmentResponse]);
 
   useEffect(() => {
     if (!slug) return;
@@ -231,19 +279,19 @@ export default function SupplementDetailPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Link href={`/portal/category/${benefit}`} className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 mb-6">
+      <Link href={benefit ? `/${language}/portal/category/${benefit}` : `/${language}/portal`} className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Volver a {benefitName}
+        {benefit ? `${labels.backTo} ${benefitName}` : labels.backToSearch}
       </Link>
 
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-            Evidencia Científica para <span className="text-blue-600">{supplementName}</span>
+            {labels.evidenceFor} <span className="text-blue-600">{supplementName}</span>
           </h1>
           {benefit && (
             <p className="text-lg text-gray-600 mt-2">
-              Enfocado en: <span className="font-medium">{benefitName}</span>
+              {labels.focusedOn} <span className="font-medium">{benefitName}</span>
             </p>
           )}
         </div>
@@ -251,10 +299,10 @@ export default function SupplementDetailPage() {
           <button
             onClick={() => fetchEnrichedEvidence(true)}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            title="Actualizar datos"
+            title={labels.refreshTitle}
           >
             <RefreshCw className="w-4 h-4" />
-            Actualizar
+            {labels.refresh}
           </button>
         )}
       </div>
@@ -262,8 +310,8 @@ export default function SupplementDetailPage() {
       {isLoading && (
         <div className="flex flex-col justify-center items-center py-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
           <LoaderCircle className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-          <p className="text-lg text-gray-700 font-medium">Analizando literatura científica...</p>
-          <p className="text-sm text-gray-500 mt-2">Esto puede tomar unos segundos</p>
+          <p className="text-lg text-gray-700 font-medium">{labels.analyzing}</p>
+          <p className="text-sm text-gray-500 mt-2">{labels.analyzingHint}</p>
         </div>
       )}
 
@@ -271,13 +319,13 @@ export default function SupplementDetailPage() {
         <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl p-6 flex items-start">
           <AlertTriangle className="w-6 h-6 mr-4 flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-bold text-lg">Error al Obtener Evidencia</h3>
+            <h3 className="font-bold text-lg">{labels.errorTitle}</h3>
             <p className="text-sm mt-1">{error}</p>
             <button
               onClick={() => fetchEnrichedEvidence(true)}
               className="mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg text-sm font-medium transition-colors"
             >
-              Reintentar
+              {labels.retry}
             </button>
           </div>
         </div>

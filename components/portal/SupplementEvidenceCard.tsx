@@ -9,7 +9,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { EvidenceGrade } from '@/lib/knowledge-base';
+import { EvidenceGrade, getCanonicalSupplementQuery } from '@/lib/knowledge-base';
 import { useReducedMotion } from '@/lib/hooks/useReducedMotion';
 
 interface SupplementEvidenceCardProps {
@@ -18,6 +18,7 @@ interface SupplementEvidenceCardProps {
     evidenceGrade: EvidenceGrade;
     summary: string;
     slug: string;
+    canonicalQuery?: string;
   };
   categorySlug: string;
   locale?: string;
@@ -31,50 +32,11 @@ const gradeColorMap: Record<EvidenceGrade, { bg: string; text: string; ring: str
   F: { bg: 'bg-red-100', text: 'text-red-800', ring: 'ring-red-300' },
 };
 
-const canonicalQueryBySlug: Record<string, string> = {
-  'ashwagandha': 'Ashwagandha',
-  'bacopa-monnieri': 'Bacopa Monnieri',
-  'beta-alanine': 'Beta-Alanine',
-  'biotin': 'Biotin',
-  'caffeine': 'Caffeine',
-  'calcium': 'Calcium',
-  'chamomile': 'Chamomile',
-  'coenzyme-q10': 'Coenzyme Q10',
-  'collagen': 'Collagen',
-  'creatine': 'Creatine',
-  'echinacea': 'Echinacea',
-  'fiber-psyllium': 'Psyllium Fiber',
-  'folic-acid': 'Folic Acid',
-  'garlic': 'Garlic',
-  'ginkgo-biloba': 'Ginkgo Biloba',
-  'glucosamine': 'Glucosamine',
-  'hydrolyzed-collagen': 'Hydrolyzed Collagen',
-  'iron': 'Iron',
-  'l-theanine': 'L-Theanine',
-  'lavender': 'Lavender',
-  'magnesium': 'Magnesium',
-  'melatonin': 'Melatonin',
-  'omega-3': 'Omega-3',
-  'probiotics': 'Probiotics',
-  'rhodiola-rosea': 'Rhodiola Rosea',
-  'saw-palmetto': 'Saw Palmetto',
-  'valerian': 'Valerian',
-  'vitamin-b12': 'Vitamin B12',
-  'vitamin-c': 'Vitamin C',
-  'vitamin-d': 'Vitamin D',
-  'whey-protein': 'Whey Protein',
-  'zinc': 'Zinc',
-};
-
-function getCanonicalSupplementQuery(slug: string, fallbackName: string): string {
-  return canonicalQueryBySlug[slug] || fallbackName;
-}
-
 export const SupplementEvidenceCard: React.FC<SupplementEvidenceCardProps> = ({ supplement, categorySlug, locale }) => {
-  const { name, evidenceGrade, summary, slug } = supplement;
+  const { name, evidenceGrade, summary, slug, canonicalQuery } = supplement;
   const colors = gradeColorMap[evidenceGrade];
   const prefersReducedMotion = useReducedMotion();
-  const query = getCanonicalSupplementQuery(slug, name);
+  const query = canonicalQuery || getCanonicalSupplementQuery(slug, name);
   const localePrefix = locale ? `/${locale}` : '';
   const resultsHref = `${localePrefix}/portal/results?q=${encodeURIComponent(query)}&supplement=${encodeURIComponent(query)}&benefit=${encodeURIComponent(categorySlug)}`;
 

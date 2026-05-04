@@ -287,7 +287,88 @@ test.describe('portal browser flows', () => {
 
     await expect(page.getByRole('heading', { name: 'Sleep' })).toBeVisible();
     await expect(page.getByText('Supplements regarding sleep quality and duration.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Melatonin' })).toBeVisible();
+    await expect(page.getByText('Hormone that regulates the sleep-wake cycle.')).toBeVisible();
+    await expect(page.getByText('Melatonina')).not.toBeVisible();
+    await expect(page.getByText('Hormona que regula el ciclo sueño-vigilia.')).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'Back to Search' })).toHaveAttribute('href', '/en/portal');
+  });
+
+  test('category pages keep card language consistent in Spanish and English', async ({ page }) => {
+    const localizedCases = [
+      {
+        url: '/es/portal/category/inflammation',
+        heading: 'Inflamación',
+        expected: ['Curcumina', 'Jengibre', 'Compuesto activo de la cúrcuma estudiado por efectos antiinflamatorios.'],
+        forbidden: ['Curcumin', 'Ginger', 'Active turmeric compound studied for anti-inflammatory effects.'],
+      },
+      {
+        url: '/en/portal/category/inflammation',
+        heading: 'Inflammation',
+        expected: ['Curcumin', 'Ginger', 'Active turmeric compound studied for anti-inflammatory effects.'],
+        forbidden: ['Curcumina', 'Jengibre', 'Compuesto activo de la cúrcuma estudiado por efectos antiinflamatorios.'],
+      },
+      {
+        url: '/es/portal/category/blood-sugar',
+        heading: 'Control de Glucosa',
+        expected: ['Berberina', 'Canela', 'Alcaloide vegetal estudiado por sus efectos en glucosa'],
+        forbidden: ['Berberine', 'Cinnamon', 'Plant alkaloid studied for effects on glucose'],
+      },
+      {
+        url: '/en/portal/category/blood-sugar',
+        heading: 'Blood Sugar Control',
+        expected: ['Berberine', 'Cinnamon', 'Plant alkaloid studied for effects on glucose'],
+        forbidden: ['Berberina', 'Canela', 'Alcaloide vegetal estudiado por sus efectos en glucosa'],
+      },
+    ];
+
+    for (const localizedCase of localizedCases) {
+      await page.goto(localizedCase.url);
+      await expect(page.getByRole('heading', { name: localizedCase.heading })).toBeVisible();
+
+      for (const text of localizedCase.expected) {
+        await expect(page.getByText(text).first()).toBeVisible();
+      }
+
+      for (const text of localizedCase.forbidden) {
+        await expect(page.getByText(text, { exact: true }).first()).not.toBeVisible();
+      }
+    }
+  });
+
+  test('supplement detail shell follows the selected locale', async ({ page }) => {
+    await page.route('**/api/portal/enrich-simple', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          evidence: {
+            overallGrade: 'B',
+            summary: 'Evidence summary',
+            worksFor: [],
+            doesntWorkFor: [],
+            limitedEvidence: [],
+            studyCount: 4,
+            rctCount: 2,
+          },
+        }),
+      });
+    });
+
+    await page.goto('/en/portal/supplement/magnesium?benefit=sleep');
+    await expect(page.getByRole('link', { name: 'Back to Sleep' })).toHaveAttribute('href', '/en/portal/category/sleep');
+    await expect(page.getByRole('heading', { name: /Scientific Evidence for Magnesium/i })).toBeVisible();
+    await expect(page.getByText('Focused on:')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Refresh' })).toBeVisible();
+    await expect(page.getByText('Evidencia Científica para')).not.toBeVisible();
+
+    await page.goto('/es/portal/supplement/magnesium?benefit=sleep');
+    await expect(page.getByRole('link', { name: 'Volver a Sueño' })).toHaveAttribute('href', '/es/portal/category/sleep');
+    await expect(page.getByRole('heading', { name: /Evidencia Científica para Magnesio/i })).toBeVisible();
+    await expect(page.getByText('Enfocado en:')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Actualizar' })).toBeVisible();
+    await expect(page.getByText('Scientific Evidence for')).not.toBeVisible();
   });
 
   test('search submission posts to quiz API and renders evidence-backed results', async ({ page }) => {

@@ -27,6 +27,12 @@ export interface HealthCategory {
   supplements: SupplementEvidence[];
 }
 
+export type KnowledgeBaseLocale = 'en' | 'es';
+
+export interface LocalizedSupplementEvidence extends SupplementEvidence {
+  canonicalQuery: string;
+}
+
 // --- Data ---
 
 const KNOWLEDGE_BASE: HealthCategory[] = [
@@ -567,3 +573,462 @@ export const getAllCategories = (): HealthCategory[] => {
 export const getCategoryBySlug = (slug: string): HealthCategory | undefined => {
   return KNOWLEDGE_BASE.find(category => category.slug === slug);
 };
+
+const canonicalSupplementQueryBySlug: Record<string, string> = {
+  ashwagandha: 'Ashwagandha',
+  'bacopa-monnieri': 'Bacopa Monnieri',
+  'berberine': 'Berberine',
+  'beta-alanine': 'Beta-Alanine',
+  biotin: 'Biotin',
+  'boswellia-serrata': 'Boswellia Serrata',
+  caffeine: 'Caffeine',
+  calcium: 'Calcium',
+  chamomile: 'Chamomile',
+  cinnamon: 'Cinnamon',
+  citrulline: 'Citrulline',
+  'coenzyme-q10': 'Coenzyme Q10',
+  collagen: 'Collagen',
+  creatine: 'Creatine',
+  curcumin: 'Curcumin',
+  echinacea: 'Echinacea',
+  'fiber-psyllium': 'Psyllium Fiber',
+  'folic-acid': 'Folic Acid',
+  garlic: 'Garlic',
+  ginger: 'Ginger',
+  'ginkgo-biloba': 'Ginkgo Biloba',
+  glucosamine: 'Glucosamine',
+  'hydrolyzed-collagen': 'Hydrolyzed Collagen',
+  inositol: 'Inositol',
+  iron: 'Iron',
+  'l-theanine': 'L-Theanine',
+  lavender: 'Lavender',
+  magnesium: 'Magnesium',
+  melatonin: 'Melatonin',
+  'omega-3': 'Omega-3',
+  'plant-sterols': 'Plant Sterols',
+  probiotics: 'Probiotics',
+  'rhodiola-rosea': 'Rhodiola Rosea',
+  riboflavin: 'Riboflavin',
+  'saw-palmetto': 'Saw Palmetto',
+  valerian: 'Valerian',
+  'vitamin-b12': 'Vitamin B12',
+  'vitamin-c': 'Vitamin C',
+  'vitamin-d': 'Vitamin D',
+  'whey-protein': 'Whey Protein',
+  zinc: 'Zinc',
+};
+
+const localizedSupplementText: Record<string, Partial<Record<KnowledgeBaseLocale, { name: string; summary: string }>>> = {
+  'sleep:melatonin': {
+    en: {
+      name: 'Melatonin',
+      summary: 'Hormone that regulates the sleep-wake cycle. Particularly effective for circadian rhythm problems such as jet lag or shift work.',
+    },
+  },
+  'sleep:magnesium': {
+    en: {
+      name: 'Magnesium',
+      summary: 'Mineral that may improve sleep quality by regulating neurotransmitters, especially in people with low intake or deficiency.',
+    },
+  },
+  'sleep:lavender': {
+    en: {
+      name: 'Lavender',
+      summary: 'Its aroma has shown calming effects that may reduce anxiety and support deeper sleep.',
+    },
+  },
+  'sleep:valerian': {
+    en: {
+      name: 'Valerian',
+      summary: 'Popular herb for insomnia, although scientific evidence for effectiveness is mixed and not conclusive.',
+    },
+  },
+  'energy:caffeine': {
+    en: {
+      name: 'Caffeine',
+      summary: 'Well-known stimulant that improves alertness and focus by blocking adenosine in the brain.',
+    },
+  },
+  'energy:creatine': {
+    en: {
+      name: 'Creatine',
+      summary: 'Improves cellular energy production (ATP), increasing strength and performance in high-intensity exercise.',
+    },
+  },
+  'energy:rhodiola-rosea': {
+    en: {
+      name: 'Rhodiola Rosea',
+      summary: 'Adaptogen that helps the body resist physical and mental stress, reducing perceived fatigue.',
+    },
+  },
+  'energy:vitamin-b12': {
+    en: {
+      name: 'Vitamin B12',
+      summary: 'Essential for energy production. Supplementation is mainly useful for fatigue when deficiency is present.',
+    },
+  },
+  'anxiety:ashwagandha': {
+    en: {
+      name: 'Ashwagandha',
+      summary: 'Adaptogenic herb with strong evidence for reducing cortisol levels and perceived stress.',
+    },
+  },
+  'anxiety:l-theanine': {
+    en: {
+      name: 'L-Theanine',
+      summary: 'Amino acid found in green tea that promotes relaxation without drowsiness and supports calm alertness.',
+    },
+  },
+  'anxiety:chamomile': {
+    en: {
+      name: 'Chamomile',
+      summary: 'Traditionally used as a calming herb. Some studies suggest a modest effect on mild anxiety.',
+    },
+  },
+  'muscle-gain:whey-protein': {
+    en: {
+      name: 'Whey Protein',
+      summary: 'Important for post-workout muscle repair and growth, with high bioavailability and a complete amino acid profile.',
+    },
+  },
+  'muscle-gain:creatine': {
+    en: {
+      name: 'Creatine',
+      summary: 'One of the most studied and effective supplements for increasing strength, power, and muscle mass.',
+    },
+  },
+  'muscle-gain:beta-alanine': {
+    en: {
+      name: 'Beta-Alanine',
+      summary: 'Raises muscle carnosine levels, delaying muscular fatigue during high-intensity exercise.',
+    },
+  },
+  'cognitive-function:omega-3': {
+    en: {
+      name: 'Omega-3 (DHA)',
+      summary: 'DHA is a key structural component of the brain and is essential for cognitive and neuronal health.',
+    },
+  },
+  'cognitive-function:bacopa-monnieri': {
+    en: {
+      name: 'Bacopa Monnieri',
+      summary: 'Adaptogenic herb used in Ayurvedic medicine to support memory and information processing.',
+    },
+  },
+  'cognitive-function:ginkgo-biloba': {
+    en: {
+      name: 'Ginkgo Biloba',
+      summary: 'May improve blood flow to the brain, but evidence for meaningful cognitive improvement is mixed.',
+    },
+  },
+  'heart-health:omega-3': {
+    en: {
+      name: 'Omega-3 (EPA/DHA)',
+      summary: 'Helps reduce triglycerides, blood pressure, and inflammation, making it relevant for heart health.',
+    },
+  },
+  'heart-health:coenzyme-q10': {
+    en: {
+      name: 'Coenzyme Q10',
+      summary: 'Antioxidant that improves energy production in heart cells and may benefit people with heart failure.',
+    },
+  },
+  'heart-health:garlic': {
+    en: {
+      name: 'Garlic',
+      summary: 'Shown to have modest but meaningful effects on blood pressure and cholesterol.',
+    },
+  },
+  'joint-bone-health:vitamin-d': {
+    en: {
+      name: 'Vitamin D',
+      summary: 'Essential for calcium absorption and bone health. Deficiency is linked to a higher risk of osteoporosis.',
+    },
+  },
+  'joint-bone-health:glucosamine': {
+    en: {
+      name: 'Glucosamine',
+      summary: 'Natural cartilage component often used for osteoarthritis pain, with moderate evidence of benefit.',
+    },
+  },
+  'joint-bone-health:hydrolyzed-collagen': {
+    en: {
+      name: 'Hydrolyzed Collagen',
+      summary: 'May help reduce joint pain and support skin and connective tissue health.',
+    },
+  },
+  'gut-health:probiotics': {
+    en: {
+      name: 'Probiotics',
+      summary: 'Live microorganisms that may provide health benefits in adequate amounts, especially for diarrhea and IBS.',
+    },
+  },
+  'gut-health:fiber-psyllium': {
+    en: {
+      name: 'Psyllium Fiber',
+      summary: 'Highly effective for bowel regularity and for relieving constipation and mild diarrhea.',
+    },
+  },
+  'skin-hair-health:collagen': {
+    en: {
+      name: 'Collagen',
+      summary: 'Improves skin elasticity and hydration, reducing the appearance of wrinkles.',
+    },
+  },
+  'skin-hair-health:biotin': {
+    en: {
+      name: 'Biotin (Vitamin B7)',
+      summary: 'Popular for hair and nails, but supplementation has only shown clear benefit in deficiency.',
+    },
+  },
+  'immunity:vitamin-c': {
+    en: {
+      name: 'Vitamin C',
+      summary: 'Key antioxidant for immune function. It may reduce the duration of the common cold.',
+    },
+  },
+  'immunity:zinc': {
+    en: {
+      name: 'Zinc',
+      summary: 'Essential mineral for immune cell development and function. It may shorten colds when taken early.',
+    },
+  },
+  'immunity:echinacea': {
+    en: {
+      name: 'Echinacea',
+      summary: 'Popular herb for cold prevention, but scientific evidence is mixed and often low quality.',
+    },
+  },
+  'mens-health:saw-palmetto': {
+    en: {
+      name: 'Saw Palmetto',
+      summary: 'Commonly used to relieve symptoms of benign prostatic hyperplasia (BPH).',
+    },
+  },
+  'mens-health:zinc': {
+    en: {
+      name: 'Zinc',
+      summary: 'Important for testosterone production and male reproductive health.',
+    },
+  },
+  'womens-health:folic-acid': {
+    en: {
+      name: 'Folic Acid (Folate)',
+      summary: 'Critical during pregnancy to help prevent neural tube defects in the fetus.',
+    },
+  },
+  'womens-health:iron': {
+    en: {
+      name: 'Iron',
+      summary: 'Important for preventing anemia, especially in women with heavy menstrual bleeding.',
+    },
+  },
+  'womens-health:calcium': {
+    en: {
+      name: 'Calcium',
+      summary: 'Essential for bone health and osteoporosis prevention, particularly after menopause.',
+    },
+  },
+  'blood-sugar:berberine': {
+    en: {
+      name: 'Berberine',
+      summary: 'Plant alkaloid studied for effects on glucose, lipids, and insulin sensitivity. It may interact with diabetes medications.',
+    },
+  },
+  'blood-sugar:fiber-psyllium': {
+    en: {
+      name: 'Psyllium Fiber',
+      summary: 'Soluble fiber that may reduce post-meal glucose spikes and support satiety and digestive health.',
+    },
+  },
+  'blood-sugar:cinnamon': {
+    en: {
+      name: 'Cinnamon',
+      summary: 'May have modest glucose effects in some studies, but evidence varies by extract and dose.',
+    },
+  },
+  'blood-sugar:magnesium': {
+    en: {
+      name: 'Magnesium',
+      summary: 'Mineral related to glucose metabolism. Supplementation is most relevant when intake is low or deficiency is present.',
+    },
+  },
+  'cholesterol-triglycerides:omega-3': {
+    en: {
+      name: 'Omega-3 (EPA/DHA)',
+      summary: 'Fatty acids with strong evidence for reducing triglycerides, especially at clinical doses and under professional supervision.',
+    },
+  },
+  'cholesterol-triglycerides:fiber-psyllium': {
+    en: {
+      name: 'Psyllium Fiber',
+      summary: 'Soluble fiber with evidence for modest LDL cholesterol reduction when used consistently.',
+    },
+  },
+  'cholesterol-triglycerides:plant-sterols': {
+    en: {
+      name: 'Plant Sterols',
+      summary: 'Compounds that can reduce intestinal cholesterol absorption and support moderate LDL reductions.',
+    },
+  },
+  'cholesterol-triglycerides:garlic': {
+    en: {
+      name: 'Garlic',
+      summary: 'May have modest effects on cholesterol and blood pressure, with results varying by preparation and dose.',
+    },
+  },
+  'inflammation:curcumin': {
+    en: {
+      name: 'Curcumin',
+      summary: 'Active turmeric compound studied for anti-inflammatory effects. Absorption improves with specialized formulations.',
+    },
+  },
+  'inflammation:omega-3': {
+    en: {
+      name: 'Omega-3 (EPA/DHA)',
+      summary: 'May modulate inflammatory processes and support cardiovascular health, though effects vary by dose and context.',
+    },
+  },
+  'inflammation:ginger': {
+    en: {
+      name: 'Ginger',
+      summary: 'Root with bioactive compounds studied for pain, nausea, and mild inflammation.',
+    },
+  },
+  'inflammation:boswellia-serrata': {
+    en: {
+      name: 'Boswellia Serrata',
+      summary: 'Herbal extract researched mainly for joint pain and osteoarthritis, with moderate evidence.',
+    },
+  },
+  'sports-performance:creatine': {
+    en: {
+      name: 'Creatine',
+      summary: 'One of the most studied supplements for strength, power, and muscle mass, with a good safety profile in healthy adults.',
+    },
+  },
+  'sports-performance:caffeine': {
+    en: {
+      name: 'Caffeine',
+      summary: 'Stimulant with strong evidence for improving alertness, power, and endurance at appropriate doses.',
+    },
+  },
+  'sports-performance:beta-alanine': {
+    en: {
+      name: 'Beta-Alanine',
+      summary: 'May improve performance during short-to-medium duration intense efforts by raising muscle carnosine.',
+    },
+  },
+  'sports-performance:citrulline': {
+    en: {
+      name: 'Citrulline',
+      summary: 'Nitric oxide precursor amino acid studied for possible benefits in blood flow and performance.',
+    },
+  },
+  'hormonal-health:inositol': {
+    en: {
+      name: 'Inositol',
+      summary: 'Compound studied for insulin sensitivity and ovarian health, especially in contexts such as PCOS.',
+    },
+  },
+  'hormonal-health:vitamin-d': {
+    en: {
+      name: 'Vitamin D',
+      summary: 'Secosteroid hormone essential for bones and immunity; supplementation is clearest when deficiency is present.',
+    },
+  },
+  'hormonal-health:zinc': {
+    en: {
+      name: 'Zinc',
+      summary: 'Mineral relevant to reproductive function, immunity, and hormone synthesis, especially when intake is low.',
+    },
+  },
+  'hormonal-health:magnesium': {
+    en: {
+      name: 'Magnesium',
+      summary: 'May support sleep, stress, and premenstrual symptoms in some people, with greater relevance when intake is insufficient.',
+    },
+  },
+  'migraine-headache:magnesium': {
+    en: {
+      name: 'Magnesium',
+      summary: 'Mineral studied for migraine prevention, especially in people with low levels or compatible symptoms.',
+    },
+  },
+  'migraine-headache:riboflavin': {
+    en: {
+      name: 'Riboflavin (Vitamin B2)',
+      summary: 'B vitamin researched for reducing migraine frequency in preventive protocols.',
+    },
+  },
+  'migraine-headache:coenzyme-q10': {
+    en: {
+      name: 'Coenzyme Q10',
+      summary: 'Mitochondrial compound studied in migraine prevention and cellular energy.',
+    },
+  },
+  'migraine-headache:melatonin': {
+    en: {
+      name: 'Melatonin',
+      summary: 'May help when migraine is related to irregular sleep, although evidence is more limited.',
+    },
+  },
+  'common-deficiencies:vitamin-d': {
+    en: {
+      name: 'Vitamin D',
+      summary: 'Common deficiency in many populations. Key for bone health, immunity, and muscle function.',
+    },
+  },
+  'common-deficiencies:iron': {
+    en: {
+      name: 'Iron',
+      summary: 'Essential for oxygen transport. Supplementation should be guided by labs, especially ferritin and hemoglobin.',
+    },
+  },
+  'common-deficiencies:vitamin-b12': {
+    en: {
+      name: 'Vitamin B12',
+      summary: 'Critical for the nervous system and red blood cells. Especially relevant in vegan or vegetarian diets and malabsorption.',
+    },
+  },
+  'common-deficiencies:folic-acid': {
+    en: {
+      name: 'Folate',
+      summary: 'Important for cell division and pregnancy. Use is key before and during early gestation.',
+    },
+  },
+  'common-deficiencies:zinc': {
+    en: {
+      name: 'Zinc',
+      summary: 'Important mineral for immunity, skin, and reproductive function. Supplementation depends on diet and clinical context.',
+    },
+  },
+};
+
+export function getCanonicalSupplementQuery(slug: string, fallbackName: string): string {
+  return canonicalSupplementQueryBySlug[slug] || fallbackName;
+}
+
+export function getLocalizedSupplementEvidence(
+  supplement: SupplementEvidence,
+  categorySlug: string,
+  locale: KnowledgeBaseLocale
+): LocalizedSupplementEvidence {
+  const localized = localizedSupplementText[`${categorySlug}:${supplement.slug}`]?.[locale];
+
+  return {
+    ...supplement,
+    name: localized?.name || supplement.name,
+    summary: localized?.summary || supplement.summary,
+    canonicalQuery: getCanonicalSupplementQuery(supplement.slug, supplement.name),
+  };
+}
+
+export function getLocalizedCategorySupplements(
+  category: HealthCategory,
+  locale: KnowledgeBaseLocale
+): LocalizedSupplementEvidence[] {
+  return category.supplements.map((supplement) =>
+    getLocalizedSupplementEvidence(supplement, category.slug, locale)
+  );
+}
