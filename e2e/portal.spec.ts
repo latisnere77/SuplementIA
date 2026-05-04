@@ -106,7 +106,7 @@ const recommendation = {
       price: 180,
       currency: 'MXN',
       contains: ['Magnesium glycinate 200 mg'],
-      whereToBuy: 'Amazon Mexico',
+      whereToBuy: 'iHerb Mexico',
       affiliateLink: 'https://example.com/budget',
       description: 'Simple low-cost magnesium option.',
       isAnkonere: false,
@@ -117,7 +117,7 @@ const recommendation = {
       price: 320,
       currency: 'MXN',
       contains: ['Magnesium glycinate 300 mg', 'L-theanine 100 mg'],
-      whereToBuy: 'Amazon Mexico',
+      whereToBuy: 'iHerb Mexico',
       affiliateLink: 'https://example.com/value',
       description: 'Balanced option for sleep routines.',
       isAnkonere: false,
@@ -214,9 +214,10 @@ test.describe('portal browser flows', () => {
 
     for (const search of popularSearches) {
       await page.goto('/es/portal');
-      const button = page.getByRole('button', { name: search.button });
-      await expect(button).toBeVisible();
-      await button.click();
+      const link = page.getByRole('link', { name: search.button });
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute('href', new RegExp(`/es/portal/results\\?q=${search.expectedQuery}&supplement=${search.expectedQuery}`));
+      await link.click();
 
       await expect(page).toHaveURL(new RegExp(`/es/portal/results\\?q=${search.expectedQuery}&supplement=${search.expectedQuery}`));
     }
@@ -307,10 +308,11 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Efectos Secundarios Posibles')).toBeVisible();
     await expect(page.getByText('Levothyroxine')).toBeVisible();
     await expect(page.getByText('Product Recommendations')).toBeVisible();
-    await expect(page.getByText('Magnesium Glycinate Basic')).toBeVisible();
+    await expect(page.getByText('Search Magnesium Glycinate on iHerb')).toBeVisible();
+    await expect(page.getByText('Magnesium Glycinate Basic')).not.toBeVisible();
   });
 
-  test('results render Amazon affiliate fallback products when backend has no product matches', async ({ page }) => {
+  test('results render iHerb affiliate card only for clear supplement matches', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, '__openedUrls', {
         value: [],
@@ -345,16 +347,51 @@ test.describe('portal browser flows', () => {
 
     await expect(page.getByTestId('recommendation-display')).toBeVisible();
     await expect(page.getByText('Product Recommendations')).toBeVisible();
-    await expect(page.getByText('As an Amazon Associate, SuplementAI may earn from qualifying purchases')).toBeVisible();
-    await expect(page.getByText('Search Magnesium Glycinate on Amazon Mexico')).toBeVisible();
-    await expect(page.getByText('See price on Amazon')).toHaveCount(3);
+    await expect(page.getByText('SuplementAI may earn from qualifying purchases through affiliate links')).toBeVisible();
+    await expect(page.getByText('Search Magnesium Glycinate on iHerb')).toBeVisible();
+    await expect(page.getByText('View on iHerb')).toHaveCount(2);
 
-    await page.getByRole('button', { name: /Buy on Amazon/i }).nth(1).click();
+    await page.getByRole('button', { name: /View on iHerb/i }).click();
 
     await expect(page.getByText('Unlock Pro Features')).not.toBeVisible();
     const openedUrls = await page.evaluate(() => (window as typeof window & { __openedUrls: string[] }).__openedUrls);
-    expect(openedUrls[0]).toContain('https://www.amazon.com.mx/s?');
-    expect(openedUrls[0]).toContain('Magnesium+Glycinate');
+    expect(openedUrls[0]).toContain('https://mx.iherb.com/search?');
+    expect(openedUrls[0]).toContain('kw=magnesium');
+  });
+
+  test('results do not render affiliate products for broad health goals without clear ingredient matches', async ({ page }) => {
+    await page.route('**/api/portal/quiz**', async (route) => {
+      const body = route.request().postDataJSON() as QuizRequest;
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          searchType: 'ingredient',
+          jobId: body.jobId,
+          recommendation: {
+            ...recommendation,
+            category: 'sleep',
+            evidence_summary: {
+              ...recommendation.evidence_summary,
+              ingredients: [],
+            },
+            supplement: {
+              ...recommendation.supplement,
+              name: 'sleep',
+            },
+            products: [],
+          },
+        }),
+      });
+    });
+
+    await page.goto('/en/portal/results?q=sleep&supplement=sleep');
+
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByText('Product Recommendations')).not.toBeVisible();
+    await expect(page.getByText('iHerb')).not.toBeVisible();
   });
 
   test('search submission polls until async enrichment returns final evidence', async ({ page }) => {

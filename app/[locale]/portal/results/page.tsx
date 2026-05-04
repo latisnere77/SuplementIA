@@ -43,7 +43,7 @@ import type { GradeType } from '@/types/supplement-grade';
 import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } from '@/lib/services/pubmed-search';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
 import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
-import { addAmazonAssociateTag, buildAmazonAffiliateSearchUrl } from '@/lib/portal/amazon-affiliate';
+import { buildIHerbAffiliateUrl, findIHerbAffiliateMatch } from '@/lib/portal/iherb-affiliate';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -469,6 +469,9 @@ interface Recommendation {
     adjustedDose?: string;
     adjustmentReason?: string;
   }>;
+  supplement?: {
+    name?: string;
+  };
   products: Array<{
     tier: 'budget' | 'value' | 'premium';
     name: string;
@@ -481,6 +484,7 @@ interface Recommendation {
     description: string;
     isAnkonere?: boolean;
     isAffiliate?: boolean;
+    affiliateProvider?: 'iherb';
   }>;
   personalization_factors: {
     altitude?: number;
@@ -500,65 +504,44 @@ interface Recommendation {
 
 type RecommendationProduct = Recommendation['products'][number];
 
-function buildFallbackAffiliateProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
+function buildIHerbAffiliateProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
   const supplementName = recommendation?.category || query || 'suplemento';
   const ingredientNames = recommendation?.evidence_summary?.ingredients
     ?.map(ingredient => ingredient.name)
     .filter(Boolean) || [supplementName];
   const primaryIngredient = ingredientNames[0] || supplementName;
   const isSpanish = language === 'es';
+  const match = findIHerbAffiliateMatch([
+    ...ingredientNames,
+    recommendation?.supplement?.name,
+    recommendation?.category,
+    query,
+  ]);
+
+  if (!match) {
+    return [];
+  }
 
   return [
     {
-      tier: 'budget',
-      name: isSpanish ? `Buscar ${primaryIngredient} en Amazon México` : `Search ${primaryIngredient} on Amazon Mexico`,
-      price: 0,
-      currency: 'MXN',
-      contains: [primaryIngredient],
-      whereToBuy: 'Amazon México',
-      affiliateLink: buildAmazonAffiliateSearchUrl(`${primaryIngredient} suplemento`, process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG),
-      description: isSpanish
-        ? 'Compara opciones disponibles y revisa etiqueta, dosis por porción, certificaciones y reputación del vendedor.'
-        : 'Compare available options and review the label, dose per serving, certifications, and seller reputation.',
-      isAffiliate: true,
-    },
-    {
       tier: 'value',
-      name: isSpanish ? `Comparar ${primaryIngredient} con buena relación valor` : `Compare value options for ${primaryIngredient}`,
+      name: isSpanish ? `Buscar ${primaryIngredient} en iHerb` : `Search ${primaryIngredient} on iHerb`,
       price: 0,
       currency: 'MXN',
-      contains: ingredientNames.slice(0, 3),
-      whereToBuy: 'Amazon México',
-      affiliateLink: buildAmazonAffiliateSearchUrl(`${primaryIngredient} suplemento alta calidad`, process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG),
+      contains: [match.canonicalName],
+      whereToBuy: 'iHerb México',
+      affiliateLink: buildIHerbAffiliateUrl(match.searchQuery, process.env.NEXT_PUBLIC_IHERB_AFFILIATE_TEMPLATE),
       description: isSpanish
-        ? 'Busca productos con ingredientes claros, dosis alineada con la evidencia y reseñas verificables.'
-        : 'Look for products with clear ingredients, evidence-aligned dosing, and verifiable reviews.',
+        ? 'Match claro con el ingrediente analizado. Revisa etiqueta, dosis por porción, certificaciones y disponibilidad antes de comprar.'
+        : 'Clear match for the analyzed ingredient. Review the label, dose per serving, certifications, and availability before buying.',
       isAffiliate: true,
-    },
-    {
-      tier: 'premium',
-      name: isSpanish ? `Ver opciones premium de ${primaryIngredient}` : `View premium options for ${primaryIngredient}`,
-      price: 0,
-      currency: 'MXN',
-      contains: ingredientNames.slice(0, 3),
-      whereToBuy: 'Amazon México',
-      affiliateLink: buildAmazonAffiliateSearchUrl(`${primaryIngredient} suplemento premium certificado`, process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG),
-      description: isSpanish
-        ? 'Prioriza marcas con pruebas de terceros, lote visible, buenas prácticas de manufactura y fórmula transparente.'
-        : 'Prioritize brands with third-party testing, visible lot details, good manufacturing practices, and transparent formulas.',
-      isAffiliate: true,
+      affiliateProvider: 'iherb',
     },
   ];
 }
 
 function buildAffiliateAwareProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
-  const configuredProducts = recommendation?.products?.length ? recommendation.products : buildFallbackAffiliateProducts(recommendation, query, language);
-
-  return configuredProducts.map(product => ({
-    ...product,
-    affiliateLink: addAmazonAssociateTag(product.affiliateLink, process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG),
-    isAffiliate: product.isAffiliate || Boolean(product.affiliateLink && !product.isAnkonere),
-  }));
+  return buildIHerbAffiliateProducts(recommendation, query, language);
 }
 
 function ResultsPageContent() {

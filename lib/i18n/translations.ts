@@ -91,10 +91,13 @@ export const translations = {
     'product.badge.premium': 'ANKONERE',
     'product.contains': 'Contains:',
     'product.available': 'Available on:',
-    'product.buy.amazon': 'Buy on Amazon',
+    'product.buy.affiliate': 'View option',
+    'product.buy.iherb': 'View on iHerb',
     'product.buy.ankonere': 'Buy from ANKONERE',
     'product.premium.badge': 'Premium ANKONERE Formula',
     'product.price.consult': 'Consult',
+    'product.price.affiliate': 'See price',
+    'product.price.iherb': 'View on iHerb',
     'product.per.month': 'per month',
 
     // Paywall
@@ -281,10 +284,13 @@ export const translations = {
     'product.badge.premium': 'ANKONERE',
     'product.contains': 'Contiene:',
     'product.available': 'Disponible en:',
-    'product.buy.amazon': 'Comprar en Amazon',
+    'product.buy.affiliate': 'Ver opción',
+    'product.buy.iherb': 'Ver en iHerb',
     'product.buy.ankonere': 'Comprar en ANKONERE',
     'product.premium.badge': 'Fórmula Premium ANKONERE',
     'product.price.consult': 'Consultar',
+    'product.price.affiliate': 'Ver precio',
+    'product.price.iherb': 'Ver en iHerb',
     'product.per.month': 'por mes',
 
     // Paywall
@@ -388,4 +394,3 @@ export const translations = {
 
 export type Language = 'en' | 'es';
 export type TranslationKey = keyof typeof translations.en;
-

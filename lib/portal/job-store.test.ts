@@ -25,6 +25,26 @@ const FC_CONFIG = {
   verbose: true,
 };
 
+const FIXED_SYSTEM_TIME = new Date('2026-05-04T12:00:00.000Z');
+const PROCESSING_RETENTION_MS = 6 * 60 * 1000;
+const COMPLETED_RETENTION_MS = 15 * 60 * 1000;
+const FAILED_RETENTION_MS = 5 * 60 * 1000;
+const TIMEOUT_RETENTION_MS = 5 * 60 * 1000;
+
+function useFixedSystemTime(): void {
+  jest.useFakeTimers({ now: FIXED_SYSTEM_TIME });
+}
+
+beforeEach(() => {
+  jest.useRealTimers();
+  clearStore();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+  clearStore();
+});
+
 describe('Job Store - Lifecycle Management', () => {
   beforeEach(() => {
     // Clear the job store before each test
@@ -38,10 +58,13 @@ describe('Job Store - Lifecycle Management', () => {
    */
   describe('Property 20: Job timestamp assignment', () => {
     it('should assign creation and expiration timestamps to all created jobs', () => {
+      useFixedSystemTime();
+
       fc.assert(
         fc.property(
           fc.uuid(), // jobId
           (jobId) => {
+            clearStore();
             const beforeCreate = Date.now();
             createJob(jobId);
             const afterCreate = Date.now();
@@ -65,8 +88,8 @@ describe('Job Store - Lifecycle Management', () => {
             // expiresAt should be after createdAt
             expect(job.expiresAt).toBeGreaterThan(job.createdAt);
 
-            // For processing jobs, expiration should be 2 minutes (120000ms) after creation
-            const expectedExpiration = job.createdAt + 2 * 60 * 1000;
+            // For processing jobs, expiration should allow long-running enrichment
+            const expectedExpiration = job.createdAt + PROCESSING_RETENTION_MS;
             expect(job.expiresAt).toBe(expectedExpiration);
           }
         ),
@@ -76,12 +99,14 @@ describe('Job Store - Lifecycle Management', () => {
   });
 
   /**
-   * Property 21: Completed jobs retained for 5 minutes
-   * Feature: frontend-error-display-fix, Property 21: Completed jobs retained for 5 minutes
+   * Property 21: Completed jobs are retained for result polling
+   * Feature: frontend-error-display-fix, Property 21: Completed jobs are retained for result polling
    * Validates: Requirements 6.2
    */
   describe('Property 21: Completed job retention', () => {
-    it('should set expiration to 5 minutes after completion for completed jobs', () => {
+    it('should set expiration after completion for completed jobs', () => {
+      useFixedSystemTime();
+
       fc.assert(
         fc.property(
           fc.uuid(), // jobId
@@ -89,6 +114,7 @@ describe('Job Store - Lifecycle Management', () => {
             recommendation: fc.object(),
           }),
           (jobId, data) => {
+            clearStore();
             // Create a job first
             createJob(jobId);
 
@@ -109,8 +135,8 @@ describe('Job Store - Lifecycle Management', () => {
             expect(job.completedAt).toBeGreaterThanOrEqual(beforeComplete);
             expect(job.completedAt).toBeLessThanOrEqual(afterComplete);
 
-            // expiresAt should be 5 minutes (300000ms) after completedAt
-            const expectedExpiration = job.completedAt + 5 * 60 * 1000;
+            // expiresAt should keep completed jobs available for result polling
+            const expectedExpiration = job.completedAt + COMPLETED_RETENTION_MS;
             expect(job.expiresAt).toBe(expectedExpiration);
 
             // Verify the job is not expired immediately after completion
@@ -123,17 +149,20 @@ describe('Job Store - Lifecycle Management', () => {
   });
 
   /**
-   * Property 22: Failed jobs retained for 2 minutes
-   * Feature: frontend-error-display-fix, Property 22: Failed jobs retained for 2 minutes
+   * Property 22: Failed jobs are retained for client polling
+   * Feature: frontend-error-display-fix, Property 22: Failed jobs are retained for client polling
    * Validates: Requirements 6.3
    */
   describe('Property 22: Failed job retention', () => {
-    it('should set expiration to 2 minutes after failure for failed jobs', () => {
+    it('should set expiration after failure for failed jobs', () => {
+      useFixedSystemTime();
+
       fc.assert(
         fc.property(
           fc.uuid(), // jobId
-          fc.string({ minLength: 1, maxLength: 100 }), // error message
+          fc.string({ minLength: 1, maxLength: 100 }).filter(message => message.trim().length > 0), // error message
           (jobId, errorMessage) => {
+            clearStore();
             // Create a job first
             createJob(jobId);
 
@@ -154,8 +183,8 @@ describe('Job Store - Lifecycle Management', () => {
             expect(job.completedAt).toBeGreaterThanOrEqual(beforeFail);
             expect(job.completedAt).toBeLessThanOrEqual(afterFail);
 
-            // expiresAt should be 2 minutes (120000ms) after completedAt
-            const expectedExpiration = job.completedAt + 2 * 60 * 1000;
+            // expiresAt should retain failed states briefly for client polling
+            const expectedExpiration = job.completedAt + FAILED_RETENTION_MS;
             expect(job.expiresAt).toBe(expectedExpiration);
 
             // Verify the job is not expired immediately after failure
@@ -422,16 +451,19 @@ describe('Job Store - Timeout Handling', () => {
   });
 
   /**
-   * Property 7: Async jobs timeout at 2 minutes
-   * Feature: frontend-error-display-fix, Property 7: Async jobs timeout at 2 minutes
+   * Property 7: Async jobs timeout after the processing retention window
+   * Feature: frontend-error-display-fix, Property 7: Async jobs timeout after the processing retention window
    * Validates: Requirements 2.3
    */
   describe('Property 7: Async timeout', () => {
-    it('should mark jobs as timeout when they exceed 2 minutes of processing', () => {
+    it('should mark jobs as timeout when they exceed the processing retention window', () => {
+      useFixedSystemTime();
+
       fc.assert(
         fc.property(
           fc.uuid(), // jobId
           (jobId) => {
+            clearStore();
             // Create a processing job
             createJob(jobId);
 
@@ -443,15 +475,15 @@ describe('Job Store - Timeout Handling', () => {
             expect(job.status).toBe('processing');
             expect(job.createdAt).toBeDefined();
 
-            // Calculate when the job should timeout (2 minutes = 120000ms)
-            const timeoutThreshold = job.createdAt + 2 * 60 * 1000;
+            // Calculate when the job should timeout
+            const timeoutThreshold = job.createdAt + PROCESSING_RETENTION_MS;
 
-            // Verify the job's expiration is set to 2 minutes from creation
+            // Verify the job expiration is set from creation
             expect(job.expiresAt).toBe(timeoutThreshold);
 
-            // For jobs that have been processing for 2 minutes,
+            // For jobs that have exceeded the processing retention window,
             // they should be marked as timeout
-            // We can't actually wait 2 minutes in a test, so we'll verify
+            // We can't actually wait the retention window in a test, so we'll verify
             // that the markTimeout function works correctly
 
             // Mark the job as timed out
@@ -467,9 +499,9 @@ describe('Job Store - Timeout Handling', () => {
             // Verify completedAt is set
             expect(timedOutJob.completedAt).toBeDefined();
 
-            // Verify expiresAt is updated to 2 minutes after completedAt
+            // Verify expiresAt is updated after completedAt
             if (timedOutJob.completedAt) {
-              const expectedExpiration = timedOutJob.completedAt + 2 * 60 * 1000;
+              const expectedExpiration = timedOutJob.completedAt + TIMEOUT_RETENTION_MS;
               expect(timedOutJob.expiresAt).toBe(expectedExpiration);
             }
           }
@@ -525,7 +557,7 @@ describe('Job Store - Timeout Handling', () => {
             // Verify the job has an expiration time
             expect(timedOutJob.expiresAt).toBeDefined();
 
-            // Timed-out jobs should have expiration set to 2 minutes after timeout
+            // Timed-out jobs should have expiration set after timeout
             // Since we just marked it as timeout, it should not be expired yet
             expect(isExpired(jobId)).toBe(false);
 
@@ -548,12 +580,14 @@ describe('Job Store - Timeout Handling', () => {
 
     it('should clean up timed-out jobs after their expiration time', () => {
       // This test verifies that timed-out jobs follow the same cleanup rules
-      // as other jobs - they expire 2 minutes after being marked as timeout
+      // as other jobs - they expire after being marked as timeout
+      useFixedSystemTime();
 
       fc.assert(
         fc.property(
           fc.uuid(), // jobId
           (jobId) => {
+            clearStore();
             // Create a processing job
             createJob(jobId);
 
@@ -565,9 +599,9 @@ describe('Job Store - Timeout Handling', () => {
             if (!timedOutJob) return;
 
             // Verify expiration is set correctly
-            // Timeout jobs expire 2 minutes after completedAt
+            // Timeout jobs expire after completedAt
             if (timedOutJob.completedAt) {
-              const expectedExpiration = timedOutJob.completedAt + 2 * 60 * 1000;
+              const expectedExpiration = timedOutJob.completedAt + TIMEOUT_RETENTION_MS;
               expect(timedOutJob.expiresAt).toBe(expectedExpiration);
             }
 
@@ -615,14 +649,14 @@ describe('Job Store - Cleanup Logic', () => {
 
               // Create different types of jobs
               if (i % 3 === 0) {
-                // Create a processing job (expires in 2 minutes)
+                // Create a processing job
                 createJob(jobId);
               } else if (i % 3 === 1) {
-                // Create a completed job (expires in 5 minutes)
+                // Create a completed job
                 createJob(jobId);
                 storeJobResult(jobId, 'completed', { recommendation: { test: true } });
               } else {
-                // Create a failed job (expires in 2 minutes)
+                // Create a failed job
                 createJob(jobId);
                 storeJobResult(jobId, 'failed', { error: 'Test error' });
               }

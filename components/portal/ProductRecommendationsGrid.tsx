@@ -21,6 +21,7 @@ interface Product {
   description: string;
   isAnkonere?: boolean;
   isAffiliate?: boolean;
+  affiliateProvider?: 'iherb';
 }
 
 interface ProductRecommendationsGridProps {
@@ -93,6 +94,7 @@ export default function ProductRecommendationsGrid({
           const isHighlighted = product.tier === 'premium' && !product.isAffiliate;
           const contains = Array.isArray(product.contains) ? product.contains : [];
           const badge = product.isAffiliate && product.tier === 'premium' ? 'Premium' : config.badge;
+          const isIHerbAffiliate = product.affiliateProvider === 'iherb';
 
           return (
             <div
@@ -124,8 +126,10 @@ export default function ProductRecommendationsGrid({
                 <div className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {product.price > 0 ? (
                     `${product.currency} ${product.price.toLocaleString()}`
+                  ) : isIHerbAffiliate ? (
+                    t('product.price.iherb')
                   ) : product.isAffiliate ? (
-                    t('product.price.amazon')
+                    t('product.price.affiliate')
                   ) : (
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     t('product.price.consult' as any)
@@ -165,7 +169,7 @@ export default function ProductRecommendationsGrid({
                 className={`w-full py-3 px-4 rounded-lg font-semibold text-white bg-gradient-to-r ${config.color} hover:opacity-90 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2`}
               >
                 <ShoppingCart className="h-5 w-5" />
-                {product.isAnkonere ? t('product.buy.ankonere') : t('product.buy.amazon')}
+                {product.isAnkonere ? t('product.buy.ankonere') : isIHerbAffiliate ? t('product.buy.iherb') : t('product.buy.affiliate')}
                 <ExternalLink className="h-4 w-4" />
               </button>
 
