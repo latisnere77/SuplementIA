@@ -11,6 +11,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { localizedPath, seoLocales, siteUrl } from '@/lib/seo';
+import { getTranslations } from 'next-intl/server';
 
 // Tell Next.js about all possible category slugs to pre-render them
 export async function generateStaticParams() {
@@ -40,13 +41,16 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   }
 
   const seoLocale = locale === 'en' ? 'en' : 'es';
+  const t = await getTranslations({ locale: seoLocale });
   const path = `/portal/category/${category.slug}`;
+  const categoryName = t(`portal.categories.${category.slug}.name`);
+  const categoryDescription = t(`portal.categories.${category.slug}.desc`);
   const title = seoLocale === 'es'
-    ? `Suplementos para ${category.name.toLowerCase()} con evidencia cientifica`
-    : `Evidence-based supplements for ${category.name}`;
+    ? `Suplementos para ${categoryName.toLowerCase()} con evidencia cientifica`
+    : `Evidence-based supplements for ${categoryName}`;
   const description = seoLocale === 'es'
-    ? `${category.description} Compara suplementos por nivel de evidencia, estudios y uso responsable en Mexico.`
-    : `${category.description} Compare supplements by evidence level, studies, and responsible use.`;
+    ? `${categoryDescription} Compara suplementos por nivel de evidencia, estudios y uso responsable en Mexico.`
+    : `${categoryDescription} Compare supplements by evidence level, studies, and responsible use.`;
 
   return {
     metadataBase: new URL(siteUrl),
@@ -80,15 +84,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   }
 
   const seoLocale = locale === 'en' ? 'en' : 'es';
+  const t = await getTranslations({ locale: seoLocale });
+  const categoryName = t(`portal.categories.${category.slug}.name`);
+  const categoryDescription = t(`portal.categories.${category.slug}.desc`);
   const categoryPath = `/portal/category/${category.slug}`;
   const structuredData = [
     {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: seoLocale === 'es'
-        ? `Suplementos para ${category.name.toLowerCase()}`
-        : `Supplements for ${category.name}`,
-      description: category.description,
+        ? `Suplementos para ${categoryName.toLowerCase()}`
+        : `Supplements for ${categoryName}`,
+      description: categoryDescription,
       url: localizedPath(seoLocale, categoryPath),
       inLanguage: seoLocale === 'es' ? 'es-MX' : 'en',
       isPartOf: {
@@ -120,7 +127,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         {
           '@type': 'ListItem',
           position: 3,
-          name: category.name,
+          name: categoryName,
           item: localizedPath(seoLocale, categoryPath),
         },
       ],
@@ -140,13 +147,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
         }}
       />
-      <Link href="/portal/search" className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 mb-6">
+      <Link href={`/${seoLocale}/portal`} className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Volver a Búsqueda
+        {seoLocale === 'es' ? 'Volver a Búsqueda' : 'Back to Search'}
       </Link>
       
-      <h1 className="text-4xl font-bold text-gray-900 mb-2">{category.name}</h1>
-      <p className="text-lg text-gray-600 mb-8">{category.description}</p>
+      <h1 className="text-4xl font-bold text-gray-900 mb-2">{categoryName}</h1>
+      <p className="text-lg text-gray-600 mb-8">{categoryDescription}</p>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
         {sortedSupplements.map(supplement => (
@@ -154,6 +161,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             key={supplement.slug} 
             supplement={supplement}
             categorySlug={category.slug}
+            locale={seoLocale}
           />
         ))}
       </div>
