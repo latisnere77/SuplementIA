@@ -101,20 +101,20 @@ export default function PortalPage() {
 
   const popularSearches = language === 'es'
     ? [
-      { term: 'Vitamina D', category: 'Vitaminas' },
-      { term: 'Omega-3', category: 'Ácidos Grasos' },
-      { term: 'Magnesio', category: 'Minerales' },
-      { term: 'Proteína Whey', category: 'Proteínas' },
-      { term: 'Creatina', category: 'Rendimiento' },
-      { term: 'Colágeno', category: 'Piel y Articulaciones' },
+      { term: 'Vitamina D', query: 'Vitamin D', category: 'Vitaminas' },
+      { term: 'Omega-3', query: 'Omega-3', category: 'Ácidos Grasos' },
+      { term: 'Magnesio', query: 'Magnesium', category: 'Minerales' },
+      { term: 'Proteína Whey', query: 'Whey Protein', category: 'Proteínas' },
+      { term: 'Creatina', query: 'Creatine', category: 'Rendimiento' },
+      { term: 'Colágeno', query: 'Collagen', category: 'Piel y Articulaciones' },
     ]
     : [
-      { term: 'Vitamin D', category: 'Vitamins' },
-      { term: 'Omega-3', category: 'Fatty Acids' },
-      { term: 'Magnesium', category: 'Minerals' },
-      { term: 'Whey Protein', category: 'Proteins' },
-      { term: 'Creatine', category: 'Performance' },
-      { term: 'Collagen', category: 'Skin & Joints' },
+      { term: 'Vitamin D', query: 'Vitamin D', category: 'Vitamins' },
+      { term: 'Omega-3', query: 'Omega-3', category: 'Fatty Acids' },
+      { term: 'Magnesium', query: 'Magnesium', category: 'Minerals' },
+      { term: 'Whey Protein', query: 'Whey Protein', category: 'Proteins' },
+      { term: 'Creatine', query: 'Creatine', category: 'Performance' },
+      { term: 'Collagen', query: 'Collagen', category: 'Skin & Joints' },
     ];
 
   const valueProps = [
@@ -192,9 +192,9 @@ export default function PortalPage() {
     router.push(`/portal/category/${encodeURIComponent(categoryId)}`);
   };
 
-  const handlePopularSearch = (term: string) => {
-    setSearchQuery(term);
-    router.push(`/portal/results?q=${encodeURIComponent(term)}&supplement=${encodeURIComponent(term)}`);
+  const handlePopularSearch = (displayTerm: string, queryTerm: string = displayTerm) => {
+    setSearchQuery(displayTerm);
+    router.push(`/portal/results?q=${encodeURIComponent(queryTerm)}&supplement=${encodeURIComponent(queryTerm)}`);
   };
 
   return (
@@ -483,7 +483,7 @@ export default function PortalPage() {
                 viewport={{ once: true }}
                 transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: index * 0.1 }}
                 whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
-                onClick={() => handlePopularSearch(search.term)}
+                onClick={() => handlePopularSearch(search.term, search.query)}
                 className="group px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all shadow-sm"
               >
                 <div className="flex items-center gap-2">
