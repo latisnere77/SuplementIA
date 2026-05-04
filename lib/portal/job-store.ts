@@ -118,6 +118,16 @@ function calculateTTL(expiresAt: number): number {
   return Math.floor(expiresAt / 1000);
 }
 
+function normalizeEpochMillis(value: unknown, fallback: number): number {
+  const timestamp = Number(value);
+
+  if (!Number.isFinite(timestamp) || timestamp <= 0) {
+    return fallback;
+  }
+
+  return timestamp < 10_000_000_000 ? timestamp * 1000 : timestamp;
+}
+
 /**
  * Check if a job has exceeded its expiration time
  */
@@ -405,19 +415,32 @@ export function getJob(jobId: string) {
     // extract recommendation to top level for compatibility with Job interface
     if (item.result && typeof item.result === 'object') {
       const result = item.result as Record<string, unknown>;
+      const createdAt = normalizeEpochMillis(item.timestamp || item.createdAt, now);
+      const completedAt = item.completedAt ? normalizeEpochMillis(item.completedAt, now) : undefined;
+
       return {
         status: item.status,
         recommendation: result.recommendation || item.result,
         error: result.error || item.error,
-        createdAt: item.timestamp || item.createdAt || now,
-        expiresAt: item.expiresAt || (now + EXPIRATION_TIMES[item.status as Job['status']]),
-        completedAt: item.completedAt,
+        createdAt,
+        expiresAt: normalizeEpochMillis(item.expiresAt, createdAt + EXPIRATION_TIMES[item.status as Job['status']]),
+        completedAt,
         lastAccessedAt: now,
         retryCount: item.retryCount,
       } as Job;
     }
 
-    return response.Item as Job;
+    const status = item.status as Job['status'];
+    const createdAt = normalizeEpochMillis(item.timestamp || item.createdAt, now);
+    const completedAt = item.completedAt ? normalizeEpochMillis(item.completedAt, now) : undefined;
+
+    return {
+      ...response.Item,
+      createdAt,
+      expiresAt: normalizeEpochMillis(item.expiresAt, createdAt + EXPIRATION_TIMES[status]),
+      completedAt,
+      lastAccessedAt: now,
+    } as Job;
   } catch (error) {
     console.error('[JobStore] Error getting job:', error);
     return undefined;
