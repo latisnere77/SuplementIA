@@ -38,4 +38,10 @@ describe('buildIHerbAffiliateUrl', () => {
       'https://track.example/click?u=https%3A%2F%2Fmx.iherb.com%2Fsearch%3Fkw%3Dbacopa%2Bmonnieri&q=bacopa%20monnieri'
     );
   });
+
+  it('falls back to direct iHerb URLs for unsafe or incomplete templates', () => {
+    expect(buildIHerbAffiliateUrl('magnesium', 'http://track.example/click?u={url}')).toBe('https://mx.iherb.com/search?kw=magnesium');
+    expect(buildIHerbAffiliateUrl('magnesium', 'https://track.example/click?q={query}')).toBe('https://mx.iherb.com/search?kw=magnesium');
+    expect(buildIHerbAffiliateUrl('magnesium', 'not-a-url-{url}')).toBe('https://mx.iherb.com/search?kw=magnesium');
+  });
 });
