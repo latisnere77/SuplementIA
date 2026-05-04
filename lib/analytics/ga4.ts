@@ -18,11 +18,16 @@ export function trackGAEvent(eventName: GAEventName, params: GAEventParams = {})
     Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== '')
   );
 
-  if (typeof window.gtag !== 'function') {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(['event', eventName, cleanParams]);
-    return;
-  }
+  const sendEvent = (attempt = 0) => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', eventName, cleanParams);
+      return;
+    }
 
-  window.gtag('event', eventName, cleanParams);
+    if (attempt < 5) {
+      window.setTimeout(() => sendEvent(attempt + 1), 750);
+    }
+  };
+
+  sendEvent();
 }
