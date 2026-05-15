@@ -18,6 +18,29 @@ function generateRequestId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
+function isLikelyScientificName(term: string): boolean {
+  const words = term.trim().split(/\s+/);
+
+  if (words.length !== 2) {
+    return false;
+  }
+
+  return words.every((word) => /^[a-z][a-z-]{2,}$/i.test(word));
+}
+
+function insufficientDataResponse(supplementName: string, requestId: string) {
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'insufficient_data',
+      message: `No encontramos estudios científicos para "${supplementName}".`,
+      suggestion: 'Verifica la ortografía o intenta con un término más específico.',
+      requestId,
+    },
+    { status: 404 }
+  );
+}
+
 export async function POST(request: NextRequest) {
   const requestId = generateRequestId();
   const startTime = Date.now();
@@ -83,6 +106,15 @@ export async function POST(request: NextRequest) {
     if (!studiesResponse.ok) {
       const errorText = await studiesResponse.text();
       console.error(`[enrich-v2] Studies fetch failed: ${studiesResponse.status}`, errorText);
+
+      if (
+        isLikelyScientificName(supplementName) &&
+        [403, 404, 422, 500].includes(studiesResponse.status)
+      ) {
+        console.warn(`[enrich-v2] Treating scientific-name studies failure as insufficient data: ${supplementName}`);
+        return insufficientDataResponse(supplementName, requestId);
+      }
+
       throw new Error(`Studies fetch failed: ${studiesResponse.status}`);
     }
     
@@ -95,16 +127,7 @@ export async function POST(request: NextRequest) {
     // Check if we have studies
     if (studies.length === 0) {
       console.log(`[enrich-v2] No studies found for: ${supplementName}`);
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'insufficient_data',
-          message: `No encontramos estudios científicos para "${supplementName}".`,
-          suggestion: 'Verifica la ortografía o intenta con un término más específico.',
-          requestId,
-        },
-        { status: 404 }
-      );
+      return insufficientDataResponse(supplementName, requestId);
     }
     
     // Step 2: Enrich with Claude via content-enricher Lambda
