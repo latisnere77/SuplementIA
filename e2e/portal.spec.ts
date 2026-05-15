@@ -590,4 +590,38 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText(/unknown herb/)).toBeVisible();
     await expect(page.getByRole('button', { name: /Buscar Otro Suplemento/i })).toBeVisible();
   });
+
+  test('supplement URL does not crash when API returns condition-shaped payload', async ({ page }) => {
+    await page.route('**/api/portal/quiz**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          searchType: 'condition',
+          condition: 'Piper auritum',
+          summary: 'Análisis enriquecido completo. Se encontraron 1 suplementos relevantes.',
+          supplementsByEvidence: {
+            gradeA: [],
+            gradeB: [],
+            gradeC: [],
+            gradeD: [
+              {
+                supplementName: 'Omega-3',
+                overallGrade: 'D',
+                totalStudyCount: 1,
+                benefits: [],
+              },
+            ],
+          },
+        }),
+      });
+    });
+
+    await page.goto('/en/portal/results?q=Piper%20auritum&supplement=Piper%20auritum');
+
+    await expect(page.getByTestId('error-state')).toBeVisible();
+    await expect(page.getByText('Sin Evidencia Científica Disponible')).toBeVisible();
+    await expect(page.getByText(/piper auritum/i)).toBeVisible();
+    await expect(page.getByText('This page couldn’t load')).not.toBeVisible();
+  });
 });
