@@ -884,9 +884,10 @@ function ResultsPageContent() {
           // Check if query matches a known category
           const matchedCategory = categoryMap[normalizedQuery];
 
-          // If not a category, treat as ingredient search
-          // Ingredients are typically: single words, compound words, or scientific names
+          // Explicit supplement URLs should stay in supplement mode even if the backend
+          // later returns a condition-shaped payload.
           const _isIngredientSearch = !matchedCategory;
+          const searchIntent = supplementParam ? 'supplement' : matchedCategory ? 'condition' : 'supplement';
 
           // The quiz endpoint handles all normalization and enrichment.
           // We send the raw user query directly to it.
@@ -916,6 +917,7 @@ function ResultsPageContent() {
               location: 'CDMX', // Default
               jobId: requestJobId, // Include in body for backend logging
               benefitQuery: submittedBenefitQuery, // Pass the benefit query
+              searchIntent,
             }),
             signal: abortController.signal,
           });
@@ -1120,6 +1122,30 @@ function ResultsPageContent() {
           }
 
           if (data.searchType === 'condition') {
+            if (searchIntent === 'supplement') {
+              console.warn('[Data Fetch] API returned CONDITION result for supplement intent; showing no-data state instead.', {
+                query: normalizedQuery,
+                data,
+              });
+              setRecommendation(null);
+              setConditionResult(null);
+              setSearchType('ingredient');
+              setError({
+                type: 'insufficient_scientific_data',
+                message: `No encontramos estudios científicos publicados sobre "${normalizedQuery}".`,
+                searchedFor: normalizedQuery,
+                suggestions: [],
+                metadata: {
+                  normalizedQuery,
+                  requestId: data.requestId,
+                  timestamp: new Date().toISOString(),
+                  receivedSearchType: 'condition',
+                },
+              });
+              setIsLoading(false);
+              return;
+            }
+
             console.log('[Data Fetch] ✅ Received CONDITION result:', data);
             setConditionResult(data);
             setRecommendation(null); // Clear other state
@@ -1385,7 +1411,7 @@ function ResultsPageContent() {
       isMounted = false;
     };
   // Note: routerRef is used instead of router to prevent infinite re-renders
-  }, [query, jobId, submittedBenefitQuery, urlJobId]);
+  }, [query, jobId, submittedBenefitQuery, supplementParam, urlJobId]);
 
   // ====================================
   // VARIANT SELECTOR HANDLERS

@@ -795,7 +795,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { category, age, gender, location, sensitivities = [] } = body;
+    const { category, age, gender, location, sensitivities = [], searchIntent } = body;
 
     portalLogger.logRequest({
       requestId,
@@ -1156,7 +1156,11 @@ export async function POST(request: NextRequest) {
       (entry) => entry.name.toLowerCase() === normalizedQuery || entry.aliases.some(a => a.toLowerCase() === normalizedQuery)
     );
 
-    if (dbMatch) {
+    if (searchIntent === 'supplement') {
+      searchType = 'ingredient';
+    } else if (searchIntent === 'condition') {
+      searchType = 'condition';
+    } else if (dbMatch) {
       searchType = dbMatch.category === 'condition' ? 'condition' : 'ingredient';
     } else {
       searchType = 'condition';
@@ -1225,13 +1229,32 @@ export async function POST(request: NextRequest) {
       });
 
       if (!recommendationResponse.ok) {
+        const errorText = await recommendationResponse.text();
+        let errorData: any = {};
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { message: errorText };
+        }
+
+        if (recommendationResponse.status === 404 && errorData.error === 'insufficient_data') {
+          return NextResponse.json({
+            success: false,
+            error: 'insufficient_data',
+            message: errorData.message || `No encontramos estudios científicos publicados sobre "${supplementName}".`,
+            suggestion: errorData.suggestion || 'Verifica la ortografía o intenta con un nombre más específico.',
+            requestId,
+            category: supplementName,
+          }, { status: 404 });
+        }
+
         // If backend fails, propagate the error. NO MOCKS.
         console.error(`[CRITICAL] Backend Recommendation Service Failed: ${recommendationResponse.status}`);
         return NextResponse.json({
           success: false,
           error: 'backend_service_error',
           message: 'El servicio de recomendaciones no está disponible en este momento.',
-          details: `Status: ${recommendationResponse.status}`
+          details: errorData.message || errorData.error || `Status: ${recommendationResponse.status}`
         }, { status: recommendationResponse.status });
       }
 

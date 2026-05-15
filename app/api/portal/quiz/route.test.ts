@@ -63,6 +63,7 @@ describe('/api/portal/quiz POST', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('should call searchPubMed and return 200 OK for a "condition" query', async () => {
@@ -132,6 +133,44 @@ describe('/api/portal/quiz POST', () => {
     expect(response.status).toBe(200);
     expect(body).toEqual(mockResult);
     expect(mockedSearchPubMed).toHaveBeenCalledWith('joint pain');
+  });
+
+  it('should honor explicit supplement intent for unknown botanical names', async () => {
+    mockedSearchSupplements.mockResolvedValueOnce([]);
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: 'insufficient_data',
+          message: 'No encontramos estudios científicos verificables sobre "Piper auritum".',
+        }),
+        {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'Piper auritum', searchIntent: 'supplement' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(body.error).toBe('insufficient_data');
+    expect(body.message).toContain('Piper auritum');
+    expect(mockedSearchPubMed).not.toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/api/portal/recommend'),
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('"category":"Piper auritum"'),
+      })
+    );
   });
 
   it('should return a 400 Bad Request if the category field is missing', async () => {
