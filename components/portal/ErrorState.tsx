@@ -10,7 +10,7 @@
 
 'use client';
 
-import { AlertCircle, RefreshCw, Search, Microscope, TrendingUp } from 'lucide-react';
+import { AlertCircle, ExternalLink, RefreshCw, Search, Microscope, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -30,8 +30,27 @@ interface ErrorMetadata {
       phytochemical?: number;
       other?: number;
     };
+    articles?: Array<{
+      pmid: string;
+      title: string;
+      year?: number;
+      category?: string;
+      publicationTypes?: string[];
+    }>;
   } | null;
   [key: string]: unknown;
+}
+
+const LITERATURE_CATEGORY_LABELS: Record<string, string> = {
+  human_clinical: 'Clínico humano',
+  review: 'Revisión',
+  preclinical: 'Preclínico',
+  phytochemical: 'Fitoquímico',
+  other: 'Otro',
+};
+
+function formatCount(count: number, singular: string, plural: string): string {
+  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 interface ErrorStateProps {
@@ -69,6 +88,7 @@ export function ErrorState({
   const literatureProfile = errorData.metadata?.literatureProfile;
   const hasLiteratureProfile = !!literatureProfile && (literatureProfile.totalCount || 0) > 0;
   const literatureCategories = literatureProfile?.categories;
+  const literatureArticles = literatureProfile?.articles?.slice(0, 4) || [];
 
   // Render based on error type
   if (errorType === 'insufficient_scientific_data') {
@@ -102,27 +122,66 @@ export function ErrorState({
                     </span>
                     {(literatureCategories?.human_clinical || 0) > 0 && (
                       <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {literatureCategories?.human_clinical} clínicas humanas en muestra
+                        {formatCount(literatureCategories?.human_clinical || 0, 'estudio clínico humano', 'estudios clínicos humanos')}
                       </span>
                     )}
                     {(literatureCategories?.preclinical || 0) > 0 && (
                       <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {literatureCategories?.preclinical} preclínicas
+                        {formatCount(literatureCategories?.preclinical || 0, 'estudio preclínico', 'estudios preclínicos')}
                       </span>
                     )}
                     {(literatureCategories?.phytochemical || 0) > 0 && (
                       <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {literatureCategories?.phytochemical} fitoquímicas
+                        {formatCount(literatureCategories?.phytochemical || 0, 'estudio fitoquímico', 'estudios fitoquímicos')}
                       </span>
                     )}
                     {(literatureCategories?.review || 0) > 0 && (
                       <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {literatureCategories?.review} revisiones
+                        {formatCount(literatureCategories?.review || 0, 'revisión', 'revisiones')}
                       </span>
                     )}
                   </div>
                 )}
               </div>
+
+              {literatureArticles.length > 0 && (
+                <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
+                  <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
+                    <Microscope className="w-5 h-5" />
+                    Literatura PubMed encontrada
+                  </h4>
+                  <p className="text-sm text-yellow-800 mb-4">
+                    Estos artículos explican por qué hay literatura sobre <strong>&ldquo;{searchedFor}&rdquo;</strong>, aunque todavía no sea suficiente para confirmar beneficios clínicos en personas.
+                  </p>
+                  <div className="space-y-3">
+                    {literatureArticles.map((article) => (
+                      <a
+                        key={article.pmid}
+                        href={`https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block rounded-lg border border-yellow-200 bg-yellow-50 p-3 transition-colors hover:bg-yellow-100"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-yellow-700">
+                              <span className="rounded-full bg-white px-2 py-0.5 font-medium">
+                                {LITERATURE_CATEGORY_LABELS[article.category || 'other'] || 'Otro'}
+                              </span>
+                              {article.year && <span>{article.year}</span>}
+                              <span>PMID {article.pmid}</span>
+                            </div>
+                            <p className="text-sm font-medium leading-snug text-yellow-950">
+                              {article.title}
+                            </p>
+                          </div>
+                          <ExternalLink className="mt-1 h-4 w-4 shrink-0 text-yellow-700" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Why This Matters */}
               <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">

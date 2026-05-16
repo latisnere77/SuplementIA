@@ -590,6 +590,22 @@ test.describe('portal browser flows', () => {
                 phytochemical: 1,
                 other: 0,
               },
+              articles: [
+                {
+                  pmid: '12345',
+                  title: 'Chemical composition of unknown herb essential oil',
+                  year: 2025,
+                  category: 'phytochemical',
+                  publicationTypes: ['Journal Article'],
+                },
+                {
+                  pmid: '67890',
+                  title: 'Unknown herb extract in rat model',
+                  year: 2024,
+                  category: 'preclinical',
+                  publicationTypes: ['Journal Article'],
+                },
+              ],
             },
           },
         }),
@@ -602,8 +618,11 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Sin Evidencia Clínica Suficiente')).toBeVisible();
     await expect(page.getByText(/^Encontramos literatura publicada/i)).toBeVisible();
     await expect(page.getByText('3 publicaciones PubMed encontradas')).toBeVisible();
+    await expect(page.getByText('Literatura PubMed encontrada')).toBeVisible();
+    await expect(page.getByText('Chemical composition of unknown herb essential oil')).toBeVisible();
+    await expect(page.getByRole('link', { name: /PMID 12345/i })).toHaveAttribute('href', /pubmed\.ncbi\.nlm\.nih\.gov\/12345/);
     await expect(page.getByText(/No encontramos estudios científicos publicados en PubMed/i)).not.toBeVisible();
-    await expect(page.getByText(/unknown herb/)).toBeVisible();
+    await expect(page.getByText(/^Encontramos literatura publicada sobre "unknown herb"/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /Buscar Otro Suplemento/i })).toBeVisible();
   });
 

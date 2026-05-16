@@ -182,19 +182,23 @@ export function formatLiteratureProfileMessage(term: string, profile: PubMedLite
 
   const parts: string[] = [];
   if (profile.categories.human_clinical > 0) {
-    parts.push(`${profile.categories.human_clinical} clínico(s) humano(s) en la muestra`);
+    parts.push(formatCount(profile.categories.human_clinical, 'estudio clínico humano', 'estudios clínicos humanos'));
   }
   if (profile.categories.preclinical > 0) {
-    parts.push(`${profile.categories.preclinical} preclínico(s)`);
+    parts.push(formatCount(profile.categories.preclinical, 'estudio preclínico', 'estudios preclínicos'));
   }
   if (profile.categories.phytochemical > 0) {
-    parts.push(`${profile.categories.phytochemical} fitoquímico(s)`);
+    parts.push(formatCount(profile.categories.phytochemical, 'estudio fitoquímico', 'estudios fitoquímicos'));
   }
   if (profile.categories.review > 0) {
-    parts.push(`${profile.categories.review} revisión(es)`);
+    parts.push(formatCount(profile.categories.review, 'revisión', 'revisiones'));
   }
 
   const detail = parts.length > 0 ? ` En la muestra revisada: ${parts.join(', ')}.` : '';
 
   return `Encontramos literatura publicada sobre "${term}" en PubMed, pero no evidencia clínica humana suficiente para confirmar beneficios.${detail} Por seguridad, no tratamos estos hallazgos como beneficios clínicos confirmados.`;
+}
+
+function formatCount(count: number, singular: string, plural: string): string {
+  return `${count} ${count === 1 ? singular : plural}`;
 }
