@@ -256,8 +256,8 @@ export async function POST(request: NextRequest) {
           {
             success: false,
             error: 'insufficient_data',
-            message: errorData.message || `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
-            suggestion: errorData.suggestion || 'Intenta buscar con un nombre más específico o verifica la ortografía.',
+            message: errorData.message || `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${sanitizedCategory}".`,
+            suggestion: errorData.suggestion || 'Intenta con una forma o extracto específico, verifica la ortografía, o busca un beneficio clínico concreto.',
             requestId,
             category: sanitizedCategory,
           },
@@ -302,8 +302,8 @@ export async function POST(request: NextRequest) {
           {
             success: false,
             error: 'insufficient_data',
-            message: enrichData.message || `No pudimos encontrar información científica suficiente sobre "${sanitizedCategory}".`,
-            suggestion: enrichData.suggestion || 'Intenta buscar con un nombre más específico o verifica la ortografía.',
+            message: enrichData.message || `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${sanitizedCategory}".`,
+            suggestion: enrichData.suggestion || 'Intenta con una forma o extracto específico, verifica la ortografía, o busca un beneficio clínico concreto.',
             requestId,
             category: sanitizedCategory,
           },
@@ -370,8 +370,8 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'insufficient_data',
-          message: `No encontramos estudios científicos verificables sobre "${sanitizedCategory}".`,
-          suggestion: 'Verifica la ortografía o intenta con un término más específico. Si crees que esto es un error, contáctanos.',
+          message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${sanitizedCategory}". Puede haber estudios preliminares o fitoquímicos publicados, pero no los tratamos como beneficios clínicos confirmados.`,
+          suggestion: 'Verifica la ortografía, intenta con una forma o extracto específico, o busca un beneficio clínico concreto.',
           requestId,
           category: sanitizedCategory,
           metadata: {

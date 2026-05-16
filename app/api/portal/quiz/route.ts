@@ -1241,8 +1241,8 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({
             success: false,
             error: 'insufficient_data',
-            message: errorData.message || `No encontramos estudios científicos publicados sobre "${supplementName}".`,
-            suggestion: errorData.suggestion || 'Verifica la ortografía o intenta con un nombre más específico.',
+            message: errorData.message || `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${supplementName}".`,
+            suggestion: errorData.suggestion || 'Verifica la ortografía, intenta con una forma o extracto específico, o busca un beneficio clínico concreto.',
             requestId,
             category: supplementName,
           }, { status: 404 });

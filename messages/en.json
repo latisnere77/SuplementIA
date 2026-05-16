@@ -200,7 +200,7 @@
       },
       "missing_info": {
         "question": "Why do some supplements have no information?",
-        "answer": "If we don't find information on a supplement, it may be because:\n\n1. The name is misspelled (try variations)\n2. It's a very new product with no published studies\n3. No scientific studies exist in PubMed for that compound\n4. It's a brand name (try searching for the active ingredient)\n\nWe never generate false information. If there are no studies, we tell you clearly."
+        "answer": "If we don't find confirmed benefits for a supplement, it may be because:\n\n1. The name is misspelled (try variations)\n2. It's a very new product without enough human clinical trials\n3. The available evidence is preliminary, preclinical, animal, in vitro, or phytochemical\n4. It's a brand name (try searching for the active ingredient)\n\nWe never generate false benefits. If there is not enough human clinical evidence, we tell you clearly."
       },
       "why_products": {
         "question": "Why do you recommend these specific products?",

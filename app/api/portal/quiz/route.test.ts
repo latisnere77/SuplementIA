@@ -142,7 +142,7 @@ describe('/api/portal/quiz POST', () => {
         JSON.stringify({
           success: false,
           error: 'insufficient_data',
-          message: 'No encontramos estudios científicos verificables sobre "Piper auritum".',
+          message: 'No encontramos evidencia clínica humana suficiente para confirmar beneficios de "Piper auritum".',
         }),
         {
           status: 404,

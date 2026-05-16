@@ -33,8 +33,8 @@ function insufficientDataResponse(supplementName: string, requestId: string) {
     {
       success: false,
       error: 'insufficient_data',
-      message: `No encontramos estudios científicos para "${supplementName}".`,
-      suggestion: 'Verifica la ortografía o intenta con un término más específico.',
+      message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${supplementName}". Puede haber estudios preclínicos, en animales, in vitro o fitoquímicos publicados, pero no los tratamos como beneficios clínicos confirmados.`,
+      suggestion: 'Verifica la ortografía, intenta con una forma o extracto específico, o busca un beneficio clínico concreto.',
       requestId,
     },
     { status: 404 }
