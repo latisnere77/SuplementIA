@@ -57,7 +57,7 @@ export function classifyLiteratureArticle(input: {
       type.includes('clinical trial') ||
       type.includes('controlled clinical trial')
     ) ||
-    /\b(human|humans|patients|subjects|volunteers|participants|clinical trial|randomi[sz]ed)\b/.test(text)
+    /\b(clinical trial|randomi[sz]ed trial|placebo-controlled|double-blind)\b/.test(text)
   ) {
     return 'human_clinical';
   }
@@ -70,9 +70,13 @@ export function classifyLiteratureArticle(input: {
   }
 
   if (
-    /\b(in vitro|cell line|cells|murine|mouse|mice|rat|rats|animal model|zebrafish|drosophila)\b/.test(text)
+    /\b(in vitro|cell line|cell lines|cells|fibroblasts|hela|sih?a|murine|mouse|mice|rat|rats|animal model|zebrafish|drosophila)\b/.test(text)
   ) {
     return 'preclinical';
+  }
+
+  if (/\b(patients|healthy adults|volunteers|participants|human subjects|subjects were randomized)\b/.test(text)) {
+    return 'human_clinical';
   }
 
   if (
