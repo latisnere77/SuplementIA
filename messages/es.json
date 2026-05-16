@@ -200,7 +200,7 @@
       },
       "missing_info": {
         "question": "¿Por qué algunos suplementos no tienen información?",
-        "answer": "Si no encontramos información sobre un suplemento, puede ser porque:\n\n1. El nombre está mal escrito (intenta con variaciones)\n2. Es un producto muy nuevo sin estudios publicados\n3. No existen estudios científicos en PubMed sobre ese compuesto\n4. Es un nombre comercial (intenta buscar con el nombre del ingrediente activo)\n\nNunca generamos información falsa. Si no hay estudios, te lo decimos claramente."
+        "answer": "Si no encontramos beneficios confirmados para un suplemento, puede ser porque:\n\n1. El nombre está mal escrito (intenta con variaciones)\n2. Es un producto muy nuevo sin ensayos clínicos humanos suficientes\n3. La evidencia disponible es preliminar, preclínica, en animales, in vitro o fitoquímica\n4. Es un nombre comercial (intenta buscar con el nombre del ingrediente activo)\n\nNunca generamos beneficios falsos. Si no hay evidencia clínica humana suficiente, te lo decimos claramente."
       },
       "why_products": {
         "question": "¿Por qué recomiendan estos productos específicos?",

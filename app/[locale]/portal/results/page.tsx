@@ -956,7 +956,7 @@ function ResultsPageContent() {
               // Show error message
               setError({
                 type: 'insufficient_scientific_data',
-                message: errorData.message || `No encontramos estudios científicos publicados sobre "${normalizedQuery}".`,
+                message: errorData.message || `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${normalizedQuery}".`,
                 searchedFor: normalizedQuery,
                 suggestions: [],
                 metadata: {
@@ -1132,7 +1132,7 @@ function ResultsPageContent() {
               setSearchType('ingredient');
               setError({
                 type: 'insufficient_scientific_data',
-                message: `No encontramos estudios científicos publicados sobre "${normalizedQuery}".`,
+                message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${normalizedQuery}".`,
                 searchedFor: normalizedQuery,
                 suggestions: [],
                 metadata: {
@@ -1664,10 +1664,10 @@ function ResultsPageContent() {
                 <div className="text-yellow-600 mt-0.5">⚠️</div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-yellow-900 mb-1">
-                    No se encontraron estudios científicos para &ldquo;{localizedSupplementName}&rdquo;
+                    No se encontró evidencia clínica humana suficiente para &ldquo;{localizedSupplementName}&rdquo;
                   </h3>
                   <p className="text-yellow-800 text-sm mb-2">
-                    No encontramos estudios científicos publicados sobre este suplemento. La información mostrada es de carácter general y no está respaldada por evidencia científica específica.
+                    Puede haber estudios preliminares, preclínicos o fitoquímicos publicados. La información mostrada no debe interpretarse como beneficios clínicos confirmados.
                   </p>
                 </div>
               </div>

@@ -577,7 +577,7 @@ test.describe('portal browser flows', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           error: 'insufficient_data',
-          message: 'No encontramos estudios científicos publicados sobre "unknown herb".',
+          message: 'No encontramos evidencia clínica humana suficiente para confirmar beneficios de "unknown herb".',
           requestId: 'browser-test-request',
         }),
       });
@@ -586,7 +586,9 @@ test.describe('portal browser flows', () => {
     await page.goto('/en/portal/results?q=unknown%20herb&supplement=unknown%20herb');
 
     await expect(page.getByTestId('error-state')).toBeVisible();
-    await expect(page.getByText('Sin Evidencia Científica Disponible')).toBeVisible();
+    await expect(page.getByText('Sin Evidencia Clínica Suficiente')).toBeVisible();
+    await expect(page.getByText(/^No encontramos evidencia clínica humana suficiente/i)).toBeVisible();
+    await expect(page.getByText(/No encontramos estudios científicos publicados en PubMed/i)).not.toBeVisible();
     await expect(page.getByText(/unknown herb/)).toBeVisible();
     await expect(page.getByRole('button', { name: /Buscar Otro Suplemento/i })).toBeVisible();
   });
@@ -620,8 +622,10 @@ test.describe('portal browser flows', () => {
     await page.goto('/en/portal/results?q=Piper%20auritum&supplement=Piper%20auritum');
 
     await expect(page.getByTestId('error-state')).toBeVisible();
-    await expect(page.getByText('Sin Evidencia Científica Disponible')).toBeVisible();
-    await expect(page.getByText(/piper auritum/i)).toBeVisible();
+    await expect(page.getByText('Sin Evidencia Clínica Suficiente')).toBeVisible();
+    await expect(page.getByText(/^No encontramos evidencia clínica humana suficiente/i)).toBeVisible();
+    await expect(page.getByText(/No encontramos estudios científicos publicados en PubMed/i)).not.toBeVisible();
+    await expect(page.getByText(/^No encontramos evidencia clínica humana suficiente para confirmar beneficios de "piper auritum"\./i)).toBeVisible();
     await expect(page.getByText('This page couldn’t load')).not.toBeVisible();
   });
 });

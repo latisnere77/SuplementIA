@@ -3,7 +3,7 @@
  * Provides clear error messages with actionable suggestions
  * 
  * Handles different error types:
- * - insufficient_scientific_data: No studies found (NOT a system error)
+ * - insufficient_scientific_data: No sufficient human clinical evidence found (NOT a system error)
  * - system_error: Backend/API errors
  * - network_error: Connection issues
  */
@@ -72,12 +72,14 @@ export function ErrorState({
                   </div>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-yellow-900 mb-3">
-                  🔬 Sin Evidencia Científica Disponible
+                  🔬 Sin Evidencia Clínica Suficiente
                 </h3>
                 <p className="text-base text-yellow-800 max-w-xl mx-auto leading-relaxed">
                   {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
                     ? `La búsqueda de "${searchedFor}" está tardando más de lo esperado. Esto puede ocurrir con términos muy amplios que tienen miles de estudios en PubMed.`
-                    : `No encontramos estudios científicos publicados en PubMed sobre "${searchedFor}".`}
+                    : typeof errorMessage === 'string' && errorMessage
+                      ? errorMessage
+                      : `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${searchedFor}".`}
                 </p>
               </div>
 
@@ -97,8 +99,8 @@ export function ErrorState({
                     </>
                   ) : (
                     <>
-                      En Suplementia, <strong>solo mostramos información respaldada por estudios científicos verificables</strong>.
-                      Esto garantiza que las recomendaciones sean seguras y efectivas.
+                      En Suplementia, <strong>solo promovemos beneficios confirmados cuando hay evidencia clínica humana suficiente</strong>.
+                      Puede haber estudios preclínicos, en animales, in vitro, fitoquímicos o revisiones botánicas, pero no los tratamos como beneficios confirmados para personas.
                     </>
                   )}
                 </p>
@@ -106,7 +108,7 @@ export function ErrorState({
                   <p className="text-xs text-yellow-700 font-medium mb-2">
                     {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
                       ? 'Recomendaciones para mejorar tu búsqueda:'
-                      : 'Posibles razones por las que no encontramos estudios:'}
+                      : 'Por qué puede aparecer este estado:'}
                   </p>
                   <ul className="text-xs text-yellow-700 space-y-1">
                     {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout') ? (
@@ -118,10 +120,10 @@ export function ErrorState({
                       </>
                     ) : (
                       <>
-                        <li>• El suplemento no tiene investigación científica publicada</li>
-                        <li>• El nombre puede estar escrito de forma diferente en la literatura científica</li>
-                        <li>• Puede ser un nombre comercial sin respaldo científico independiente</li>
-                        <li>• Los estudios pueden estar en bases de datos especializadas que aún no indexamos</li>
+                        <li>• Puede haber estudios publicados, pero no ensayos clínicos humanos suficientes</li>
+                        <li>• La evidencia disponible puede ser preclínica, animal, in vitro o fitoquímica</li>
+                        <li>• Los resultados pueden estudiar mecanismos, seguridad o composición, no beneficios clínicos</li>
+                        <li>• El término puede necesitar una forma, extracto, dosis o beneficio más específico</li>
                       </>
                     )}
                   </ul>
@@ -194,6 +196,7 @@ export function ErrorState({
                 <ul className="text-xs text-blue-800 space-y-1.5">
                   <li>• <strong>Verifica la ortografía</strong> del nombre del suplemento</li>
                   <li>• <strong>Usa el nombre científico</strong> si lo conoces (ej: &ldquo;Withania somnifera&rdquo; en vez de &ldquo;ashwagandha&rdquo;)</li>
+                  <li>• <strong>Prueba con un beneficio específico</strong> (ej: &ldquo;Piper auritum diabetes&rdquo;)</li>
                   <li>• <strong>Prueba con términos en inglés</strong> - la mayoría de estudios están en inglés</li>
                   <li>• <strong>Evita nombres comerciales</strong> - busca el ingrediente activo (ej: &ldquo;Creatine&rdquo; en vez de &ldquo;CreaPure&rdquo;)</li>
                   <li>• <strong>Busca por categoría</strong> - ej: &ldquo;adaptógeno&rdquo;, &ldquo;nootrópico&rdquo;, &ldquo;antioxidante&rdquo;</li>
