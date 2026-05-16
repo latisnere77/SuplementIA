@@ -20,6 +20,17 @@ interface ErrorMetadata {
   normalizedQuery?: string;
   requestId?: string;
   timestamp?: string;
+  literatureProfile?: {
+    totalCount?: number;
+    sampledCount?: number;
+    categories?: {
+      human_clinical?: number;
+      review?: number;
+      preclinical?: number;
+      phytochemical?: number;
+      other?: number;
+    };
+  } | null;
   [key: string]: unknown;
 }
 
@@ -55,6 +66,9 @@ export function ErrorState({
   const errorMessage = errorData.message || error;
   const searchedFor = errorData.searchedFor || supplementName;
   const suggestions = errorData.suggestions || legacySuggestions.map(s => ({ name: s, hasStudies: true }));
+  const literatureProfile = errorData.metadata?.literatureProfile;
+  const hasLiteratureProfile = !!literatureProfile && (literatureProfile.totalCount || 0) > 0;
+  const literatureCategories = literatureProfile?.categories;
 
   // Render based on error type
   if (errorType === 'insufficient_scientific_data') {
@@ -81,6 +95,33 @@ export function ErrorState({
                       ? errorMessage
                       : `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${searchedFor}".`}
                 </p>
+                {hasLiteratureProfile && (
+                  <div className="mt-4 inline-flex flex-wrap justify-center gap-2 text-xs text-yellow-900">
+                    <span className="rounded-full border border-yellow-300 bg-white px-3 py-1 font-semibold">
+                      {literatureProfile?.totalCount ?? 0} publicaciones PubMed encontradas
+                    </span>
+                    {(literatureCategories?.human_clinical || 0) > 0 && (
+                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
+                        {literatureCategories?.human_clinical} clínicas humanas en muestra
+                      </span>
+                    )}
+                    {(literatureCategories?.preclinical || 0) > 0 && (
+                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
+                        {literatureCategories?.preclinical} preclínicas
+                      </span>
+                    )}
+                    {(literatureCategories?.phytochemical || 0) > 0 && (
+                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
+                        {literatureCategories?.phytochemical} fitoquímicas
+                      </span>
+                    )}
+                    {(literatureCategories?.review || 0) > 0 && (
+                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
+                        {literatureCategories?.review} revisiones
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Why This Matters */}

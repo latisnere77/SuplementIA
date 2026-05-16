@@ -8,6 +8,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
+import {
+  formatLiteratureProfileMessage,
+  searchPubMedLiteratureProfile,
+  type PubMedLiteratureProfile,
+} from '@/lib/services/pubmed-literature-profile';
 
 export const runtime = 'nodejs';
 export const maxDuration = 180; // Increased to 180s for complex supplements with many studies
@@ -28,14 +33,31 @@ function isLikelyScientificName(term: string): boolean {
   return words.every((word) => /^[a-z][a-z-]{2,}$/i.test(word));
 }
 
-function insufficientDataResponse(supplementName: string, requestId: string) {
+async function buildLiteratureProfile(supplementName: string): Promise<PubMedLiteratureProfile | null> {
+  try {
+    return await searchPubMedLiteratureProfile(supplementName, {
+      maxArticles: 8,
+      signal: AbortSignal.timeout(10000),
+    });
+  } catch (error) {
+    console.warn(`[enrich-v2] PubMed literature profile unavailable for ${supplementName}:`, error);
+    return null;
+  }
+}
+
+async function insufficientDataResponse(supplementName: string, requestId: string) {
+  const literatureProfile = await buildLiteratureProfile(supplementName);
+
   return NextResponse.json(
     {
       success: false,
       error: 'insufficient_data',
-      message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${supplementName}". Puede haber estudios preclínicos, en animales, in vitro o fitoquímicos publicados, pero no los tratamos como beneficios clínicos confirmados.`,
+      message: formatLiteratureProfileMessage(supplementName, literatureProfile),
       suggestion: 'Verifica la ortografía, intenta con una forma o extracto específico, o busca un beneficio clínico concreto.',
       requestId,
+      metadata: {
+        literatureProfile,
+      },
     },
     { status: 404 }
   );

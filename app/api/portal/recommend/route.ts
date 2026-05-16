@@ -260,6 +260,7 @@ export async function POST(request: NextRequest) {
             suggestion: errorData.suggestion || 'Intenta con una forma o extracto específico, verifica la ortografía, o busca un beneficio clínico concreto.',
             requestId,
             category: sanitizedCategory,
+            metadata: errorData.metadata,
           },
           { status: 404 }
         );
@@ -306,6 +307,7 @@ export async function POST(request: NextRequest) {
             suggestion: enrichData.suggestion || 'Intenta con una forma o extracto específico, verifica la ortografía, o busca un beneficio clínico concreto.',
             requestId,
             category: sanitizedCategory,
+            metadata: enrichData.metadata,
           },
           { status: 404 }
         );
