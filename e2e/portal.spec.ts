@@ -577,8 +577,21 @@ test.describe('portal browser flows', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           error: 'insufficient_data',
-          message: 'No encontramos evidencia clínica humana suficiente para confirmar beneficios de "unknown herb".',
+          message: 'Encontramos literatura publicada sobre "unknown herb" en PubMed, pero no evidencia clínica humana suficiente para confirmar beneficios.',
           requestId: 'browser-test-request',
+          metadata: {
+            literatureProfile: {
+              totalCount: 3,
+              sampledCount: 3,
+              categories: {
+                human_clinical: 0,
+                review: 1,
+                preclinical: 1,
+                phytochemical: 1,
+                other: 0,
+              },
+            },
+          },
         }),
       });
     });
@@ -587,7 +600,8 @@ test.describe('portal browser flows', () => {
 
     await expect(page.getByTestId('error-state')).toBeVisible();
     await expect(page.getByText('Sin Evidencia Clínica Suficiente')).toBeVisible();
-    await expect(page.getByText(/^No encontramos evidencia clínica humana suficiente/i)).toBeVisible();
+    await expect(page.getByText(/^Encontramos literatura publicada/i)).toBeVisible();
+    await expect(page.getByText('3 publicaciones PubMed encontradas')).toBeVisible();
     await expect(page.getByText(/No encontramos estudios científicos publicados en PubMed/i)).not.toBeVisible();
     await expect(page.getByText(/unknown herb/)).toBeVisible();
     await expect(page.getByRole('button', { name: /Buscar Otro Suplemento/i })).toBeVisible();

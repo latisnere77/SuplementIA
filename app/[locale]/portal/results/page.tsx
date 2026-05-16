@@ -963,6 +963,7 @@ function ResultsPageContent() {
                   normalizedQuery: searchTerm,
                   requestId: errorData.requestId,
                   timestamp: new Date().toISOString(),
+                  ...(errorData.metadata || {}),
                 },
               });
               setIsLoading(false);

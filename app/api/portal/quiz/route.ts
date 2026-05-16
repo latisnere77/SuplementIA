@@ -1245,6 +1245,7 @@ export async function POST(request: NextRequest) {
             suggestion: errorData.suggestion || 'Verifica la ortografía, intenta con una forma o extracto específico, o busca un beneficio clínico concreto.',
             requestId,
             category: supplementName,
+            metadata: errorData.metadata,
           }, { status: 404 });
         }
 
