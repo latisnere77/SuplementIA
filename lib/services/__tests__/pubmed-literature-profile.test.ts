@@ -36,6 +36,22 @@ describe('pubmed literature profile', () => {
         publicationTypes: ['Randomized Controlled Trial'],
       })
     ).toBe('human_clinical');
+
+    expect(
+      classifyLiteratureArticle({
+        title: 'Selective cytotoxic effects of Piper auritum extracts in human cancer cell lines',
+        abstract: 'The extract was evaluated in HeLa cells and primary human uterine fibroblasts.',
+        publicationTypes: ['Journal Article'],
+      })
+    ).toBe('preclinical');
+
+    expect(
+      classifyLiteratureArticle({
+        title: 'Insecticidal activity of Piper auritum plant powders in stored corn grains',
+        abstract: 'The powders were tested in a rural community for weevil control in corn.',
+        publicationTypes: ['Journal Article'],
+      })
+    ).not.toBe('human_clinical');
   });
 
   it('builds a broad PubMed profile with categorized articles', async () => {
