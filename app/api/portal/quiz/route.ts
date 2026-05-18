@@ -257,6 +257,24 @@ function hasHumanClinicalRankedEvidence(ranking: any): boolean {
   return countRankedStudies(ranking) > 0;
 }
 
+function shouldUseNoDataFallbackForEmptyRanking(recommendation: any, searchTerm: string): boolean {
+  const text = [
+    searchTerm,
+    recommendation?.supplement?.name,
+    recommendation?.supplement?.description,
+    recommendation?.category,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return (
+    text.includes('human clinical evidence remains limited') ||
+    text.includes('human evidence remains limited') ||
+    text.includes('safety data are not well established')
+  );
+}
+
 async function invokeStudiesFetcher(
   supplementName: string,
   benefitQuery?: string
@@ -1102,12 +1120,15 @@ export async function POST(request: NextRequest) {
             console.log(`🔬 [STUDIES_RANKING] Fetching ranked studies for "${searchTerm}"...`);
             const rankingData = await invokeStudiesFetcher(searchTerm);
 
-            if (!hasHumanClinicalRankedEvidence(rankingData)) {
-              console.log(`⚠️ [STUDIES_RANKING] No human clinical ranking data for "${searchTerm}" after local screening; continuing to backend no-data fallback.`);
+            if (
+              !hasHumanClinicalRankedEvidence(rankingData) &&
+              shouldUseNoDataFallbackForEmptyRanking(rec, searchTerm)
+            ) {
+              console.log(`⚠️ [STUDIES_RANKING] No human clinical ranking data for known limited-evidence supplement "${searchTerm}"; continuing to backend no-data fallback.`);
             } else {
-              console.log(`✅ [STUDIES_RANKING] Got ranking data: positive=${rankingData.positive?.length || 0} negative=${rankingData.negative?.length || 0}`);
+              console.log(`✅ [STUDIES_RANKING] Got ranking data: positive=${rankingData?.positive?.length || 0} negative=${rankingData?.negative?.length || 0}`);
 
-              // Create job in DynamoDB with processing status only after local human-clinical screening passes.
+              // Create job in DynamoDB with processing status after local screening.
               await createJob(jobId);
 
               // STEP 1.5: Build initial recommendation with ranking data for the immediate response.
@@ -1117,18 +1138,18 @@ export async function POST(request: NextRequest) {
                 ...rec,
                 evidence_summary: {
                   ...rec.evidence_summary,
-                  studies: {
+                  studies: rankingData ? {
                     ...(rec.evidence_summary?.studies || {}),
                     ranked: rankingData, // Preserve ranking data in initial recommendation
-                  },
+                  } : rec.evidence_summary?.studies,
                 },
               };
 
               // Mark as interim enrichment with ranking but no detailed analysis yet
               initialRecommendation._enrichment_metadata = {
                 ...initialRecommendation._enrichment_metadata,
-                hasRanking: true,
-                rankingSource: 'studies-fetcher',
+                hasRanking: !!rankingData,
+                rankingSource: rankingData ? 'studies-fetcher' : 'none',
                 interim: true, // Will be enhanced by async enrichment
                 storedAt: new Date().toISOString(),
               };
