@@ -14,6 +14,7 @@ import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } 
 import { getSupplementEvidenceFromCache } from '@/lib/portal/supplements-evidence-data';
 import { SUPPLEMENTS_DATABASE, type SupplementEntry } from '@/lib/portal/supplements-database';
 import { searchPubMed } from '@/lib/services/pubmed-search';
+import { isHumanClinicalEvidenceArticle } from '@/lib/services/pubmed-literature-profile';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { detectVariants } from '@/lib/portal/variant-detector';
 import type { SupplementVariant, VariantDetectionResult } from '@/types/supplement-variants';
@@ -196,6 +197,51 @@ const CACHE_TTL_MS = 3600000; // 1 hour - cache successful results
 const RATE_LIMIT_BACKOFF_MS = 300000; // 5 minutes backoff on 429 errors
 const MAX_BACKOFF_RETRIES = 3;
 
+function getPublicationTypes(study: any): string[] {
+  const rawTypes = study?.publicationTypes || study?.publication_types || study?.publicationType || study?.type;
+
+  if (Array.isArray(rawTypes)) {
+    return rawTypes.map(String);
+  }
+
+  if (typeof rawTypes === 'string') {
+    return rawTypes
+      .split(/[;,|]/)
+      .map((type) => type.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function getStudyText(study: any, field: 'title' | 'abstract'): string {
+  const value = study?.[field] || study?.article?.[field] || study?.metadata?.[field] || '';
+  return typeof value === 'string' ? value : '';
+}
+
+function isHumanClinicalStudy(study: any): boolean {
+  return isHumanClinicalEvidenceArticle({
+    title: getStudyText(study, 'title'),
+    abstract: getStudyText(study, 'abstract'),
+    publicationTypes: getPublicationTypes(study),
+  });
+}
+
+function filterRankedDataByHumanClinical(ranking: any): any {
+  if (!ranking || typeof ranking !== 'object') {
+    return ranking;
+  }
+
+  const filtered = { ...ranking };
+  for (const key of ['positive', 'negative', 'mixed']) {
+    if (Array.isArray(filtered[key])) {
+      filtered[key] = filtered[key].filter(isHumanClinicalStudy);
+    }
+  }
+
+  return filtered;
+}
+
 async function invokeStudiesFetcher(
   supplementName: string,
   benefitQuery?: string
@@ -276,7 +322,7 @@ async function invokeStudiesFetcher(
       return null;
     }
 
-    const ranking = parsedBody.data?.ranked;
+    const ranking = filterRankedDataByHumanClinical(parsedBody.data?.ranked);
     if (ranking) {
       console.log(`✅ [STUDIES_FETCHER] Got ranking: positive=${ranking.positive?.length || 0} negative=${ranking.negative?.length || 0} confidence=${ranking.metadata?.confidenceScore || 0}`);
       // Cache the successful result
@@ -1242,7 +1288,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: 'insufficient_data',
             message: errorData.message || `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${supplementName}".`,
-            suggestion: errorData.suggestion || 'Verifica la ortografía, intenta con una forma o extracto específico, o busca un beneficio clínico concreto.',
+            suggestion: errorData.suggestion || 'Verifica la ortografía, intenta con una forma o extracto específico, o explora un tema clínico o componente específico.',
             requestId,
             category: supplementName,
             metadata: errorData.metadata,
