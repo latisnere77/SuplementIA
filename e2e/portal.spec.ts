@@ -605,6 +605,13 @@ test.describe('portal browser flows', () => {
                   category: 'preclinical',
                   publicationTypes: ['Journal Article'],
                 },
+                {
+                  pmid: '13579',
+                  title: 'Unknown herb field use report',
+                  year: 2023,
+                  category: 'other',
+                  publicationTypes: ['Journal Article'],
+                },
               ],
             },
           },
@@ -618,8 +625,12 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Sin Evidencia Clínica Suficiente')).toBeVisible();
     await expect(page.getByText(/^Encontramos literatura publicada/i)).toBeVisible();
     await expect(page.getByText('3 publicaciones PubMed encontradas')).toBeVisible();
+    await expect(page.getByText('3 revisadas en la muestra')).toBeVisible();
     await expect(page.getByText('Literatura PubMed encontrada')).toBeVisible();
+    await expect(page.getByText('Mostramos una selección representativa')).toBeVisible();
     await expect(page.getByText('Chemical composition of unknown herb essential oil')).toBeVisible();
+    await expect(page.getByText('Unknown herb extract in rat model')).toBeVisible();
+    await expect(page.getByText('Unknown herb field use report')).toBeVisible();
     await expect(page.getByRole('link', { name: /PMID 12345/i })).toHaveAttribute('href', /pubmed\.ncbi\.nlm\.nih\.gov\/12345/);
     await expect(page.getByText(/No encontramos estudios científicos publicados en PubMed/i)).not.toBeVisible();
     await expect(page.getByText(/^Encontramos literatura publicada sobre "unknown herb"/i)).toBeVisible();
