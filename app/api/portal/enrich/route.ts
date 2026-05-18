@@ -16,6 +16,7 @@ import { expandAbbreviation, generateSearchVariations } from '@/lib/services/abb
 import { studiesCache, enrichmentCache } from '@/lib/cache/simple-cache';
 import { TimeoutManager, TIMEOUTS } from '@/lib/resilience/timeout-manager';
 import { globalRateLimiter } from '@/lib/resilience/rate-limiter';
+import { isHumanClinicalEvidenceArticle } from '@/lib/services/pubmed-literature-profile';
 
 // UUID generation helper (avoiding crypto import issues in Edge Runtime)
 function generateUUID(): string {
@@ -34,6 +35,55 @@ function getStudiesApiUrl(): string {
 
 function getEnricherApiUrl(): string {
   return process.env.ENRICHER_API_URL || 'https://55noz2p7ypqcatwf2o2kjnw7dq0eeqge.lambda-url.us-east-1.on.aws/';
+}
+
+function getPublicationTypes(study: any): string[] {
+  const rawTypes = study?.publicationTypes || study?.publication_types || study?.publicationType || study?.type;
+
+  if (Array.isArray(rawTypes)) {
+    return rawTypes.map(String);
+  }
+
+  if (typeof rawTypes === 'string') {
+    return rawTypes
+      .split(/[;,|]/)
+      .map((type) => type.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function getStudyText(study: any, field: 'title' | 'abstract'): string {
+  const value = study?.[field] || study?.article?.[field] || study?.metadata?.[field] || '';
+  return typeof value === 'string' ? value : '';
+}
+
+function isHumanClinicalStudy(study: any): boolean {
+  return isHumanClinicalEvidenceArticle({
+    title: getStudyText(study, 'title'),
+    abstract: getStudyText(study, 'abstract'),
+    publicationTypes: getPublicationTypes(study),
+  });
+}
+
+function filterHumanClinicalStudies(studies: any[]): any[] {
+  return studies.filter(isHumanClinicalStudy);
+}
+
+function filterRankedDataByHumanClinical(rankedData: any): any {
+  if (!rankedData || typeof rankedData !== 'object') {
+    return rankedData;
+  }
+
+  const filtered = { ...rankedData };
+  for (const key of ['positive', 'negative', 'mixed']) {
+    if (Array.isArray(filtered[key])) {
+      filtered[key] = filtered[key].filter(isHumanClinicalStudy);
+    }
+  }
+
+  return filtered;
 }
 
 export interface EnrichRequest {
@@ -905,7 +955,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: 'insufficient_data',
           message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${supplementName}". Puede haber estudios preclínicos, en animales, in vitro o fitoquímicos publicados, pero no los tratamos como beneficios clínicos confirmados.`,
-          suggestion: 'Verifica la ortografía, intenta con una forma o extracto específico, o busca un beneficio clínico concreto.',
+          suggestion: 'Verifica la ortografía, intenta con una forma o extracto específico, o explora un tema clínico o componente específico.',
           metadata: {
             hasRealData: false,
             studiesUsed: 0,
@@ -925,9 +975,47 @@ export async function POST(request: NextRequest) {
     const baseTerm = expansionMetadata?.expanded || supplementName;
     const _usedVariationForLogging = searchTerm !== supplementName && searchTerm !== baseTerm;
 
+    const humanClinicalStudies = filterHumanClinicalStudies(studies);
+    if (humanClinicalStudies.length === 0) {
+      const totalDuration = Date.now() - startTime;
+      console.warn(
+        JSON.stringify({
+          event: 'STUDIES_FETCH_NO_HUMAN_CLINICAL_EVIDENCE',
+          requestId,
+          correlationId,
+          originalQuery: supplementName,
+          translatedQuery: searchTerm,
+          studiesFound: studies.length,
+          totalDuration,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'insufficient_data',
+          message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${supplementName}". Puede haber estudios preclínicos, en animales, in vitro o fitoquímicos publicados, pero no los tratamos como beneficios clínicos confirmados.`,
+          suggestion: 'Verifica la ortografía, intenta con una forma o extracto específico, o explora un tema clínico o componente específico.',
+          metadata: {
+            hasRealData: false,
+            studiesUsed: 0,
+            nonHumanStudiesFound: studies.length,
+            requestId,
+            correlationId,
+            originalQuery: supplementName,
+            translatedQuery: searchTerm,
+          },
+        },
+        { status: 404 }
+      );
+    }
+
+    studies = humanClinicalStudies;
+
     // Extract ranking data from studiesData if available, or use cached ranking
     // studiesData comes from the studies-fetcher lambda response
-    const rankedData = studiesData?.data?.ranked || cachedRankedData || null;
+    const rankedData = filterRankedDataByHumanClinical(studiesData?.data?.ranked || cachedRankedData || null);
 
     // Cache studies AND ranking data for future requests
     if (!studiesFromCache && studies.length > 0) {
@@ -975,7 +1063,7 @@ export async function POST(request: NextRequest) {
           supplementId: supplementName,
           category: category || 'general',
           forceRefresh: true, // TEMPORARY: Force refresh to bypass corrupted cache (revert after cache cleared)
-          studies, // CRITICAL: Pass real PubMed studies to Claude
+          studies, // CRITICAL: Pass real human clinical PubMed studies to Claude
           ranking: rankedData, // NEW: Pass ranking to save in cache
           jobId,
         }),

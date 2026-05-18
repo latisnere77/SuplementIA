@@ -52,6 +52,18 @@ export function classifyLiteratureArticle(input: {
   const types = (input.publicationTypes || []).map((type) => type.toLowerCase());
 
   if (
+    /\b(in vitro|ex vivo|cell line|cell lines|cultured cells|cells|fibroblasts|hela|sih?a|murine|mouse|mice|rat|rats|animal model|zebrafish|drosophila|broiler|porcine|bovine|canine|rabbit|wistar|sprague-dawley)\b/.test(text)
+  ) {
+    return 'preclinical';
+  }
+
+  if (
+    /\b(abiotic stress|agricultur|horticultur|germination|seedling|crop|corn grain|stored corn|weevil|insecticidal|repellent|endophyte|fungal endophytes?|plant powder|botanical characterization|taxonomy|microscopy|energy-dispersive x-ray|eds)\b/.test(text)
+  ) {
+    return 'other';
+  }
+
+  if (
     types.some((type) =>
       type.includes('randomized controlled trial') ||
       type.includes('clinical trial') ||
@@ -62,6 +74,10 @@ export function classifyLiteratureArticle(input: {
     return 'human_clinical';
   }
 
+  if (/\b(patients|healthy adults|volunteers|participants|human subjects|subjects were randomized)\b/.test(text)) {
+    return 'human_clinical';
+  }
+
   if (
     types.some((type) => type.includes('review') || type.includes('meta-analysis')) ||
     /\b(review|systematic review|meta-analysis)\b/.test(text)
@@ -69,23 +85,29 @@ export function classifyLiteratureArticle(input: {
     return 'review';
   }
 
-  if (
-    /\b(in vitro|cell line|cell lines|cells|fibroblasts|hela|sih?a|murine|mouse|mice|rat|rats|animal model|zebrafish|drosophila)\b/.test(text)
-  ) {
+  if (/\b(phytochemical|chemical composition|chromatograph|safrole|flavonoid|alkaloid|terpene|metabolite|metabolomic|glycomic)\b/.test(text)) {
+    return 'phytochemical';
+  }
+
+  if (/\b(ames test|mutagenic|antimutagenic|antioxidant activity|antimicrobial activity|antifungal activity|antibacterial activity|cytotoxic|antiproliferative)\b/.test(text)) {
     return 'preclinical';
   }
 
-  if (/\b(patients|healthy adults|volunteers|participants|human subjects|subjects were randomized)\b/.test(text)) {
-    return 'human_clinical';
-  }
-
   if (
-    /\b(phytochemical|essential oil|extract|compound|flavonoid|alkaloid|terpene|chemical composition|chromatograph|metabolite)\b/.test(text)
+    /\b(essential oil|extract|compound)\b/.test(text)
   ) {
     return 'phytochemical';
   }
 
   return 'other';
+}
+
+export function isHumanClinicalEvidenceArticle(input: {
+  title: string;
+  abstract?: string;
+  publicationTypes?: string[];
+}): boolean {
+  return classifyLiteratureArticle(input) === 'human_clinical';
 }
 
 function textContent(xml: string, pattern: RegExp): string | undefined {

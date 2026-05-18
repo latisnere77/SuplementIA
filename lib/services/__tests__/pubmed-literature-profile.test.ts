@@ -1,6 +1,7 @@
 import {
   classifyLiteratureArticle,
   formatLiteratureProfileMessage,
+  isHumanClinicalEvidenceArticle,
   searchPubMedLiteratureProfile,
 } from '../pubmed-literature-profile';
 
@@ -52,6 +53,56 @@ describe('pubmed literature profile', () => {
         publicationTypes: ['Journal Article'],
       })
     ).not.toBe('human_clinical');
+
+    expect(
+      classifyLiteratureArticle({
+        title: 'Antifungal potential of essential oils from native Mexican species',
+        abstract: 'In vitro vapor-phase analyses of chemical composition and antifungal activity.',
+        publicationTypes: ['Journal Article'],
+      })
+    ).toBe('preclinical');
+
+    expect(
+      classifyLiteratureArticle({
+        title: 'Abiotic stress alters the nutritional, metabolomic, and glycomic profiles of Piper auritum',
+        abstract: 'Plants were grown under agricultural stress conditions.',
+        publicationTypes: ['Journal Article'],
+      })
+    ).toBe('other');
+
+    expect(
+      classifyLiteratureArticle({
+        title: 'Randomized clinical trial of magnesium supplementation in healthy adults',
+        abstract: 'Participants were randomized to magnesium or placebo.',
+        publicationTypes: ['Randomized Controlled Trial'],
+      })
+    ).toBe('human_clinical');
+  });
+
+  it('only treats human clinical studies as benefit-claim evidence', () => {
+    expect(
+      isHumanClinicalEvidenceArticle({
+        title: 'Selective cytotoxic effects of extracts in human cancer cell lines',
+        abstract: 'The extract was evaluated in human cancer cells in vitro.',
+        publicationTypes: ['Journal Article'],
+      })
+    ).toBe(false);
+
+    expect(
+      isHumanClinicalEvidenceArticle({
+        title: 'Systematic review of in vitro antioxidant activity of botanical extracts',
+        abstract: 'The review summarizes cell-free and cell line assays.',
+        publicationTypes: ['Systematic Review'],
+      })
+    ).toBe(false);
+
+    expect(
+      isHumanClinicalEvidenceArticle({
+        title: 'Double-blind placebo-controlled trial of vitamin D in adults',
+        abstract: 'Healthy adults were randomized to supplementation or placebo.',
+        publicationTypes: ['Clinical Trial'],
+      })
+    ).toBe(true);
   });
 
   it('builds a broad PubMed profile with categorized articles', async () => {
@@ -99,5 +150,25 @@ describe('pubmed literature profile', () => {
     expect(message).toContain('Encontramos literatura publicada');
     expect(message).toContain('no evidencia clínica humana suficiente');
     expect(message).not.toContain('no hay estudios');
+  });
+
+  it('formats no-article profiles without implying clinical benefits', () => {
+    const message = formatLiteratureProfileMessage('unknown herb', {
+      query: '"unknown herb"[Title/Abstract]',
+      totalCount: 0,
+      sampledCount: 0,
+      categories: {
+        human_clinical: 0,
+        review: 0,
+        preclinical: 0,
+        phytochemical: 0,
+        other: 0,
+      },
+      articles: [],
+    });
+
+    expect(message).toBe('No encontramos evidencia clínica humana suficiente para confirmar beneficios de "unknown herb".');
+    expect(message).not.toContain('sirve');
+    expect(message).not.toContain('beneficios confirmados');
   });
 });

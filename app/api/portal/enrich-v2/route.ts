@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import {
   formatLiteratureProfileMessage,
+  isHumanClinicalEvidenceArticle,
   searchPubMedLiteratureProfile,
   type PubMedLiteratureProfile,
 } from '@/lib/services/pubmed-literature-profile';
@@ -53,13 +54,45 @@ async function insufficientDataResponse(supplementName: string, requestId: strin
       success: false,
       error: 'insufficient_data',
       message: formatLiteratureProfileMessage(supplementName, literatureProfile),
-      suggestion: 'Verifica la ortografía, intenta con una forma o extracto específico, o busca un beneficio clínico concreto.',
+      suggestion: 'Verifica la ortografía, intenta con una forma o extracto específico, o explora un tema clínico o componente específico.',
       requestId,
       metadata: {
         literatureProfile,
       },
     },
     { status: 404 }
+  );
+}
+
+function getPublicationTypes(study: any): string[] {
+  const rawTypes = study?.publicationTypes || study?.publication_types || study?.publicationType || study?.type;
+
+  if (Array.isArray(rawTypes)) {
+    return rawTypes.map(String);
+  }
+
+  if (typeof rawTypes === 'string') {
+    return rawTypes
+      .split(/[;,|]/)
+      .map((type) => type.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function getStudyText(study: any, field: 'title' | 'abstract'): string {
+  const value = study?.[field] || study?.article?.[field] || study?.metadata?.[field] || '';
+  return typeof value === 'string' ? value : '';
+}
+
+function filterHumanClinicalStudies(studies: any[]): any[] {
+  return studies.filter((study) =>
+    isHumanClinicalEvidenceArticle({
+      title: getStudyText(study, 'title'),
+      abstract: getStudyText(study, 'abstract'),
+      publicationTypes: getPublicationTypes(study),
+    })
   );
 }
 
@@ -151,6 +184,12 @@ export async function POST(request: NextRequest) {
       console.log(`[enrich-v2] No studies found for: ${supplementName}`);
       return insufficientDataResponse(supplementName, requestId);
     }
+
+    const humanClinicalStudies = filterHumanClinicalStudies(studies);
+    if (humanClinicalStudies.length === 0) {
+      console.log(`[enrich-v2] Studies found for ${supplementName}, but none passed local human-clinical evidence screening`);
+      return insufficientDataResponse(supplementName, requestId);
+    }
     
     // Step 2: Enrich with Claude via content-enricher Lambda
     const enricherUrl = process.env.NEXT_PUBLIC_ENRICHER_API_URL || process.env.ENRICHER_API_URL ||
@@ -168,7 +207,7 @@ export async function POST(request: NextRequest) {
         supplementId: benefitQuery ? `${supplementName}-${benefitQuery}` : supplementName, // Unique cache key for benefit queries
         category: category || 'general',
         forceRefresh: benefitQuery ? true : (forceRefresh || false), // Force refresh for benefit queries to avoid English cached data
-        studies: studies.slice(0, 8), // Increased to 8 studies for richer evidence (5+ items per section)
+        studies: humanClinicalStudies.slice(0, 8), // Only human clinical evidence can drive benefit claims
         benefitQuery: benefitQuery || undefined, // Pass benefitQuery to enricher for focused analysis
       }),
       signal: AbortSignal.timeout(150000), // 150s timeout for Claude (complex supplements can take longer)
@@ -193,6 +232,7 @@ export async function POST(request: NextRequest) {
         requestId,
         duration,
         studiesCount: studies.length,
+        humanClinicalStudiesCount: humanClinicalStudies.length,
         version: 'v2-simplified',
       },
     });

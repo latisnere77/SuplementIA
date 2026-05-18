@@ -1739,9 +1739,9 @@ function ResultsPageContent() {
 
             {/* Benefit Search Box - Moved here after Scientific Studies */}
             <div className="mb-8 bg-white p-6 rounded-xl border-2 border-gray-200 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-800 mb-3">Buscar por Beneficio Específico</h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-3">Explorar Evidencia por Tema</h2>
               <p className="text-sm text-gray-600 mb-4">
-                ¿Te interesa saber si este suplemento sirve para algo en particular? Escribe en español, buscamos en la literatura científica en inglés.
+                ¿Te interesa explorar un tema clínico o componente específico? Escribe en español; buscamos en la literatura científica en inglés.
               </p>
 
               {/* Auto-suggested benefits for this supplement */}
@@ -1751,7 +1751,7 @@ function ResultsPageContent() {
                   return (
                     <div className="mb-4">
                       <p className="text-xs font-medium text-blue-700 mb-2">
-                        🎯 Beneficios más investigados para {localizedSupplementName}:
+                        🎯 Temas más investigados para {localizedSupplementName}:
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {suggestions.map((suggestion, idx) => (
