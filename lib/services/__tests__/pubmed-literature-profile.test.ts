@@ -98,6 +98,14 @@ describe('pubmed literature profile', () => {
 
     expect(
       isHumanClinicalEvidenceArticle({
+        title: 'Meta-analysis of randomized controlled trials of psyllium supplementation',
+        abstract: 'Included clinical trials enrolled adult participants with elevated cholesterol.',
+        publicationTypes: ['Meta-Analysis'],
+      })
+    ).toBe(true);
+
+    expect(
+      isHumanClinicalEvidenceArticle({
         title: 'Double-blind placebo-controlled trial of vitamin D in adults',
         abstract: 'Healthy adults were randomized to supplementation or placebo.',
         publicationTypes: ['Clinical Trial'],

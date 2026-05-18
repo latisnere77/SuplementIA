@@ -242,6 +242,21 @@ function filterRankedDataByHumanClinical(ranking: any): any {
   return filtered;
 }
 
+function countRankedStudies(ranking: any): number {
+  if (!ranking || typeof ranking !== 'object') {
+    return 0;
+  }
+
+  return ['positive', 'negative', 'mixed'].reduce((sum, key) => {
+    const studies = ranking[key];
+    return sum + (Array.isArray(studies) ? studies.length : 0);
+  }, 0);
+}
+
+function hasHumanClinicalRankedEvidence(ranking: any): boolean {
+  return countRankedStudies(ranking) > 0;
+}
+
 async function invokeStudiesFetcher(
   supplementName: string,
   benefitQuery?: string
@@ -1082,76 +1097,76 @@ export async function POST(request: NextRequest) {
           if (needsEnrichment(rec)) {
             console.log(`🚀🚀🚀 [ENRICHMENT_TRIGGERED_ASYNC] supplement="${searchTerm}" jobId=${jobId}`);
 
-            // Create job in DynamoDB with processing status
-            await createJob(jobId);
-
             // STEP 1: Call studies-fetcher Lambda to get intelligent ranking
             // This generates 5 positive + 5 negative studies with confidence scores
             console.log(`🔬 [STUDIES_RANKING] Fetching ranked studies for "${searchTerm}"...`);
             const rankingData = await invokeStudiesFetcher(searchTerm);
 
-            if (rankingData) {
-              console.log(`✅ [STUDIES_RANKING] Got ranking data: positive=${rankingData.positive?.length || 0} negative=${rankingData.negative?.length || 0}`);
+            if (!hasHumanClinicalRankedEvidence(rankingData)) {
+              console.log(`⚠️ [STUDIES_RANKING] No human clinical ranking data for "${searchTerm}" after local screening; continuing to backend no-data fallback.`);
             } else {
-              console.log(`⚠️ [STUDIES_RANKING] No ranking data - enrichment will proceed without it`);
-            }
+              console.log(`✅ [STUDIES_RANKING] Got ranking data: positive=${rankingData.positive?.length || 0} negative=${rankingData.negative?.length || 0}`);
 
-            // STEP 1.5: Build initial recommendation with ranking data for the immediate response.
-            // Do not store it as completed: it has ranking studies but not final A/B benefit
-            // extraction yet, and the UI must keep polling until enrichment writes the final job.
-            const initialRecommendation = {
-              ...rec,
-              evidence_summary: {
-                ...rec.evidence_summary,
-                studies: rankingData ? {
-                  ...(rec.evidence_summary?.studies || {}),
-                  ranked: rankingData, // Preserve ranking data in initial recommendation
-                } : rec.evidence_summary?.studies,
-              },
-            };
+              // Create job in DynamoDB with processing status only after local human-clinical screening passes.
+              await createJob(jobId);
 
-            // Mark as interim enrichment with ranking but no detailed analysis yet
-            initialRecommendation._enrichment_metadata = {
-              ...initialRecommendation._enrichment_metadata,
-              hasRanking: !!rankingData,
-              rankingSource: rankingData ? 'studies-fetcher' : 'none',
-              interim: true, // Will be enhanced by async enrichment
-              storedAt: new Date().toISOString(),
-            };
-
-            console.log(`✅ [INITIAL_RECOMMENDATION_READY] Ranking attached for immediate response; job remains processing until final enrichment. jobId=${jobId}`);
-
-            // STEP 2: ASYNC ENRICHMENT with ranking data
-            // Lambda will enrich content AND preserve the ranking we just generated
-            // The enrichment Lambda will save both to cache for future requests
-            await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData);
-
-            // Return immediately with processing status
-            return NextResponse.json({
-              success: true,
-              quiz_id: quizId,
-              jobId,
-              status: 'processing',
-              message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
-              recommendation: initialRecommendation, // Return initial recommendation WITH ranking data
-              variantDetection: {
-                ...variantDetection,
-                _cacheMetadata: {
-                  hit: variantCacheHit,
-                  key: variantCacheKey,
-                  studyCount: hitsForVariantDetection.length,
-                  timestamp: Date.now()
+              // STEP 1.5: Build initial recommendation with ranking data for the immediate response.
+              // Do not store it as completed: it has ranking studies but not final A/B benefit
+              // extraction yet, and the UI must keep polling until enrichment writes the final job.
+              const initialRecommendation = {
+                ...rec,
+                evidence_summary: {
+                  ...rec.evidence_summary,
+                  studies: {
+                    ...(rec.evidence_summary?.studies || {}),
+                    ranked: rankingData, // Preserve ranking data in initial recommendation
+                  },
                 },
-                // NEW: Add selected variant info to signal frontend not to show modal
-                _selectedVariant: parsedQuery.isVariantSpecific ? {
-                  type: parsedQuery.variantType,
-                  baseSupplement: parsedQuery.baseSupplement,
-                  fullName: parsedQuery.fullQuery
-                } : null
-              },
-              suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific, // Only show if not already selected
-              source: 'lancedb_enriching_async'
-            });
+              };
+
+              // Mark as interim enrichment with ranking but no detailed analysis yet
+              initialRecommendation._enrichment_metadata = {
+                ...initialRecommendation._enrichment_metadata,
+                hasRanking: true,
+                rankingSource: 'studies-fetcher',
+                interim: true, // Will be enhanced by async enrichment
+                storedAt: new Date().toISOString(),
+              };
+
+              console.log(`✅ [INITIAL_RECOMMENDATION_READY] Ranking attached for immediate response; job remains processing until final enrichment. jobId=${jobId}`);
+
+              // STEP 2: ASYNC ENRICHMENT with ranking data
+              // Lambda will enrich content AND preserve the ranking we just generated
+              // The enrichment Lambda will save both to cache for future requests
+              await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData);
+
+              // Return immediately with processing status
+              return NextResponse.json({
+                success: true,
+                quiz_id: quizId,
+                jobId,
+                status: 'processing',
+                message: 'Enrichment in progress. Poll /api/portal/status/{jobId} for results.',
+                recommendation: initialRecommendation, // Return initial recommendation WITH ranking data
+                variantDetection: {
+                  ...variantDetection,
+                  _cacheMetadata: {
+                    hit: variantCacheHit,
+                    key: variantCacheKey,
+                    studyCount: hitsForVariantDetection.length,
+                    timestamp: Date.now()
+                  },
+                  // NEW: Add selected variant info to signal frontend not to show modal
+                  _selectedVariant: parsedQuery.isVariantSpecific ? {
+                    type: parsedQuery.variantType,
+                    baseSupplement: parsedQuery.baseSupplement,
+                    fullName: parsedQuery.fullQuery
+                  } : null
+                },
+                suggestVariantSelection: variantDetection.recommendedForGenericSearch && !parsedQuery.isVariantSpecific, // Only show if not already selected
+                source: 'lancedb_enriching_async'
+              });
+            }
           } else {
             console.log(`⏭️ [SKIP_ENRICHMENT] supplement="${searchTerm}" already has good metadata`);
 
