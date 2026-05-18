@@ -194,7 +194,10 @@ export function formatLiteratureProfileMessage(term: string, profile: PubMedLite
     parts.push(formatCount(profile.categories.review, 'revisión', 'revisiones'));
   }
 
-  const detail = parts.length > 0 ? ` En la muestra revisada: ${parts.join(', ')}.` : '';
+  const sampleLabel = profile.sampledCount > 0
+    ? `En una muestra reciente de ${profile.sampledCount} publicaciones revisadas`
+    : 'En la muestra revisada';
+  const detail = parts.length > 0 ? ` ${sampleLabel}: ${parts.join(', ')}.` : '';
 
   return `Encontramos literatura publicada sobre "${term}" en PubMed, pero no evidencia clínica humana suficiente para confirmar beneficios.${detail} Por seguridad, no tratamos estos hallazgos como beneficios clínicos confirmados.`;
 }

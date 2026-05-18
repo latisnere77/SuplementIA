@@ -49,8 +49,36 @@ const LITERATURE_CATEGORY_LABELS: Record<string, string> = {
   other: 'Otro',
 };
 
+const LITERATURE_CATEGORY_ORDER = ['human_clinical', 'preclinical', 'phytochemical', 'review', 'other'];
+
 function formatCount(count: number, singular: string, plural: string): string {
   return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function selectRepresentativeArticles(
+  articles: NonNullable<NonNullable<ErrorMetadata['literatureProfile']>['articles']>,
+  limit = 6
+) {
+  const selected: typeof articles = [];
+  const seen = new Set<string>();
+
+  for (const category of LITERATURE_CATEGORY_ORDER) {
+    const article = articles.find((candidate) => candidate.category === category && !seen.has(candidate.pmid));
+    if (article) {
+      selected.push(article);
+      seen.add(article.pmid);
+    }
+  }
+
+  for (const article of articles) {
+    if (selected.length >= limit) break;
+    if (!seen.has(article.pmid)) {
+      selected.push(article);
+      seen.add(article.pmid);
+    }
+  }
+
+  return selected.slice(0, limit);
 }
 
 interface ErrorStateProps {
@@ -88,7 +116,7 @@ export function ErrorState({
   const literatureProfile = errorData.metadata?.literatureProfile;
   const hasLiteratureProfile = !!literatureProfile && (literatureProfile.totalCount || 0) > 0;
   const literatureCategories = literatureProfile?.categories;
-  const literatureArticles = literatureProfile?.articles?.slice(0, 4) || [];
+  const literatureArticles = literatureProfile?.articles ? selectRepresentativeArticles(literatureProfile.articles) : [];
 
   // Render based on error type
   if (errorType === 'insufficient_scientific_data') {
@@ -120,6 +148,11 @@ export function ErrorState({
                     <span className="rounded-full border border-yellow-300 bg-white px-3 py-1 font-semibold">
                       {literatureProfile?.totalCount ?? 0} publicaciones PubMed encontradas
                     </span>
+                    {(literatureProfile?.sampledCount || 0) > 0 && (
+                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
+                        {literatureProfile?.sampledCount} revisadas en la muestra
+                      </span>
+                    )}
                     {(literatureCategories?.human_clinical || 0) > 0 && (
                       <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
                         {formatCount(literatureCategories?.human_clinical || 0, 'estudio clínico humano', 'estudios clínicos humanos')}
@@ -151,7 +184,7 @@ export function ErrorState({
                     Literatura PubMed encontrada
                   </h4>
                   <p className="text-sm text-yellow-800 mb-4">
-                    Estos artículos explican por qué hay literatura sobre <strong>&ldquo;{searchedFor}&rdquo;</strong>, aunque todavía no sea suficiente para confirmar beneficios clínicos en personas.
+                    Mostramos una selección representativa de la muestra revisada sobre <strong>&ldquo;{searchedFor}&rdquo;</strong>. Estos artículos explican por qué hay literatura publicada, aunque todavía no sea suficiente para confirmar beneficios clínicos en personas.
                   </p>
                   <div className="space-y-3">
                     {literatureArticles.map((article) => (
@@ -296,7 +329,7 @@ export function ErrorState({
                 <ul className="text-xs text-blue-800 space-y-1.5">
                   <li>• <strong>Verifica la ortografía</strong> del nombre del suplemento</li>
                   <li>• <strong>Usa el nombre científico</strong> si lo conoces (ej: &ldquo;Withania somnifera&rdquo; en vez de &ldquo;ashwagandha&rdquo;)</li>
-                  <li>• <strong>Prueba con un beneficio específico</strong> (ej: &ldquo;Piper auritum diabetes&rdquo;)</li>
+                  <li>• <strong>Prueba con un tema específico</strong> (ej: &ldquo;Piper auritum safrole&rdquo; o &ldquo;Piper auritum essential oil&rdquo;)</li>
                   <li>• <strong>Prueba con términos en inglés</strong> - la mayoría de estudios están en inglés</li>
                   <li>• <strong>Evita nombres comerciales</strong> - busca el ingrediente activo (ej: &ldquo;Creatine&rdquo; en vez de &ldquo;CreaPure&rdquo;)</li>
                   <li>• <strong>Busca por categoría</strong> - ej: &ldquo;adaptógeno&rdquo;, &ldquo;nootrópico&rdquo;, &ldquo;antioxidante&rdquo;</li>
