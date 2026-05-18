@@ -240,7 +240,7 @@ describe('/api/portal/quiz POST', () => {
       source: 'pubmed',
       name: 'Fadogia agrestis',
       title: 'Fadogia agrestis extract in rats',
-      abstract: 'A rat model evaluated testicular effects of the botanical extract.',
+      abstract: 'Fadogia agrestis is promoted for male vitality, but human clinical evidence remains limited and safety data are not well established.',
       ingredients: ['Fadogia agrestis'],
       study_count: 75,
       score: 0.95,
@@ -305,6 +305,62 @@ describe('/api/portal/quiz POST', () => {
       expect.objectContaining({ method: 'POST' })
     );
     expect(mockLambdaSend).toHaveBeenCalledTimes(1);
+  });
+
+  it('should keep mixed-evidence supplements in async enrichment when they are not known limited-evidence fallbacks', async () => {
+    const lancedbHit = {
+      source: 'pubmed',
+      name: 'Turmeric',
+      title: 'Turmeric and curcumin clinical literature',
+      abstract: 'Turmeric is studied for inflammatory signaling, joint comfort, and antioxidant pathways.',
+      ingredients: ['Turmeric'],
+      study_count: 40,
+      score: 0.95,
+    };
+
+    mockedSearchSupplements
+      .mockResolvedValueOnce([lancedbHit])
+      .mockResolvedValueOnce([lancedbHit]);
+
+    mockLambdaSend
+      .mockResolvedValueOnce({
+        Payload: Buffer.from(JSON.stringify({
+          body: JSON.stringify({
+            success: true,
+            data: {
+              ranked: {
+                positive: [
+                  {
+                    pmid: '456',
+                    title: 'Curcumin extract in rats',
+                    abstract: 'A rat model evaluated inflammatory markers.',
+                    publicationTypes: ['Journal Article'],
+                  },
+                ],
+                negative: [],
+                mixed: [],
+                metadata: { confidenceScore: 80 },
+              },
+            },
+          }),
+        })),
+      })
+      .mockResolvedValueOnce({});
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'Turmeric', searchIntent: 'supplement' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.status).toBe('processing');
+    expect(body.source).toBe('lancedb_enriching_async');
+    expect(body.recommendation.supplement.worksFor).toEqual([]);
+    expect(mockLambdaSend).toHaveBeenCalledTimes(2);
   });
 
   it('should return a 500 Internal Server Error if the searchPubMed service fails', async () => {
