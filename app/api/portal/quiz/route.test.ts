@@ -18,13 +18,17 @@ jest.mock('@/lib/services/abbreviation-expander', () => ({
   })),
 }));
 // Mock Lambda client so route tests do not keep AWS SDK sockets open.
-jest.mock('@aws-sdk/client-lambda', () => ({
-  LambdaClient: jest.fn().mockImplementation(() => ({
-    send: jest.fn(),
-    destroy: jest.fn(),
-  })),
-  InvokeCommand: jest.fn().mockImplementation((input) => input),
-}));
+jest.mock('@aws-sdk/client-lambda', () => {
+  const send = jest.fn();
+  return {
+    __mockLambdaSend: send,
+    LambdaClient: jest.fn().mockImplementation(() => ({
+      send,
+      destroy: jest.fn(),
+    })),
+    InvokeCommand: jest.fn().mockImplementation((input) => input),
+  };
+});
 jest.mock('@aws-sdk/client-dynamodb', () => ({
   DynamoDBClient: jest.fn().mockImplementation(() => ({
     send: jest.fn(),
@@ -54,6 +58,7 @@ jest.mock('@/lib/search-service', () => ({
 
 const mockedSearchPubMed = pubmedSearch.searchPubMed as jest.Mock;
 const mockedSearchSupplements = searchSupplements as jest.Mock;
+const { __mockLambdaSend: mockLambdaSend } = jest.requireMock('@aws-sdk/client-lambda');
 
 describe('/api/portal/quiz POST', () => {
   afterAll(async () => {
@@ -228,6 +233,78 @@ describe('/api/portal/quiz POST', () => {
         }),
       ])
     );
+  });
+
+  it('should not start async enrichment when ranked literature has no human clinical studies', async () => {
+    const lancedbHit = {
+      source: 'pubmed',
+      name: 'Fadogia agrestis',
+      title: 'Fadogia agrestis extract in rats',
+      abstract: 'A rat model evaluated testicular effects of the botanical extract.',
+      ingredients: ['Fadogia agrestis'],
+      study_count: 75,
+      score: 0.95,
+    };
+
+    mockedSearchSupplements
+      .mockResolvedValueOnce([lancedbHit])
+      .mockResolvedValueOnce([lancedbHit]);
+
+    mockLambdaSend.mockResolvedValueOnce({
+      Payload: Buffer.from(JSON.stringify({
+        body: JSON.stringify({
+          success: true,
+          data: {
+            ranked: {
+              positive: [
+                {
+                  pmid: '123',
+                  title: 'Fadogia agrestis extract in rats',
+                  abstract: 'A rat model evaluated testicular effects of the botanical extract.',
+                  publicationTypes: ['Journal Article'],
+                },
+              ],
+              negative: [],
+              mixed: [],
+              metadata: { confidenceScore: 80 },
+            },
+          },
+        }),
+      })),
+    });
+
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: 'insufficient_data',
+          message: 'No encontramos evidencia clínica humana suficiente para confirmar beneficios de "Fadogia agrestis".',
+        }),
+        {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'Fadogia agrestis', searchIntent: 'supplement' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(body.error).toBe('insufficient_data');
+    expect(body.message).toContain('Fadogia agrestis');
+    expect(body.status).not.toBe('processing');
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/api/portal/recommend'),
+      expect.objectContaining({ method: 'POST' })
+    );
+    expect(mockLambdaSend).toHaveBeenCalledTimes(1);
   });
 
   it('should return a 500 Internal Server Error if the searchPubMed service fails', async () => {

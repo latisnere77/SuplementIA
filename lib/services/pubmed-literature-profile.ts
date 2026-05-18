@@ -34,6 +34,8 @@ const EMPTY_CATEGORIES: Record<LiteratureStudyCategory, number> = {
   other: 0,
 };
 
+const HUMAN_CLINICAL_REVIEW_PATTERN = /\b(randomi[sz]ed controlled trials?|controlled clinical trials?|clinical trials?|human trials?|patients|healthy adults|volunteers|participants|human subjects|subjects were randomized|placebo-controlled|double-blind)\b/;
+
 function escapePubMedPhrase(term: string): string {
   return term.replace(/"/g, '').trim();
 }
@@ -107,7 +109,17 @@ export function isHumanClinicalEvidenceArticle(input: {
   abstract?: string;
   publicationTypes?: string[];
 }): boolean {
-  return classifyLiteratureArticle(input) === 'human_clinical';
+  const category = classifyLiteratureArticle(input);
+  if (category === 'human_clinical') {
+    return true;
+  }
+
+  if (category !== 'review') {
+    return false;
+  }
+
+  const text = `${input.title} ${input.abstract || ''}`.toLowerCase();
+  return HUMAN_CLINICAL_REVIEW_PATTERN.test(text);
 }
 
 function textContent(xml: string, pattern: RegExp): string | undefined {
