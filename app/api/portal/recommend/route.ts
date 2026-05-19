@@ -19,11 +19,43 @@ import {
   logRetryLimitExceeded,
   logEnrichmentError,
   logDirectFetchFailure,
+  logPortalSupplementOutcome,
 } from '@/lib/portal/structured-logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 120; // 2 minutes for enrichment
+
+function logRecommendOutcome(data: {
+  requestId: string;
+  jobId: string;
+  supplementName?: string;
+  originalQuery?: string;
+  normalizedQuery?: string;
+  status: 'completed' | 'processing' | 'failed' | 'insufficient_data' | 'upstream_unavailable';
+  finalStatusCode: number;
+  fallback?: 'local_catalog_fallback' | 'async_enrichment' | 'insufficient_data' | 'upstream_unavailable' | 'backend_service_error' | 'none';
+  errorCode?: string;
+  upstreamStatus?: number;
+  source?: string;
+  startTime: number;
+}) {
+  logPortalSupplementOutcome({
+    endpoint: '/api/portal/recommend',
+    requestId: data.requestId,
+    jobId: data.jobId,
+    supplementName: data.supplementName,
+    originalQuery: data.originalQuery,
+    normalizedQuery: data.normalizedQuery,
+    status: data.status,
+    finalStatusCode: data.finalStatusCode,
+    fallback: data.fallback,
+    errorCode: data.errorCode,
+    upstreamStatus: data.upstreamStatus,
+    source: data.source,
+    elapsedTime: Date.now() - data.startTime,
+  });
+}
 
 /**
  * Get the base URL for internal API calls
@@ -203,6 +235,19 @@ export async function POST(request: NextRequest) {
         });
         
         // Return async response immediately
+        logRecommendOutcome({
+          requestId,
+          jobId,
+          supplementName: searchTerm,
+          originalQuery: category,
+          normalizedQuery: searchTerm,
+          status: 'processing',
+          finalStatusCode: 202,
+          fallback: 'async_enrichment',
+          source: 'enrich-v2-timeout-background',
+          startTime,
+        });
+
         return NextResponse.json({
           success: true,
           status: 'processing',
@@ -252,6 +297,21 @@ export async function POST(request: NextRequest) {
       // Differentiate between "no data" (404) vs system errors (500, timeout)
       if (enrichResponse.status === 404 && errorData.error === 'insufficient_data') {
         // TRUE 404: No studies found - this is expected for some supplements
+        logRecommendOutcome({
+          requestId,
+          jobId,
+          supplementName: searchTerm,
+          originalQuery: category,
+          normalizedQuery: searchTerm,
+          status: 'insufficient_data',
+          finalStatusCode: 404,
+          fallback: 'insufficient_data',
+          errorCode: 'insufficient_data',
+          upstreamStatus: enrichResponse.status,
+          source: 'enrich-v2',
+          startTime,
+        });
+
         return NextResponse.json(
           {
             success: false,
@@ -265,6 +325,21 @@ export async function POST(request: NextRequest) {
           { status: 404 }
         );
       } else if (enrichResponse.status === 503 && errorData.error === 'upstream_unavailable') {
+        logRecommendOutcome({
+          requestId,
+          jobId,
+          supplementName: searchTerm,
+          originalQuery: category,
+          normalizedQuery: searchTerm,
+          status: 'upstream_unavailable',
+          finalStatusCode: 503,
+          fallback: 'upstream_unavailable',
+          errorCode: 'upstream_unavailable',
+          upstreamStatus: errorData.statusCode || enrichResponse.status,
+          source: 'enrich-v2',
+          startTime,
+        });
+
         return NextResponse.json(
           {
             success: false,
@@ -280,6 +355,21 @@ export async function POST(request: NextRequest) {
       } else {
         // SYSTEM ERROR: Lambda failed, timeout, or other server error
         // Return 500 so frontend shows system error (red) not "no data" (yellow)
+        logRecommendOutcome({
+          requestId,
+          jobId,
+          supplementName: searchTerm,
+          originalQuery: category,
+          normalizedQuery: searchTerm,
+          status: 'failed',
+          finalStatusCode: 500,
+          fallback: 'backend_service_error',
+          errorCode: errorData.error || 'enrichment_failed',
+          upstreamStatus: enrichResponse.status,
+          source: 'enrich-v2',
+          startTime,
+        });
+
         return NextResponse.json(
           {
             success: false,
@@ -312,6 +402,20 @@ export async function POST(request: NextRequest) {
       // Check if this is a true "no data" case or a system error
       if (enrichData.error === 'insufficient_data') {
         // TRUE insufficient data: No studies found
+        logRecommendOutcome({
+          requestId,
+          jobId,
+          supplementName: searchTerm,
+          originalQuery: category,
+          normalizedQuery: searchTerm,
+          status: 'insufficient_data',
+          finalStatusCode: 404,
+          fallback: 'insufficient_data',
+          errorCode: 'insufficient_data',
+          source: 'enrich-v2',
+          startTime,
+        });
+
         return NextResponse.json(
           {
             success: false,
@@ -326,6 +430,20 @@ export async function POST(request: NextRequest) {
         );
       } else {
         // SYSTEM ERROR: Enrichment failed for technical reasons
+        logRecommendOutcome({
+          requestId,
+          jobId,
+          supplementName: searchTerm,
+          originalQuery: category,
+          normalizedQuery: searchTerm,
+          status: 'failed',
+          finalStatusCode: 500,
+          fallback: 'backend_service_error',
+          errorCode: enrichData.error || 'enrichment_failed',
+          source: 'enrich-v2',
+          startTime,
+        });
+
         return NextResponse.json(
           {
             success: false,
@@ -381,6 +499,20 @@ export async function POST(request: NextRequest) {
 
       // STRICT VALIDATION: DO NOT generate fake data
       // Return 404 with clear message
+      logRecommendOutcome({
+        requestId,
+        jobId,
+        supplementName: searchTerm,
+        originalQuery: category,
+        normalizedQuery: searchTerm,
+        status: 'insufficient_data',
+        finalStatusCode: 404,
+        fallback: 'insufficient_data',
+        errorCode: 'recommend_validation_failed',
+        source: 'recommend-validation',
+        startTime,
+      });
+
       return NextResponse.json(
         {
           success: false,
@@ -415,6 +547,24 @@ export async function POST(request: NextRequest) {
       category: sanitizedCategory,
       duration,
       studiesUsed: metadata.studiesUsed || 0,
+    });
+
+    const successFallback =
+      metadata.fallback === 'local_catalog_fallback' || metadata.source === 'local_catalog_fallback'
+        ? 'local_catalog_fallback'
+        : 'none';
+
+    logRecommendOutcome({
+      requestId,
+      jobId,
+      supplementName: searchTerm,
+      originalQuery: category,
+      normalizedQuery: searchTerm,
+      status: 'completed',
+      finalStatusCode: 200,
+      fallback: successFallback,
+      source: successFallback === 'local_catalog_fallback' ? 'local_catalog_fallback' : 'enrich-v2',
+      startTime,
     });
 
     return NextResponse.json(
@@ -461,6 +611,18 @@ export async function POST(request: NextRequest) {
         endpoint: '/api/portal/recommend',
       }
     );
+
+    logPortalSupplementOutcome({
+      endpoint: '/api/portal/recommend',
+      requestId,
+      supplementName: category,
+      originalQuery: category,
+      status: 'failed',
+      finalStatusCode: 500,
+      fallback: 'backend_service_error',
+      errorCode: 'recommendation_generation_failed',
+      elapsedTime: duration,
+    });
 
     // DO NOT generate fake data - return proper error instead
     return NextResponse.json(

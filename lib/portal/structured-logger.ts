@@ -40,6 +40,18 @@ export interface LogData {
   [key: string]: unknown;
 }
 
+export interface PortalSupplementOutcomeData extends LogData {
+  endpoint: string;
+  status: 'completed' | 'processing' | 'failed' | 'insufficient_data' | 'upstream_unavailable';
+  finalStatusCode: number;
+  fallback?: 'local_catalog_fallback' | 'async_enrichment' | 'insufficient_data' | 'upstream_unavailable' | 'backend_service_error' | 'none';
+  errorCode?: string;
+  upstreamStatus?: number;
+  normalizedQuery?: string;
+  originalQuery?: string;
+  source?: string;
+}
+
 export interface StructuredLogEntry {
   timestamp: string;
   level: LogLevel;
@@ -76,6 +88,61 @@ export function logStructured(
   } else {
     console.log(logString);
   }
+}
+
+function sanitizeForLog(value: unknown): unknown {
+  if (value === undefined || value === null) {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    return value.length > 500 ? `${value.slice(0, 500)}...[truncated]` : value;
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return {
+      type: 'array',
+      length: value.length,
+    };
+  }
+
+  if (typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    const safeKeys = ['success', 'error', 'message', 'details', 'statusCode', 'requestId', 'category'];
+    const summary: Record<string, unknown> = {};
+
+    for (const key of safeKeys) {
+      if (key in record) {
+        summary[key] = sanitizeForLog(record[key]);
+      }
+    }
+
+    return {
+      type: 'object',
+      keys: Object.keys(record).slice(0, 20),
+      ...summary,
+    };
+  }
+
+  return String(value);
+}
+
+export function logPortalSupplementOutcome(data: PortalSupplementOutcomeData): void {
+  const level: LogLevel =
+    data.finalStatusCode >= 500
+      ? (data.status === 'upstream_unavailable' || data.errorCode === 'upstream_unavailable' ? 'warn' : 'error')
+      : 'info';
+
+  logStructured(level, 'PORTAL_SUPPLEMENT_OUTCOME', {
+    ...data,
+    responseBody: undefined,
+    body: undefined,
+    stack: undefined,
+  });
 }
 
 /**
@@ -120,7 +187,7 @@ export function logDirectFetchFailure(
     supplementName,
     statusCode: response.status,
     statusText: response.statusText,
-    responseBody: response.body,
+    responseBody: sanitizeForLog(response.body),
     error: response.error,
     ...additionalData,
   });

@@ -19,6 +19,7 @@ import {
   logProblematicQuery,
   logRetryAttempt,
   logRetryLimitExceeded,
+  logPortalSupplementOutcome,
 } from './structured-logger';
 
 // Mock console methods
@@ -56,13 +57,13 @@ afterEach(() => {
 
 describe('Structured Logger Property Tests', () => {
   /**
-   * Property 12: Direct fetch failure logs complete response
+   * Property 12: Direct fetch failure logs sanitized response summary
    * Validates: Requirements 3.3
    * 
-   * For any direct fetch failure, the system should log the complete response
-   * from the recommend endpoint including status, statusText, body, and error
+   * For any direct fetch failure, the system should log enough response
+   * context for diagnosis without storing full upstream payloads.
    */
-  describe('Property 12: Direct fetch failure logs complete response', () => {
+  describe('Property 12: Direct fetch failure logs sanitized response summary', () => {
     it('should log all response fields for any direct fetch failure', () => {
       fc.assert(
         fc.property(
@@ -110,12 +111,12 @@ describe('Structured Logger Property Tests', () => {
             expect(logEntry).toHaveProperty('statusCode', status);
             expect(logEntry).toHaveProperty('statusText', statusText);
             
-            // Verify response body is included
+            // Verify response body is included as a sanitized summary
             if (body !== undefined) {
               expect(logEntry).toHaveProperty('responseBody');
-              // JSON.stringify converts undefined to null, so we need to handle that
-              const expectedBody = JSON.parse(JSON.stringify(body));
-              expect(logEntry.responseBody).toEqual(expectedBody);
+              expect(logEntry.responseBody).toHaveProperty('type', 'object');
+              expect(logEntry.responseBody).toHaveProperty('keys');
+              expect(logEntry.responseBody.keys.length).toBeLessThanOrEqual(20);
             }
             
             // Verify error message is included if provided
@@ -162,6 +163,116 @@ describe('Structured Logger Property Tests', () => {
         ),
         { numRuns: 100 }
       );
+    });
+
+    it('should truncate large upstream response strings', () => {
+      const longBody = 'x'.repeat(1000);
+
+      logDirectFetchFailure('job-1', 'Psyllium', {
+        status: 503,
+        statusText: 'Service Unavailable',
+        body: longBody,
+        error: 'upstream_unavailable',
+      });
+
+      const logEntry = JSON.parse(errorOutput[0]);
+
+      expect(logEntry.responseBody).toHaveLength(514);
+      expect(logEntry.responseBody).toContain('[truncated]');
+      expect(logEntry.responseBody.length).toBeLessThan(longBody.length);
+    });
+  });
+
+  describe('Portal supplement outcome logs', () => {
+    it('logs upstream_unavailable as a controlled warning event', () => {
+      logPortalSupplementOutcome({
+        endpoint: '/api/portal/quiz',
+        requestId: 'req-1',
+        jobId: 'job-1',
+        supplementName: 'Psyllium',
+        normalizedQuery: 'Psyllium',
+        status: 'upstream_unavailable',
+        finalStatusCode: 503,
+        fallback: 'upstream_unavailable',
+        errorCode: 'upstream_unavailable',
+        upstreamStatus: 403,
+        elapsedTime: 250,
+      });
+
+      expect(warnOutput).toHaveLength(1);
+      const logEntry = JSON.parse(warnOutput[0]);
+
+      expect(logEntry).toMatchObject({
+        level: 'warn',
+        event: 'PORTAL_SUPPLEMENT_OUTCOME',
+        endpoint: '/api/portal/quiz',
+        supplementName: 'Psyllium',
+        status: 'upstream_unavailable',
+        finalStatusCode: 503,
+        fallback: 'upstream_unavailable',
+        errorCode: 'upstream_unavailable',
+        upstreamStatus: 403,
+      });
+    });
+
+    it('logs unexpected 500 outcomes as errors with diagnostic context', () => {
+      logPortalSupplementOutcome({
+        endpoint: '/api/portal/recommend',
+        requestId: 'req-2',
+        supplementName: 'Creatine',
+        originalQuery: 'creatina',
+        normalizedQuery: 'Creatine',
+        status: 'failed',
+        finalStatusCode: 500,
+        fallback: 'backend_service_error',
+        errorCode: 'recommendation_generation_failed',
+        elapsedTime: 1200,
+      });
+
+      expect(errorOutput).toHaveLength(1);
+      const logEntry = JSON.parse(errorOutput[0]);
+
+      expect(logEntry).toMatchObject({
+        level: 'error',
+        event: 'PORTAL_SUPPLEMENT_OUTCOME',
+        endpoint: '/api/portal/recommend',
+        supplementName: 'Creatine',
+        originalQuery: 'creatina',
+        normalizedQuery: 'Creatine',
+        status: 'failed',
+        finalStatusCode: 500,
+        fallback: 'backend_service_error',
+        errorCode: 'recommendation_generation_failed',
+      });
+      expect(logEntry.responseBody).toBeUndefined();
+      expect(logEntry.body).toBeUndefined();
+    });
+
+    it('logs local catalog fallback as a completed info event', () => {
+      logPortalSupplementOutcome({
+        endpoint: '/api/portal/quiz',
+        requestId: 'req-3',
+        jobId: 'job-3',
+        supplementName: 'Magnesium',
+        status: 'completed',
+        finalStatusCode: 200,
+        fallback: 'local_catalog_fallback',
+        source: 'local_catalog_fallback',
+        elapsedTime: 20,
+      });
+
+      expect(logOutput).toHaveLength(1);
+      const logEntry = JSON.parse(logOutput[0]);
+
+      expect(logEntry).toMatchObject({
+        level: 'info',
+        event: 'PORTAL_SUPPLEMENT_OUTCOME',
+        endpoint: '/api/portal/quiz',
+        supplementName: 'Magnesium',
+        status: 'completed',
+        finalStatusCode: 200,
+        fallback: 'local_catalog_fallback',
+      });
     });
   });
   

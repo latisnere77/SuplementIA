@@ -15,6 +15,7 @@ import {
   logJobTimeout,
   logJobProcessing,
   logStoreMaintenance,
+  logPortalSupplementOutcome,
 } from '@/lib/portal/structured-logger';
 import { recordFailure } from '@/lib/portal/failure-pattern-detector';
 import { jobMetrics } from '@/lib/portal/job-metrics';
@@ -68,6 +69,18 @@ export async function GET(
     // Record error and latency
     jobMetrics.recordError(statusCode);
     jobMetrics.recordLatency(Date.now() - startTime);
+
+    logPortalSupplementOutcome({
+      endpoint: '/api/portal/enrichment-status/[id]',
+      requestId: correlationId,
+      jobId,
+      supplementName: supplement || undefined,
+      status: 'failed',
+      finalStatusCode: statusCode,
+      fallback: 'async_enrichment',
+      errorCode: 'JOB_EXPIRED',
+      elapsedTime: Date.now() - startTime,
+    });
     
     return NextResponse.json(response, { status: statusCode });
   }
@@ -92,6 +105,18 @@ export async function GET(
     // Record error and latency
     jobMetrics.recordError(statusCode);
     jobMetrics.recordLatency(Date.now() - startTime);
+
+    logPortalSupplementOutcome({
+      endpoint: '/api/portal/enrichment-status/[id]',
+      requestId: correlationId,
+      jobId,
+      supplementName: supplement || undefined,
+      status: 'failed',
+      finalStatusCode: statusCode,
+      fallback: 'async_enrichment',
+      errorCode: 'JOB_NOT_FOUND',
+      elapsedTime: Date.now() - startTime,
+    });
     
     return NextResponse.json(response, { status: statusCode });
   }
@@ -117,6 +142,18 @@ export async function GET(
     
     // Record latency (no error for successful completion)
     jobMetrics.recordLatency(Date.now() - startTime);
+
+    logPortalSupplementOutcome({
+      endpoint: '/api/portal/enrichment-status/[id]',
+      requestId: correlationId,
+      jobId,
+      supplementName: supplement || undefined,
+      status: 'completed',
+      finalStatusCode: 200,
+      fallback: 'async_enrichment',
+      source: 'job-store',
+      elapsedTime: Date.now() - startTime,
+    });
     
     return NextResponse.json({
       success: true,
@@ -159,6 +196,18 @@ export async function GET(
     // Record error and latency
     jobMetrics.recordError(statusCode);
     jobMetrics.recordLatency(Date.now() - startTime);
+
+    logPortalSupplementOutcome({
+      endpoint: '/api/portal/enrichment-status/[id]',
+      requestId: correlationId,
+      jobId,
+      supplementName: supplement || undefined,
+      status: 'failed',
+      finalStatusCode: statusCode,
+      fallback: 'async_enrichment',
+      errorCode: 'ENRICHMENT_FAILED',
+      elapsedTime,
+    });
     
     return NextResponse.json(response, { status: statusCode });
   }
@@ -190,6 +239,18 @@ export async function GET(
     // Record error and latency
     jobMetrics.recordError(statusCode);
     jobMetrics.recordLatency(Date.now() - startTime);
+
+    logPortalSupplementOutcome({
+      endpoint: '/api/portal/enrichment-status/[id]',
+      requestId: correlationId,
+      jobId,
+      supplementName: supplement || undefined,
+      status: 'failed',
+      finalStatusCode: statusCode,
+      fallback: 'async_enrichment',
+      errorCode: 'JOB_TIMEOUT',
+      elapsedTime,
+    });
     
     return NextResponse.json(response, { status: statusCode });
   }
@@ -206,6 +267,18 @@ export async function GET(
   
   // Record latency (no error for processing status)
   jobMetrics.recordLatency(Date.now() - startTime);
+
+  logPortalSupplementOutcome({
+    endpoint: '/api/portal/enrichment-status/[id]',
+    requestId: correlationId,
+    jobId,
+    supplementName: supplement || undefined,
+    status: 'processing',
+    finalStatusCode: 202,
+    fallback: 'async_enrichment',
+    source: 'job-store',
+    elapsedTime: Date.now() - startTime,
+  });
   
   return NextResponse.json(
     {

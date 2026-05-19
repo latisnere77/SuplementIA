@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { getJob, cleanupExpired } from '@/lib/portal/job-store';
+import { logPortalSupplementOutcome } from '@/lib/portal/structured-logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -82,6 +83,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const requestId = crypto.randomUUID();
+  const startTime = Date.now();
   let jobId: string | undefined;
 
   try {
@@ -107,6 +109,16 @@ export async function GET(
           statusCode: 400,
         }
       );
+
+      logPortalSupplementOutcome({
+        endpoint: '/api/portal/status/[id]',
+        requestId,
+        status: 'failed',
+        finalStatusCode: 400,
+        fallback: 'backend_service_error',
+        errorCode: 'missing_job_id',
+        elapsedTime: Date.now() - startTime,
+      });
 
       return NextResponse.json(
         {
@@ -135,6 +147,17 @@ export async function GET(
           statusCode: 404,
         }
       );
+
+      logPortalSupplementOutcome({
+        endpoint: '/api/portal/status/[id]',
+        requestId,
+        jobId,
+        status: 'failed',
+        finalStatusCode: 404,
+        fallback: 'backend_service_error',
+        errorCode: 'job_not_found',
+        elapsedTime: Date.now() - startTime,
+      });
 
       return NextResponse.json(
         {
@@ -174,6 +197,19 @@ export async function GET(
       jobStatus: job.status,
     });
 
+    logPortalSupplementOutcome({
+      endpoint: '/api/portal/status/[id]',
+      requestId,
+      jobId,
+      supplementName: response.recommendation?.supplement?.name || response.recommendation?.category,
+      status: job.status === 'completed' ? 'completed' : job.status === 'failed' ? 'failed' : 'processing',
+      finalStatusCode: 200,
+      fallback: 'async_enrichment',
+      errorCode: job.error,
+      source: 'job-store',
+      elapsedTime: Date.now() - startTime,
+    });
+
     return NextResponse.json(response, { status: 200 });
   } catch (error: any) {
     portalLogger.logError(error, {
@@ -182,6 +218,17 @@ export async function GET(
       endpoint: '/api/portal/status/[id]',
       method: 'GET',
       statusCode: 503,
+    });
+
+    logPortalSupplementOutcome({
+      endpoint: '/api/portal/status/[id]',
+      requestId,
+      jobId,
+      status: 'upstream_unavailable',
+      finalStatusCode: 503,
+      fallback: 'upstream_unavailable',
+      errorCode: 'job_status_check_failed',
+      elapsedTime: Date.now() - startTime,
     });
 
     return NextResponse.json(
