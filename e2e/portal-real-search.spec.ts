@@ -120,7 +120,8 @@ test.describe('portal real supplement searches', () => {
             hasDosage: visibleText.includes('Dosificación según Estudios Clínicos'),
             hasSideEffects: visibleText.includes('Efectos Secundarios Posibles'),
             hasProducts: visibleText.includes('Product Recommendations'),
-            hasNoEvidence: visibleText.includes('Sin Evidencia Clínica Suficiente'),
+            hasNoEvidence: visibleText.includes('Sin Evidencia Clínica Humana Suficiente') ||
+              visibleText.includes('Not Enough Human Clinical Evidence'),
             hasUnsupportedWarning: visibleText.includes('no está respaldada por estudios científicos'),
           },
         }),

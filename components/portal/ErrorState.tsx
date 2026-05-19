@@ -13,6 +13,7 @@
 import { AlertCircle, BookOpen, ExternalLink, FlaskConical, RefreshCw, Search, Microscope, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export type ErrorType = 'insufficient_scientific_data' | 'system_error' | 'network_error' | 'generic';
 
@@ -40,22 +41,6 @@ interface ErrorMetadata {
   } | null;
   [key: string]: unknown;
 }
-
-const LITERATURE_CATEGORY_LABELS: Record<string, string> = {
-  human_clinical: 'Clínico humano',
-  review: 'Revisión',
-  preclinical: 'Preclínico',
-  phytochemical: 'Fitoquímico',
-  other: 'Otro',
-};
-
-const LITERATURE_CATEGORY_DESCRIPTIONS: Record<string, string> = {
-  human_clinical: 'Estudios en personas',
-  preclinical: 'Animales, células o laboratorio',
-  phytochemical: 'Composición o caracterización química',
-  review: 'Revisiones o contexto bibliográfico',
-  other: 'Botánica, agricultura u otros temas',
-};
 
 const LITERATURE_CATEGORY_ORDER = ['human_clinical', 'preclinical', 'phytochemical', 'review', 'other'];
 
@@ -112,6 +97,8 @@ export function ErrorState({
   onRetry, 
   suggestions: legacySuggestions = [] 
 }: ErrorStateProps) {
+  const t = useTranslations('portal.insufficientData');
+  const errorT = useTranslations('portal.errorState');
   // Parse error object or string
   const errorData = typeof error === 'string' 
     ? { type: 'generic' as ErrorType, message: error, suggestions: [] }
@@ -130,6 +117,7 @@ export function ErrorState({
   const neutralComponentQuery = `${searchedFor} chemical composition`;
   const neutralTopicQuery = `${searchedFor} safety`;
   const popularEvidenceSupplements = ['Magnesium', 'Creatine', 'Vitamin D', 'Psyllium'];
+  const isTimeout = typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout');
 
   // Render based on error type
   if (errorType === 'insufficient_scientific_data') {
@@ -147,33 +135,33 @@ export function ErrorState({
                   </div>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-yellow-950 mb-3">
-                  Sin Evidencia Clínica Humana Suficiente
+                  {t('title')}
                 </h3>
                 <p className="text-base text-yellow-900 max-w-2xl mx-auto leading-relaxed">
-                  {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
-                    ? `La búsqueda de "${searchedFor}" está tardando más de lo esperado. Esto puede ocurrir con términos muy amplios que tienen miles de estudios en PubMed.`
+                  {isTimeout
+                    ? t('timeoutMessage', { query: searchedFor })
                     : hasLiteratureProfile
-                      ? `PubMed sí contiene literatura relacionada con "${searchedFor}", pero la muestra revisada no tiene evidencia clínica humana suficiente para recomendar beneficios.`
-                      : `No encontramos evidencia clínica humana suficiente para recomendar beneficios de "${searchedFor}".`}
+                      ? t('literatureMessage', { query: searchedFor })
+                      : t('defaultMessage', { query: searchedFor })}
                 </p>
               </div>
 
               {hasLiteratureProfile && (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div className="rounded-lg border border-yellow-200 bg-white p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">Resultados PubMed</p>
+                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">{t('pubmedResults')}</p>
                     <p className="mt-1 text-2xl font-semibold text-yellow-950">{totalCount}</p>
-                    <p className="mt-1 text-xs text-yellow-800">Literatura relacionada con la consulta, no beneficios confirmados.</p>
+                    <p className="mt-1 text-xs text-yellow-800">{t('pubmedResultsDesc')}</p>
                   </div>
                   <div className="rounded-lg border border-yellow-200 bg-white p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">Muestra Revisada</p>
+                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">{t('reviewedSample')}</p>
                     <p className="mt-1 text-2xl font-semibold text-yellow-950">{sampledCount}</p>
-                    <p className="mt-1 text-xs text-yellow-800">Artículos clasificados para orientar este estado.</p>
+                    <p className="mt-1 text-xs text-yellow-800">{t('reviewedSampleDesc')}</p>
                   </div>
                   <div className="rounded-lg border border-yellow-200 bg-white p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">Conclusión</p>
-                    <p className="mt-2 text-sm font-semibold text-yellow-950">No recomendar beneficios</p>
-                    <p className="mt-1 text-xs text-yellow-800">La evidencia no alcanza el umbral clínico humano.</p>
+                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">{t('conclusion')}</p>
+                    <p className="mt-2 text-sm font-semibold text-yellow-950">{t('doNotRecommend')}</p>
+                    <p className="mt-1 text-xs text-yellow-800">{t('thresholdDesc')}</p>
                   </div>
                 </div>
               )}
@@ -182,7 +170,7 @@ export function ErrorState({
                 <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
                   <h4 className="font-semibold text-yellow-950 mb-4 flex items-center gap-2">
                     <FlaskConical className="w-5 h-5" />
-                    Qué tipo de literatura apareció en la muestra
+                    {t('literatureTypes')}
                   </h4>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {LITERATURE_CATEGORY_ORDER.map((category) => {
@@ -195,10 +183,10 @@ export function ErrorState({
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <p className="text-sm font-semibold text-yellow-950">
-                                {LITERATURE_CATEGORY_LABELS[category]}
+                                {t(`categoryLabels.${category}`)}
                               </p>
                               <p className="mt-1 text-xs text-yellow-800">
-                                {LITERATURE_CATEGORY_DESCRIPTIONS[category]}
+                                {t(`categoryDescriptions.${category}`)}
                               </p>
                             </div>
                             <span className="rounded-full bg-white px-2.5 py-1 text-sm font-semibold text-yellow-900">
@@ -210,7 +198,7 @@ export function ErrorState({
                     })}
                   </div>
                   <p className="mt-4 text-xs text-yellow-800">
-                    Preclínico, fitoquímico, botánico o agrícola no equivale a un efecto comprobado en personas.
+                    {t('nonClinicalWarning')}
                   </p>
                 </div>
               )}
@@ -219,10 +207,10 @@ export function ErrorState({
                 <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
                   <h4 className="font-semibold text-yellow-950 mb-3 flex items-center gap-2">
                     <Microscope className="w-5 h-5" />
-                    Artículos representativos de la muestra
+                    {t('representativeArticles')}
                   </h4>
                   <p className="text-sm text-yellow-800 mb-4">
-                    Esta lista no es una recomendación. Solo muestra ejemplos de la literatura revisada sobre <strong>&ldquo;{searchedFor}&rdquo;</strong> y por qué no la tratamos como evidencia clínica humana suficiente.
+                    {t('representativeArticlesDesc', { query: searchedFor })}
                   </p>
                   <div className="space-y-3">
                     {literatureArticles.map((article) => (
@@ -237,7 +225,7 @@ export function ErrorState({
                           <div className="min-w-0">
                             <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-yellow-700">
                               <span className="rounded-full bg-white px-2 py-0.5 font-medium">
-                                {LITERATURE_CATEGORY_LABELS[article.category || 'other'] || 'Otro'}
+                                {t(`categoryLabels.${article.category || 'other'}`)}
                               </span>
                               {article.year && <span>{article.year}</span>}
                               <span>PMID {article.pmid}</span>
@@ -258,43 +246,33 @@ export function ErrorState({
               <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
                 <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
-                  {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
-                      ? '¿Por qué ocurre esto?'
-                      : '¿Por qué es importante?'}
+                  {isTimeout ? t('timeoutWhyTitle') : t('whyTitle')}
                 </h4>
                 <p className="text-sm text-yellow-800 mb-3">
-                  {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout') ? (
-                    <>
-                      <strong>&ldquo;{searchedFor}&rdquo;</strong> puede ser un término demasiado genérico o amplio.
-                      Los términos genéricos tienen miles de estudios en PubMed, lo que hace que la búsqueda tarde demasiado.
-                    </>
+                  {isTimeout ? (
+                    t('whyTimeout', { query: searchedFor })
                   ) : (
-                    <>
-                      En Suplementia, <strong>solo promovemos beneficios confirmados cuando hay evidencia clínica humana suficiente</strong>.
-                      Puede haber estudios preclínicos, en animales, in vitro, fitoquímicos o revisiones botánicas, pero no los tratamos como efectos comprobados en personas.
-                    </>
+                    t('whyBody')
                   )}
                 </p>
                 <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
                   <p className="text-xs text-yellow-700 font-medium mb-2">
-                    {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
-                      ? 'Recomendaciones para mejorar tu búsqueda:'
-                      : 'Por qué puede aparecer este estado:'}
+                    {isTimeout ? t('timeoutRecommendations') : t('reasonsTitle')}
                   </p>
                   <ul className="text-xs text-yellow-700 space-y-1">
-                    {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout') ? (
+                    {isTimeout ? (
                       <>
-                        <li>• <strong>Busca un suplemento específico</strong> en lugar de categorías amplias (ej: busca &ldquo;Colágeno hidrolizado&rdquo; en vez de &ldquo;péptidos bioactivos&rdquo;)</li>
-                        <li>• <strong>Usa nombres comerciales específicos</strong> de suplementos que conozcas</li>
-                        <li>• <strong>Especifica el tipo o función</strong> (ej: &ldquo;péptidos de colágeno para articulaciones&rdquo;)</li>
-                        <li>• El término ha sido agregado a nuestra cola de procesamiento para futura indexación</li>
+                        <li>• {t('timeoutTipSpecific')}</li>
+                        <li>• {t('timeoutTipNames')}</li>
+                        <li>• {t('timeoutTipFunction')}</li>
+                        <li>• {t('timeoutTipQueued')}</li>
                       </>
                     ) : (
                       <>
-                        <li>• Puede haber estudios publicados, pero no ensayos clínicos humanos suficientes</li>
-                        <li>• La evidencia disponible puede ser preclínica, animal, in vitro o fitoquímica</li>
-                        <li>• Los resultados pueden estudiar mecanismos, seguridad, cultivo o composición</li>
-                        <li>• El término puede necesitar una forma, extracto, dosis o tema de búsqueda más específico</li>
+                        <li>• {t('reasonPublishedNoTrials')}</li>
+                        <li>• {t('reasonNonHuman')}</li>
+                        <li>• {t('reasonMechanisms')}</li>
+                        <li>• {t('reasonSpecificTerm')}</li>
                       </>
                     )}
                   </ul>
@@ -305,10 +283,10 @@ export function ErrorState({
               {suggestions.length > 0 && (
                 <div className="bg-white rounded-xl p-5 border-2 border-blue-200">
                   <h4 className="font-semibold text-blue-900 mb-3 text-center">
-                    💡 Suplementos similares con evidencia científica
+                    {t('similarTitle')}
                   </h4>
                   <p className="text-sm text-blue-700 mb-4 text-center">
-                    Estos suplementos tienen estudios publicados y podrían ser lo que buscas:
+                    {t('similarDesc')}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {suggestions.slice(0, 6).map((suggestion, i) => (
@@ -325,7 +303,7 @@ export function ErrorState({
                             {suggestion.hasStudies && (
                               <div className="text-xs text-blue-100 mt-1 flex items-center gap-1">
                                 <Microscope className="w-3 h-3" />
-                                Con estudios científicos
+                                {t('withStudies')}
                               </div>
                             )}
                           </div>
@@ -340,10 +318,10 @@ export function ErrorState({
               <div className="bg-white rounded-xl p-5 border-2 border-blue-200">
                 <h4 className="font-semibold text-blue-950 mb-3 flex items-center gap-2">
                   <BookOpen className="w-5 h-5" />
-                  Siguientes búsquedas exploratorias
+                  {t('nextSearchesTitle')}
                 </h4>
                 <p className="text-sm text-blue-800 mb-4">
-                  Estas acciones sirven para refinar la búsqueda. No implican que el suplemento tenga un efecto clínico confirmado.
+                  {t('nextSearchesDesc')}
                 </p>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <Button
@@ -353,8 +331,8 @@ export function ErrorState({
                   >
                     <Search className="mr-3 h-4 w-4 shrink-0" />
                     <span>
-                      <span className="block font-semibold">Probar otro nombre</span>
-                      <span className="block text-xs font-normal text-blue-800">Nombre común, científico o forma específica</span>
+                      <span className="block font-semibold">{t('tryAnotherName')}</span>
+                      <span className="block text-xs font-normal text-blue-800">{t('tryAnotherNameDesc')}</span>
                     </span>
                   </Button>
                   <Button
@@ -364,7 +342,7 @@ export function ErrorState({
                   >
                     <FlaskConical className="mr-3 h-4 w-4 shrink-0" />
                     <span>
-                      <span className="block font-semibold">Buscar componentes</span>
+                      <span className="block font-semibold">{t('searchComponents')}</span>
                       <span className="block text-xs font-normal text-blue-800">{neutralComponentQuery}</span>
                     </span>
                   </Button>
@@ -375,7 +353,7 @@ export function ErrorState({
                   >
                     <Microscope className="mr-3 h-4 w-4 shrink-0" />
                     <span>
-                      <span className="block font-semibold">Explorar un tema específico</span>
+                      <span className="block font-semibold">{t('exploreSpecificTopic')}</span>
                       <span className="block text-xs font-normal text-blue-800">{neutralTopicQuery}</span>
                     </span>
                   </Button>
@@ -386,8 +364,8 @@ export function ErrorState({
                   >
                     <TrendingUp className="mr-3 h-4 w-4 shrink-0" />
                     <span>
-                      <span className="block font-semibold">Volver a suplementos populares</span>
-                      <span className="block text-xs font-normal text-blue-800">Ver ingredientes con mejor respaldo clínico</span>
+                      <span className="block font-semibold">{t('popularEvidence')}</span>
+                      <span className="block text-xs font-normal text-blue-800">{t('popularEvidenceDesc')}</span>
                     </span>
                   </Button>
                 </div>
@@ -413,7 +391,7 @@ export function ErrorState({
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Search className="w-5 h-5 mr-2" />
-                  Buscar Otro Suplemento
+                  {t('searchAnother')}
                 </Button>
                 <Button 
                   onClick={onRetry} 
@@ -422,23 +400,23 @@ export function ErrorState({
                   className="border-yellow-300 hover:bg-yellow-100"
                 >
                   <RefreshCw className="w-5 h-5 mr-2" />
-                  Intentar de Nuevo
+                  {t('retry')}
                 </Button>
               </div>
 
               {/* Search Tips */}
               <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
                 <p className="font-medium text-blue-900 mb-2 text-sm">
-                  💡 Consejos para mejorar tu búsqueda:
+                  {t('tipsTitle')}
                 </p>
                 <ul className="text-xs text-blue-800 space-y-1.5">
-                  <li>• <strong>Verifica la ortografía</strong> del nombre del suplemento</li>
-                  <li>• <strong>Prueba otro nombre común o científico</strong> si lo conoces (ej: &ldquo;Withania somnifera&rdquo; en vez de &ldquo;ashwagandha&rdquo;)</li>
-                  <li>• <strong>Busca componentes específicos</strong> (ej: &ldquo;{searchedFor} essential oil&rdquo; o &ldquo;{searchedFor} chemical composition&rdquo;)</li>
-                  <li>• <strong>Explora suplemento + condición solo como búsqueda</strong>; no lo interpretes como recomendación</li>
-                  <li>• <strong>Prueba con términos en inglés</strong> - la mayoría de estudios están en inglés</li>
-                  <li>• <strong>Evita nombres comerciales</strong> - busca el ingrediente activo (ej: &ldquo;Creatine&rdquo; en vez de &ldquo;CreaPure&rdquo;)</li>
-                  <li>• <strong>Compara con ingredientes populares</strong> cuando quieras ver ejemplos con respaldo clínico humano</li>
+                  <li>• {t('tipSpelling')}</li>
+                  <li>• {t('tipName')}</li>
+                  <li>• {t('tipComponents', { query: searchedFor })}</li>
+                  <li>• {t('tipCondition')}</li>
+                  <li>• {t('tipEnglish')}</li>
+                  <li>• {t('tipBrands')}</li>
+                  <li>• {t('tipPopular')}</li>
                 </ul>
               </div>
             </div>
@@ -458,7 +436,7 @@ export function ErrorState({
             <div className="text-center">
               <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
               <h3 className="text-lg sm:text-xl font-semibold text-red-900 mb-2">
-                {errorType === 'network_error' ? 'Error de Conexión' : 'Error del Sistema'}
+                {errorType === 'network_error' ? errorT('networkTitle') : errorT('systemTitle')}
               </h3>
               <p className="text-sm text-red-700 whitespace-pre-line">
                 {typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage)}
@@ -469,7 +447,7 @@ export function ErrorState({
             {suggestions.length > 0 && (
               <div className="space-y-3">
                 <p className="text-sm font-medium text-red-900 text-center">
-                  ¿Quizás buscabas alguno de estos?
+                  {errorT('maybeSearched')}
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {suggestions.map((suggestion, i) => (
@@ -497,7 +475,7 @@ export function ErrorState({
                 className="bg-red-600 hover:bg-red-700"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Intentar de Nuevo
+                {errorT('retry')}
               </Button>
               <Button 
                 onClick={() => window.location.href = '/portal'} 
@@ -505,18 +483,18 @@ export function ErrorState({
                 className="border-red-300 hover:bg-red-100"
               >
                 <Search className="w-4 h-4 mr-2" />
-                Nueva Búsqueda
+                {errorT('newSearch')}
               </Button>
             </div>
 
             {/* Help Text */}
             <div className="text-center text-xs text-red-600 bg-white rounded-lg p-3 border border-red-200">
-              <p className="font-medium mb-1">💡 Consejos de búsqueda:</p>
+              <p className="font-medium mb-1">{errorT('tipsTitle')}</p>
               <ul className="text-left space-y-1 max-w-md mx-auto">
-                <li>• Verifica la ortografía del suplemento</li>
-                <li>• Intenta con el nombre científico (ej: &ldquo;Withania somnifera&rdquo; en vez de &ldquo;ashwagandha&rdquo;)</li>
-                <li>• Usa términos en inglés si es posible</li>
-                <li>• Evita nombres comerciales o marcas</li>
+                <li>• {errorT('tipSpelling')}</li>
+                <li>• {errorT('tipScientific')}</li>
+                <li>• {errorT('tipEnglish')}</li>
+                <li>• {errorT('tipBrands')}</li>
               </ul>
             </div>
           </div>
