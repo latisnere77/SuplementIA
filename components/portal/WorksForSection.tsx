@@ -13,8 +13,25 @@ import { SupplementGradeBadge, type GradeType } from './SupplementGrade';
 /**
  * Componente de leyenda para explicar los grados de evidencia
  */
-function EvidenceGradeLegend() {
+function EvidenceGradeLegend({ language = 'es' }: { language?: 'en' | 'es' }) {
   const [isOpen, setIsOpen] = useState(false);
+  const labels = language === 'en'
+    ? {
+      button: 'What do A, B, C, D, F mean?',
+      buttonShort: 'Legend',
+      title: 'Scientific Evidence Grades',
+      noteTitle: 'Note:',
+      note: 'These grades are based on the amount and quality of available scientific studies, not personal effectiveness. Always consult a health professional.',
+      close: 'Close legend',
+    }
+    : {
+      button: '¿Qué significan A, B, C, D, F?',
+      buttonShort: 'Leyenda',
+      title: 'Grados de Evidencia Científica',
+      noteTitle: 'Nota:',
+      note: 'Estos grados se basan en la cantidad y calidad de estudios científicos disponibles, no en la efectividad personal. Consulta siempre a un profesional de salud.',
+      close: 'Cerrar leyenda',
+    };
 
   const grades = [
     {
@@ -73,11 +90,11 @@ function EvidenceGradeLegend() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg"
-        aria-label="Ver leyenda de grados de evidencia"
+        aria-label={labels.button}
       >
         <HelpCircle className="h-4 w-4" />
-        <span className="hidden sm:inline">¿Qué significan A, B, C, D, F?</span>
-        <span className="sm:hidden">Leyenda</span>
+        <span className="hidden sm:inline">{labels.button}</span>
+        <span className="sm:hidden">{labels.buttonShort}</span>
       </button>
 
       {/* Modal/Popup de leyenda */}
@@ -94,12 +111,12 @@ function EvidenceGradeLegend() {
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 flex items-center justify-between">
               <h3 className="text-white font-bold text-lg">
-                Grados de Evidencia Científica
+                {labels.title}
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-white/80 hover:text-white transition-colors"
-                aria-label="Cerrar leyenda"
+                aria-label={labels.close}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -129,8 +146,7 @@ function EvidenceGradeLegend() {
               {/* Nota adicional */}
               <div className="bg-gray-50 rounded-lg p-3 mt-4 border border-gray-200">
                 <p className="text-xs text-gray-500">
-                  <strong>Nota:</strong> Estos grados se basan en la cantidad y calidad de estudios científicos disponibles,
-                  no en la efectividad personal. Consulta siempre a un profesional de salud.
+                  <strong>{labels.noteTitle}</strong> {labels.note}
                 </p>
               </div>
             </div>
@@ -151,6 +167,7 @@ interface WorksForSectionProps {
   worksFor: WorksForItem[];
   doesntWorkFor: WorksForItem[];
   limitedEvidence?: WorksForItem[];
+  language?: 'en' | 'es';
 }
 
 /**
@@ -192,7 +209,25 @@ export default function WorksForSection({
   worksFor,
   doesntWorkFor,
   limitedEvidence = [],
+  language = 'es',
 }: WorksForSectionProps) {
+  const labels = language === 'en'
+    ? {
+      title: 'What has evidence?',
+      noStrongBenefits: 'No benefits with confirmed A/B human clinical evidence in PubMed are available to show as supported.',
+      worksFor: 'Supported for',
+      doesntWorkFor: 'Not supported for',
+      limitedEvidence: 'Limited Evidence',
+      limitedIntro: 'The following effects have promising evidence but need more research:',
+    }
+    : {
+      title: '¿Para qué funciona?',
+      noStrongBenefits: 'No hay beneficios con evidencia clínica A/B confirmada en PubMed para mostrar como funciona.',
+      worksFor: 'Funciona para',
+      doesntWorkFor: 'No funciona para',
+      limitedEvidence: 'Evidencia Limitada',
+      limitedIntro: 'Los siguientes efectos tienen evidencia prometedora pero necesitan más investigación:',
+    };
   // Ordenar items por grado de evidencia (A → F)
   const sortedWorksFor = sortByEvidenceGrade(worksFor);
   const sortedDoesntWorkFor = sortByEvidenceGrade(doesntWorkFor);
@@ -203,16 +238,16 @@ export default function WorksForSection({
       {/* Header con título y leyenda */}
       <div className="flex items-start justify-between gap-4 mb-6">
         <h2 className="text-2xl font-bold text-gray-900">
-          ¿Para qué funciona?
+          {labels.title}
         </h2>
-        <EvidenceGradeLegend />
+        <EvidenceGradeLegend language={language} />
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         {sortedWorksFor.length === 0 && sortedDoesntWorkFor.length === 0 && sortedLimitedEvidence.length === 0 && (
           <div className="md:col-span-2 bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
             <p className="text-sm text-gray-700">
-              No hay beneficios con evidencia clínica A/B confirmada en PubMed para mostrar como funciona.
+              {labels.noStrongBenefits}
             </p>
           </div>
         )}
@@ -225,7 +260,7 @@ export default function WorksForSection({
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <h3 className="text-xl font-bold text-green-800">
-                ✅ Funciona para
+                ✅ {labels.worksFor}
               </h3>
             </div>
 
@@ -264,7 +299,7 @@ export default function WorksForSection({
                 <XCircle className="h-6 w-6 text-red-600" />
               </div>
               <h3 className="text-xl font-bold text-red-800">
-                ❌ No funciona para
+                ❌ {labels.doesntWorkFor}
               </h3>
             </div>
 
@@ -304,13 +339,13 @@ export default function WorksForSection({
               <TrendingUp className="h-6 w-6 text-yellow-600" />
             </div>
             <h3 className="text-xl font-bold text-yellow-800">
-              ⚠️ Evidencia Limitada
+              ⚠️ {labels.limitedEvidence}
             </h3>
           </div>
 
           <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
             <p className="text-sm text-gray-600 mb-3">
-              Los siguientes efectos tienen evidencia prometedora pero necesitan más investigación:
+              {labels.limitedIntro}
             </p>
             <ul className="space-y-2">
               {sortedLimitedEvidence.map((item, index) => (

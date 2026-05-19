@@ -61,7 +61,7 @@ function logRecommendOutcome(data: {
  * Get the base URL for internal API calls
  * Auto-detects production URL from Vercel environment
  */
-function getBaseUrl(): string {
+function getBaseUrl(request?: NextRequest): string {
   // 1. Vercel production URL
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
@@ -72,7 +72,12 @@ function getBaseUrl(): string {
     return process.env.NEXT_PUBLIC_APP_URL;
   }
 
-  // 3. Local development
+  // 3. Current request origin for local development on non-default ports
+  if (request?.nextUrl?.origin) {
+    return request.nextUrl.origin;
+  }
+
+  // 4. Local development fallback
   return 'http://localhost:3000';
 }
 
@@ -176,7 +181,7 @@ export async function POST(request: NextRequest) {
 
     // Call our intelligent enrichment system with extended timeout
     // Using enrich-v2 (simplified version) to avoid TDZ issues
-    const ENRICH_API_URL = `${getBaseUrl()}/api/portal/enrich-v2`;
+    const ENRICH_API_URL = `${getBaseUrl(request)}/api/portal/enrich-v2`;
     const enrichStartTime = Date.now();
     
     // Try sync first with shorter timeout (30s)

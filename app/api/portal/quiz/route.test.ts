@@ -96,12 +96,12 @@ const criticalAsyncCases = ['Turmeric', 'Berberine', 'Green tea extract'];
 
 const criticalInsufficientDataCases = ['Piper auritum', 'Fadogia agrestis'];
 
-function localCatalogHit(name: string) {
+function localCatalogHit(name: string, abstract = `${name} local catalog canary entry.`) {
   return {
     source: 'local_catalog',
     name,
     title: name,
-    abstract: `${name} local catalog canary entry.`,
+    abstract,
     ingredients: [name],
     conditions: ['catalog tag that must not become worksFor'],
     study_count: 75,
@@ -274,6 +274,57 @@ describe('/api/portal/quiz POST', () => {
         body: expect.stringContaining('"category":"Piper auritum"'),
       })
     );
+  });
+
+  it('uses the incoming request origin for internal recommendation fallback in local smoke runs', async () => {
+    const originalVercelUrl = process.env.VERCEL_URL;
+    const originalAppUrl = process.env.NEXT_PUBLIC_APP_URL;
+    delete process.env.VERCEL_URL;
+    delete process.env.NEXT_PUBLIC_APP_URL;
+
+    mockedSearchSupplements.mockResolvedValueOnce([]);
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: 'insufficient_data',
+          message: 'No encontramos evidencia clínica humana suficiente para confirmar beneficios de "Piper auritum".',
+        }),
+        {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    try {
+      const request = new NextRequest('http://127.0.0.1:3100/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: 'Piper auritum', searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(body.error).toBe('insufficient_data');
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://localhost:3100/api/portal/recommend',
+        expect.objectContaining({ method: 'POST' })
+      );
+    } finally {
+      if (originalVercelUrl === undefined) {
+        delete process.env.VERCEL_URL;
+      } else {
+        process.env.VERCEL_URL = originalVercelUrl;
+      }
+      if (originalAppUrl === undefined) {
+        delete process.env.NEXT_PUBLIC_APP_URL;
+      } else {
+        process.env.NEXT_PUBLIC_APP_URL = originalAppUrl;
+      }
+    }
   });
 
   it('should return a 400 Bad Request if the category field is missing', async () => {
@@ -469,6 +520,93 @@ describe('/api/portal/quiz POST', () => {
         expect(mockLambdaSend).toHaveBeenCalledTimes(1);
       }
     );
+
+    it('does not complete local catalog fallback when cached evidence has no strong worksFor claims', async () => {
+      const originalSearchBackend = process.env.SEARCH_BACKEND;
+      process.env.SEARCH_BACKEND = 'local';
+
+      mockedSearchSupplements
+        .mockResolvedValueOnce([
+          localCatalogHit(
+            'Fadogia agrestis',
+            'Fadogia agrestis is promoted online, but human clinical evidence remains limited and safety data are not well established.'
+          ),
+        ])
+        .mockResolvedValueOnce([]);
+      const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: false,
+            error: 'insufficient_data',
+            message: 'No encontramos evidencia clínica humana suficiente para confirmar beneficios de "Fadogia agrestis".',
+          }),
+          {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+      try {
+        const request = new NextRequest('http://localhost/api/portal/quiz', {
+          method: 'POST',
+          body: JSON.stringify({ category: 'Fadogia agrestis', searchIntent: 'supplement' }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        const response = await POST(request);
+        const body = await response.json();
+
+        expect(response.status).toBe(404);
+        expect(body.success).toBe(false);
+        expect(body.error).toBe('insufficient_data');
+        expect(fetchMock).toHaveBeenCalledWith(
+          expect.stringContaining('/api/portal/recommend'),
+          expect.objectContaining({
+            method: 'POST',
+            body: expect.stringContaining('"category":"Fadogia agrestis"'),
+          })
+        );
+      } finally {
+        if (originalSearchBackend === undefined) {
+          delete process.env.SEARCH_BACKEND;
+        } else {
+          process.env.SEARCH_BACKEND = originalSearchBackend;
+        }
+      }
+    });
+
+    it('keeps local catalog smoke runs deterministic for non-limited supplements without AWS credentials', async () => {
+      const originalSearchBackend = process.env.SEARCH_BACKEND;
+      process.env.SEARCH_BACKEND = 'local';
+
+      mockedSearchSupplements.mockResolvedValueOnce([localCatalogHit('Zinc')]);
+      const fetchMock = jest.spyOn(global, 'fetch');
+
+      try {
+        const request = new NextRequest('http://localhost/api/portal/quiz', {
+          method: 'POST',
+          body: JSON.stringify({ category: 'Zinc', searchIntent: 'supplement' }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        const response = await POST(request);
+        const body = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(body.success).toBe(true);
+        expect(body.status).toBe('completed');
+        expect(body.source).toBe('local_catalog_fallback');
+        expect(fetchMock).not.toHaveBeenCalled();
+        expect(mockLambdaSend).not.toHaveBeenCalled();
+      } finally {
+        if (originalSearchBackend === undefined) {
+          delete process.env.SEARCH_BACKEND;
+        } else {
+          process.env.SEARCH_BACKEND = originalSearchBackend;
+        }
+      }
+    });
 
     it('returns controlled upstream_unavailable for transient studies backend failures', async () => {
       mockedSearchSupplements.mockResolvedValueOnce([]);

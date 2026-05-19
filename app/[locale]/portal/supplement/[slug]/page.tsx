@@ -123,6 +123,18 @@ export default function SupplementDetailPage() {
       retry: 'Retry',
     }), [language, supplementName]);
 
+  const formatEvidenceError = useCallback((data: any): string => {
+    if (data?.error === 'insufficient_data') {
+      return data.message || labels.enrichmentIncomplete;
+    }
+
+    if (data?.error === 'upstream_unavailable') {
+      return data.message || labels.timeout;
+    }
+
+    return labels.enrichmentIncomplete;
+  }, [labels.enrichmentIncomplete, labels.timeout]);
+
   // Transform enrichment API response to component format
   const transformEnrichmentResponse = useCallback((data: any): EvidenceSummary => {
     const evidence = data.evidence || data.data || {};
@@ -228,7 +240,7 @@ export default function SupplementDetailPage() {
       if (response.status === 202 && data.status === 'processing' && data.pollUrl) {
         enrichmentData = await pollEnrichmentStatus(data.pollUrl);
       } else if (!response.ok) {
-        throw new Error(`${labels.fetchEvidenceError}: ${data.error || JSON.stringify(data)}`);
+        throw new Error(formatEvidenceError(data));
       }
 
       if (enrichmentData.success && enrichmentData.evidence) {
@@ -252,7 +264,7 @@ export default function SupplementDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [benefit, labels.fetchEvidenceError, labels.invalidFormat, labels.unknownError, pollEnrichmentStatus, slug, transformEnrichmentResponse]);
+  }, [benefit, formatEvidenceError, labels.invalidFormat, labels.unknownError, pollEnrichmentStatus, slug, transformEnrichmentResponse]);
 
   useEffect(() => {
     if (!slug) return;
@@ -344,6 +356,7 @@ export default function SupplementDetailPage() {
           <EvidenceAnalysisPanelNew
             evidenceSummary={evidenceSummary}
             supplementName={supplementName}
+            language={language}
             onViewStudies={(ingredientName) => {
               // Open PubMed search for this ingredient
               const query = encodeURIComponent(ingredientName);

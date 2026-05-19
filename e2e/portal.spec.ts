@@ -402,9 +402,9 @@ test.describe('portal browser flows', () => {
 
     await expect(page.getByRole('heading', { name: /Magnesium/i }).first()).toBeVisible();
     await expect(page.getByTestId('study-data-summary')).toContainText('142');
-    await expect(page.getByText('Dosificación según Estudios Clínicos')).toBeVisible();
+    await expect(page.getByText('Dosage in Clinical Studies')).toBeVisible();
     await expect(page.getByText('200-400 mg elemental magnesium daily')).toBeVisible();
-    await expect(page.getByText('Efectos Secundarios Posibles')).toBeVisible();
+    await expect(page.getByText('Possible Side Effects')).toBeVisible();
     await expect(page.getByText('Levothyroxine')).toBeVisible();
     await expect(page.getByText('Product Recommendations')).toBeVisible();
     await expect(page.getByText('Search Magnesium Glycinate on iHerb')).toBeVisible();

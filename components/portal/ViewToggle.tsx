@@ -10,9 +10,14 @@ export type ViewMode = 'standard' | 'examine';
 interface ViewToggleProps {
   mode: ViewMode;
   onChange: (mode: ViewMode) => void;
+  language?: 'en' | 'es';
 }
 
-export function ViewToggle({ mode, onChange }: ViewToggleProps) {
+export function ViewToggle({ mode, onChange, language = 'es' }: ViewToggleProps) {
+  const labels = language === 'en'
+    ? { standard: 'Standard View', examine: 'Quantitative View' }
+    : { standard: 'Vista Estándar', examine: 'Vista Cuantitativa' };
+
   return (
     <div className="inline-flex items-center gap-1 p-1 bg-gray-100 rounded-lg mb-6">
       <button
@@ -26,7 +31,7 @@ export function ViewToggle({ mode, onChange }: ViewToggleProps) {
           }
         `}
       >
-        Vista Estándar
+        {labels.standard}
       </button>
       <button
         type="button"
@@ -39,7 +44,7 @@ export function ViewToggle({ mode, onChange }: ViewToggleProps) {
           }
         `}
       >
-        Vista Cuantitativa
+        {labels.examine}
       </button>
     </div>
   );

@@ -123,7 +123,7 @@ export function ErrorState({
   if (errorType === 'insufficient_scientific_data') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" data-testid="error-state">
-        <Card className="max-w-3xl w-full border-yellow-200 bg-yellow-50">
+        <Card className="max-w-3xl w-full overflow-hidden border-yellow-200 bg-yellow-50">
           <CardContent className="pt-8 pb-8">
             <div className="space-y-6">
               {/* Scientific Data Not Found Icon */}
@@ -230,7 +230,7 @@ export function ErrorState({
                               {article.year && <span>{article.year}</span>}
                               <span>PMID {article.pmid}</span>
                             </div>
-                            <p className="text-sm font-medium leading-snug text-yellow-950">
+                            <p className="text-sm font-medium leading-snug text-yellow-950 break-words [overflow-wrap:anywhere]">
                               {article.title}
                             </p>
                           </div>
@@ -327,45 +327,45 @@ export function ErrorState({
                   <Button
                     onClick={() => window.location.href = '/portal'}
                     variant="outline"
-                    className="h-auto justify-start border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
+                    className="h-auto min-w-0 justify-start whitespace-normal border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
                   >
                     <Search className="mr-3 h-4 w-4 shrink-0" />
-                    <span>
+                    <span className="min-w-0">
                       <span className="block font-semibold">{t('tryAnotherName')}</span>
-                      <span className="block text-xs font-normal text-blue-800">{t('tryAnotherNameDesc')}</span>
+                      <span className="block break-words text-xs font-normal text-blue-800 [overflow-wrap:anywhere]">{t('tryAnotherNameDesc')}</span>
                     </span>
                   </Button>
                   <Button
                     onClick={() => window.location.href = `/portal/results?q=${encodeURIComponent(neutralComponentQuery)}&supplement=${encodeURIComponent(neutralComponentQuery)}`}
                     variant="outline"
-                    className="h-auto justify-start border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
+                    className="h-auto min-w-0 justify-start whitespace-normal border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
                   >
                     <FlaskConical className="mr-3 h-4 w-4 shrink-0" />
-                    <span>
+                    <span className="min-w-0">
                       <span className="block font-semibold">{t('searchComponents')}</span>
-                      <span className="block text-xs font-normal text-blue-800">{neutralComponentQuery}</span>
+                      <span className="block break-words text-xs font-normal text-blue-800 [overflow-wrap:anywhere]">{neutralComponentQuery}</span>
                     </span>
                   </Button>
                   <Button
                     onClick={() => window.location.href = `/portal/results?q=${encodeURIComponent(neutralTopicQuery)}&supplement=${encodeURIComponent(neutralTopicQuery)}`}
                     variant="outline"
-                    className="h-auto justify-start border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
+                    className="h-auto min-w-0 justify-start whitespace-normal border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
                   >
                     <Microscope className="mr-3 h-4 w-4 shrink-0" />
-                    <span>
+                    <span className="min-w-0">
                       <span className="block font-semibold">{t('exploreSpecificTopic')}</span>
-                      <span className="block text-xs font-normal text-blue-800">{neutralTopicQuery}</span>
+                      <span className="block break-words text-xs font-normal text-blue-800 [overflow-wrap:anywhere]">{neutralTopicQuery}</span>
                     </span>
                   </Button>
                   <Button
                     onClick={() => window.location.href = '/portal'}
                     variant="outline"
-                    className="h-auto justify-start border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
+                    className="h-auto min-w-0 justify-start whitespace-normal border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
                   >
                     <TrendingUp className="mr-3 h-4 w-4 shrink-0" />
-                    <span>
+                    <span className="min-w-0">
                       <span className="block font-semibold">{t('popularEvidence')}</span>
-                      <span className="block text-xs font-normal text-blue-800">{t('popularEvidenceDesc')}</span>
+                      <span className="block break-words text-xs font-normal text-blue-800 [overflow-wrap:anywhere]">{t('popularEvidenceDesc')}</span>
                     </span>
                   </Button>
                 </div>

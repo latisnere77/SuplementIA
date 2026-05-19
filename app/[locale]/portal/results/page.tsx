@@ -1583,7 +1583,7 @@ function ResultsPageContent() {
       )}
 
       {/* Legal Disclaimer Banner */}
-      <LegalDisclaimer />
+      <LegalDisclaimer language={language} />
 
       <div className="container mx-auto px-4 py-6 sm:py-8 md:py-10 lg:py-12">
         {/* Header */}
@@ -1687,11 +1687,12 @@ function ResultsPageContent() {
               <>
                 {transformedEvidence ? (
                   <>
-                    <ViewToggle mode={viewMode} onChange={setViewMode} />
+                    <ViewToggle mode={viewMode} onChange={setViewMode} language={language} />
                     {viewMode === 'standard' ? (
                       <EvidenceAnalysisPanelNew
                         evidenceSummary={transformedEvidence}
                         supplementName={localizedSupplementName}
+                        language={language}
                       />
                     ) : (
                       examineContent && (
