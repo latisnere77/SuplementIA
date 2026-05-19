@@ -34,6 +34,29 @@ function isLikelyScientificName(term: string): boolean {
   return words.every((word) => /^[a-z][a-z-]{2,}$/i.test(word));
 }
 
+function isTransientUpstreamStatus(status: number): boolean {
+  return [401, 403, 408, 429, 502, 503, 504].includes(status);
+}
+
+function upstreamUnavailableResponse(
+  supplementName: string,
+  requestId: string,
+  status: number,
+  details?: string
+) {
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'upstream_unavailable',
+      message: `No pudimos consultar temporalmente la base de estudios para "${supplementName}". Intenta de nuevo en unos minutos.`,
+      details: details?.slice(0, 500) || `Studies service returned ${status}`,
+      statusCode: status,
+      requestId,
+    },
+    { status: 503 }
+  );
+}
+
 async function buildLiteratureProfile(supplementName: string): Promise<PubMedLiteratureProfile | null> {
   try {
     return await searchPubMedLiteratureProfile(supplementName, {
@@ -168,6 +191,11 @@ export async function POST(request: NextRequest) {
       ) {
         console.warn(`[enrich-v2] Treating scientific-name studies failure as insufficient data: ${supplementName}`);
         return insufficientDataResponse(supplementName, requestId);
+      }
+
+      if (isTransientUpstreamStatus(studiesResponse.status)) {
+        console.warn(`[enrich-v2] Treating studies fetch ${studiesResponse.status} as upstream unavailable for ${supplementName}`);
+        return upstreamUnavailableResponse(supplementName, requestId, studiesResponse.status, errorText);
       }
 
       throw new Error(`Studies fetch failed: ${studiesResponse.status}`);

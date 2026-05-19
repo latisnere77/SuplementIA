@@ -1331,6 +1331,17 @@ export async function POST(request: NextRequest) {
           }, { status: 404 });
         }
 
+        if (recommendationResponse.status === 503 && errorData.error === 'upstream_unavailable') {
+          return NextResponse.json({
+            success: false,
+            error: 'upstream_unavailable',
+            message: errorData.message || 'No pudimos consultar temporalmente la base de estudios. Intenta de nuevo en unos minutos.',
+            details: errorData.details || errorData.error || 'Studies service unavailable',
+            requestId,
+            category: supplementName,
+          }, { status: 503 });
+        }
+
         // If backend fails, propagate the error. NO MOCKS.
         console.error(`[CRITICAL] Backend Recommendation Service Failed: ${recommendationResponse.status}`);
         return NextResponse.json({

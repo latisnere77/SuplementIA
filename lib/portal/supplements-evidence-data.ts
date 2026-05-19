@@ -392,6 +392,63 @@ export const SUPPLEMENTS_EVIDENCE_CACHE: Record<string, SupplementEvidenceData> 
     ],
   },
 
+  // PSYLLIUM
+  psyllium: {
+    overallGrade: 'A',
+    whatIsItFor: 'Fibra soluble que apoya la regularidad intestinal y puede reducir modestamente el colesterol LDL y los picos de glucosa postprandial.',
+    worksFor: [
+      {
+        condition: 'Mejorar estreñimiento y regularidad intestinal',
+        grade: 'A',
+        description: 'Ensayos clínicos y revisiones respaldan su uso como fibra formadora de volumen para mejorar la frecuencia y consistencia de evacuaciones.',
+      },
+      {
+        condition: 'Reducir colesterol LDL',
+        grade: 'A',
+        description: 'Meta-análisis de ensayos clínicos muestran reducciones modestas de LDL cuando se usa de forma constante junto con dieta.',
+      },
+      {
+        condition: 'Reducir respuesta glucémica postprandial',
+        grade: 'B',
+        description: 'La fibra soluble puede atenuar picos de glucosa después de comidas, especialmente en personas con riesgo metabólico.',
+      },
+    ],
+    doesntWorkFor: [
+      {
+        condition: 'Pérdida de peso rápida',
+        grade: 'D',
+        description: 'Puede apoyar saciedad, pero no produce pérdida de peso relevante por sí sola.',
+      },
+      {
+        condition: 'Curar diabetes o hipercolesterolemia',
+        grade: 'F',
+        description: 'No sustituye tratamiento médico, dieta ni seguimiento clínico.',
+      },
+    ],
+    limitedEvidence: [
+      {
+        condition: 'Síndrome de intestino irritable',
+        grade: 'C',
+        description: 'Puede ayudar en algunos perfiles de SII, pero la respuesta individual varía.',
+      },
+    ],
+    qualityBadges: {
+      hasRCTs: true,
+      hasMetaAnalysis: true,
+      longTermStudies: true,
+      safetyEstablished: true,
+    },
+    ingredients: [
+      {
+        name: 'Psyllium husk',
+        grade: 'A',
+        studyCount: 62,
+        rctCount: 24,
+        description: 'Fibra soluble formadora de gel derivada de Plantago ovata.',
+      },
+    ],
+  },
+
   // CATEGORÍAS COMUNES
   sleep: {
     overallGrade: 'B',

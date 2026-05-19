@@ -1188,6 +1188,14 @@ export const SUPPLEMENTS_DATABASE: SupplementEntry[] = [
     healthConditions: ['gut health', 'digestion', 'blood sugar'],
     language: 'en',
   },
+  {
+    id: 'psyllium-en',
+    name: 'Psyllium',
+    aliases: ['psyllium fiber', 'psyllium husk', 'ispaghula', 'isabgol', 'plantago ovata', 'fibra psyllium', 'psilio'],
+    category: 'other',
+    healthConditions: ['gut health', 'constipation', 'cholesterol', 'blood sugar', 'satiety'],
+    language: 'en',
+  },
 
   {
     id: 'multivitamin-en',

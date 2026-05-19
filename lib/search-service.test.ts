@@ -31,6 +31,7 @@ describe('search service fallback chain', () => {
     ['Omega-3', 'Omega-3'],
     ['Magnesium Glycinate', 'Magnesium'],
     ['Creatine', 'Creatine'],
+    ['Psyllium', 'Psyllium'],
     ['Ashwagandha', 'Ashwagandha'],
     ['Zinc', 'Zinc'],
     ['Collagen', 'Collagen'],
@@ -80,6 +81,7 @@ describe('search service fallback chain', () => {
   it.each([
     ['tongkat ali', 'Tongkat Ali', 'Eurycoma longifolia'],
     ['fadogia agrestis', 'Fadogia Agrestis', 'human clinical evidence remains limited'],
+    ['psyllium husk', 'Psyllium', 'soluble fiber'],
     ['sea moss', 'Sea Moss', 'Chondrus crispus'],
     ['musgo marino', 'Musgo Marino', 'Chondrus crispus'],
     ['shilajit', 'Shilajit', 'fulvic acids'],
