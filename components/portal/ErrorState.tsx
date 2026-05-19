@@ -10,7 +10,7 @@
 
 'use client';
 
-import { AlertCircle, ExternalLink, RefreshCw, Search, Microscope, TrendingUp } from 'lucide-react';
+import { AlertCircle, BookOpen, ExternalLink, FlaskConical, RefreshCw, Search, Microscope, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -47,6 +47,14 @@ const LITERATURE_CATEGORY_LABELS: Record<string, string> = {
   preclinical: 'Preclínico',
   phytochemical: 'Fitoquímico',
   other: 'Otro',
+};
+
+const LITERATURE_CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  human_clinical: 'Estudios en personas',
+  preclinical: 'Animales, células o laboratorio',
+  phytochemical: 'Composición o caracterización química',
+  review: 'Revisiones o contexto bibliográfico',
+  other: 'Botánica, agricultura u otros temas',
 };
 
 const LITERATURE_CATEGORY_ORDER = ['human_clinical', 'preclinical', 'phytochemical', 'review', 'other'];
@@ -117,6 +125,11 @@ export function ErrorState({
   const hasLiteratureProfile = !!literatureProfile && (literatureProfile.totalCount || 0) > 0;
   const literatureCategories = literatureProfile?.categories;
   const literatureArticles = literatureProfile?.articles ? selectRepresentativeArticles(literatureProfile.articles) : [];
+  const sampledCount = literatureProfile?.sampledCount || literatureArticles.length || 0;
+  const totalCount = literatureProfile?.totalCount || 0;
+  const neutralComponentQuery = `${searchedFor} chemical composition`;
+  const neutralTopicQuery = `${searchedFor} safety`;
+  const popularEvidenceSupplements = ['Magnesium', 'Creatine', 'Vitamin D', 'Psyllium'];
 
   // Render based on error type
   if (errorType === 'insufficient_scientific_data') {
@@ -133,58 +146,83 @@ export function ErrorState({
                     <AlertCircle className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-yellow-900 mb-3">
-                  🔬 Sin Evidencia Clínica Suficiente
+                <h3 className="text-xl sm:text-2xl font-bold text-yellow-950 mb-3">
+                  Sin Evidencia Clínica Humana Suficiente
                 </h3>
-                <p className="text-base text-yellow-800 max-w-xl mx-auto leading-relaxed">
+                <p className="text-base text-yellow-900 max-w-2xl mx-auto leading-relaxed">
                   {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
                     ? `La búsqueda de "${searchedFor}" está tardando más de lo esperado. Esto puede ocurrir con términos muy amplios que tienen miles de estudios en PubMed.`
-                    : typeof errorMessage === 'string' && errorMessage
-                      ? errorMessage
-                      : `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${searchedFor}".`}
+                    : hasLiteratureProfile
+                      ? `PubMed sí contiene literatura relacionada con "${searchedFor}", pero la muestra revisada no tiene evidencia clínica humana suficiente para recomendar beneficios.`
+                      : `No encontramos evidencia clínica humana suficiente para recomendar beneficios de "${searchedFor}".`}
                 </p>
-                {hasLiteratureProfile && (
-                  <div className="mt-4 inline-flex flex-wrap justify-center gap-2 text-xs text-yellow-900">
-                    <span className="rounded-full border border-yellow-300 bg-white px-3 py-1 font-semibold">
-                      {literatureProfile?.totalCount ?? 0} publicaciones PubMed encontradas
-                    </span>
-                    {(literatureProfile?.sampledCount || 0) > 0 && (
-                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {literatureProfile?.sampledCount} revisadas en la muestra
-                      </span>
-                    )}
-                    {(literatureCategories?.human_clinical || 0) > 0 && (
-                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {formatCount(literatureCategories?.human_clinical || 0, 'estudio clínico humano', 'estudios clínicos humanos')}
-                      </span>
-                    )}
-                    {(literatureCategories?.preclinical || 0) > 0 && (
-                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {formatCount(literatureCategories?.preclinical || 0, 'estudio preclínico', 'estudios preclínicos')}
-                      </span>
-                    )}
-                    {(literatureCategories?.phytochemical || 0) > 0 && (
-                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {formatCount(literatureCategories?.phytochemical || 0, 'estudio fitoquímico', 'estudios fitoquímicos')}
-                      </span>
-                    )}
-                    {(literatureCategories?.review || 0) > 0 && (
-                      <span className="rounded-full border border-yellow-300 bg-white px-3 py-1">
-                        {formatCount(literatureCategories?.review || 0, 'revisión', 'revisiones')}
-                      </span>
-                    )}
-                  </div>
-                )}
               </div>
+
+              {hasLiteratureProfile && (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div className="rounded-lg border border-yellow-200 bg-white p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">Resultados PubMed</p>
+                    <p className="mt-1 text-2xl font-semibold text-yellow-950">{totalCount}</p>
+                    <p className="mt-1 text-xs text-yellow-800">Literatura relacionada con la consulta, no beneficios confirmados.</p>
+                  </div>
+                  <div className="rounded-lg border border-yellow-200 bg-white p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">Muestra Revisada</p>
+                    <p className="mt-1 text-2xl font-semibold text-yellow-950">{sampledCount}</p>
+                    <p className="mt-1 text-xs text-yellow-800">Artículos clasificados para orientar este estado.</p>
+                  </div>
+                  <div className="rounded-lg border border-yellow-200 bg-white p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">Conclusión</p>
+                    <p className="mt-2 text-sm font-semibold text-yellow-950">No recomendar beneficios</p>
+                    <p className="mt-1 text-xs text-yellow-800">La evidencia no alcanza el umbral clínico humano.</p>
+                  </div>
+                </div>
+              )}
+
+              {hasLiteratureProfile && (
+                <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
+                  <h4 className="font-semibold text-yellow-950 mb-4 flex items-center gap-2">
+                    <FlaskConical className="w-5 h-5" />
+                    Qué tipo de literatura apareció en la muestra
+                  </h4>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {LITERATURE_CATEGORY_ORDER.map((category) => {
+                      const count = literatureCategories?.[category as keyof typeof literatureCategories] || 0;
+                      return (
+                        <div
+                          key={category}
+                          className="rounded-lg border border-yellow-200 bg-yellow-50 p-3"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-yellow-950">
+                                {LITERATURE_CATEGORY_LABELS[category]}
+                              </p>
+                              <p className="mt-1 text-xs text-yellow-800">
+                                {LITERATURE_CATEGORY_DESCRIPTIONS[category]}
+                              </p>
+                            </div>
+                            <span className="rounded-full bg-white px-2.5 py-1 text-sm font-semibold text-yellow-900">
+                              {count}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-4 text-xs text-yellow-800">
+                    Preclínico, fitoquímico, botánico o agrícola no equivale a un efecto comprobado en personas.
+                  </p>
+                </div>
+              )}
 
               {literatureArticles.length > 0 && (
                 <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
-                  <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
+                  <h4 className="font-semibold text-yellow-950 mb-3 flex items-center gap-2">
                     <Microscope className="w-5 h-5" />
-                    Literatura PubMed encontrada
+                    Artículos representativos de la muestra
                   </h4>
                   <p className="text-sm text-yellow-800 mb-4">
-                    Mostramos una selección representativa de la muestra revisada sobre <strong>&ldquo;{searchedFor}&rdquo;</strong>. Estos artículos explican por qué hay literatura publicada, aunque todavía no sea suficiente para confirmar beneficios clínicos en personas.
+                    Esta lista no es una recomendación. Solo muestra ejemplos de la literatura revisada sobre <strong>&ldquo;{searchedFor}&rdquo;</strong> y por qué no la tratamos como evidencia clínica humana suficiente.
                   </p>
                   <div className="space-y-3">
                     {literatureArticles.map((article) => (
@@ -221,8 +259,8 @@ export function ErrorState({
                 <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
                   {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout')
-                    ? '¿Por qué ocurre esto?'
-                    : '¿Por qué es importante?'}
+                      ? '¿Por qué ocurre esto?'
+                      : '¿Por qué es importante?'}
                 </h4>
                 <p className="text-sm text-yellow-800 mb-3">
                   {errorMessage && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout') ? (
@@ -233,7 +271,7 @@ export function ErrorState({
                   ) : (
                     <>
                       En Suplementia, <strong>solo promovemos beneficios confirmados cuando hay evidencia clínica humana suficiente</strong>.
-                      Puede haber estudios preclínicos, en animales, in vitro, fitoquímicos o revisiones botánicas, pero no los tratamos como beneficios confirmados para personas.
+                      Puede haber estudios preclínicos, en animales, in vitro, fitoquímicos o revisiones botánicas, pero no los tratamos como efectos comprobados en personas.
                     </>
                   )}
                 </p>
@@ -255,8 +293,8 @@ export function ErrorState({
                       <>
                         <li>• Puede haber estudios publicados, pero no ensayos clínicos humanos suficientes</li>
                         <li>• La evidencia disponible puede ser preclínica, animal, in vitro o fitoquímica</li>
-                        <li>• Los resultados pueden estudiar mecanismos, seguridad o composición, no beneficios clínicos</li>
-                        <li>• El término puede necesitar una forma, extracto, dosis o beneficio más específico</li>
+                        <li>• Los resultados pueden estudiar mecanismos, seguridad, cultivo o composición</li>
+                        <li>• El término puede necesitar una forma, extracto, dosis o tema de búsqueda más específico</li>
                       </>
                     )}
                   </ul>
@@ -299,6 +337,73 @@ export function ErrorState({
                 </div>
               )}
 
+              <div className="bg-white rounded-xl p-5 border-2 border-blue-200">
+                <h4 className="font-semibold text-blue-950 mb-3 flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  Siguientes búsquedas exploratorias
+                </h4>
+                <p className="text-sm text-blue-800 mb-4">
+                  Estas acciones sirven para refinar la búsqueda. No implican que el suplemento tenga un efecto clínico confirmado.
+                </p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Button
+                    onClick={() => window.location.href = '/portal'}
+                    variant="outline"
+                    className="h-auto justify-start border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
+                  >
+                    <Search className="mr-3 h-4 w-4 shrink-0" />
+                    <span>
+                      <span className="block font-semibold">Probar otro nombre</span>
+                      <span className="block text-xs font-normal text-blue-800">Nombre común, científico o forma específica</span>
+                    </span>
+                  </Button>
+                  <Button
+                    onClick={() => window.location.href = `/portal/results?q=${encodeURIComponent(neutralComponentQuery)}&supplement=${encodeURIComponent(neutralComponentQuery)}`}
+                    variant="outline"
+                    className="h-auto justify-start border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
+                  >
+                    <FlaskConical className="mr-3 h-4 w-4 shrink-0" />
+                    <span>
+                      <span className="block font-semibold">Buscar componentes</span>
+                      <span className="block text-xs font-normal text-blue-800">{neutralComponentQuery}</span>
+                    </span>
+                  </Button>
+                  <Button
+                    onClick={() => window.location.href = `/portal/results?q=${encodeURIComponent(neutralTopicQuery)}&supplement=${encodeURIComponent(neutralTopicQuery)}`}
+                    variant="outline"
+                    className="h-auto justify-start border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
+                  >
+                    <Microscope className="mr-3 h-4 w-4 shrink-0" />
+                    <span>
+                      <span className="block font-semibold">Explorar un tema específico</span>
+                      <span className="block text-xs font-normal text-blue-800">{neutralTopicQuery}</span>
+                    </span>
+                  </Button>
+                  <Button
+                    onClick={() => window.location.href = '/portal'}
+                    variant="outline"
+                    className="h-auto justify-start border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-950 hover:bg-blue-100"
+                  >
+                    <TrendingUp className="mr-3 h-4 w-4 shrink-0" />
+                    <span>
+                      <span className="block font-semibold">Volver a suplementos populares</span>
+                      <span className="block text-xs font-normal text-blue-800">Ver ingredientes con mejor respaldo clínico</span>
+                    </span>
+                  </Button>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {popularEvidenceSupplements.map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => window.location.href = `/portal/results?q=${encodeURIComponent(name)}&supplement=${encodeURIComponent(name)}`}
+                      className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-medium text-blue-800 hover:bg-blue-50"
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                 <Button 
@@ -328,11 +433,12 @@ export function ErrorState({
                 </p>
                 <ul className="text-xs text-blue-800 space-y-1.5">
                   <li>• <strong>Verifica la ortografía</strong> del nombre del suplemento</li>
-                  <li>• <strong>Usa el nombre científico</strong> si lo conoces (ej: &ldquo;Withania somnifera&rdquo; en vez de &ldquo;ashwagandha&rdquo;)</li>
-                  <li>• <strong>Prueba con un tema específico</strong> (ej: &ldquo;Piper auritum safrole&rdquo; o &ldquo;Piper auritum essential oil&rdquo;)</li>
+                  <li>• <strong>Prueba otro nombre común o científico</strong> si lo conoces (ej: &ldquo;Withania somnifera&rdquo; en vez de &ldquo;ashwagandha&rdquo;)</li>
+                  <li>• <strong>Busca componentes específicos</strong> (ej: &ldquo;{searchedFor} essential oil&rdquo; o &ldquo;{searchedFor} chemical composition&rdquo;)</li>
+                  <li>• <strong>Explora suplemento + condición solo como búsqueda</strong>; no lo interpretes como recomendación</li>
                   <li>• <strong>Prueba con términos en inglés</strong> - la mayoría de estudios están en inglés</li>
                   <li>• <strong>Evita nombres comerciales</strong> - busca el ingrediente activo (ej: &ldquo;Creatine&rdquo; en vez de &ldquo;CreaPure&rdquo;)</li>
-                  <li>• <strong>Busca por categoría</strong> - ej: &ldquo;adaptógeno&rdquo;, &ldquo;nootrópico&rdquo;, &ldquo;antioxidante&rdquo;</li>
+                  <li>• <strong>Compara con ingredientes populares</strong> cuando quieras ver ejemplos con respaldo clínico humano</li>
                 </ul>
               </div>
             </div>

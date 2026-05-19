@@ -622,18 +622,30 @@ test.describe('portal browser flows', () => {
     await page.goto('/en/portal/results?q=unknown%20herb&supplement=unknown%20herb');
 
     await expect(page.getByTestId('error-state')).toBeVisible();
-    await expect(page.getByText('Sin Evidencia Clínica Suficiente')).toBeVisible();
-    await expect(page.getByText(/^Encontramos literatura publicada/i)).toBeVisible();
-    await expect(page.getByText('3 publicaciones PubMed encontradas')).toBeVisible();
-    await expect(page.getByText('3 revisadas en la muestra')).toBeVisible();
-    await expect(page.getByText('Literatura PubMed encontrada')).toBeVisible();
-    await expect(page.getByText('Mostramos una selección representativa')).toBeVisible();
+    await expect(page.getByText('Sin Evidencia Clínica Humana Suficiente')).toBeVisible();
+    await expect(page.getByText(/^PubMed sí contiene literatura relacionada/i)).toBeVisible();
+    await expect(page.getByText('Resultados PubMed')).toBeVisible();
+    await expect(page.getByText('Muestra Revisada', { exact: true })).toBeVisible();
+    await expect(page.getByText('Qué tipo de literatura apareció en la muestra')).toBeVisible();
+    await expect(page.getByText('Estudios en personas')).toBeVisible();
+    await expect(page.getByText('Animales, células o laboratorio')).toBeVisible();
+    await expect(page.getByText('Composición o caracterización química')).toBeVisible();
+    await expect(page.getByText('Artículos representativos de la muestra')).toBeVisible();
+    await expect(page.getByText('Esta lista no es una recomendación.')).toBeVisible();
     await expect(page.getByText('Chemical composition of unknown herb essential oil')).toBeVisible();
     await expect(page.getByText('Unknown herb extract in rat model')).toBeVisible();
     await expect(page.getByText('Unknown herb field use report')).toBeVisible();
     await expect(page.getByRole('link', { name: /PMID 12345/i })).toHaveAttribute('href', /pubmed\.ncbi\.nlm\.nih\.gov\/12345/);
     await expect(page.getByText(/No encontramos estudios científicos publicados en PubMed/i)).not.toBeVisible();
-    await expect(page.getByText(/^Encontramos literatura publicada sobre "unknown herb"/i)).toBeVisible();
+    await expect(page.getByText(/Preclínico, fitoquímico, botánico o agrícola no equivale/i)).toBeVisible();
+    await expect(page.getByText('Siguientes búsquedas exploratorias')).toBeVisible();
+    await expect(page.getByText('Estas acciones sirven para refinar la búsqueda. No implican')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Probar otro nombre/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Buscar componentes/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Explorar un tema específico/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Volver a suplementos populares/i })).toBeVisible();
+    await expect(page.getByText(/Explora suplemento \+ condición solo como búsqueda/i)).toBeVisible();
+    await expect(page.getByText(/sirve para/i)).not.toBeVisible();
     await expect(page.getByRole('button', { name: /Buscar Otro Suplemento/i })).toBeVisible();
   });
 
@@ -666,10 +678,11 @@ test.describe('portal browser flows', () => {
     await page.goto('/en/portal/results?q=Piper%20auritum&supplement=Piper%20auritum');
 
     await expect(page.getByTestId('error-state')).toBeVisible();
-    await expect(page.getByText('Sin Evidencia Clínica Suficiente')).toBeVisible();
+    await expect(page.getByText('Sin Evidencia Clínica Humana Suficiente')).toBeVisible();
     await expect(page.getByText(/^No encontramos evidencia clínica humana suficiente/i)).toBeVisible();
     await expect(page.getByText(/No encontramos estudios científicos publicados en PubMed/i)).not.toBeVisible();
-    await expect(page.getByText(/^No encontramos evidencia clínica humana suficiente para confirmar beneficios de "piper auritum"\./i)).toBeVisible();
+    await expect(page.getByText(/^No encontramos evidencia clínica humana suficiente para recomendar beneficios de "piper auritum"\./i)).toBeVisible();
+    await expect(page.getByText(/sirve para/i)).not.toBeVisible();
     await expect(page.getByText('This page couldn’t load')).not.toBeVisible();
   });
 });

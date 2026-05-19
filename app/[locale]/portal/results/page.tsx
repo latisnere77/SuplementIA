@@ -1133,7 +1133,7 @@ function ResultsPageContent() {
               setSearchType('ingredient');
               setError({
                 type: 'insufficient_scientific_data',
-                message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${normalizedQuery}".`,
+                message: `No encontramos evidencia clínica humana suficiente para recomendar beneficios de "${normalizedQuery}".`,
                 searchedFor: normalizedQuery,
                 suggestions: [],
                 metadata: {
