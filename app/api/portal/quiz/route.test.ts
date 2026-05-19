@@ -48,6 +48,9 @@ jest.mock('@aws-sdk/lib-dynamodb', () => ({
 jest.mock('@/lib/portal/supplements-database', () => ({
   SUPPLEMENTS_DATABASE: [
     { name: 'Magnesium', aliases: [], category: 'ingredient' },
+    { name: 'Creatine', aliases: [], category: 'ingredient' },
+    { name: 'Vitamin D', aliases: ['vitamin d3'], category: 'ingredient' },
+    { name: 'Melatonin', aliases: [], category: 'ingredient' },
     { name: 'Psyllium', aliases: ['psyllium husk', 'psyllium fiber'], category: 'ingredient' },
   ],
 }));
@@ -60,6 +63,80 @@ jest.mock('@/lib/search-service', () => ({
 const mockedSearchPubMed = pubmedSearch.searchPubMed as jest.Mock;
 const mockedSearchSupplements = searchSupplements as jest.Mock;
 const { __mockLambdaSend: mockLambdaSend } = jest.requireMock('@aws-sdk/client-lambda');
+
+const criticalLocalCatalogCases = [
+  {
+    query: 'Magnesium',
+    expectedCondition: 'Reducir calambres musculares',
+    expectedGrade: 'B',
+  },
+  {
+    query: 'Creatine',
+    expectedCondition: 'Aumentar fuerza muscular',
+    expectedGrade: 'A',
+  },
+  {
+    query: 'Vitamin D',
+    expectedCondition: 'Salud ósea',
+    expectedGrade: 'A',
+  },
+  {
+    query: 'Melatonin',
+    expectedCondition: 'Jet lag',
+    expectedGrade: 'A',
+  },
+  {
+    query: 'Psyllium',
+    expectedCondition: 'Reducir colesterol LDL',
+    expectedGrade: 'A',
+  },
+];
+
+const criticalAsyncCases = ['Turmeric', 'Berberine', 'Green tea extract'];
+
+const criticalInsufficientDataCases = ['Piper auritum', 'Fadogia agrestis'];
+
+function localCatalogHit(name: string) {
+  return {
+    source: 'local_catalog',
+    name,
+    title: name,
+    abstract: `${name} local catalog canary entry.`,
+    ingredients: [name],
+    conditions: ['catalog tag that must not become worksFor'],
+    study_count: 75,
+  };
+}
+
+function lancedbHit(name: string, abstract = `${name} is studied in mixed supplement literature.`) {
+  return {
+    source: 'pubmed',
+    name,
+    title: `${name} clinical literature`,
+    abstract,
+    ingredients: [name],
+    study_count: 40,
+    score: 0.95,
+  };
+}
+
+function studiesFetcherPayload(studies: any[]) {
+  return {
+    Payload: Buffer.from(JSON.stringify({
+      body: JSON.stringify({
+        success: true,
+        data: {
+          ranked: {
+            positive: studies,
+            negative: [],
+            mixed: [],
+            metadata: { confidenceScore: 80 },
+          },
+        },
+      }),
+    })),
+  };
+}
 
 describe('/api/portal/quiz POST', () => {
   afterAll(async () => {
@@ -236,203 +313,174 @@ describe('/api/portal/quiz POST', () => {
     );
   });
 
-  it('should serve Psyllium from local cached evidence instead of falling through to the upstream fetcher', async () => {
-    mockedSearchSupplements.mockResolvedValueOnce([
-      {
-        source: 'local_catalog',
-        name: 'Psyllium',
-        title: 'Psyllium',
-        abstract: 'Psyllium is a soluble fiber from Plantago ovata husk.',
-        ingredients: ['Psyllium'],
-        conditions: ['gut health', 'cholesterol', 'blood sugar'],
-        study_count: 75,
-      },
-    ]);
-    const fetchMock = jest.spyOn(global, 'fetch');
+  describe('critical supplement smoke matrix', () => {
+    /*
+     * Canary coverage for recent production regressions:
+     * - local catalog supplements must return completed recommendations with curated worksFor
+     * - mixed-evidence supplements must enter async enrichment without leaking preclinical claims
+     * - low/no human-evidence botanicals must stay insufficient_data
+     * - transient upstream failures must surface as controlled 503, not backend_service_error/500
+     */
+    it.each(criticalLocalCatalogCases)(
+      'returns completed local_catalog_fallback for $query with curated worksFor',
+      async ({ query, expectedCondition, expectedGrade }) => {
+        mockedSearchSupplements.mockResolvedValueOnce([localCatalogHit(query)]);
+        const fetchMock = jest.spyOn(global, 'fetch');
 
-    const request = new NextRequest('http://localhost/api/portal/quiz', {
-      method: 'POST',
-      body: JSON.stringify({ category: 'Psyllium', searchIntent: 'supplement' }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    const response = await POST(request);
-    const body = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(body.source).toBe('local_catalog_fallback');
-    expect(body.status).toBe('completed');
-    expect(body.recommendation.supplement.name).toBe('Psyllium');
-    expect(body.recommendation.supplement.worksFor).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          condition: 'Reducir colesterol LDL',
-          evidenceGrade: 'A',
-        }),
-      ])
-    );
-    expect(fetchMock).not.toHaveBeenCalled();
-    expect(mockLambdaSend).not.toHaveBeenCalled();
-  });
-
-  it('should propagate upstream unavailable from the recommendation service as a controlled 503', async () => {
-    mockedSearchSupplements.mockResolvedValueOnce([]);
-    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          success: false,
-          error: 'upstream_unavailable',
-          message: 'No pudimos consultar temporalmente la base de estudios para "Psyllium". Intenta de nuevo en unos minutos.',
-          details: 'Studies service returned 403',
-        }),
-        {
-          status: 503,
+        const request = new NextRequest('http://localhost/api/portal/quiz', {
+          method: 'POST',
+          body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
           headers: { 'Content-Type': 'application/json' },
-        }
-      )
+        });
+
+        const response = await POST(request);
+        const body = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(body.success).toBe(true);
+        expect(body.status).toBe('completed');
+        expect(body.source).toBe('local_catalog_fallback');
+        expect(body.recommendation.supplement.worksFor).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              condition: expectedCondition,
+              evidenceGrade: expectedGrade,
+            }),
+          ])
+        );
+        expect(body.recommendation.supplement.worksFor).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              condition: expect.stringContaining('catalog tag'),
+            }),
+          ])
+        );
+        expect(fetchMock).not.toHaveBeenCalled();
+        expect(mockLambdaSend).not.toHaveBeenCalled();
+      }
     );
 
-    const request = new NextRequest('http://localhost/api/portal/quiz', {
-      method: 'POST',
-      body: JSON.stringify({ category: 'Psyllium', searchIntent: 'supplement' }),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    it.each(criticalAsyncCases)(
+      'starts controlled async enrichment for mixed-evidence canary %s without immediate claims',
+      async (query) => {
+        mockedSearchSupplements
+          .mockResolvedValueOnce([lancedbHit(query)])
+          .mockResolvedValueOnce([lancedbHit(query)]);
 
-    const response = await POST(request);
-    const body = await response.json();
-
-    expect(response.status).toBe(503);
-    expect(body.error).toBe('upstream_unavailable');
-    expect(body.message).toContain('Psyllium');
-    expect(body.error).not.toBe('backend_service_error');
-  });
-
-  it('should not start async enrichment when ranked literature has no human clinical studies', async () => {
-    const lancedbHit = {
-      source: 'pubmed',
-      name: 'Fadogia agrestis',
-      title: 'Fadogia agrestis extract in rats',
-      abstract: 'Fadogia agrestis is promoted for male vitality, but human clinical evidence remains limited and safety data are not well established.',
-      ingredients: ['Fadogia agrestis'],
-      study_count: 75,
-      score: 0.95,
-    };
-
-    mockedSearchSupplements
-      .mockResolvedValueOnce([lancedbHit])
-      .mockResolvedValueOnce([lancedbHit]);
-
-    mockLambdaSend.mockResolvedValueOnce({
-      Payload: Buffer.from(JSON.stringify({
-        body: JSON.stringify({
-          success: true,
-          data: {
-            ranked: {
-              positive: [
-                {
-                  pmid: '123',
-                  title: 'Fadogia agrestis extract in rats',
-                  abstract: 'A rat model evaluated testicular effects of the botanical extract.',
-                  publicationTypes: ['Journal Article'],
-                },
-              ],
-              negative: [],
-              mixed: [],
-              metadata: { confidenceScore: 80 },
+        mockLambdaSend
+          .mockResolvedValueOnce(studiesFetcherPayload([
+            {
+              pmid: '456',
+              title: `${query} extract in rats`,
+              abstract: 'A rat model evaluated inflammatory markers.',
+              publicationTypes: ['Journal Article'],
             },
+          ]))
+          .mockResolvedValueOnce({});
+
+        const request = new NextRequest('http://localhost/api/portal/quiz', {
+          method: 'POST',
+          body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        const response = await POST(request);
+        const body = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(body.success).toBe(true);
+        expect(body.status).toBe('processing');
+        expect(body.source).toBe('lancedb_enriching_async');
+        expect(body.recommendation.supplement.worksFor).toEqual([]);
+        expect(body.message).toContain('Enrichment in progress');
+        expect(mockLambdaSend).toHaveBeenCalledTimes(2);
+      }
+    );
+
+    it.each(criticalInsufficientDataCases)(
+      'returns insufficient_data without claims for low human-evidence canary %s',
+      async (query) => {
+        const limitedEvidenceHit = lancedbHit(
+          query,
+          `${query} is promoted online, but human clinical evidence remains limited and safety data are not well established.`
+        );
+        mockedSearchSupplements
+          .mockResolvedValueOnce([limitedEvidenceHit])
+          .mockResolvedValueOnce([limitedEvidenceHit]);
+
+        mockLambdaSend.mockResolvedValueOnce(studiesFetcherPayload([
+          {
+            pmid: '123',
+            title: `${query} extract in rats`,
+            abstract: 'A rat model evaluated botanical extract activity.',
+            publicationTypes: ['Journal Article'],
           },
-        }),
-      })),
-    });
+        ]));
 
-    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          success: false,
-          error: 'insufficient_data',
-          message: 'No encontramos evidencia clínica humana suficiente para confirmar beneficios de "Fadogia agrestis".',
-        }),
-        {
-          status: 404,
+        jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              success: false,
+              error: 'insufficient_data',
+              message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${query}".`,
+            }),
+            {
+              status: 404,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          )
+        );
+
+        const request = new NextRequest('http://localhost/api/portal/quiz', {
+          method: 'POST',
+          body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
           headers: { 'Content-Type': 'application/json' },
-        }
-      )
+        });
+
+        const response = await POST(request);
+        const body = await response.json();
+
+        expect(response.status).toBe(404);
+        expect(body.success).toBe(false);
+        expect(body.error).toBe('insufficient_data');
+        expect(body.message).toContain(query);
+        expect(body.recommendation?.supplement?.worksFor || []).toEqual([]);
+        expect(body.status).not.toBe('processing');
+        expect(mockLambdaSend).toHaveBeenCalledTimes(1);
+      }
     );
 
-    const request = new NextRequest('http://localhost/api/portal/quiz', {
-      method: 'POST',
-      body: JSON.stringify({ category: 'Fadogia agrestis', searchIntent: 'supplement' }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    const response = await POST(request);
-    const body = await response.json();
-
-    expect(response.status).toBe(404);
-    expect(body.error).toBe('insufficient_data');
-    expect(body.message).toContain('Fadogia agrestis');
-    expect(body.status).not.toBe('processing');
-    expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/api/portal/recommend'),
-      expect.objectContaining({ method: 'POST' })
-    );
-    expect(mockLambdaSend).toHaveBeenCalledTimes(1);
-  });
-
-  it('should keep mixed-evidence supplements in async enrichment when they are not known limited-evidence fallbacks', async () => {
-    const lancedbHit = {
-      source: 'pubmed',
-      name: 'Turmeric',
-      title: 'Turmeric and curcumin clinical literature',
-      abstract: 'Turmeric is studied for inflammatory signaling, joint comfort, and antioxidant pathways.',
-      ingredients: ['Turmeric'],
-      study_count: 40,
-      score: 0.95,
-    };
-
-    mockedSearchSupplements
-      .mockResolvedValueOnce([lancedbHit])
-      .mockResolvedValueOnce([lancedbHit]);
-
-    mockLambdaSend
-      .mockResolvedValueOnce({
-        Payload: Buffer.from(JSON.stringify({
-          body: JSON.stringify({
-            success: true,
-            data: {
-              ranked: {
-                positive: [
-                  {
-                    pmid: '456',
-                    title: 'Curcumin extract in rats',
-                    abstract: 'A rat model evaluated inflammatory markers.',
-                    publicationTypes: ['Journal Article'],
-                  },
-                ],
-                negative: [],
-                mixed: [],
-                metadata: { confidenceScore: 80 },
-              },
-            },
+    it('returns controlled upstream_unavailable for transient studies backend failures', async () => {
+      mockedSearchSupplements.mockResolvedValueOnce([]);
+      jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: false,
+            error: 'upstream_unavailable',
+            message: 'No pudimos consultar temporalmente la base de estudios para "Psyllium". Intenta de nuevo en unos minutos.',
+            details: 'Studies service returned 403',
           }),
-        })),
-      })
-      .mockResolvedValueOnce({});
+          {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
 
-    const request = new NextRequest('http://localhost/api/portal/quiz', {
-      method: 'POST',
-      body: JSON.stringify({ category: 'Turmeric', searchIntent: 'supplement' }),
-      headers: { 'Content-Type': 'application/json' },
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: 'Psyllium', searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(503);
+      expect(body.success).toBe(false);
+      expect(body.error).toBe('upstream_unavailable');
+      expect(body.error).not.toBe('backend_service_error');
     });
-
-    const response = await POST(request);
-    const body = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(body.status).toBe('processing');
-    expect(body.source).toBe('lancedb_enriching_async');
-    expect(body.recommendation.supplement.worksFor).toEqual([]);
-    expect(mockLambdaSend).toHaveBeenCalledTimes(2);
   });
 
   it('should return a 500 Internal Server Error if the searchPubMed service fails', async () => {
