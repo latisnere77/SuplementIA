@@ -1133,7 +1133,9 @@ function ResultsPageContent() {
               setSearchType('ingredient');
               setError({
                 type: 'insufficient_scientific_data',
-                message: `No encontramos evidencia clínica humana suficiente para recomendar beneficios de "${normalizedQuery}".`,
+                message: language === 'es'
+                  ? `No encontramos evidencia clínica humana suficiente para recomendar beneficios de "${normalizedQuery}".`
+                  : `We did not find enough human clinical evidence to recommend benefits for "${normalizedQuery}".`,
                 searchedFor: normalizedQuery,
                 suggestions: [],
                 metadata: {
@@ -1412,7 +1414,7 @@ function ResultsPageContent() {
       isMounted = false;
     };
   // Note: routerRef is used instead of router to prevent infinite re-renders
-  }, [query, jobId, submittedBenefitQuery, supplementParam, urlJobId]);
+  }, [query, jobId, submittedBenefitQuery, supplementParam, urlJobId, language]);
 
   // ====================================
   // VARIANT SELECTOR HANDLERS

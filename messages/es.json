@@ -19,43 +19,43 @@
     "categories": {
       "sleep": {
         "name": "Sueño",
-        "desc": "Suplementos que pueden ayudar a mejorar la calidad y la duración del sueño, facilitando el descanso nocturno."
+        "desc": "Suplementos estudiados para calidad y duración del sueño."
       },
       "energy": {
         "name": "Energía y Fatiga",
-        "desc": "Compuestos que pueden ayudar a aumentar los niveles de energía, combatir la fatiga y mejorar el rendimiento físico y mental."
+        "desc": "Compuestos estudiados para niveles de energía, fatiga y resultados relacionados."
       },
       "anxiety": {
         "name": "Ansiedad y Estrés",
-        "desc": "Suplementos y hierbas que pueden ayudar a reducir los síntomas de la ansiedad y a mejorar la respuesta del cuerpo al estrés."
+        "desc": "Suplementos y hierbas estudiados para ansiedad, respuesta al estrés y resultados relacionados."
       },
       "muscle-gain": {
         "name": "Ganancia de Músculo y Ejercicio",
-        "desc": "Desarrolla músculo, mejora la fuerza y aumenta el rendimiento físico."
+        "desc": "Suplementos estudiados para masa muscular, fuerza y rendimiento físico."
       },
       "cognitive-function": {
         "name": "Memoria y Concentración",
-        "desc": "Mejora la función cognitiva, la memoria y la claridad mental."
+        "desc": "Nutrientes y compuestos estudiados para función cognitiva, memoria y concentración."
       },
       "heart-health": {
         "name": "Salud Cardíaca",
-        "desc": "Suplementos que apoyan la salud cardiovascular, la presión arterial y los niveles de colesterol."
+        "desc": "Suplementos estudiados para marcadores cardiovasculares y apoyo de presión arterial."
       },
       "joint-bone-health": {
         "name": "Salud Articular y Ósea",
-        "desc": "Suplementos para fortalecer los huesos, mejorar la flexibilidad y aliviar el dolor articular."
+        "desc": "Suplementos estudiados para salud ósea, confort articular y movilidad."
       },
       "gut-health": {
         "name": "Salud Digestiva",
-        "desc": "Probióticos, enzimas y otros suplementos para una digestión saludable y un microbioma equilibrado."
+        "desc": "Probióticos, enzimas y nutrientes estudiados para digestión y apoyo del microbioma."
       },
       "skin-hair-health": {
         "name": "Salud de la Piel y Cabello",
-        "desc": "Nutrientes para una piel radiante, un cabello fuerte y uñas saludables."
+        "desc": "Nutrientes estudiados para marcadores de salud de piel, cabello y uñas."
       },
       "immunity": {
         "name": "Inmunidad",
-        "desc": "Vitaminas y hierbas para fortalecer el sistema inmunológico y prevenir enfermedades."
+        "desc": "Vitaminas y hierbas estudiadas para función inmune y marcadores de salud relacionados."
       },
       "mens-health": {
         "name": "Salud Masculina",
@@ -107,6 +107,84 @@
         "title": "Optimizado para LATAM",
         "desc": "Personalizado para altitud, clima y disponibilidad local en América Latina"
       }
+    },
+    "insufficientData": {
+      "title": "Sin Evidencia Clínica Humana Suficiente",
+      "defaultMessage": "No encontramos evidencia clínica humana suficiente para recomendar beneficios de \"{query}\".",
+      "literatureMessage": "PubMed sí contiene literatura relacionada con \"{query}\", pero la muestra revisada no tiene evidencia clínica humana suficiente para recomendar beneficios.",
+      "timeoutMessage": "La búsqueda de \"{query}\" está tardando más de lo esperado. Esto puede ocurrir con términos amplios que tienen miles de registros en PubMed.",
+      "pubmedResults": "Resultados PubMed",
+      "pubmedResultsDesc": "Literatura relacionada con la consulta, no beneficios confirmados.",
+      "reviewedSample": "Muestra Revisada",
+      "reviewedSampleDesc": "Artículos clasificados para orientar este estado.",
+      "conclusion": "Conclusión",
+      "doNotRecommend": "No recomendar beneficios",
+      "thresholdDesc": "La evidencia no alcanza el umbral clínico humano.",
+      "literatureTypes": "Qué tipo de literatura apareció en la muestra",
+      "categoryLabels": {
+        "human_clinical": "Clínico humano",
+        "preclinical": "Preclínico",
+        "phytochemical": "Fitoquímico",
+        "review": "Revisión",
+        "other": "Otro"
+      },
+      "categoryDescriptions": {
+        "human_clinical": "Estudios en personas",
+        "preclinical": "Animales, células o laboratorio",
+        "phytochemical": "Composición o caracterización química",
+        "review": "Revisiones o contexto bibliográfico",
+        "other": "Botánica, agricultura u otros temas"
+      },
+      "nonClinicalWarning": "Preclínico, fitoquímico, botánico o agrícola no equivale a un efecto comprobado en personas.",
+      "representativeArticles": "Artículos representativos de la muestra",
+      "representativeArticlesDesc": "Esta lista no es una recomendación. Solo muestra ejemplos de la literatura revisada sobre \"{query}\" y por qué no la tratamos como evidencia clínica humana suficiente.",
+      "whyTitle": "¿Por qué es importante?",
+      "timeoutWhyTitle": "¿Por qué ocurre esto?",
+      "whyTimeout": "\"{query}\" puede ser un término demasiado genérico o amplio. Los términos genéricos pueden tener miles de registros en PubMed, lo que hace que la búsqueda tarde demasiado.",
+      "whyBody": "En Suplementia, solo promovemos beneficios cuando hay evidencia clínica humana suficiente. Puede haber estudios preclínicos, en animales, in vitro, fitoquímicos o revisiones botánicas, pero no los tratamos como efectos comprobados en personas.",
+      "reasonsTitle": "Por qué puede aparecer este estado:",
+      "timeoutRecommendations": "Recomendaciones para mejorar tu búsqueda:",
+      "reasonPublishedNoTrials": "Puede haber estudios publicados, pero no ensayos clínicos humanos suficientes.",
+      "reasonNonHuman": "La evidencia disponible puede ser preclínica, animal, in vitro o fitoquímica.",
+      "reasonMechanisms": "Los resultados pueden estudiar mecanismos, seguridad, cultivo o composición.",
+      "reasonSpecificTerm": "El término puede necesitar una forma, extracto, dosis o tema de búsqueda más específico.",
+      "timeoutTipSpecific": "Busca un suplemento específico en lugar de categorías amplias.",
+      "timeoutTipNames": "Usa nombres específicos de ingredientes o formas del producto.",
+      "timeoutTipFunction": "Especifica el tipo o tema de investigación.",
+      "timeoutTipQueued": "El término ha sido agregado a nuestra cola de procesamiento para futura indexación.",
+      "similarTitle": "Suplementos similares con evidencia científica",
+      "similarDesc": "Estos suplementos tienen estudios publicados y pueden ayudarte a refinar la búsqueda:",
+      "withStudies": "Con estudios científicos",
+      "nextSearchesTitle": "Siguientes búsquedas exploratorias",
+      "nextSearchesDesc": "Estas acciones sirven para refinar la búsqueda. No implican que el suplemento tenga un efecto clínico confirmado.",
+      "tryAnotherName": "Probar otro nombre",
+      "tryAnotherNameDesc": "Nombre común, científico o forma específica",
+      "searchComponents": "Buscar componentes",
+      "exploreSpecificTopic": "Explorar un tema específico",
+      "popularEvidence": "Volver a suplementos populares",
+      "popularEvidenceDesc": "Ver ingredientes con mejor respaldo clínico humano",
+      "searchAnother": "Buscar Otro Suplemento",
+      "retry": "Intentar de Nuevo",
+      "tipsTitle": "Consejos para mejorar tu búsqueda:",
+      "tipSpelling": "Verifica la ortografía del nombre del suplemento.",
+      "tipName": "Prueba otro nombre común o científico si lo conoces.",
+      "tipComponents": "Busca componentes específicos, como \"{query} essential oil\" o \"{query} chemical composition\".",
+      "tipCondition": "Explora suplemento + condición solo como búsqueda; no lo interpretes como recomendación.",
+      "tipEnglish": "Prueba con términos en inglés; la mayoría de estudios están indexados en inglés.",
+      "tipBrands": "Evita nombres comerciales; busca el ingrediente activo.",
+      "tipPopular": "Compara con ingredientes populares cuando quieras ver ejemplos con respaldo clínico humano."
+    },
+    "errorState": {
+      "networkTitle": "Error de Conexión",
+      "systemTitle": "Error del Sistema",
+      "maybeSearched": "¿Quizás buscabas alguno de estos?",
+      "retry": "Intentar de Nuevo",
+      "newSearch": "Nueva Búsqueda",
+      "tipsTitle": "Consejos de búsqueda:",
+      "tipSpelling": "Verifica la ortografía del suplemento.",
+      "tipScientific": "Intenta con el nombre científico si lo conoces.",
+      "tipEnglish": "Usa términos en inglés si es posible.",
+      "tipBrands": "Evita nombres comerciales o marcas."
     }
   },
   "autocomplete": {
@@ -196,7 +274,7 @@
       },
       "what_is_rct": {
         "question": "¿Qué es un RCT (Randomized Controlled Trial)?",
-        "answer": "Un RCT (Ensayo Controlado Aleatorio) es el estándar de oro en investigación científica. Los participantes se asignan aleatoriamente a dos grupos: uno recibe el suplemento y otro recibe un placebo. Esto elimina sesgos y permite determinar si el suplemento realmente funciona."
+        "answer": "Un RCT (Ensayo Controlado Aleatorio) es el estándar de oro en investigación científica. Los participantes se asignan aleatoriamente a dos grupos: uno recibe el suplemento y otro recibe un placebo. Esto reduce sesgos y ayuda a evaluar si el suplemento tiene un efecto medible."
       },
       "missing_info": {
         "question": "¿Por qué algunos suplementos no tienen información?",
