@@ -14,6 +14,7 @@ import {
   searchPubMedLiteratureProfile,
   type PubMedLiteratureProfile,
 } from '@/lib/services/pubmed-literature-profile';
+import { logPortalSupplementOutcome, logStructured } from '@/lib/portal/structured-logger';
 
 export const runtime = 'nodejs';
 export const maxDuration = 180; // Increased to 180s for complex supplements with many studies
@@ -38,12 +39,57 @@ function isTransientUpstreamStatus(status: number): boolean {
   return [401, 403, 408, 429, 502, 503, 504].includes(status);
 }
 
+function logEnrichOutcome(data: {
+  requestId: string;
+  supplementName?: string;
+  originalQuery?: string;
+  normalizedQuery?: string;
+  status: 'completed' | 'processing' | 'failed' | 'insufficient_data' | 'upstream_unavailable';
+  finalStatusCode: number;
+  fallback?: 'local_catalog_fallback' | 'async_enrichment' | 'insufficient_data' | 'upstream_unavailable' | 'backend_service_error' | 'none';
+  errorCode?: string;
+  upstreamStatus?: number;
+  source?: string;
+  startTime: number;
+}) {
+  logPortalSupplementOutcome({
+    endpoint: '/api/portal/enrich-v2',
+    requestId: data.requestId,
+    supplementName: data.supplementName,
+    originalQuery: data.originalQuery,
+    normalizedQuery: data.normalizedQuery,
+    status: data.status,
+    finalStatusCode: data.finalStatusCode,
+    fallback: data.fallback,
+    errorCode: data.errorCode,
+    upstreamStatus: data.upstreamStatus,
+    source: data.source,
+    elapsedTime: Date.now() - data.startTime,
+  });
+}
+
 function upstreamUnavailableResponse(
   supplementName: string,
   requestId: string,
   status: number,
-  details?: string
+  details?: string,
+  startTime = Date.now(),
+  normalizedQuery?: string
 ) {
+  logEnrichOutcome({
+    requestId,
+    supplementName,
+    originalQuery: supplementName,
+    normalizedQuery: normalizedQuery || supplementName,
+    status: 'upstream_unavailable',
+    finalStatusCode: 503,
+    fallback: 'upstream_unavailable',
+    errorCode: 'upstream_unavailable',
+    upstreamStatus: status,
+    source: 'studies-fetcher',
+    startTime,
+  });
+
   return NextResponse.json(
     {
       success: false,
@@ -65,12 +111,36 @@ async function buildLiteratureProfile(supplementName: string): Promise<PubMedLit
     });
   } catch (error) {
     console.warn(`[enrich-v2] PubMed literature profile unavailable for ${supplementName}:`, error);
+    logStructured('warn', 'STUDIES_FETCHER_FAILURE', {
+      endpoint: 'pubmed-literature-profile',
+      supplementName,
+      error: error instanceof Error ? error.message : String(error),
+      fallback: 'insufficient_data_profile_unavailable',
+    });
     return null;
   }
 }
 
-async function insufficientDataResponse(supplementName: string, requestId: string) {
+async function insufficientDataResponse(
+  supplementName: string,
+  requestId: string,
+  startTime = Date.now(),
+  normalizedQuery?: string
+) {
   const literatureProfile = await buildLiteratureProfile(supplementName);
+
+  logEnrichOutcome({
+    requestId,
+    supplementName,
+    originalQuery: supplementName,
+    normalizedQuery: normalizedQuery || supplementName,
+    status: 'insufficient_data',
+    finalStatusCode: 404,
+    fallback: 'insufficient_data',
+    errorCode: 'insufficient_data',
+    source: literatureProfile ? 'pubmed-literature-profile' : 'studies-fetcher',
+    startTime,
+  });
 
   return NextResponse.json(
     {
@@ -190,12 +260,12 @@ export async function POST(request: NextRequest) {
         [403, 404, 422, 500].includes(studiesResponse.status)
       ) {
         console.warn(`[enrich-v2] Treating scientific-name studies failure as insufficient data: ${supplementName}`);
-        return insufficientDataResponse(supplementName, requestId);
+        return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
       }
 
       if (isTransientUpstreamStatus(studiesResponse.status)) {
         console.warn(`[enrich-v2] Treating studies fetch ${studiesResponse.status} as upstream unavailable for ${supplementName}`);
-        return upstreamUnavailableResponse(supplementName, requestId, studiesResponse.status, errorText);
+        return upstreamUnavailableResponse(supplementName, requestId, studiesResponse.status, errorText, startTime, searchTerm);
       }
 
       throw new Error(`Studies fetch failed: ${studiesResponse.status}`);
@@ -210,13 +280,13 @@ export async function POST(request: NextRequest) {
     // Check if we have studies
     if (studies.length === 0) {
       console.log(`[enrich-v2] No studies found for: ${supplementName}`);
-      return insufficientDataResponse(supplementName, requestId);
+      return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
     }
 
     const humanClinicalStudies = filterHumanClinicalStudies(studies);
     if (humanClinicalStudies.length === 0) {
       console.log(`[enrich-v2] Studies found for ${supplementName}, but none passed local human-clinical evidence screening`);
-      return insufficientDataResponse(supplementName, requestId);
+      return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
     }
     
     // Step 2: Enrich with Claude via content-enricher Lambda
@@ -251,6 +321,17 @@ export async function POST(request: NextRequest) {
     const duration = Date.now() - startTime;
     
     console.log(`[enrich-v2] Success in ${duration}ms`);
+    logEnrichOutcome({
+      requestId,
+      supplementName,
+      originalQuery: supplementName,
+      normalizedQuery: searchTerm,
+      status: 'completed',
+      finalStatusCode: 200,
+      fallback: 'none',
+      source: 'enrich-v2',
+      startTime,
+    });
     
     return NextResponse.json({
       success: true,
@@ -268,6 +349,14 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     const duration = Date.now() - startTime;
     console.error(`[enrich-v2] Error after ${duration}ms:`, error);
+    logEnrichOutcome({
+      requestId,
+      status: 'failed',
+      finalStatusCode: 500,
+      fallback: 'backend_service_error',
+      errorCode: error.message || 'Internal server error',
+      startTime,
+    });
     
     return NextResponse.json(
       {

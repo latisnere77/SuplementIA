@@ -138,6 +138,26 @@ function studiesFetcherPayload(studies: any[]) {
   };
 }
 
+function captureStructuredLogs() {
+  const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  return {
+    entries() {
+      return [...logSpy.mock.calls, ...warnSpy.mock.calls, ...errorSpy.mock.calls]
+        .map((call) => {
+          try {
+            return JSON.parse(String(call[0]));
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean);
+    },
+  };
+}
+
 describe('/api/portal/quiz POST', () => {
   afterAll(async () => {
     closeJobStoreClientsForTests();
@@ -480,6 +500,123 @@ describe('/api/portal/quiz POST', () => {
       expect(body.success).toBe(false);
       expect(body.error).toBe('upstream_unavailable');
       expect(body.error).not.toBe('backend_service_error');
+    });
+  });
+
+  describe('portal outcome observability', () => {
+    it('identifies local_catalog_fallback in structured logs', async () => {
+      const logs = captureStructuredLogs();
+      mockedSearchSupplements.mockResolvedValueOnce([localCatalogHit('Magnesium')]);
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: 'Magnesium', searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(logs.entries()).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            event: 'PORTAL_SUPPLEMENT_OUTCOME',
+            endpoint: '/api/portal/quiz',
+            supplementName: 'Magnesium',
+            status: 'completed',
+            finalStatusCode: 200,
+            fallback: 'local_catalog_fallback',
+            source: 'local_catalog_fallback',
+          }),
+        ])
+      );
+    });
+
+    it('logs upstream_unavailable as a controlled 503 outcome', async () => {
+      const logs = captureStructuredLogs();
+      mockedSearchSupplements.mockResolvedValueOnce([]);
+      jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: false,
+            error: 'upstream_unavailable',
+            message: 'No pudimos consultar temporalmente la base de estudios para "Psyllium".',
+            statusCode: 403,
+          }),
+          {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: 'Psyllium', searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(503);
+      expect(logs.entries()).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            level: 'warn',
+            event: 'PORTAL_SUPPLEMENT_OUTCOME',
+            endpoint: '/api/portal/quiz',
+            supplementName: 'Psyllium',
+            status: 'upstream_unavailable',
+            finalStatusCode: 503,
+            fallback: 'upstream_unavailable',
+            errorCode: 'upstream_unavailable',
+            upstreamStatus: 403,
+          }),
+        ])
+      );
+    });
+
+    it('logs unexpected backend failures with useful 500 context', async () => {
+      const logs = captureStructuredLogs();
+      mockedSearchSupplements.mockResolvedValueOnce([]);
+      jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: false,
+            error: 'lambda_down',
+            message: 'backend failed',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: 'Creatine', searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(500);
+      expect(logs.entries()).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            level: 'error',
+            event: 'PORTAL_SUPPLEMENT_OUTCOME',
+            endpoint: '/api/portal/quiz',
+            supplementName: 'Creatine',
+            status: 'failed',
+            finalStatusCode: 500,
+            fallback: 'backend_service_error',
+            errorCode: 'lambda_down',
+            upstreamStatus: 500,
+          }),
+        ])
+      );
     });
   });
 

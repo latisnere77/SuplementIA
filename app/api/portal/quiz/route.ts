@@ -17,6 +17,7 @@ import { searchPubMed } from '@/lib/services/pubmed-search';
 import { isHumanClinicalEvidenceArticle } from '@/lib/services/pubmed-literature-profile';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { detectVariants } from '@/lib/portal/variant-detector';
+import { logPortalSupplementOutcome, logStructured } from '@/lib/portal/structured-logger';
 import type { SupplementVariant, VariantDetectionResult } from '@/types/supplement-variants';
 
 import { searchSupplements } from '@/lib/search-service';
@@ -40,6 +41,39 @@ export const maxDuration = 180; // 3 minutes to allow for complex supplements wi
 
 // Check if we're in demo mode
 const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
+
+function logQuizOutcome(data: {
+  requestId: string;
+  jobId: string;
+  quizId?: string;
+  supplementName?: string;
+  originalQuery?: string;
+  normalizedQuery?: string;
+  status: 'completed' | 'processing' | 'failed' | 'insufficient_data' | 'upstream_unavailable';
+  finalStatusCode: number;
+  fallback?: 'local_catalog_fallback' | 'async_enrichment' | 'insufficient_data' | 'upstream_unavailable' | 'backend_service_error' | 'none';
+  errorCode?: string;
+  upstreamStatus?: number;
+  source?: string;
+  startTime: number;
+}) {
+  logPortalSupplementOutcome({
+    endpoint: '/api/portal/quiz',
+    requestId: data.requestId,
+    jobId: data.jobId,
+    quizId: data.quizId,
+    supplementName: data.supplementName,
+    originalQuery: data.originalQuery,
+    normalizedQuery: data.normalizedQuery,
+    status: data.status,
+    finalStatusCode: data.finalStatusCode,
+    fallback: data.fallback,
+    errorCode: data.errorCode,
+    upstreamStatus: data.upstreamStatus,
+    source: data.source,
+    elapsedTime: Date.now() - data.startTime,
+  });
+}
 
 /**
  * Detect if recommendation has poor/placeholder metadata that needs enrichment
@@ -352,6 +386,13 @@ async function invokeStudiesFetcher(
         });
       }
       console.error(`❌ [STUDIES_FETCHER] Failed:`, parsedBody.error);
+      logStructured('warn', 'STUDIES_FETCHER_FAILURE', {
+        endpoint: 'studies-fetcher',
+        supplementName,
+        error: parsedBody.error,
+        statusCode: parsedBody.statusCode,
+        fallback: 'async_enrichment_without_ranking',
+      });
       return null;
     }
 
@@ -369,6 +410,12 @@ async function invokeStudiesFetcher(
     return ranking;
   } catch (error: any) {
     console.error(`❌ [STUDIES_FETCHER] Error:`, error.message);
+    logStructured('warn', 'STUDIES_FETCHER_FAILURE', {
+      endpoint: 'studies-fetcher',
+      supplementName,
+      error: error.message,
+      fallback: 'async_enrichment_without_ranking',
+    });
     return null; // Non-fatal - enrichment can proceed without ranking
   }
 }
@@ -868,6 +915,7 @@ function generateVariantDescription(
 
 export async function POST(request: NextRequest) {
   console.log("🚀🚀🚀 [QUIZ UPDATE] New deployment active! " + new Date().toISOString());
+  const startTime = Date.now();
   const requestId = randomUUID();
   const jobId = request.headers.get('X-Job-ID') || `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const quizId = `quiz_${Date.now()}_${randomUUID().substring(0, 8)}`;
@@ -1012,6 +1060,20 @@ export async function POST(request: NextRequest) {
                 abstract: hit.abstract || ''
               }));
               const variantDetection = detectVariants(searchTerm, hitsForVariantDetection);
+
+              logQuizOutcome({
+                requestId,
+                jobId,
+                quizId,
+                supplementName: searchTerm,
+                originalQuery: sanitizedCategory,
+                normalizedQuery: searchTerm,
+                status: 'completed',
+                finalStatusCode: 200,
+                fallback: 'local_catalog_fallback',
+                source: 'local_catalog_fallback',
+                startTime,
+              });
 
               return NextResponse.json({
                 success: true,
@@ -1162,6 +1224,20 @@ export async function POST(request: NextRequest) {
               await invokeLambdaEnrichmentAsync(jobId, searchTerm, false, rankingData);
 
               // Return immediately with processing status
+              logQuizOutcome({
+                requestId,
+                jobId,
+                quizId,
+                supplementName: searchTerm,
+                originalQuery: sanitizedCategory,
+                normalizedQuery: searchTerm,
+                status: 'processing',
+                finalStatusCode: 200,
+                fallback: 'async_enrichment',
+                source: 'lancedb_enriching_async',
+                startTime,
+              });
+
               return NextResponse.json({
                 success: true,
                 quiz_id: quizId,
@@ -1193,6 +1269,19 @@ export async function POST(request: NextRequest) {
 
             // No enrichment needed, return immediately
             await storeJobResult(jobId, 'completed', { recommendation: rec });
+            logQuizOutcome({
+              requestId,
+              jobId,
+              quizId,
+              supplementName: searchTerm,
+              originalQuery: sanitizedCategory,
+              normalizedQuery: searchTerm,
+              status: 'completed',
+              finalStatusCode: 200,
+              fallback: 'none',
+              source: rec.enriched ? 'lancedb_lambda_enriched' : 'lancedb_lambda_serverless',
+              startTime,
+            });
             return NextResponse.json({
               success: true,
               quiz_id: quizId,
@@ -1320,6 +1409,20 @@ export async function POST(request: NextRequest) {
         }
 
         if (recommendationResponse.status === 404 && errorData.error === 'insufficient_data') {
+          logQuizOutcome({
+            requestId,
+            jobId,
+            quizId,
+            supplementName,
+            originalQuery: sanitizedCategory,
+            normalizedQuery: supplementName,
+            status: 'insufficient_data',
+            finalStatusCode: 404,
+            fallback: 'insufficient_data',
+            errorCode: 'insufficient_data',
+            upstreamStatus: recommendationResponse.status,
+            startTime,
+          });
           return NextResponse.json({
             success: false,
             error: 'insufficient_data',
@@ -1332,6 +1435,20 @@ export async function POST(request: NextRequest) {
         }
 
         if (recommendationResponse.status === 503 && errorData.error === 'upstream_unavailable') {
+          logQuizOutcome({
+            requestId,
+            jobId,
+            quizId,
+            supplementName,
+            originalQuery: sanitizedCategory,
+            normalizedQuery: supplementName,
+            status: 'upstream_unavailable',
+            finalStatusCode: 503,
+            fallback: 'upstream_unavailable',
+            errorCode: 'upstream_unavailable',
+            upstreamStatus: errorData.statusCode || recommendationResponse.status,
+            startTime,
+          });
           return NextResponse.json({
             success: false,
             error: 'upstream_unavailable',
@@ -1344,6 +1461,20 @@ export async function POST(request: NextRequest) {
 
         // If backend fails, propagate the error. NO MOCKS.
         console.error(`[CRITICAL] Backend Recommendation Service Failed: ${recommendationResponse.status}`);
+        logQuizOutcome({
+          requestId,
+          jobId,
+          quizId,
+          supplementName,
+          originalQuery: sanitizedCategory,
+          normalizedQuery: supplementName,
+          status: 'failed',
+          finalStatusCode: recommendationResponse.status,
+          fallback: 'backend_service_error',
+          errorCode: errorData.error || 'backend_service_error',
+          upstreamStatus: recommendationResponse.status,
+          startTime,
+        });
         return NextResponse.json({
           success: false,
           error: 'backend_service_error',
@@ -1372,6 +1503,19 @@ export async function POST(request: NextRequest) {
           responseData.recommendation.recommendation_id = jobId;
         }
         await storeJobResult(jobId, 'completed', { recommendation: responseData.recommendation });
+        logQuizOutcome({
+          requestId,
+          jobId,
+          quizId,
+          supplementName,
+          originalQuery: sanitizedCategory,
+          normalizedQuery: supplementName,
+          status: 'completed',
+          finalStatusCode: 200,
+          fallback: 'none',
+          source: 'recommend',
+          startTime,
+        });
         return NextResponse.json({
           success: true,
           jobId,
@@ -1381,6 +1525,19 @@ export async function POST(request: NextRequest) {
       }
 
       // If we got here, response was 200 but had no recommendation data.
+      logQuizOutcome({
+        requestId,
+        jobId,
+        quizId,
+        supplementName,
+        originalQuery: sanitizedCategory,
+        normalizedQuery: supplementName,
+        status: 'failed',
+        finalStatusCode: 500,
+        fallback: 'backend_service_error',
+        errorCode: 'invalid_response_structure',
+        startTime,
+      });
       return NextResponse.json({
         success: false,
         error: 'invalid_response_structure',
@@ -1398,6 +1555,19 @@ export async function POST(request: NextRequest) {
       }
 
       // NO FALLBACK TO MOCK. Return 500.
+      logQuizOutcome({
+        requestId,
+        jobId,
+        quizId,
+        supplementName,
+        originalQuery: sanitizedCategory,
+        normalizedQuery: supplementName,
+        status: 'failed',
+        finalStatusCode: 500,
+        fallback: 'backend_service_error',
+        errorCode: 'backend_connection_failed',
+        startTime,
+      });
       return NextResponse.json({
         success: false,
         jobId,
@@ -1409,6 +1579,15 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error: any) {
+    logQuizOutcome({
+      requestId,
+      jobId,
+      status: 'failed',
+      finalStatusCode: 500,
+      fallback: 'backend_service_error',
+      errorCode: 'Internal server error',
+      startTime,
+    });
     return NextResponse.json({
       success: false,
       error: 'Internal server error',
