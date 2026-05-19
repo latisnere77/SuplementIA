@@ -104,6 +104,33 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(body.metadata.literatureProfile.categories.preclinical).toBe(1);
   });
 
+  it('returns controlled upstream_unavailable when studies fetch is forbidden for a common supplement', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Forbidden' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'Psyllium',
+        category: 'Psyllium',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body.error).toBe('upstream_unavailable');
+    expect(body.message).toContain('Psyllium');
+    expect(body.details).toContain('Forbidden');
+  });
+
   it('does not send preclinical-only literature to the benefit enricher', async () => {
     const fetchMock = jest
       .spyOn(global, 'fetch')

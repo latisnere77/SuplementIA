@@ -264,6 +264,19 @@ export async function POST(request: NextRequest) {
           },
           { status: 404 }
         );
+      } else if (enrichResponse.status === 503 && errorData.error === 'upstream_unavailable') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'upstream_unavailable',
+            message: errorData.message || `No pudimos consultar temporalmente la base de estudios para "${sanitizedCategory}". Intenta de nuevo en unos minutos.`,
+            details: errorData.details || errorData.error || 'Studies service unavailable',
+            statusCode: errorData.statusCode || enrichResponse.status,
+            requestId,
+            category: sanitizedCategory,
+          },
+          { status: 503 }
+        );
       } else {
         // SYSTEM ERROR: Lambda failed, timeout, or other server error
         // Return 500 so frontend shows system error (red) not "no data" (yellow)

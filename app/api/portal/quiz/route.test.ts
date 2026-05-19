@@ -48,6 +48,7 @@ jest.mock('@aws-sdk/lib-dynamodb', () => ({
 jest.mock('@/lib/portal/supplements-database', () => ({
   SUPPLEMENTS_DATABASE: [
     { name: 'Magnesium', aliases: [], category: 'ingredient' },
+    { name: 'Psyllium', aliases: ['psyllium husk', 'psyllium fiber'], category: 'ingredient' },
   ],
 }));
 
@@ -233,6 +234,77 @@ describe('/api/portal/quiz POST', () => {
         }),
       ])
     );
+  });
+
+  it('should serve Psyllium from local cached evidence instead of falling through to the upstream fetcher', async () => {
+    mockedSearchSupplements.mockResolvedValueOnce([
+      {
+        source: 'local_catalog',
+        name: 'Psyllium',
+        title: 'Psyllium',
+        abstract: 'Psyllium is a soluble fiber from Plantago ovata husk.',
+        ingredients: ['Psyllium'],
+        conditions: ['gut health', 'cholesterol', 'blood sugar'],
+        study_count: 75,
+      },
+    ]);
+    const fetchMock = jest.spyOn(global, 'fetch');
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'Psyllium', searchIntent: 'supplement' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.source).toBe('local_catalog_fallback');
+    expect(body.status).toBe('completed');
+    expect(body.recommendation.supplement.name).toBe('Psyllium');
+    expect(body.recommendation.supplement.worksFor).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          condition: 'Reducir colesterol LDL',
+          evidenceGrade: 'A',
+        }),
+      ])
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mockLambdaSend).not.toHaveBeenCalled();
+  });
+
+  it('should propagate upstream unavailable from the recommendation service as a controlled 503', async () => {
+    mockedSearchSupplements.mockResolvedValueOnce([]);
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: 'upstream_unavailable',
+          message: 'No pudimos consultar temporalmente la base de estudios para "Psyllium". Intenta de nuevo en unos minutos.',
+          details: 'Studies service returned 403',
+        }),
+        {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'Psyllium', searchIntent: 'supplement' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body.error).toBe('upstream_unavailable');
+    expect(body.message).toContain('Psyllium');
+    expect(body.error).not.toBe('backend_service_error');
   });
 
   it('should not start async enrichment when ranked literature has no human clinical studies', async () => {
