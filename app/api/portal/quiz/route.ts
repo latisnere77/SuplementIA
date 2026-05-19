@@ -702,12 +702,15 @@ function hasStrongWorksForEvidence(recommendation: any): boolean {
  * Get the base URL for internal API calls
  * Auto-detects production URL from Vercel environment
  */
-function getBaseUrl(): string {
+function getBaseUrl(request?: NextRequest): string {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
   if (process.env.NEXT_PUBLIC_APP_URL) {
     return process.env.NEXT_PUBLIC_APP_URL;
+  }
+  if (request?.nextUrl?.origin) {
+    return request.nextUrl.origin;
   }
   return 'http://localhost:3000';
 }
@@ -1050,9 +1053,10 @@ export async function POST(request: NextRequest) {
             const recWithCachedEvidence = applyCachedPubMedEvidence(rec, searchTerm);
             rec = recWithCachedEvidence;
 
+            const isKnownLimitedEvidenceLocalHit = shouldUseNoDataFallbackForEmptyRanking(recWithCachedEvidence, searchTerm);
             const shouldReturnLocalFallback =
               hasStrongWorksForEvidence(recWithCachedEvidence) ||
-              process.env.SEARCH_BACKEND === 'local';
+              (process.env.SEARCH_BACKEND === 'local' && !isKnownLimitedEvidenceLocalHit);
 
             if (shouldReturnLocalFallback) {
               const hitsForVariantDetection = finalHits.map((hit: any) => ({
@@ -1367,7 +1371,7 @@ export async function POST(request: NextRequest) {
     // Mocks and fallbacks have been removed to ensure data integrity.
 
     const backendCallStart = Date.now();
-    const QUIZ_API_URL = `${getBaseUrl()}/api/portal/recommend`;
+    const QUIZ_API_URL = `${getBaseUrl(request)}/api/portal/recommend`;
 
     try {
       const recommendationResponse = await fetch(QUIZ_API_URL, {

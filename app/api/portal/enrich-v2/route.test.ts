@@ -45,6 +45,27 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(body.message).toContain('piper auritum');
   });
 
+  it('returns insufficient_data for scientific botanical names when studies fetch cannot connect', async () => {
+    jest.spyOn(global, 'fetch').mockRejectedValueOnce(new TypeError('fetch failed'));
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'Fadogia agrestis',
+        category: 'Fadogia agrestis',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(body.error).toBe('insufficient_data');
+    expect(body.message).toContain('Fadogia agrestis');
+  });
+
   it('includes a broad PubMed literature profile for botanical no-data responses', async () => {
     jest
       .spyOn(global, 'fetch')
@@ -129,6 +150,28 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(body.error).toBe('upstream_unavailable');
     expect(body.message).toContain('Psyllium');
     expect(body.details).toContain('Forbidden');
+  });
+
+  it('returns controlled upstream_unavailable when studies fetch cannot connect for a common supplement', async () => {
+    jest.spyOn(global, 'fetch').mockRejectedValueOnce(new TypeError('fetch failed'));
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'Psyllium',
+        category: 'Psyllium',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body.error).toBe('upstream_unavailable');
+    expect(body.message).toContain('Psyllium');
+    expect(body.details).toContain('fetch failed');
   });
 
   it('does not send preclinical-only literature to the benefit enricher', async () => {

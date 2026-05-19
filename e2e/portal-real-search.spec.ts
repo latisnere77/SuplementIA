@@ -2,7 +2,15 @@ import { expect, test } from '@playwright/test';
 
 const runRealSearches = process.env.RUN_REAL_SEARCHES === '1';
 
-const searchCases = [
+type ExpectedOutcome = 'recommendation' | 'insufficient_data';
+
+type SearchCase = {
+  query: string;
+  expectedSearchTerm?: string;
+  expectedOutcome?: ExpectedOutcome;
+};
+
+const searchCases: SearchCase[] = [
   { query: 'Vitamin B Complex' },
   { query: 'Vitamin D' },
   { query: 'Omega-3' },
@@ -39,7 +47,7 @@ const searchCases = [
   { query: 'berberine', expectedSearchTerm: 'Berberine' },
   { query: 'berberina', expectedSearchTerm: 'Berberine' },
   { query: 'tongkat ali' },
-  { query: 'fadogia agrestis' },
+  { query: 'fadogia agrestis', expectedOutcome: 'insufficient_data' },
   { query: 'sea moss' },
   { query: 'musgo marino' },
   { query: 'shilajit' },
@@ -55,6 +63,7 @@ test.describe('portal real supplement searches', () => {
     test(`live result quality for ${searchCase.query}`, async ({ page }) => {
       test.setTimeout(120_000);
       const expectedSearchTerm = searchCase.expectedSearchTerm ?? searchCase.query;
+      const expectedOutcome = searchCase.expectedOutcome ?? 'recommendation';
 
       const apiResponses: Array<{ status: number; url: string; body?: any }> = [];
       page.on('response', async (response) => {
@@ -107,6 +116,7 @@ test.describe('portal real supplement searches', () => {
         description: JSON.stringify({
           query: searchCase.query,
           expectedSearchTerm,
+          expectedOutcome,
           isError,
           apiStatus: latestApiResponse?.status,
           apiUrl: latestApiResponse?.url,
@@ -117,8 +127,8 @@ test.describe('portal real supplement searches', () => {
           hasSupplement: Boolean(latestApiResponse?.body?.recommendation?.supplement),
           visibleSignals: {
             hasStudySummary: visibleText.includes('Based on') || visibleText.includes('basada'),
-            hasDosage: visibleText.includes('Dosificación según Estudios Clínicos'),
-            hasSideEffects: visibleText.includes('Efectos Secundarios Posibles'),
+            hasDosage: visibleText.includes('Dosage in Clinical Studies') || visibleText.includes('Dosificación según Estudios Clínicos'),
+            hasSideEffects: visibleText.includes('Possible Side Effects') || visibleText.includes('Efectos Secundarios Posibles'),
             hasProducts: visibleText.includes('Product Recommendations'),
             hasNoEvidence: visibleText.includes('Sin Evidencia Clínica Humana Suficiente') ||
               visibleText.includes('Not Enough Human Clinical Evidence'),
@@ -127,13 +137,36 @@ test.describe('portal real supplement searches', () => {
         }),
       });
 
+      if (expectedOutcome === 'insufficient_data') {
+        expect.soft(isError, `${searchCase.query} should render the controlled no-data state`).toBe(true);
+        expect.soft(apiResponses.length, `${searchCase.query} should submit one quiz request from the browser flow`).toBe(1);
+        expect.soft(latestApiResponse?.status, `${searchCase.query} quiz API status`).toBe(404);
+        expect.soft(latestApiResponse?.body?.error, `${searchCase.query} API error code`).toBe('insufficient_data');
+        expect.soft(
+          visibleText.includes('Not Enough Human Clinical Evidence') ||
+            visibleText.includes('Sin Evidencia Clínica Humana Suficiente'),
+          `${searchCase.query} should explain insufficient human clinical evidence`
+        ).toBe(true);
+        expect.soft(visibleText, `${searchCase.query} should not expose backend internals`).not.toContain('backend_service_error');
+        expect.soft(visibleText, `${searchCase.query} should not expose backend internals`).not.toContain('Internal Server Error');
+        expect.soft(visibleText, `${searchCase.query} should not expose backend internals`).not.toContain('Function not found');
+        expect.soft(
+          visibleText,
+          `${searchCase.query} insufficient-data state should not make unsafe clinical claims`
+        ).not.toMatch(/sirve para|treats|cures|beneficio comprobado|clinical benefit/i);
+        return;
+      }
+
       expect.soft(isError, `${searchCase.query} should not render the no-data/system error state`).toBe(false);
       expect.soft(apiResponses.length, `${searchCase.query} should submit one quiz request from the browser flow`).toBe(1);
       expect.soft(latestApiResponse?.status, `${searchCase.query} quiz API status`).toBe(200);
       expect.soft(latestApiResponse?.body?.success, `${searchCase.query} API success flag`).toBe(true);
       expect.soft(latestApiResponse?.body?.recommendation?.evidence_summary?.totalStudies ?? 0, `${searchCase.query} should include study count`).toBeGreaterThan(0);
       expect.soft(visibleText, `${searchCase.query} should render study summary`).toContain('studies');
-      expect.soft(visibleText, `${searchCase.query} should render dosage section`).toContain('Dosificación según Estudios Clínicos');
+      expect.soft(
+        visibleText.includes('Dosage in Clinical Studies') || visibleText.includes('Dosificación según Estudios Clínicos'),
+        `${searchCase.query} should render dosage section`
+      ).toBe(true);
       expect.soft(visibleText, `${searchCase.query} should render products`).toContain('Product Recommendations');
       expect.soft(visibleText, `${searchCase.query} should not expose local catalog internals`).not.toContain('catálogo local');
       expect.soft(visibleText, `${searchCase.query} should not expose local catalog internals`).not.toContain('catalogo local');
@@ -146,8 +179,8 @@ test.describe('portal real supplement searches', () => {
         expect.soft(visibleText, 'Magnesium benefit list should not expose raw condition tags').not.toContain('\nsleep\n');
         expect.soft(visibleText, 'Magnesium worksFor should not show catalog-derived preliminary claims').not.toContain('Evidencia preliminar encontrada');
         expect.soft(visibleText, 'Magnesium worksFor should not promote grade C placeholders').not.toContain('Sleep quality\n🟡\nC');
-        expect.soft(visibleText, 'Magnesium should render cached PubMed-backed grade B benefits').toContain('Reducir calambres musculares');
-        expect.soft(visibleText, 'Magnesium should render grade B worksFor evidence').toContain('Mejorar el sueño');
+        expect.soft(visibleText, 'Magnesium should render cached PubMed-backed grade B benefits').toContain('Reduce muscle cramps');
+        expect.soft(visibleText, 'Magnesium should render grade B worksFor evidence').toContain('Improve sleep');
       }
 
       const unrelatedCatalogTerms: Record<string, string[]> = {

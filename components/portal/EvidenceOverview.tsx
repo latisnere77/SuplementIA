@@ -20,6 +20,7 @@ interface EvidenceOverviewProps {
 
   // Optional: supplement name for display
   supplementName?: string;
+  language?: 'en' | 'es';
 }
 
 /**
@@ -28,8 +29,20 @@ interface EvidenceOverviewProps {
 export default function EvidenceOverview({
   totalStudies,
   topConditions,
-  supplementName,
+  language = 'es',
 }: EvidenceOverviewProps) {
+  const labels = language === 'en'
+    ? {
+      studies: 'scientific studies',
+      limited: 'Limited research',
+      mostStudied: 'Most studied for:',
+    }
+    : {
+      studies: 'estudios científicos',
+      limited: 'Investigación limitada',
+      mostStudied: 'Más estudiado para:',
+    };
+
   return (
     <div className="space-y-2">
       {/* Line 1: Total Studies */}
@@ -37,9 +50,9 @@ export default function EvidenceOverview({
         <BookOpen className="h-5 w-5 text-blue-600" />
         <span className="font-semibold text-blue-800">
           {totalStudies > 0 ? (
-            <>{totalStudies.toLocaleString()} estudios científicos</>
+            <>{totalStudies.toLocaleString()} {labels.studies}</>
           ) : (
-            <>Investigación limitada</>
+            <>{labels.limited}</>
           )}
         </span>
       </div>
@@ -48,7 +61,7 @@ export default function EvidenceOverview({
       {topConditions.length > 0 && (
         <div className="text-sm text-gray-600">
           <span className="text-gray-700">
-            Más estudiado para: <strong>{topConditions.slice(0, 3).join(', ')}</strong>
+            {labels.mostStudied} <strong>{topConditions.slice(0, 3).join(', ')}</strong>
           </span>
         </div>
       )}
@@ -61,11 +74,12 @@ export default function EvidenceOverview({
  */
 export function EvidenceOverviewCompact({
   totalStudies,
-}: Pick<EvidenceOverviewProps, 'totalStudies'>) {
+  language = 'es',
+}: Pick<EvidenceOverviewProps, 'totalStudies' | 'language'>) {
   return (
     <span className="inline-flex items-center gap-2 text-sm text-gray-600">
       <BookOpen className="h-4 w-4" />
-      <span>{totalStudies.toLocaleString()} estudios</span>
+      <span>{totalStudies.toLocaleString()} {language === 'en' ? 'studies' : 'estudios'}</span>
     </span>
   );
 }

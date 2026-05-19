@@ -234,22 +234,34 @@ export async function POST(request: NextRequest) {
     
     console.log(`[enrich-v2] Fetching studies from: ${studiesUrl}`);
     
-    const studiesResponse = await fetch(studiesUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Request-ID': requestId,
-      },
-      body: JSON.stringify({
-        supplementName: searchTerm, // Use expanded term if available
-        ...(benefitQuery && { benefitQuery }), // Only include if provided
-        maxResults: benefitQuery ? Math.min(maxStudies, 30) : Math.min(maxStudies, 10), // More results for benefit searches to catch older studies
-        rctOnly: false,
-        yearFrom: 2010,
-        humanStudiesOnly: true,
-      }),
-      signal: AbortSignal.timeout(30000), // 30s timeout
-    });
+    let studiesResponse: Response;
+    try {
+      studiesResponse = await fetch(studiesUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-ID': requestId,
+        },
+        body: JSON.stringify({
+          supplementName: searchTerm, // Use expanded term if available
+          ...(benefitQuery && { benefitQuery }), // Only include if provided
+          maxResults: benefitQuery ? Math.min(maxStudies, 30) : Math.min(maxStudies, 10), // More results for benefit searches to catch older studies
+          rctOnly: false,
+          yearFrom: 2010,
+          humanStudiesOnly: true,
+        }),
+        signal: AbortSignal.timeout(30000), // 30s timeout
+      });
+    } catch (error: any) {
+      const details = error?.message || String(error);
+      console.warn(`[enrich-v2] Studies fetch unavailable for ${supplementName}: ${details}`);
+
+      if (isLikelyScientificName(supplementName)) {
+        return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+      }
+
+      return upstreamUnavailableResponse(supplementName, requestId, 0, details, startTime, searchTerm);
+    }
     
     if (!studiesResponse.ok) {
       const errorText = await studiesResponse.text();
