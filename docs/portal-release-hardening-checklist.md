@@ -110,6 +110,9 @@ Expected canary outcomes:
 
 If production returns `Hybrid Search Failed` or `hybrid_search_debug_fail`, production is not running the current hardened portal code. Redeploy the latest `main` commit before debugging clinical gating.
 
+For the exact Vercel diagnosis and redeploy steps for `https://suplementia.vercel.app`, see
+[`vercel-production-alignment-runbook.md`](./vercel-production-alignment-runbook.md).
+
 ## Production logs to check
 
 Search production logs for structured portal outcomes:
