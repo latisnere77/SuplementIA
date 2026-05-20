@@ -24,3 +24,6 @@ Keep deterministic unit/integration checks separate from live browser diagnostic
 - `Turmeric`, `Berberine`, and `Green tea extract` guard mixed-evidence supplements that should not be blocked too aggressively and should not return 500 while async enrichment runs.
 
 When adding a new canary, prefer a deterministic route test first. Add it to the live browser matrix only if the value of testing the deployed network path outweighs the extra runtime and flake risk.
+
+For the production smoke command and incident checklist, see
+[`portal-release-hardening-checklist.md`](./portal-release-hardening-checklist.md).
