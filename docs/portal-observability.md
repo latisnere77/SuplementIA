@@ -32,3 +32,6 @@ event="STUDIES_FETCHER_FAILURE"
 ```
 
 Those events identify the supplement and fallback path without logging full upstream payloads.
+
+For post-release validation, production canary smoke commands, and rollback/debug steps, see
+[`portal-release-hardening-checklist.md`](./portal-release-hardening-checklist.md).
