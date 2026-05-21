@@ -59,10 +59,10 @@ function logRecommendOutcome(data: {
 
 /**
  * Get the base URL for internal API calls
- * Auto-detects production URL from Vercel environment
+ * Auto-detects the current request origin in production and local dev.
  */
 function getBaseUrl(request?: NextRequest): string {
-  // 1. Vercel production URL
+  // 1. Legacy Vercel preview support, if explicitly present
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }

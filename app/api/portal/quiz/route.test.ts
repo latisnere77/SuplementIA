@@ -639,6 +639,77 @@ describe('/api/portal/quiz POST', () => {
       expect(body.error).toBe('upstream_unavailable');
       expect(body.error).not.toBe('backend_service_error');
     });
+
+    it('uses direct enrich-v2 fallback when recommend connection fails for a supplement with insufficient evidence', async () => {
+      mockedSearchSupplements.mockResolvedValueOnce([]);
+      const fetchMock = jest.spyOn(global, 'fetch')
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              success: false,
+              error: 'recommendation_generation_failed',
+              message: 'Hubo un error al generar la recomendación.',
+              details: 'fetch failed',
+            }),
+            {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          )
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              success: false,
+              error: 'insufficient_data',
+              message: 'No encontramos evidencia clínica humana suficiente para confirmar beneficios de "Piper auritum".',
+              metadata: {
+                literatureProfile: {
+                  sampledCount: 8,
+                  categories: {
+                    human_clinical: 0,
+                    preclinical: 6,
+                    phytochemical: 0,
+                    review: 0,
+                    other: 2,
+                  },
+                },
+              },
+            }),
+            {
+              status: 404,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          )
+        );
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: 'Piper auritum', searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(body.success).toBe(false);
+      expect(body.error).toBe('insufficient_data');
+      expect(body.metadata?.literatureProfile?.sampledCount).toBe(8);
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining('/api/portal/recommend'),
+        expect.objectContaining({ method: 'POST' })
+      );
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining('/api/portal/enrich-v2'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"supplementName":"Piper auritum"'),
+        })
+      );
+    });
   });
 
   describe('portal outcome observability', () => {
