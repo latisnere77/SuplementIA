@@ -733,7 +733,7 @@ test.describe('portal browser flows', () => {
       .evaluateAll((nodes) => nodes.map((node) => node.textContent || '').join('\n'));
 
     expect(structuredData).toContain('"@type":"MedicalWebPage"');
-    expect(structuredData).toContain('"@type":"DietarySupplement"');
+    expect(structuredData).toContain('"@type":"Thing"');
     expect(structuredData).toContain('https://suplementai.com/en/portal/supplement/magnesium');
     expect(structuredData).not.toMatch(/sirve para|treats|cures|beneficio comprobado|clinical benefit/i);
   });

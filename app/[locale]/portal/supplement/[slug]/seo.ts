@@ -91,7 +91,7 @@ export function buildSupplementStructuredData(data: SupplementSeoData, locale: S
         '@id': `${siteUrl}/#website`,
       },
       about: {
-        '@type': 'DietarySupplement',
+        '@type': 'Thing',
         name: data.localizedName,
         alternateName: data.canonicalName === data.localizedName ? undefined : data.canonicalName,
         description: sanitizeSupplementSeoText(data.summary),

@@ -50,7 +50,7 @@ describe('supplement page SEO', () => {
       '@type': 'MedicalWebPage',
       url: 'https://suplementai.com/en/portal/supplement/magnesium',
       about: {
-        '@type': 'DietarySupplement',
+        '@type': 'Thing',
         name: 'Magnesium',
       },
     });
