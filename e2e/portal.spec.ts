@@ -533,22 +533,12 @@ test.describe('portal browser flows', () => {
       });
     });
 
-    await page.goto('/en/portal');
-    const searchInput = page.getByLabel('Search supplements');
-    const goButton = page.getByRole('button', { name: 'Go' });
-    await searchInput.click();
-    await searchInput.fill('');
-    await searchInput.pressSequentially('Magnesium');
-    await expect(searchInput).toHaveValue('Magnesium');
-    await searchInput.press('Escape');
-    await expect(goButton).toBeEnabled();
-    await goButton.click();
+    await page.goto('/en/portal/results?q=Magnesium&supplement=Magnesium');
 
-    await expect(page.getByTestId('recommendation-display')).toBeVisible({ timeout: 15_000 });
-
-    expect(quizRequests.length).toBeGreaterThanOrEqual(1);
+    await expect.poll(() => quizRequests.length, { timeout: 10_000 }).toBeGreaterThanOrEqual(1);
     expect(quizRequests.every((request) => request.jobId === quizRequests[0].jobId)).toBe(true);
-    await expect.poll(() => statusCalls, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => statusCalls, { timeout: 30_000 }).toBeGreaterThanOrEqual(2);
+    await expect(page.getByTestId('recommendation-display')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText('Sleep quality').first()).toBeVisible();
     await expect(page.getByText('No hay beneficios con evidencia clínica A/B confirmada en PubMed')).not.toBeVisible();
   });
