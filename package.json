@@ -14,6 +14,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "validate": "npm run type-check && npm run build && npm test -- --passWithNoTests",
+    "smoke:production:portal": "node scripts/portal-production-smoke.mjs",
     "predeploy": "npm run validate",
     "deploy": "git push origin main",
     "prepare": "husky || true",

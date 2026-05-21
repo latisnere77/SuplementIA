@@ -700,7 +700,7 @@ function hasStrongWorksForEvidence(recommendation: any): boolean {
 
 /**
  * Get the base URL for internal API calls
- * Auto-detects production URL from Vercel environment
+ * Auto-detects the current request origin in production and local dev.
  */
 function getBaseUrl(request?: NextRequest): string {
   if (process.env.VERCEL_URL) {
@@ -1461,6 +1461,103 @@ export async function POST(request: NextRequest) {
             requestId,
             category: supplementName,
           }, { status: 503 });
+        }
+
+        if (
+          searchType === 'ingredient' &&
+          (errorData.error === 'backend_connection_failed' || errorData.error === 'recommendation_generation_failed')
+        ) {
+          try {
+            const directEnrichResponse = await fetch(`${getBaseUrl(request)}/api/portal/enrich-v2`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'User-Agent': 'SuplementIA-Portal-API/1.0',
+                'X-Request-ID': requestId,
+                'X-Job-ID': jobId,
+              },
+              body: JSON.stringify({
+                supplementName,
+                benefitQuery,
+                category: supplementName,
+                forceRefresh: false,
+                maxStudies: 10,
+                rctOnly: false,
+                yearFrom: 2010,
+                jobId,
+              }),
+              signal: AbortSignal.timeout(120000),
+            });
+
+            if (!directEnrichResponse.ok) {
+              const directErrorText = await directEnrichResponse.text();
+              let directErrorData: any = {};
+              try {
+                directErrorData = JSON.parse(directErrorText);
+              } catch {
+                directErrorData = { message: directErrorText };
+              }
+
+              if (directEnrichResponse.status === 404 && directErrorData.error === 'insufficient_data') {
+                logQuizOutcome({
+                  requestId,
+                  jobId,
+                  quizId,
+                  supplementName,
+                  originalQuery: sanitizedCategory,
+                  normalizedQuery: supplementName,
+                  status: 'insufficient_data',
+                  finalStatusCode: 404,
+                  fallback: 'insufficient_data',
+                  errorCode: 'insufficient_data',
+                  upstreamStatus: directEnrichResponse.status,
+                  source: 'enrich-v2-direct-fallback',
+                  startTime,
+                });
+                return NextResponse.json({
+                  success: false,
+                  error: 'insufficient_data',
+                  message: directErrorData.message || `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${supplementName}".`,
+                  suggestion: directErrorData.suggestion || 'Verifica la ortografía, intenta con una forma o extracto específico, o explora un tema clínico o componente específico.',
+                  requestId,
+                  category: supplementName,
+                  metadata: directErrorData.metadata,
+                }, { status: 404 });
+              }
+
+              if (directEnrichResponse.status === 503 && directErrorData.error === 'upstream_unavailable') {
+                logQuizOutcome({
+                  requestId,
+                  jobId,
+                  quizId,
+                  supplementName,
+                  originalQuery: sanitizedCategory,
+                  normalizedQuery: supplementName,
+                  status: 'upstream_unavailable',
+                  finalStatusCode: 503,
+                  fallback: 'upstream_unavailable',
+                  errorCode: 'upstream_unavailable',
+                  upstreamStatus: directErrorData.statusCode || directEnrichResponse.status,
+                  source: 'enrich-v2-direct-fallback',
+                  startTime,
+                });
+                return NextResponse.json({
+                  success: false,
+                  error: 'upstream_unavailable',
+                  message: directErrorData.message || 'No pudimos consultar temporalmente la base de estudios. Intenta de nuevo en unos minutos.',
+                  details: directErrorData.details || directErrorData.error || 'Studies service unavailable',
+                  requestId,
+                  category: supplementName,
+                }, { status: 503 });
+              }
+            }
+          } catch (directError: any) {
+            console.warn('[Quiz] Direct enrich-v2 fallback after recommend failure also failed.', {
+              category: supplementName,
+              message: directError?.message,
+            });
+          }
         }
 
         // If backend fails, propagate the error. NO MOCKS.
