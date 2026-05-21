@@ -40,7 +40,14 @@ for (const c of cases) {
     body.source ||
     body.recommendation?.metadata?.fallback ||
     body.recommendation?.source ||
+    (body.error === 'insufficient_data' ? 'insufficient_data' : undefined) ||
     'none';
+  const worksFor =
+    body.recommendation?.supplement?.worksFor ||
+    body.recommendation?.worksFor ||
+    body.recommendation?.works_for ||
+    body.supplement?.worksFor ||
+    [];
   const hasOldHybridSearchError =
     text.includes('Hybrid Search Failed') || text.includes('hybrid_search_debug_fail');
   const ok =
@@ -57,7 +64,7 @@ for (const c of cases) {
     state,
     success: body.success,
     fallback,
-    worksForCount: body.recommendation?.worksFor?.length ?? body.recommendation?.works_for?.length ?? 0,
+    worksForCount: Array.isArray(worksFor) ? worksFor.length : 0,
     error: body.error,
     oldHybridSearchError: hasOldHybridSearchError,
     durationMs: Date.now() - started,

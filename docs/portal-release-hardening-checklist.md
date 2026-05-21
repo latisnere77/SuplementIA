@@ -63,7 +63,7 @@ Expected canary outcomes:
 
 | Canary group | Supplements | Expected production outcome |
 | --- | --- | --- |
-| Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium | `200 completed`, useful `worksFor`, no `500` |
+| Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium | `200 completed`, useful nested `recommendation.supplement.worksFor`, no `500` |
 | Async enrichment | Turmeric, Berberine, Green tea extract | `200 processing` or controlled `completed`, no `500` |
 | Insufficient human clinical evidence | Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims |
 
