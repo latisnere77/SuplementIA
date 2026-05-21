@@ -7,7 +7,7 @@ Last hardening pass:
 - Date: 2026-05-20
 - Expected main commit: latest green `origin/main`
 - Production URL checked: `https://suplementai.com`
-- Production delivery: AWS CloudFront/Amplify
+- Production delivery: AWS CloudFront. Amplify config exists in repo, but the live AWS project must be verified by domain/build history before treating Amplify as the source of truth.
 - Legacy URL note: `https://suplementia.vercel.app` is not production and must not be used for release smoke.
 
 ## Local release validation
@@ -66,7 +66,7 @@ Expected canary outcomes:
 | Async enrichment | Turmeric, Berberine, Green tea extract | `200 processing` or controlled `completed`, no `500` |
 | Insufficient human clinical evidence | Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims |
 
-If AWS production returns `Hybrid Search Failed` or `hybrid_search_debug_fail`, the request is hitting stale code or a legacy endpoint. Confirm the base URL is `https://suplementai.com`, then verify the Amplify deploy before debugging clinical gating.
+If AWS production returns `Hybrid Search Failed` or `hybrid_search_debug_fail`, the request is hitting stale code or a legacy endpoint. Confirm the base URL is `https://suplementai.com`, then verify the AWS project/build that owns the CloudFront distribution before debugging clinical gating.
 
 For AWS production alignment and deploy checks, see
 [`aws-production-alignment-runbook.md`](./aws-production-alignment-runbook.md).

@@ -10,11 +10,13 @@ Checked on 2026-05-20:
 - `www` production URL: `https://www.suplementai.com`
 - Frontend delivery: AWS CloudFront
 - CloudFront distribution domain observed via DNS: `d2of3lawf9cckm.cloudfront.net`
-- Build config: `amplify.yml`
+- Repo build config present: `amplify.yml`
 - Canonical app URL in code: `lib/seo.ts` exports `https://suplementai.com`
 - Public runtime diagnostic: `https://suplementai.com/api/check-env`
 
 `https://suplementia.vercel.app` is not the production endpoint. It is a legacy/desynchronized Vercel deployment and must not be used for release smoke. It currently reports missing AWS search env and can return old errors such as `Hybrid Search Failed` / `hybrid_search_debug_fail`.
+
+AWS CLI check on 2026-05-20 found an Amplify app named `suplementia` in account `239378269775`, but that app had no branches or domain associations and its default Amplify domain did not serve `/api/check-env`. Treat CloudFront/DNS plus the runtime diagnostic above as the confirmed production signal. Do not assume the visible Amplify app is the live production project unless its branch, custom domain, and build history are confirmed.
 
 ## Confirm current GitHub source of truth
 
@@ -45,16 +47,27 @@ Expected:
 - `www.suplementai.com` resolves through `d2of3lawf9cckm.cloudfront.net` unless the distribution changes intentionally.
 - `/api/check-env` reports production AWS search settings, for example `NEXT_PUBLIC_USE_INTELLIGENT_SEARCH="true"`.
 
-## Verify Amplify deployment
+## Verify AWS deployment
 
-In AWS Amplify console:
+First identify the AWS service/project that actually owns `suplementai.com`. The current public DNS points to CloudFront, but the CloudFront distribution may be in another AWS account or managed outside the Amplify app visible to your current CLI credentials.
 
-1. Open the SuplementAI/SuplementIA app that serves `suplementai.com`.
+Useful discovery checks:
+
+```bash
+aws sts get-caller-identity
+aws amplify list-apps --region us-east-1
+aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items && contains(join(',', Aliases.Items), 'suplementai.com')]"
+aws route53 list-hosted-zones-by-name --dns-name suplementai.com
+```
+
+If the live project is Amplify:
+
+1. Open the AWS Amplify app that serves `suplementai.com`.
 2. Confirm the connected repo is `latisnere77/SuplementIA`.
 3. Confirm the production branch is `main`.
 4. Confirm the latest deployment points at the intended `origin/main` SHA.
 5. Confirm custom domains include `suplementai.com` and `www.suplementai.com`.
-6. Review the latest build logs and confirm `amplify.yml` ran `npm run build`.
+6. Review the latest build logs and confirm `amplify.yml` or the configured build spec ran `npm run build`.
 
 Useful AWS CLI checks when credentials are available:
 
@@ -64,6 +77,8 @@ aws amplify list-branches --app-id <app-id> --region us-east-1
 aws amplify list-jobs --app-id <app-id> --branch-name main --region us-east-1 --max-results 5
 aws amplify get-job --app-id <app-id> --branch-name main --job-id <job-id> --region us-east-1
 ```
+
+If these commands show no branch/domain for the app, that app is not enough to prove production deployment. Find the account/project that owns `d2of3lawf9cckm.cloudfront.net` or the custom domain association before redeploying.
 
 ## Production environment variables to verify
 
@@ -110,7 +125,7 @@ The smoke fails if any canary returns raw `500`, `Hybrid Search Failed`, `hybrid
 
 ## Logs to inspect
 
-Use AWS Amplify/CloudWatch logs for the deployed SSR functions and search/enrichment functions. Search for:
+Use CloudWatch logs for the deployed SSR functions and search/enrichment functions. If the app is served by Amplify, also inspect Amplify build and hosting logs. Search for:
 
 ```text
 PORTAL_SUPPLEMENT_OUTCOME
@@ -133,13 +148,13 @@ Interpretation:
 ## If AWS production differs from green main
 
 1. Confirm `main` Quality Gates is green for the target SHA.
-2. Confirm Amplify deployed that exact SHA on branch `main`.
-3. Confirm `suplementai.com` points at the current CloudFront/Amplify app.
+2. Confirm the AWS project that owns `suplementai.com` deployed that exact SHA on branch `main`.
+3. Confirm `suplementai.com` points at the current CloudFront distribution and that the distribution points at the intended SSR origin.
 4. Rerun:
    ```bash
    PRODUCTION_BASE_URL=https://suplementai.com npm run smoke:production:portal
    ```
-5. If only production fails, inspect Amplify env and CloudWatch logs before changing clinical logic.
+5. If only production fails, inspect deployed env, SSR logs, and CloudWatch logs before changing clinical logic.
 6. If local and production both fail on current `main`, add a focused regression test before patching.
 
 ## Legacy Vercel URL
