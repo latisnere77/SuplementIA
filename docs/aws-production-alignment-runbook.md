@@ -50,7 +50,7 @@ Expected:
 
 - Response has CloudFront headers such as `x-cache`, `via`, `x-amz-cf-pop`, or `x-amz-cf-id`.
 - `www.suplementai.com` resolves through `d2of3lawf9cckm.cloudfront.net` unless the distribution changes intentionally.
-- `/api/check-env` reports production AWS search settings, for example `NEXT_PUBLIC_USE_INTELLIGENT_SEARCH="true"`.
+- `/api/check-env` reports production AWS search status, for example `NEXT_PUBLIC_USE_INTELLIGENT_SEARCH="true"` and whether search URLs are configured. It intentionally reports only booleans and a public host, not raw backend URLs.
 
 ## Verify AWS deployment
 
@@ -135,6 +135,8 @@ In Amplify production branch `main`, verify values are intentional:
 | `USE_LANCEDB` | Optional emergency override: `false` if native LanceDB path is unhealthy |
 
 `NEXT_PUBLIC_APP_URL` is required for server-side internal route fetches in Amplify SSR. If it is missing, `/api/portal/quiz` can resolve internal calls such as `/api/portal/recommend` and `/api/portal/enrich-v2` incorrectly and surface `backend_connection_failed` for cases that should be controlled `insufficient_data`.
+
+`/api/check-env` is public. Keep it limited to coarse diagnostic status such as configured booleans and safe hostnames. Do not add raw secret values, signed URLs, API keys, bearer tokens, or full private backend URLs to that response.
 
 To update branch env safely, export the current map, add only the needed keys, then update the branch:
 
