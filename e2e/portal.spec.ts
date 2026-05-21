@@ -676,4 +676,65 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText(/treats|cures/i)).not.toBeVisible();
     await expect(page.getByText('This page couldn’t load')).not.toBeVisible();
   });
+
+  test('supplement detail page has SEO metadata and keeps dynamic evidence flow', async ({ page }) => {
+    await page.route('**/api/portal/enrich-simple', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          evidence: {
+            overallGrade: 'B',
+            description: 'Magnesium is an essential mineral involved in normal physiology.',
+            worksFor: [
+              {
+                condition: 'Sleep quality',
+                grade: 'B',
+                description: 'Studied in people with low magnesium intake.',
+              },
+            ],
+            doesntWorkFor: [],
+            limitedEvidence: [],
+            ingredients: [
+              {
+                name: 'Magnesium',
+                grade: 'B',
+                studyCount: 12,
+                rctCount: 4,
+              },
+            ],
+            qualityBadges: {
+              hasRCTs: true,
+              hasMetaAnalysis: false,
+              longTermStudies: false,
+              safetyEstablished: true,
+            },
+          },
+          metadata: {
+            studiesUsed: 12,
+            searchTerm: 'Magnesium',
+          },
+        }),
+      });
+    });
+
+    await page.goto('/en/portal/supplement/magnesium');
+
+    await expect(page).toHaveTitle(/Magnesium: evidence, studies, and safety/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://suplementai.com/en/portal/supplement/magnesium');
+    await expect(page.locator('link[hreflang="es"]')).toHaveAttribute('href', 'https://suplementai.com/es/portal/supplement/magnesium');
+    await expect(page.locator('link[hreflang="en"]')).toHaveAttribute('href', 'https://suplementai.com/en/portal/supplement/magnesium');
+    await expect(page.getByRole('heading', { name: /Scientific Evidence for Magnesium/i })).toBeVisible();
+    await expect(page.getByText('Sleep quality').first()).toBeVisible();
+
+    const structuredData = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluateAll((nodes) => nodes.map((node) => node.textContent || '').join('\n'));
+
+    expect(structuredData).toContain('"@type":"MedicalWebPage"');
+    expect(structuredData).toContain('"@type":"DietarySupplement"');
+    expect(structuredData).toContain('https://suplementai.com/en/portal/supplement/magnesium');
+    expect(structuredData).not.toMatch(/sirve para|treats|cures|beneficio comprobado|clinical benefit/i);
+  });
 });
