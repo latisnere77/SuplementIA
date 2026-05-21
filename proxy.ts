@@ -4,7 +4,7 @@ import createMiddleware from 'next-intl/middleware';
 // Using 'always' prefix keeps routing consistent and avoids redirect delays.
 const intlProxy = createMiddleware({
   locales: ['en', 'es'],
-  defaultLocale: 'en',
+  defaultLocale: 'es',
   localeDetection: true,
   localePrefix: 'always'
 });

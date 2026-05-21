@@ -16,23 +16,23 @@ export const localeAlternates = {
 
 export const mexicanSeoKeywords = [
   'suplementos basados en evidencia',
-  'suplementos con evidencia cientifica',
+  'suplementos con evidencia científica',
   'suplementos para dormir',
   'suplementos para ansiedad',
-  'suplementos para energia',
-  'suplementos para inflamacion',
+  'suplementos para energía',
+  'suplementos para inflamación',
   'suplementos para colesterol',
   'suplementos para memoria',
   'magnesio para dormir',
-  'omega 3 para trigliceridos',
+  'omega 3 para triglicéridos',
   'vitamina d para sistema inmune',
   'creatina para rendimiento',
   'berberina para glucosa',
-  'probioticos para salud digestiva',
-  'ashwagandha para estres',
+  'probióticos para salud digestiva',
+  'ashwagandha para estrés',
   'suplementos para controlar glucosa',
-  'suplementos para colesterol y trigliceridos',
-  'suplementos para inflamacion',
+  'suplementos para colesterol y triglicéridos',
+  'suplementos para inflamación',
   'suplementos para rendimiento deportivo',
   'suplementos para salud hormonal',
   'suplementos para migraña',
@@ -43,9 +43,9 @@ export const mexicanSeoKeywords = [
 
 export const globalSeo = {
   es: {
-    title: 'SuplementAI | Suplementos con evidencia cientifica en Mexico',
+    title: 'SuplementAI | Suplementos con evidencia científica en México',
     description:
-      'Encuentra suplementos con respaldo cientifico para dormir mejor, energia, ansiedad, digestion, memoria y salud general. Informacion clara para Mexico en espanol.',
+      'Encuentra suplementos con respaldo científico para dormir mejor, energía, ansiedad, digestión, memoria y salud general. Información clara para México en español.',
   },
   en: {
     title: 'SuplementAI | Evidence-Based Supplement Guidance',

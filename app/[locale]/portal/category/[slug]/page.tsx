@@ -32,6 +32,73 @@ interface CategoryPageProps {
   }>;
 }
 
+function buildCategorySeoCopy({
+  slug,
+  categoryName,
+  categoryDescription,
+  locale,
+}: {
+  slug: string;
+  categoryName: string;
+  categoryDescription: string;
+  locale: 'es' | 'en';
+}) {
+  const targetedCopy: Record<string, Record<'es' | 'en', { title: string; description: string }>> = {
+    'cholesterol-triglycerides': {
+      es: {
+        title: 'Suplementos para colesterol y triglicéridos: evidencia y seguridad',
+        description:
+          'Compara suplementos estudiados para colesterol y triglicéridos, incluyendo evidencia, seguridad y uso responsable en México.',
+      },
+      en: {
+        title: 'Supplements for cholesterol and triglycerides: evidence and safety',
+        description:
+          'Compare supplements studied for cholesterol and triglycerides, including evidence level, safety context, and responsible use.',
+      },
+    },
+    sleep: {
+      es: {
+        title: 'Suplementos para dormir: evidencia, dosis y seguridad',
+        description:
+          'Compara suplementos para sueño como melatonina, magnesio y L-teanina por evidencia, seguridad y uso responsable.',
+      },
+      en: {
+        title: 'Supplements for sleep: evidence, dosage, and safety',
+        description:
+          'Compare sleep supplements such as melatonin, magnesium, and L-theanine by evidence level, safety context, and responsible use.',
+      },
+    },
+    'heart-health': {
+      es: {
+        title: 'Suplementos para salud cardiovascular: evidencia y seguridad',
+        description:
+          'Revisa suplementos estudiados para salud cardiovascular con enfoque en evidencia, seguridad y contexto de uso responsable.',
+      },
+      en: {
+        title: 'Supplements for heart health: evidence and safety',
+        description:
+          'Review supplements studied for heart health with evidence level, safety context, and responsible-use guidance.',
+      },
+    },
+  };
+
+  const targeted = targetedCopy[slug]?.[locale];
+
+  if (targeted) {
+    return targeted;
+  }
+
+  return locale === 'es'
+    ? {
+      title: `Suplementos para ${categoryName.toLowerCase()} con evidencia científica`,
+      description: `${categoryDescription} Compara suplementos por nivel de evidencia, estudios y uso responsable en México.`,
+    }
+    : {
+      title: `Evidence-based supplements for ${categoryName}`,
+      description: `${categoryDescription} Compare supplements by evidence level, studies, and responsible use.`,
+    };
+}
+
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   const category = getCategoryBySlug(slug);
@@ -45,12 +112,12 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const path = `/portal/category/${category.slug}`;
   const categoryName = t(`portal.categories.${category.slug}.name`);
   const categoryDescription = t(`portal.categories.${category.slug}.desc`);
-  const title = seoLocale === 'es'
-    ? `Suplementos para ${categoryName.toLowerCase()} con evidencia cientifica`
-    : `Evidence-based supplements for ${categoryName}`;
-  const description = seoLocale === 'es'
-    ? `${categoryDescription} Compara suplementos por nivel de evidencia, estudios y uso responsable en Mexico.`
-    : `${categoryDescription} Compare supplements by evidence level, studies, and responsible use.`;
+  const { title, description } = buildCategorySeoCopy({
+    slug: category.slug,
+    categoryName,
+    categoryDescription,
+    locale: seoLocale,
+  });
 
   return {
     metadataBase: new URL(siteUrl),
@@ -103,7 +170,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         '@id': `${siteUrl}/#website`,
       },
       about: getLocalizedCategorySupplements(category, seoLocale).map((supplement) => ({
-        '@type': 'DietarySupplement',
+        '@type': 'Thing',
         name: supplement.name,
         description: supplement.summary,
       })),
