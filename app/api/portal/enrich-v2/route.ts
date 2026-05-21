@@ -35,6 +35,19 @@ function isLikelyScientificName(term: string): boolean {
   return words.every((word) => /^[a-z][a-z-]{2,}$/i.test(word));
 }
 
+function isLikelyBotanicalQuery(term: string): boolean {
+  const normalized = term
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  return /\b(hoja|hojas|leaf|leaves|raiz|raices|root|roots|corteza|bark|semilla|semillas|seed|seeds|flor|flores|flower|flowers|fruto|fruit|extracto|extract|aceite|oil|planta|plant|herb|hierba)\b/.test(normalized);
+}
+
+function shouldTreatStudiesFailureAsInsufficientData(term: string): boolean {
+  return isLikelyScientificName(term) || isLikelyBotanicalQuery(term);
+}
+
 function isTransientUpstreamStatus(status: number): boolean {
   return [401, 403, 408, 429, 502, 503, 504].includes(status);
 }
@@ -256,7 +269,7 @@ export async function POST(request: NextRequest) {
       const details = error?.message || String(error);
       console.warn(`[enrich-v2] Studies fetch unavailable for ${supplementName}: ${details}`);
 
-      if (isLikelyScientificName(supplementName)) {
+      if (shouldTreatStudiesFailureAsInsufficientData(supplementName)) {
         return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
       }
 
@@ -268,10 +281,10 @@ export async function POST(request: NextRequest) {
       console.error(`[enrich-v2] Studies fetch failed: ${studiesResponse.status}`, errorText);
 
       if (
-        isLikelyScientificName(supplementName) &&
+        shouldTreatStudiesFailureAsInsufficientData(supplementName) &&
         [403, 404, 422, 500].includes(studiesResponse.status)
       ) {
-        console.warn(`[enrich-v2] Treating scientific-name studies failure as insufficient data: ${supplementName}`);
+        console.warn(`[enrich-v2] Treating botanical studies failure as insufficient data: ${supplementName}`);
         return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
       }
 

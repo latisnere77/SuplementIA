@@ -125,6 +125,64 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(body.metadata.literatureProfile.categories.preclinical).toBe(1);
   });
 
+  it('returns insufficient_data for common-language botanical plant-part queries when studies fetch is forbidden', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ message: 'Forbidden' }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ esearchresult: { count: '2', idlist: ['11', '22'] } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          `
+          <PubmedArticle>
+            <PMID>11</PMID>
+            <ArticleTitle>Chemical composition of avocado leaf extract</ArticleTitle>
+            <AbstractText>Phytochemical characterization of leaf extract.</AbstractText>
+            <PubDate><Year>2022</Year></PubDate>
+            <PublicationType>Journal Article</PublicationType>
+          </PubmedArticle>
+          <PubmedArticle>
+            <PMID>22</PMID>
+            <ArticleTitle>Avocado leaf extract in rats</ArticleTitle>
+            <AbstractText>Animal model in rats evaluated plant extract.</AbstractText>
+            <PubDate><Year>2021</Year></PubDate>
+            <PublicationType>Journal Article</PublicationType>
+          </PubmedArticle>
+          `,
+          { status: 200, headers: { 'Content-Type': 'application/xml' } }
+        )
+      );
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'hoja de aguacate',
+        category: 'hoja de aguacate',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(body.error).toBe('insufficient_data');
+    expect(body.message).toContain('hoja de aguacate');
+    expect(body.message).toContain('no evidencia clínica humana suficiente');
+    expect(body.metadata.literatureProfile.categories.phytochemical).toBe(1);
+    expect(body.metadata.literatureProfile.categories.preclinical).toBe(1);
+  });
+
   it('returns controlled upstream_unavailable when studies fetch is forbidden for a common supplement', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'Forbidden' }), {
