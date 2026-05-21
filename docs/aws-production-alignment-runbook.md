@@ -4,19 +4,24 @@ Use this when GitHub `main` is green but the public portal behaves differently f
 
 ## Production endpoints
 
-Checked on 2026-05-20:
+Checked on 2026-05-21:
 
 - Canonical production URL: `https://suplementai.com`
 - `www` production URL: `https://www.suplementai.com`
-- Frontend delivery: AWS CloudFront
-- CloudFront distribution domain observed via DNS: `d2of3lawf9cckm.cloudfront.net`
+- Frontend delivery: AWS Amplify Hosting with Amplify-managed CloudFront
+- Amplify-managed CloudFront distribution domain observed via DNS: `d2of3lawf9cckm.cloudfront.net`
+- AWS account: `643942183354`
+- Amplify app: `SuplementAI` / app id `d2yn3faih4ykom`
+- Production branch: `main`
+- Branch domain: `https://main.d2yn3faih4ykom.amplifyapp.com`
+- Connected repository shown by Amplify: `https://github.com/latisnere77/suplementia`
 - Repo build config present: `amplify.yml`
 - Canonical app URL in code: `lib/seo.ts` exports `https://suplementai.com`
 - Public runtime diagnostic: `https://suplementai.com/api/check-env`
 
 `https://suplementia.vercel.app` is not the production endpoint. It is a legacy/desynchronized Vercel deployment and must not be used for release smoke. It currently reports missing AWS search env and can return old errors such as `Hybrid Search Failed` / `hybrid_search_debug_fail`.
 
-AWS CLI check on 2026-05-20 found an Amplify app named `suplementia` in account `239378269775`, but that app had no branches or domain associations and its default Amplify domain did not serve `/api/check-env`. Treat CloudFront/DNS plus the runtime diagnostic above as the confirmed production signal. Do not assume the visible Amplify app is the live production project unless its branch, custom domain, and build history are confirmed.
+AWS CLI check on 2026-05-20 found an unrelated/stale Amplify app named `suplementia` in account `239378269775`; that app had no branches or domain associations and its default Amplify domain did not serve `/api/check-env`. The live project is in account `643942183354` and requires assuming `CrossAccountAdminRole` through the local `suplementai-admin` AWS profile.
 
 ## Confirm current GitHub source of truth
 
@@ -55,46 +60,100 @@ Useful discovery checks:
 
 ```bash
 aws sts get-caller-identity
-aws amplify list-apps --region us-east-1
-aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items && contains(join(',', Aliases.Items), 'suplementai.com')]"
-aws route53 list-hosted-zones-by-name --dns-name suplementai.com
+AWS_PROFILE=suplementai-admin aws sts get-caller-identity
+AWS_PROFILE=suplementai-admin aws amplify list-apps --region us-east-1
+AWS_PROFILE=suplementai-admin aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items && contains(join(',', Aliases.Items), 'suplementai.com')]"
+AWS_PROFILE=suplementai-admin aws route53 list-hosted-zones-by-name --dns-name suplementai.com
 ```
 
-If the live project is Amplify:
+The live project is Amplify:
 
-1. Open the AWS Amplify app that serves `suplementai.com`.
-2. Confirm the connected repo is `latisnere77/SuplementIA`.
-3. Confirm the production branch is `main`.
-4. Confirm the latest deployment points at the intended `origin/main` SHA.
-5. Confirm custom domains include `suplementai.com` and `www.suplementai.com`.
-6. Review the latest build logs and confirm `amplify.yml` or the configured build spec ran `npm run build`.
+1. Open AWS account `643942183354`.
+2. Open Amplify app `SuplementAI` (`d2yn3faih4ykom`).
+3. Confirm the connected repo is `latisnere77/suplementia`.
+4. Confirm the production branch is `main`.
+5. Confirm the latest deployment points at the intended `origin/main` SHA.
+6. Confirm custom domains include `suplementai.com` and `www.suplementai.com`.
+7. Review the latest build logs and confirm `amplify.yml` or the configured build spec ran `npm run build`.
 
 Useful AWS CLI checks when credentials are available:
 
 ```bash
-aws amplify list-apps --region us-east-1
-aws amplify list-branches --app-id <app-id> --region us-east-1
-aws amplify list-jobs --app-id <app-id> --branch-name main --region us-east-1 --max-results 5
-aws amplify get-job --app-id <app-id> --branch-name main --job-id <job-id> --region us-east-1
+AWS_PROFILE=suplementai-admin aws amplify get-app --app-id d2yn3faih4ykom --region us-east-1
+AWS_PROFILE=suplementai-admin aws amplify get-branch --app-id d2yn3faih4ykom --branch-name main --region us-east-1
+AWS_PROFILE=suplementai-admin aws amplify list-domain-associations --app-id d2yn3faih4ykom --region us-east-1
+AWS_PROFILE=suplementai-admin aws amplify list-jobs --app-id d2yn3faih4ykom --branch-name main --region us-east-1 --max-results 5
+AWS_PROFILE=suplementai-admin aws amplify get-job --app-id d2yn3faih4ykom --branch-name main --job-id <job-id> --region us-east-1
 ```
 
-If these commands show no branch/domain for the app, that app is not enough to prove production deployment. Find the account/project that owns `d2of3lawf9cckm.cloudfront.net` or the custom domain association before redeploying.
+Known-good deployment check from 2026-05-21:
+
+- Amplify job `187` succeeded after the production env fix.
+- Previous job `186` deployed commit `254fe2b720862fa964103634072ba11e506946d9`.
+- `suplementai.com`, `www.suplementai.com`, and `main.d2yn3faih4ykom.amplifyapp.com` all served the fixed behavior after job `187`.
+
+Amplify manages the CloudFront distribution for this app. Manual `aws cloudfront list-distributions` can return no distributions in this account even though Route 53 points at `d2of3lawf9cckm.cloudfront.net`; use Amplify domain association as the source of truth. Amplify invalidates its managed distribution during deploy, so a separate CloudFront invalidation is normally not available or needed from this account.
+
+## Redeploy current main
+
+Use this when `main` is green but production appears stale or when Amplify env vars changed:
+
+```bash
+AWS_PROFILE=suplementai-admin aws amplify start-job \
+  --app-id d2yn3faih4ykom \
+  --branch-name main \
+  --region us-east-1 \
+  --job-type RELEASE \
+  --job-reason "Redeploy latest green main"
+```
+
+Watch the job:
+
+```bash
+AWS_PROFILE=suplementai-admin aws amplify get-job \
+  --app-id d2yn3faih4ykom \
+  --branch-name main \
+  --job-id <job-id> \
+  --region us-east-1
+```
 
 ## Production environment variables to verify
 
-In Amplify production environment variables, verify values are intentional:
+In Amplify production branch `main`, verify values are intentional:
 
 | Variable | Expected/recommended state |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `https://suplementai.com` if set |
+| `NEXT_PUBLIC_APP_URL` | `https://suplementai.com` |
+| `NEXT_PUBLIC_SITE_URL` | `https://suplementai.com` |
 | `NEXT_PUBLIC_USE_INTELLIGENT_SEARCH` | `true` in production |
 | `NEXT_PUBLIC_SEARCH_API_URL` | Current AWS Lambda Function URL for supplement search |
 | `STUDIES_API_URL` | Current AWS studies-fetcher endpoint |
 | `ENRICHER_API_URL` | Current AWS content-enricher endpoint |
-| `NEXT_PUBLIC_QUIZ_API_URL` | Usually unset unless intentionally bypassing the Next portal API |
+| `NEXT_PUBLIC_QUIZ_API_URL` | Currently set to the production quiz orchestrator Lambda URL |
 | `PORTAL_API_URL` | Do not leave pointed at stale staging API unless that path is intentionally used |
 | `SEARCH_BACKEND` | Optional emergency override: `local` |
 | `USE_LANCEDB` | Optional emergency override: `false` if native LanceDB path is unhealthy |
+
+`NEXT_PUBLIC_APP_URL` is required for server-side internal route fetches in Amplify SSR. If it is missing, `/api/portal/quiz` can resolve internal calls such as `/api/portal/recommend` and `/api/portal/enrich-v2` incorrectly and surface `backend_connection_failed` for cases that should be controlled `insufficient_data`.
+
+To update branch env safely, export the current map, add only the needed keys, then update the branch:
+
+```bash
+AWS_PROFILE=suplementai-admin aws amplify get-branch \
+  --app-id d2yn3faih4ykom \
+  --branch-name main \
+  --region us-east-1 \
+  --query 'branch.environmentVariables' \
+  --output json > /tmp/main-env.json
+
+node -e "const fs=require('fs'); const env=JSON.parse(fs.readFileSync('/tmp/main-env.json','utf8')); env.NEXT_PUBLIC_APP_URL='https://suplementai.com'; env.NEXT_PUBLIC_SITE_URL='https://suplementai.com'; fs.writeFileSync('/tmp/main-env-updated.json', JSON.stringify(env));"
+
+AWS_PROFILE=suplementai-admin aws amplify update-branch \
+  --app-id d2yn3faih4ykom \
+  --branch-name main \
+  --region us-east-1 \
+  --environment-variables file:///tmp/main-env-updated.json
+```
 
 Avoid using `suplementia.vercel.app` as any production base URL.
 
@@ -111,6 +170,7 @@ To test another environment explicitly:
 ```bash
 PRODUCTION_BASE_URL=https://suplementai.com npm run smoke:production:portal
 PRODUCTION_BASE_URL=https://www.suplementai.com npm run smoke:production:portal
+PRODUCTION_BASE_URL=https://main.d2yn3faih4ykom.amplifyapp.com npm run smoke:production:portal
 ```
 
 Expected canary outcomes:
@@ -141,7 +201,7 @@ hybrid_search_debug_fail
 Interpretation:
 
 - `Hybrid Search Failed` or `hybrid_search_debug_fail`: the request is hitting stale code or a legacy endpoint.
-- `backend_connection_failed` / `recommendation_generation_failed`: inspect internal route fetches and backend endpoint env (`PORTAL_API_URL`, `NEXT_PUBLIC_QUIZ_API_URL`, studies/enricher URLs).
+- `backend_connection_failed` / `recommendation_generation_failed`: inspect internal route fetches and backend endpoint env first. In Amplify SSR, confirm `NEXT_PUBLIC_APP_URL=https://suplementai.com`; if it is missing, internal same-app fetches can resolve incorrectly.
 - `upstream_unavailable`: controlled external outage/rate-limit path.
 - `insufficient_data`: expected for botanicals without enough human clinical evidence.
 

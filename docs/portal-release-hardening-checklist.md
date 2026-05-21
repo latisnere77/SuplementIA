@@ -7,7 +7,7 @@ Last hardening pass:
 - Date: 2026-05-20
 - Expected main commit: latest green `origin/main`
 - Production URL checked: `https://suplementai.com`
-- Production delivery: AWS CloudFront. Amplify config exists in repo, but the live AWS project must be verified by domain/build history before treating Amplify as the source of truth.
+- Production delivery: AWS Amplify Hosting in account `643942183354`, app `SuplementAI` (`d2yn3faih4ykom`), with Amplify-managed CloudFront `d2of3lawf9cckm.cloudfront.net`.
 - Legacy URL note: `https://suplementia.vercel.app` is not production and must not be used for release smoke.
 
 ## Local release validation
@@ -56,6 +56,7 @@ Run the focused API canary smoke against production:
 ```bash
 npm run smoke:production:portal
 PRODUCTION_BASE_URL=https://www.suplementai.com npm run smoke:production:portal
+PRODUCTION_BASE_URL=https://main.d2yn3faih4ykom.amplifyapp.com npm run smoke:production:portal
 ```
 
 Expected canary outcomes:
@@ -66,7 +67,9 @@ Expected canary outcomes:
 | Async enrichment | Turmeric, Berberine, Green tea extract | `200 processing` or controlled `completed`, no `500` |
 | Insufficient human clinical evidence | Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims |
 
-If AWS production returns `Hybrid Search Failed` or `hybrid_search_debug_fail`, the request is hitting stale code or a legacy endpoint. Confirm the base URL is `https://suplementai.com`, then verify the AWS project/build that owns the CloudFront distribution before debugging clinical gating.
+If AWS production returns `Hybrid Search Failed` or `hybrid_search_debug_fail`, the request is hitting stale code or a legacy endpoint. Confirm the base URL is `https://suplementai.com`, then verify Amplify app `d2yn3faih4ykom` deployed the latest green `main`.
+
+If Piper auritum or Fadogia agrestis return `500 backend_connection_failed`, verify Amplify branch `main` has `NEXT_PUBLIC_APP_URL=https://suplementai.com`, then redeploy the branch. Missing `NEXT_PUBLIC_APP_URL` can break internal SSR fetches before controlled `insufficient_data` handling runs.
 
 For AWS production alignment and deploy checks, see
 [`aws-production-alignment-runbook.md`](./aws-production-alignment-runbook.md).
