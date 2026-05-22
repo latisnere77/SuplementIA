@@ -11,6 +11,7 @@ export interface LiteratureProfileArticle {
   abstract: string;
   year?: number;
   publicationTypes: string[];
+  meshHeadings: string[];
   category: LiteratureStudyCategory;
 }
 
@@ -41,17 +42,44 @@ function escapePubMedPhrase(term: string): string {
 }
 
 function buildBroadQuery(term: string): string {
+  const phrases = getPubMedQueryPhrases(term);
+
+  return phrases
+    .flatMap((phrase) => [`"${phrase}"[Title/Abstract]`, `"${phrase}"[All Fields]`])
+    .join(' OR ');
+}
+
+export function getPubMedQueryPhrases(term: string): string[] {
   const phrase = escapePubMedPhrase(term);
-  return `"${phrase}"[Title/Abstract] OR "${phrase}"[All Fields]`;
+  const normalized = phrase
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+  const aliases: Record<string, string[]> = {
+    'hoja de aguacate': ['avocado leaf', 'Persea americana leaf'],
+    'hojas de aguacate': ['avocado leaf', 'Persea americana leaf'],
+  };
+
+  return Array.from(new Set([phrase, ...(aliases[normalized] || [])]));
 }
 
 export function classifyLiteratureArticle(input: {
   title: string;
   abstract?: string;
   publicationTypes?: string[];
+  meshHeadings?: string[];
 }): LiteratureStudyCategory {
   const text = `${input.title} ${input.abstract || ''}`.toLowerCase();
   const types = (input.publicationTypes || []).map((type) => type.toLowerCase());
+  const meshHeadings = (input.meshHeadings || []).map((heading) => heading.toLowerCase());
+
+  if (
+    meshHeadings.some((heading) =>
+      ['animals', 'rats', 'rats, wistar', 'mice', 'mouse', 'rat', 'animal experimentation'].includes(heading)
+    )
+  ) {
+    return 'preclinical';
+  }
 
   if (
     /\b(in vitro|ex vivo|cell line|cell lines|cultured cells|cells|fibroblasts|hela|sih?a|murine|mouse|mice|rat|rats|animal model|zebrafish|drosophila|broiler|porcine|bovine|canine|rabbit|wistar|sprague-dawley)\b/.test(text)
@@ -108,6 +136,7 @@ export function isHumanClinicalEvidenceArticle(input: {
   title: string;
   abstract?: string;
   publicationTypes?: string[];
+  meshHeadings?: string[];
 }): boolean {
   const category = classifyLiteratureArticle(input);
   if (category === 'human_clinical') {
@@ -143,7 +172,10 @@ function parseArticles(xmlText: string): LiteratureProfileArticle[] {
     const publicationTypes = [...articleXml.matchAll(/<PublicationType[^>]*>([^<]+)<\/PublicationType>/g)].map(
       (match) => match[1]
     );
-    const category = classifyLiteratureArticle({ title, abstract, publicationTypes });
+    const meshHeadings = [...articleXml.matchAll(/<DescriptorName[^>]*>([^<]+)<\/DescriptorName>/g)].map(
+      (match) => match[1]
+    );
+    const category = classifyLiteratureArticle({ title, abstract, publicationTypes, meshHeadings });
 
     return [
       {
@@ -152,6 +184,7 @@ function parseArticles(xmlText: string): LiteratureProfileArticle[] {
         abstract,
         year: yearText ? Number(yearText) : undefined,
         publicationTypes,
+        meshHeadings,
         category,
       },
     ];
