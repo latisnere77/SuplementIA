@@ -18,8 +18,18 @@ const nextConfig = {
       'framer-motion',
     ],
   },
+  turbopack: {
+    resolveAlias: {
+      'js-cookie': './lib/auth/js-cookie-compat.js',
+    },
+  },
   // Webpack config for LanceDB native bindings
   webpack: (config, { isServer, nextRuntime }) => {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      'js-cookie$': require.resolve('./lib/auth/js-cookie-compat.js'),
+    };
+
     if (isServer && nextRuntime !== 'edge') {
       // Externalize server-only SDKs to prevent bundling native files and AWS SDK ESM subpath issues.
       config.externals.push('@lancedb/lancedb');
