@@ -94,6 +94,9 @@
     "tsx": "^4.19.2"
   },
   "overrides": {
+    "amazon-cognito-identity-js": {
+      "js-cookie": "3.0.7"
+    },
     "next": {
       "postcss": "8.5.13"
     },
