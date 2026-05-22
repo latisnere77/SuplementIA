@@ -1,6 +1,7 @@
 import {
   classifyLiteratureArticle,
   formatLiteratureProfileMessage,
+  getPubMedQueryPhrases,
   isHumanClinicalEvidenceArticle,
   searchPubMedLiteratureProfile,
 } from '../pubmed-literature-profile';
@@ -77,6 +78,15 @@ describe('pubmed literature profile', () => {
         publicationTypes: ['Randomized Controlled Trial'],
       })
     ).toBe('human_clinical');
+
+    expect(
+      classifyLiteratureArticle({
+        title: 'Effectiveness of avocado leaf extract as antihypertensive',
+        abstract: 'Blood pressure was evaluated after plant extract exposure.',
+        publicationTypes: ['Journal Article'],
+        meshHeadings: ['Animals', 'Rats', 'Rats, Wistar'],
+      })
+    ).toBe('preclinical');
   });
 
   it('only treats human clinical studies as benefit-claim evidence', () => {
@@ -158,6 +168,64 @@ describe('pubmed literature profile', () => {
     expect(message).toContain('Encontramos literatura publicada');
     expect(message).toContain('no evidencia clínica humana suficiente');
     expect(message).not.toContain('no hay estudios');
+  });
+
+  it('expands Spanish avocado leaf queries to controlled PubMed aliases', async () => {
+    expect(getPubMedQueryPhrases('hoja de aguacate')).toEqual([
+      'hoja de aguacate',
+      'avocado leaf',
+      'Persea americana leaf',
+    ]);
+    expect(getPubMedQueryPhrases('hojas de aguacate')).toEqual([
+      'hojas de aguacate',
+      'avocado leaf',
+      'Persea americana leaf',
+    ]);
+    expect(getPubMedQueryPhrases('Piper auritum')).toEqual(['Piper auritum']);
+  });
+
+  it('uses avocado leaf aliases for PubMed profiles and keeps rat literature preclinical', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          json: async () => ({ esearchresult: { count: '1', idlist: ['40919293'] } }),
+        } as Response
+      )
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          text: async () => `
+          <PubmedArticle>
+            <PMID>40919293</PMID>
+            <ArticleTitle>Effectiveness of avocado leaf extract (Persea americana Mill.) as antihypertensive.</ArticleTitle>
+            <AbstractText>This study used an experimental in vivo design involving white male Wistar rats.</AbstractText>
+            <PubDate><Year>2022</Year></PubDate>
+            <PublicationType>Journal Article</PublicationType>
+            <MeshHeading><DescriptorName>Animals</DescriptorName></MeshHeading>
+            <MeshHeading><DescriptorName>Rats</DescriptorName></MeshHeading>
+            <MeshHeading><DescriptorName>Rats, Wistar</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          `,
+        } as Response
+      );
+    global.fetch = fetchMock as jest.Mock;
+
+    const profile = await searchPubMedLiteratureProfile('hoja de aguacate');
+    const searchUrl = String(fetchMock.mock.calls[0][0]);
+
+    expect(searchUrl).toContain(encodeURIComponent('"hoja de aguacate"[Title/Abstract]'));
+    expect(searchUrl).toContain(encodeURIComponent('"avocado leaf"[Title/Abstract]'));
+    expect(searchUrl).toContain(encodeURIComponent('"Persea americana leaf"[Title/Abstract]'));
+    expect(searchUrl).not.toContain(encodeURIComponent('"Persea americana"[Title/Abstract]'));
+    expect(profile?.totalCount).toBe(1);
+    expect(profile?.articles[0]).toMatchObject({
+      pmid: '40919293',
+      category: 'preclinical',
+    });
+    expect(profile?.categories.preclinical).toBe(1);
+    expect(profile?.categories.human_clinical).toBe(0);
   });
 
   it('formats no-article profiles without implying clinical benefits', () => {

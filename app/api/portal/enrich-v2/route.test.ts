@@ -135,7 +135,7 @@ describe('/api/portal/enrich-v2 POST', () => {
         })
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ esearchresult: { count: '2', idlist: ['11', '22'] } }), {
+        new Response(JSON.stringify({ esearchresult: { count: '1', idlist: ['40919293'] } }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
         })
@@ -144,18 +144,14 @@ describe('/api/portal/enrich-v2 POST', () => {
         new Response(
           `
           <PubmedArticle>
-            <PMID>11</PMID>
-            <ArticleTitle>Chemical composition of avocado leaf extract</ArticleTitle>
-            <AbstractText>Phytochemical characterization of leaf extract.</AbstractText>
+            <PMID>40919293</PMID>
+            <ArticleTitle>Effectiveness of avocado leaf extract (Persea americana Mill.) as antihypertensive.</ArticleTitle>
+            <AbstractText>This study used an experimental in vivo study design involving white male Wistar rats.</AbstractText>
             <PubDate><Year>2022</Year></PubDate>
             <PublicationType>Journal Article</PublicationType>
-          </PubmedArticle>
-          <PubmedArticle>
-            <PMID>22</PMID>
-            <ArticleTitle>Avocado leaf extract in rats</ArticleTitle>
-            <AbstractText>Animal model in rats evaluated plant extract.</AbstractText>
-            <PubDate><Year>2021</Year></PubDate>
-            <PublicationType>Journal Article</PublicationType>
+            <MeshHeading><DescriptorName>Animals</DescriptorName></MeshHeading>
+            <MeshHeading><DescriptorName>Rats</DescriptorName></MeshHeading>
+            <MeshHeading><DescriptorName>Rats, Wistar</DescriptorName></MeshHeading>
           </PubmedArticle>
           `,
           { status: 200, headers: { 'Content-Type': 'application/xml' } }
@@ -179,8 +175,13 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(body.error).toBe('insufficient_data');
     expect(body.message).toContain('hoja de aguacate');
     expect(body.message).toContain('no evidencia clínica humana suficiente');
-    expect(body.metadata.literatureProfile.categories.phytochemical).toBe(1);
     expect(body.metadata.literatureProfile.categories.preclinical).toBe(1);
+    expect(body.metadata.literatureProfile.categories.human_clinical).toBe(0);
+    expect(body.metadata.literatureProfile.articles[0]).toMatchObject({
+      pmid: '40919293',
+      category: 'preclinical',
+    });
+    expect(JSON.stringify(body)).not.toMatch(/sirve para|treats|cures|beneficio clinico|beneficio clínico/i);
   });
 
   it('returns controlled upstream_unavailable when studies fetch is forbidden for a common supplement', async () => {
