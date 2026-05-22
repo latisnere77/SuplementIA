@@ -612,14 +612,16 @@ test.describe('portal browser flows', () => {
     await page.goto('/en/portal/results?q=unknown%20herb&supplement=unknown%20herb');
 
     await expect(page.getByTestId('error-state')).toBeVisible();
-    await expect(page.getByText('Not Enough Human Clinical Evidence')).toBeVisible();
+    await expect(page.getByText('Research brief: not enough human clinical evidence')).toBeVisible();
     await expect(page.getByText(/^PubMed does contain literature related/i)).toBeVisible();
     await expect(page.getByText('PubMed Results')).toBeVisible();
     await expect(page.getByText('Reviewed Sample', { exact: true })).toBeVisible();
-    await expect(page.getByText('What type of literature appeared in the sample')).toBeVisible();
+    await expect(page.getByText('Evidence type in the sample')).toBeVisible();
     await expect(page.getByText('Studies in people')).toBeVisible();
     await expect(page.getByText('Animals, cells, or laboratory work')).toBeVisible();
     await expect(page.getByText('Composition or chemical characterization')).toBeVisible();
+    await expect(page.getByText('What this does not allow us to conclude')).toBeVisible();
+    await expect(page.getByText(/does not allow us to say that "unknown herb" produces an effect in people/i)).toBeVisible();
     await expect(page.getByText('Representative articles from the sample')).toBeVisible();
     await expect(page.getByText('This list is not a recommendation.')).toBeVisible();
     await expect(page.getByText('Chemical composition of unknown herb essential oil')).toBeVisible();
@@ -628,6 +630,9 @@ test.describe('portal browser flows', () => {
     await expect(page.getByRole('link', { name: /PMID 12345/i })).toHaveAttribute('href', /pubmed\.ncbi\.nlm\.nih\.gov\/12345/);
     await expect(page.getByText(/No encontramos estudios científicos publicados en PubMed/i)).not.toBeVisible();
     await expect(page.getByText(/Preclinical, phytochemical, botanical, or agricultural literature is not/i)).toBeVisible();
+    await expect(page.getByText('Useful terms for further research')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'unknown herb chemical composition', exact: true })).toBeVisible();
+    await expect(page.getByText('Prudent conclusion')).toBeVisible();
     await expect(page.getByText('Next exploratory searches')).toBeVisible();
     await expect(page.getByText('These actions are for refining the search. They do not imply')).toBeVisible();
     await expect(page.getByRole('button', { name: /Try another name/i })).toBeVisible();
@@ -635,6 +640,8 @@ test.describe('portal browser flows', () => {
     await expect(page.getByRole('button', { name: /Explore a specific topic/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Back to popular supplements/i })).toBeVisible();
     await expect(page.getByText(/Explore supplement \+ condition only as a search/i)).toBeVisible();
+    await expect(page.getByText(/worksFor/i)).not.toBeVisible();
+    await expect(page.getByText('Product Recommendations')).not.toBeVisible();
     await expect(page.getByText(/sirve para/i)).not.toBeVisible();
     await expect(page.getByText(/treats|cures/i)).not.toBeVisible();
     await expect(page.getByRole('button', { name: /Search Another Supplement/i })).toBeVisible();
