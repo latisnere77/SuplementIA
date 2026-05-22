@@ -36,6 +36,23 @@ const EMPTY_CATEGORIES: Record<LiteratureStudyCategory, number> = {
 };
 
 const HUMAN_CLINICAL_REVIEW_PATTERN = /\b(randomi[sz]ed controlled trials?|controlled clinical trials?|clinical trials?|human trials?|patients|healthy adults|volunteers|participants|human subjects|subjects were randomized|placebo-controlled|double-blind)\b/;
+const CENTELLA_ALIASES = [
+  'Centella asiatica',
+  'gotu kola',
+  'Centella asiatica extract',
+  'total triterpenic fraction of Centella asiatica',
+  'TECA Centella asiatica',
+];
+const CENTELLA_CLINICAL_TERMS = [
+  'clinical trial',
+  'randomized controlled trial',
+  'humans',
+  'systematic review',
+  'venous insufficiency',
+  'wound healing',
+  'acoustic startle',
+  'cognition',
+];
 
 function escapePubMedPhrase(term: string): string {
   return term.replace(/"/g, '').trim();
@@ -49,6 +66,36 @@ function buildBroadQuery(term: string): string {
     .join(' OR ');
 }
 
+function isCentellaQuery(term: string): boolean {
+  const normalized = term
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  return /\b(centella asiatica|gotu kola|centella asiatica extract)\b/.test(normalized);
+}
+
+function buildClinicalRecallQuery(term: string): string | null {
+  if (!isCentellaQuery(term)) {
+    return null;
+  }
+
+  const aliasQuery = CENTELLA_ALIASES
+    .flatMap((phrase) => [`"${phrase}"[Title/Abstract]`, `"${phrase}"[All Fields]`])
+    .join(' OR ');
+  const clinicalQuery = CENTELLA_CLINICAL_TERMS
+    .map((phrase) => `"${phrase}"[Title/Abstract]`)
+    .concat([
+      '"Clinical Trial"[Publication Type]',
+      '"Randomized Controlled Trial"[Publication Type]',
+      '"Systematic Review"[Publication Type]',
+      '"Humans"[MeSH Terms]',
+    ])
+    .join(' OR ');
+
+  return `(${aliasQuery}) AND (${clinicalQuery})`;
+}
+
 export function getPubMedQueryPhrases(term: string): string[] {
   const phrase = escapePubMedPhrase(term);
   const normalized = phrase
@@ -58,9 +105,20 @@ export function getPubMedQueryPhrases(term: string): string[] {
   const aliases: Record<string, string[]> = {
     'hoja de aguacate': ['avocado leaf', 'Persea americana leaf'],
     'hojas de aguacate': ['avocado leaf', 'Persea americana leaf'],
+    'centella asiatica': CENTELLA_ALIASES.filter((alias) => alias !== phrase),
+    'gotu kola': CENTELLA_ALIASES.filter((alias) => alias !== phrase),
+    'centella asiatica extract': CENTELLA_ALIASES.filter((alias) => alias !== phrase),
   };
 
-  return Array.from(new Set([phrase, ...(aliases[normalized] || [])]));
+  const seen = new Set<string>();
+  return [phrase, ...(aliases[normalized] || [])].filter((candidate) => {
+    const key = candidate.toLowerCase();
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
 }
 
 export function classifyLiteratureArticle(input: {
@@ -207,8 +265,21 @@ export async function searchPubMedLiteratureProfile(
   const searchData = await searchResponse.json();
   const idList: string[] = searchData.esearchresult?.idlist || [];
   const totalCount = Number(searchData.esearchresult?.count || idList.length || 0);
+  let prioritizedIdList = idList;
 
-  if (idList.length === 0) {
+  const clinicalRecallQuery = buildClinicalRecallQuery(term);
+  if (clinicalRecallQuery) {
+    const clinicalSearchUrl = `${PUBMED_API_BASE}/esearch.fcgi?db=pubmed&term=${encodeURIComponent(clinicalRecallQuery)}&retmode=json&retmax=${maxArticles}&sort=relevance&tool=${TOOL_NAME}&email=${TOOL_EMAIL}`;
+    const clinicalSearchResponse = await fetch(clinicalSearchUrl, { signal: options.signal });
+
+    if (clinicalSearchResponse.ok) {
+      const clinicalSearchData = await clinicalSearchResponse.json();
+      const clinicalIdList: string[] = clinicalSearchData.esearchresult?.idlist || [];
+      prioritizedIdList = Array.from(new Set([...clinicalIdList, ...idList])).slice(0, maxArticles);
+    }
+  }
+
+  if (prioritizedIdList.length === 0) {
     return {
       query,
       totalCount,
@@ -218,7 +289,7 @@ export async function searchPubMedLiteratureProfile(
     };
   }
 
-  const fetchUrl = `${PUBMED_API_BASE}/efetch.fcgi?db=pubmed&id=${idList.join(',')}&retmode=xml&tool=${TOOL_NAME}&email=${TOOL_EMAIL}`;
+  const fetchUrl = `${PUBMED_API_BASE}/efetch.fcgi?db=pubmed&id=${prioritizedIdList.join(',')}&retmode=xml&tool=${TOOL_NAME}&email=${TOOL_EMAIL}`;
   const fetchResponse = await fetch(fetchUrl, { signal: options.signal });
   if (!fetchResponse.ok) {
     throw new Error(`PubMed profile fetch failed: ${fetchResponse.status}`);

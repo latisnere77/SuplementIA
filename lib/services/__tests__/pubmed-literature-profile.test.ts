@@ -184,6 +184,98 @@ describe('pubmed literature profile', () => {
     expect(getPubMedQueryPhrases('Piper auritum')).toEqual(['Piper auritum']);
   });
 
+  it('expands Centella asiatica and gotu kola to controlled PubMed aliases', () => {
+    expect(getPubMedQueryPhrases('centella asiatica')).toEqual([
+      'centella asiatica',
+      'gotu kola',
+      'Centella asiatica extract',
+      'total triterpenic fraction of Centella asiatica',
+      'TECA Centella asiatica',
+    ]);
+    expect(getPubMedQueryPhrases('gotu kola')).toEqual([
+      'gotu kola',
+      'Centella asiatica',
+      'Centella asiatica extract',
+      'total triterpenic fraction of Centella asiatica',
+      'TECA Centella asiatica',
+    ]);
+  });
+
+  it('prioritizes human clinical Centella articles in the PubMed literature sample', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          json: async () => ({ esearchresult: { count: '1324', idlist: ['9001', '9002'] } }),
+        } as Response
+      )
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          json: async () => ({ esearchresult: { count: '6', idlist: ['11106141', '35328954', '23533507', '35204098'] } }),
+        } as Response
+      )
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          text: async () => `
+          <PubmedArticle>
+            <PMID>11106141</PMID>
+            <ArticleTitle>A double-blind, placebo-controlled study on the effects of Gotu Kola (Centella asiatica) on acoustic startle response in healthy subjects.</ArticleTitle>
+            <AbstractText>Healthy subjects participated in a randomized placebo-controlled study.</AbstractText>
+            <PubDate><Year>2000</Year></PubDate>
+            <PublicationType>Clinical Trial</PublicationType>
+            <PublicationType>Randomized Controlled Trial</PublicationType>
+            <MeshHeading><DescriptorName>Humans</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          <PubmedArticle>
+            <PMID>35328954</PMID>
+            <ArticleTitle>A Systematic Review of the Effect of Centella asiatica on Wound Healing.</ArticleTitle>
+            <AbstractText>Four clinical trials met the inclusion criteria.</AbstractText>
+            <PubDate><Year>2022</Year></PubDate>
+            <PublicationType>Systematic Review</PublicationType>
+          </PubmedArticle>
+          <PubmedArticle>
+            <PMID>23533507</PMID>
+            <ArticleTitle>A Systematic Review of the Efficacy of Centella asiatica for Improvement of the Signs and Symptoms of Chronic Venous Insufficiency.</ArticleTitle>
+            <AbstractText>Randomized clinical trials were searched for patients with chronic venous insufficiency.</AbstractText>
+            <PubDate><Year>2013</Year></PubDate>
+            <PublicationType>Journal Article</PublicationType>
+          </PubmedArticle>
+          <PubmedArticle>
+            <PMID>35204098</PMID>
+            <ArticleTitle>Pharmacokinetics and Pharmacodynamics of Key Components of a Standardized Centella asiatica Product in Cognitively Impaired Older Adults: A Phase 1, Double-Blind, Randomized Clinical Trial.</ArticleTitle>
+            <AbstractText>Older adult participants were randomized in a clinical trial.</AbstractText>
+            <PubDate><Year>2022</Year></PubDate>
+            <PublicationType>Journal Article</PublicationType>
+          </PubmedArticle>
+          `,
+        } as Response
+      );
+    global.fetch = fetchMock as jest.Mock;
+
+    const profile = await searchPubMedLiteratureProfile('centella asiatica');
+    const broadSearchUrl = String(fetchMock.mock.calls[0][0]);
+    const clinicalSearchUrl = String(fetchMock.mock.calls[1][0]);
+
+    expect(broadSearchUrl).toContain(encodeURIComponent('"gotu kola"[Title/Abstract]'));
+    expect(broadSearchUrl).toContain(encodeURIComponent('"Centella asiatica extract"[Title/Abstract]'));
+    expect(clinicalSearchUrl).toContain(encodeURIComponent('"venous insufficiency"[Title/Abstract]'));
+    expect(clinicalSearchUrl).toContain(encodeURIComponent('"wound healing"[Title/Abstract]'));
+    expect(clinicalSearchUrl).toContain(encodeURIComponent('"Randomized Controlled Trial"[Publication Type]'));
+    expect(profile?.totalCount).toBe(1324);
+    expect(profile?.articles.map((article) => article.pmid)).toEqual([
+      '11106141',
+      '35328954',
+      '23533507',
+      '35204098',
+    ]);
+    expect(profile?.categories.human_clinical).toBe(3);
+    expect(profile?.categories.review).toBe(1);
+    expect(profile?.categories.preclinical).toBe(0);
+  });
+
   it('uses avocado leaf aliases for PubMed profiles and keeps rat literature preclinical', async () => {
     const fetchMock = jest
       .fn()

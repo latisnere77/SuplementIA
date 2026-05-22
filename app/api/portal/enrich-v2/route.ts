@@ -81,6 +81,42 @@ function logEnrichOutcome(data: {
   });
 }
 
+function isCentellaRecallCandidate(term: string): boolean {
+  const normalized = term
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  return /\b(centella asiatica|gotu kola|centella asiatica extract)\b/.test(normalized);
+}
+
+function getCentellaClinicalRecallRequests() {
+  const clinicalBenefitQuery = [
+    'clinical trial',
+    'randomized controlled trial',
+    'humans',
+    'systematic review',
+    'venous insufficiency',
+    'wound healing',
+    'acoustic startle',
+    'cognition',
+  ].join(' ');
+
+  return [
+    { supplementName: 'Centella asiatica', benefitQuery: clinicalBenefitQuery },
+    { supplementName: 'gotu kola', benefitQuery: clinicalBenefitQuery },
+    { supplementName: 'Centella asiatica extract', benefitQuery: clinicalBenefitQuery },
+    {
+      supplementName: 'total triterpenic fraction of Centella asiatica',
+      benefitQuery: 'clinical trial randomized controlled trial humans venous insufficiency',
+    },
+    {
+      supplementName: 'TECA Centella asiatica',
+      benefitQuery: 'clinical trial randomized controlled trial humans venous insufficiency',
+    },
+  ];
+}
+
 function upstreamUnavailableResponse(
   supplementName: string,
   requestId: string,
@@ -192,14 +228,124 @@ function getStudyText(study: any, field: 'title' | 'abstract'): string {
   return typeof value === 'string' ? value : '';
 }
 
+function getMeshHeadings(study: any): string[] {
+  const rawHeadings = study?.meshHeadings || study?.mesh_headings || study?.meshTerms || study?.mesh_terms;
+
+  if (Array.isArray(rawHeadings)) {
+    return rawHeadings.map(String);
+  }
+
+  if (typeof rawHeadings === 'string') {
+    return rawHeadings
+      .split(/[;,|]/)
+      .map((heading) => heading.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
 function filterHumanClinicalStudies(studies: any[]): any[] {
   return studies.filter((study) =>
     isHumanClinicalEvidenceArticle({
       title: getStudyText(study, 'title'),
       abstract: getStudyText(study, 'abstract'),
       publicationTypes: getPublicationTypes(study),
+      meshHeadings: getMeshHeadings(study),
     })
   );
+}
+
+async function fetchStudiesFromService(params: {
+  studiesUrl: string;
+  requestId: string;
+  supplementName: string;
+  benefitQuery?: string;
+  maxResults: number;
+  yearFrom?: number;
+}) {
+  return fetch(params.studiesUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Request-ID': params.requestId,
+    },
+    body: JSON.stringify({
+      supplementName: params.supplementName,
+      ...(params.benefitQuery && { benefitQuery: params.benefitQuery }),
+      maxResults: params.maxResults,
+      rctOnly: false,
+      ...(params.yearFrom && { yearFrom: params.yearFrom }),
+      humanStudiesOnly: true,
+    }),
+    signal: AbortSignal.timeout(30000),
+  });
+}
+
+async function fetchCentellaClinicalRecallStudies(params: {
+  studiesUrl: string;
+  requestId: string;
+  originalSupplementName: string;
+}) {
+  const collectedStudies: any[] = [];
+  const seenPmids = new Set<string>();
+
+  for (const recallRequest of getCentellaClinicalRecallRequests()) {
+    try {
+      const response = await fetchStudiesFromService({
+        studiesUrl: params.studiesUrl,
+        requestId: params.requestId,
+        supplementName: recallRequest.supplementName,
+        benefitQuery: recallRequest.benefitQuery,
+        maxResults: 30,
+      });
+
+      if (!response.ok) {
+        console.warn(`[enrich-v2] Centella clinical recall search failed for ${recallRequest.supplementName}: ${response.status}`);
+        continue;
+      }
+
+      const data = await response.json();
+      const studies = data.data?.studies || data.studies || [];
+      for (const study of studies) {
+        const pmid = String(study?.pmid || study?.id || `${recallRequest.supplementName}-${collectedStudies.length}`);
+        if (seenPmids.has(pmid)) {
+          continue;
+        }
+        seenPmids.add(pmid);
+        collectedStudies.push(study);
+      }
+
+      if (filterHumanClinicalStudies(collectedStudies).length >= 4) {
+        break;
+      }
+    } catch (error) {
+      console.warn(`[enrich-v2] Centella clinical recall unavailable for ${params.originalSupplementName}:`, error);
+    }
+  }
+
+  return collectedStudies;
+}
+
+async function fetchCentellaLocalPubMedClinicalStudies(supplementName: string) {
+  try {
+    const profile = await searchPubMedLiteratureProfile(supplementName, {
+      maxArticles: 16,
+      signal: AbortSignal.timeout(10000),
+    });
+
+    return (profile?.articles || []).filter((article) =>
+      isHumanClinicalEvidenceArticle({
+        title: article.title,
+        abstract: article.abstract,
+        publicationTypes: article.publicationTypes,
+        meshHeadings: article.meshHeadings,
+      })
+    );
+  } catch (error) {
+    console.warn(`[enrich-v2] Local Centella PubMed clinical recall unavailable for ${supplementName}:`, error);
+    return [];
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -249,21 +395,13 @@ export async function POST(request: NextRequest) {
     
     let studiesResponse: Response;
     try {
-      studiesResponse = await fetch(studiesUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Request-ID': requestId,
-        },
-        body: JSON.stringify({
-          supplementName: searchTerm, // Use expanded term if available
-          ...(benefitQuery && { benefitQuery }), // Only include if provided
-          maxResults: benefitQuery ? Math.min(maxStudies, 30) : Math.min(maxStudies, 10), // More results for benefit searches to catch older studies
-          rctOnly: false,
-          yearFrom: 2010,
-          humanStudiesOnly: true,
-        }),
-        signal: AbortSignal.timeout(30000), // 30s timeout
+      studiesResponse = await fetchStudiesFromService({
+        studiesUrl,
+        requestId,
+        supplementName: searchTerm, // Use expanded term if available
+        benefitQuery: benefitQuery || undefined,
+        maxResults: benefitQuery ? Math.min(maxStudies, 30) : Math.min(maxStudies, 10), // More results for benefit searches to catch older studies
+        yearFrom: 2010,
       });
     } catch (error: any) {
       const details = error?.message || String(error);
@@ -299,19 +437,74 @@ export async function POST(request: NextRequest) {
     const studiesData = await studiesResponse.json();
     
     // Lambda returns { success: true, data: { studies: [...] } }
-    const studies = studiesData.data?.studies || studiesData.studies || [];
+    let studies = studiesData.data?.studies || studiesData.studies || [];
+    let centellaRecallAttempted = false;
     console.log(`[enrich-v2] Found ${studies.length} studies`);
     
     // Check if we have studies
     if (studies.length === 0) {
-      console.log(`[enrich-v2] No studies found for: ${supplementName}`);
-      return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+      if (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm)) {
+        centellaRecallAttempted = true;
+        const recalledStudies = await fetchCentellaClinicalRecallStudies({
+          studiesUrl,
+          requestId,
+          originalSupplementName: supplementName,
+        });
+        studies = recalledStudies;
+
+        if (studies.length === 0) {
+          studies = await fetchCentellaLocalPubMedClinicalStudies(supplementName);
+        }
+      }
+
+      if (studies.length === 0) {
+        console.log(`[enrich-v2] No studies found for: ${supplementName}`);
+        return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+      }
     }
 
-    const humanClinicalStudies = filterHumanClinicalStudies(studies);
+    let humanClinicalStudies = filterHumanClinicalStudies(studies);
     if (humanClinicalStudies.length === 0) {
-      console.log(`[enrich-v2] Studies found for ${supplementName}, but none passed local human-clinical evidence screening`);
-      return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+      if (!centellaRecallAttempted && (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm))) {
+        const recalledStudies = await fetchCentellaClinicalRecallStudies({
+          studiesUrl,
+          requestId,
+          originalSupplementName: supplementName,
+        });
+        if (recalledStudies.length > 0) {
+          const mergedByPmid = new Map<string, any>();
+          for (const study of [...studies, ...recalledStudies]) {
+            const pmid = String(study?.pmid || study?.id || `${mergedByPmid.size}`);
+            if (!mergedByPmid.has(pmid)) {
+              mergedByPmid.set(pmid, study);
+            }
+          }
+          studies = Array.from(mergedByPmid.values());
+          humanClinicalStudies = filterHumanClinicalStudies(studies);
+        }
+      }
+
+      if (humanClinicalStudies.length === 0 && (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm))) {
+        const localPubMedStudies = await fetchCentellaLocalPubMedClinicalStudies(supplementName);
+        if (localPubMedStudies.length > 0) {
+          const mergedByPmid = new Map<string, any>();
+          for (const study of [...studies, ...localPubMedStudies]) {
+            const pmid = String(study?.pmid || study?.id || `${mergedByPmid.size}`);
+            if (!mergedByPmid.has(pmid)) {
+              mergedByPmid.set(pmid, study);
+            }
+          }
+          studies = Array.from(mergedByPmid.values());
+          humanClinicalStudies = filterHumanClinicalStudies(studies);
+        }
+      }
+
+      if (humanClinicalStudies.length > 0) {
+        console.log(`[enrich-v2] Centella clinical recall recovered ${humanClinicalStudies.length} human clinical studies for ${supplementName}`);
+      } else {
+        console.log(`[enrich-v2] Studies found for ${supplementName}, but none passed local human-clinical evidence screening`);
+        return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+      }
     }
     
     // Step 2: Enrich with Claude via content-enricher Lambda

@@ -384,4 +384,140 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(enricherBody.studies).toHaveLength(1);
     expect(enricherBody.studies[0].pmid).toBe('333');
   });
+
+  it('recovers Centella asiatica human clinical evidence with controlled clinical recall search', async () => {
+    const fetchMock = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              studies: [
+                {
+                  pmid: '9001',
+                  title: 'Centella asiatica extract in rats',
+                  abstract: 'Animal model in rats evaluated extract activity.',
+                  publicationTypes: ['Journal Article'],
+                  meshHeadings: ['Animals', 'Rats'],
+                },
+                {
+                  pmid: '9002',
+                  title: 'Chemical composition of Centella asiatica extract',
+                  abstract: 'Phytochemical analysis of triterpenes.',
+                  publicationTypes: ['Journal Article'],
+                },
+              ],
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              studies: [
+                {
+                  pmid: '11106141',
+                  title: 'A double-blind, placebo-controlled study on the effects of Gotu Kola (Centella asiatica) on acoustic startle response in healthy subjects.',
+                  abstract: 'Healthy subjects participated in a randomized placebo-controlled study.',
+                  publicationTypes: ['Clinical Trial', 'Randomized Controlled Trial'],
+                  meshHeadings: ['Humans'],
+                },
+                {
+                  pmid: '35328954',
+                  title: 'A Systematic Review of the Effect of Centella asiatica on Wound Healing.',
+                  abstract: 'Four clinical trials met the inclusion criteria.',
+                  publicationTypes: ['Systematic Review'],
+                },
+                {
+                  pmid: '23533507',
+                  title: 'A Systematic Review of the Efficacy of Centella asiatica for Improvement of the Signs and Symptoms of Chronic Venous Insufficiency.',
+                  abstract: 'Randomized clinical trials were searched for patients with chronic venous insufficiency.',
+                  publicationTypes: ['Journal Article'],
+                },
+                {
+                  pmid: '35204098',
+                  title: 'Pharmacokinetics and Pharmacodynamics of Key Components of a Standardized Centella asiatica Product in Cognitively Impaired Older Adults: A Phase 1, Double-Blind, Randomized Clinical Trial.',
+                  abstract: 'Older adult participants were randomized in a clinical trial.',
+                  publicationTypes: ['Journal Article'],
+                },
+              ],
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              name: 'Centella asiatica',
+              worksFor: [
+                {
+                  condition: 'Wound healing',
+                  evidenceGrade: 'C',
+                  studyCount: 1,
+                },
+              ],
+              totalStudies: 4,
+            },
+            metadata: {
+              hasRealData: true,
+              studiesUsed: 4,
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'centella asiatica',
+        category: 'centella asiatica',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.error).not.toBe('insufficient_data');
+    expect(body.metadata.humanClinicalStudiesCount).toBe(4);
+
+    const primaryStudiesCall = fetchMock.mock.calls[0];
+    const primaryStudiesBody = JSON.parse(primaryStudiesCall[1]?.body as string);
+    expect(primaryStudiesBody).toMatchObject({
+      supplementName: 'centella asiatica',
+      yearFrom: 2010,
+      humanStudiesOnly: true,
+    });
+
+    const recallStudiesCall = fetchMock.mock.calls[1];
+    const recallStudiesBody = JSON.parse(recallStudiesCall[1]?.body as string);
+    expect(recallStudiesBody.supplementName).toBe('Centella asiatica');
+    expect(recallStudiesBody.benefitQuery).toContain('venous insufficiency');
+    expect(recallStudiesBody.benefitQuery).toContain('wound healing');
+    expect(recallStudiesBody.benefitQuery).toContain('randomized controlled trial');
+    expect(recallStudiesBody.yearFrom).toBeUndefined();
+    expect(recallStudiesBody.humanStudiesOnly).toBe(true);
+
+    const enricherCall = fetchMock.mock.calls[2];
+    const enricherBody = JSON.parse(enricherCall[1]?.body as string);
+    expect(enricherBody.studies.map((study: any) => study.pmid)).toEqual([
+      '11106141',
+      '35328954',
+      '23533507',
+      '35204098',
+    ]);
+    expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9001');
+    expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9002');
+  });
 });
