@@ -520,4 +520,124 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9001');
     expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9002');
   });
+
+  it('recovers Gotu Kola human clinical evidence with controlled clinical recall search', async () => {
+    const fetchMock = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              studies: [
+                {
+                  pmid: '9003',
+                  title: 'Gotu Kola extract in mouse model',
+                  abstract: 'A mouse model evaluated extract activity.',
+                  publicationTypes: ['Journal Article'],
+                  meshHeadings: ['Animals', 'Mice'],
+                },
+              ],
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              studies: [
+                {
+                  pmid: '3544968',
+                  title: 'Titrated extract of Centella asiatica (TECA) in the treatment of venous insufficiency of the lower limbs.',
+                  abstract: 'Ninety-four patients participated in a multicenter, double-blind versus placebo study.',
+                  publicationTypes: ['Clinical Trial', 'Randomized Controlled Trial'],
+                  meshHeadings: ['Humans'],
+                },
+                {
+                  pmid: '7936334',
+                  title: 'The microcirculatory activity of Centella asiatica in venous insufficiency. A double-blind study.',
+                  abstract: 'In patients with chronic venous hypertensive microangiopathy, oral FTTCA was tested versus placebo.',
+                  publicationTypes: ['Clinical Trial', 'Randomized Controlled Trial'],
+                  meshHeadings: ['Humans'],
+                },
+                {
+                  pmid: '11106141',
+                  title: 'A double-blind, placebo-controlled study on the effects of Gotu Kola (Centella asiatica) on acoustic startle response in healthy subjects.',
+                  abstract: 'Healthy subjects participated in a randomized placebo-controlled study.',
+                  publicationTypes: ['Clinical Trial', 'Randomized Controlled Trial'],
+                  meshHeadings: ['Humans'],
+                },
+                {
+                  pmid: '35204098',
+                  title: 'Pharmacokinetics and Pharmacodynamics of Key Components of a Standardized Centella asiatica Product in Cognitively Impaired Older Adults: A Phase 1, Double-Blind, Randomized Clinical Trial.',
+                  abstract: 'Older adult participants were randomized in a clinical trial.',
+                  publicationTypes: ['Journal Article'],
+                },
+              ],
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              name: 'Gotu Kola',
+              worksFor: [
+                {
+                  condition: 'Chronic venous insufficiency',
+                  evidenceGrade: 'B',
+                  studyCount: 2,
+                },
+              ],
+              totalStudies: 2,
+            },
+            metadata: {
+              hasRealData: true,
+              studiesUsed: 2,
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'gotu kola',
+        category: 'gotu kola',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.error).not.toBe('insufficient_data');
+    expect(body.metadata.humanClinicalStudiesCount).toBe(4);
+
+    const recallStudiesCall = fetchMock.mock.calls[1];
+    const recallStudiesBody = JSON.parse(recallStudiesCall[1]?.body as string);
+    expect(recallStudiesBody.supplementName).toBe('Centella asiatica');
+    expect(recallStudiesBody.benefitQuery).toContain('venous insufficiency');
+    expect(recallStudiesBody.humanStudiesOnly).toBe(true);
+
+    const enricherCall = fetchMock.mock.calls[2];
+    const enricherBody = JSON.parse(enricherCall[1]?.body as string);
+    expect(enricherBody.studies.map((study: any) => study.pmid)).toEqual([
+      '3544968',
+      '7936334',
+      '11106141',
+      '35204098',
+    ]);
+    expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9003');
+  });
 });
