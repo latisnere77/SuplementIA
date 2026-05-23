@@ -411,6 +411,41 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Magnesium Glycinate Basic')).not.toBeVisible();
   });
 
+  test('results labels follow Spanish and English route locales', async ({ page }) => {
+    await mockSuccessfulQuiz(page);
+
+    await page.goto('/es/portal/results?q=Magnesium&supplement=Magnesium');
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Recomendaciones para/i })).toBeVisible();
+    await expect(page.getByText('Importante:')).toBeVisible();
+    await expect(page.getByText('Vista Estándar')).toBeVisible();
+    await expect(page.getByText('Vista Cuantitativa')).toBeVisible();
+    await expect(page.getByText('Más estudiado para:')).toBeVisible();
+    await expect(page.getByText('Recomendaciones de Productos')).toBeVisible();
+    await expect(page.getByText('Buscar Magnesium Glycinate en iHerb')).toBeVisible();
+
+    const spanishText = await page.locator('body').innerText();
+    expect(spanishText).toContain('Buscar');
+    expect(spanishText).not.toContain('Recommendations for');
+    expect(spanishText).not.toContain('Most studied for:');
+    expect(spanishText).not.toContain('Important:');
+    expect(spanishText).not.toContain('Standard View');
+    expect(spanishText).not.toContain('Quantitative View');
+    expect(spanishText).not.toContain('Product Recommendations');
+    expect(spanishText).not.toContain('Search Magnesium Glycinate on iHerb');
+    expect(spanishText).not.toContain('Sign In');
+
+    await page.goto('/en/portal/results?q=Magnesium&supplement=Magnesium');
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Recommendations for/i })).toBeVisible();
+    await expect(page.getByText('Important:')).toBeVisible();
+    await expect(page.getByText('Standard View')).toBeVisible();
+    await expect(page.getByText('Quantitative View')).toBeVisible();
+    await expect(page.getByText('Most studied for:')).toBeVisible();
+    await expect(page.getByText('Product Recommendations')).toBeVisible();
+    await expect(page.getByText('Search Magnesium Glycinate on iHerb')).toBeVisible();
+  });
+
   test('results render iHerb affiliate card only for clear supplement matches', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, '__openedUrls', {
