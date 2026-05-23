@@ -89,6 +89,26 @@ describe('pubmed literature profile', () => {
     ).toBe('preclinical');
   });
 
+  it('keeps human clinical trials human even when abstracts mention animal background', () => {
+    expect(
+      classifyLiteratureArticle({
+        title: 'A double-blind, placebo-controlled study on the effects of Gotu Kola (Centella asiatica) on acoustic startle response in healthy subjects.',
+        abstract: 'Recent studies in the rat showed effects on acoustic startle response. In this study, subjects were randomly assigned to Gotu Kola or placebo.',
+        publicationTypes: ['Clinical Trial', 'Randomized Controlled Trial'],
+        meshHeadings: ['Humans'],
+      })
+    ).toBe('human_clinical');
+
+    expect(
+      classifyLiteratureArticle({
+        title: 'Pharmacokinetics and Pharmacodynamics of Key Components of a Standardized Centella asiatica Product in Cognitively Impaired Older Adults: A Phase 1, Double-Blind, Randomized Clinical Trial.',
+        abstract: 'Preclinical studies have demonstrated effects in mouse models. Older adult participants were randomized in a clinical trial.',
+        publicationTypes: ['Journal Article'],
+        meshHeadings: [],
+      })
+    ).toBe('human_clinical');
+  });
+
   it('only treats human clinical studies as benefit-claim evidence', () => {
     expect(
       isHumanClinicalEvidenceArticle({
