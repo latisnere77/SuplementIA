@@ -18,6 +18,7 @@ import { isHumanClinicalEvidenceArticle } from '@/lib/services/pubmed-literature
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { detectVariants } from '@/lib/portal/variant-detector';
 import { logPortalSupplementOutcome, logStructured } from '@/lib/portal/structured-logger';
+import { calibrateCentellaRecommendation } from '@/lib/portal/centella-editorial-calibration';
 import type { SupplementVariant, VariantDetectionResult } from '@/types/supplement-variants';
 
 import { searchSupplements } from '@/lib/search-service';
@@ -1046,11 +1047,17 @@ export async function POST(request: NextRequest) {
             isVariantSpecific: parsedQuery.isVariantSpecific
           });
           
-          let rec = transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery);
+          let rec = calibrateCentellaRecommendation(
+            transformHitsToRecommendation(finalHits, searchTerm, quizId, parsedQuery),
+            searchTerm
+          );
           const usesLocalCatalog = finalHits.every((hit: any) => hit.source === 'local_catalog');
 
           if (usesLocalCatalog) {
-            const recWithCachedEvidence = applyCachedPubMedEvidence(rec, searchTerm);
+            const recWithCachedEvidence = calibrateCentellaRecommendation(
+              applyCachedPubMedEvidence(rec, searchTerm),
+              searchTerm
+            );
             rec = recWithCachedEvidence;
 
             const isKnownLimitedEvidenceLocalHit = shouldUseNoDataFallbackForEmptyRanking(recWithCachedEvidence, searchTerm);
@@ -1600,6 +1607,10 @@ export async function POST(request: NextRequest) {
       }
 
       if (responseData.recommendation) {
+        responseData.recommendation = calibrateCentellaRecommendation(
+          responseData.recommendation,
+          supplementName
+        );
         if (!responseData.recommendation.recommendation_id) {
           responseData.recommendation.recommendation_id = jobId;
         }
