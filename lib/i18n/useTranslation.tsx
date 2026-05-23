@@ -6,6 +6,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useLocale } from 'next-intl';
 import { translations, type Language, type TranslationKey } from './translations';
 
 interface TranslationContextType {
@@ -17,28 +18,15 @@ interface TranslationContextType {
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
 export function TranslationProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en');
+  const locale = useLocale();
+  const routeLanguage: Language = locale === 'es' ? 'es' : 'en';
+  const [language, setLanguageState] = useState<Language>(routeLanguage);
 
-  // Load language from localStorage on mount
+  // Keep the portal UI aligned with the route locale. The language selector changes
+  // the route, so route locale is the source of truth for fixed UI labels.
   useEffect(() => {
-    // Only run in browser
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const savedLanguage = localStorage.getItem('portal-language') as Language;
-      if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
-        setLanguageState(savedLanguage);
-      } else {
-        // Auto-detect language from browser
-        const browserLang = navigator.language.split('-')[0];
-        setLanguageState(browserLang === 'es' ? 'es' : 'en');
-      }
-    } catch (error) {
-      console.error('Error loading language:', error);
-      // Default to English if there's an error
-      setLanguageState('en');
-    }
-  }, []);
+    setLanguageState(routeLanguage);
+  }, [routeLanguage]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -79,4 +67,3 @@ export function useTranslation() {
   }
   return context;
 }
-
