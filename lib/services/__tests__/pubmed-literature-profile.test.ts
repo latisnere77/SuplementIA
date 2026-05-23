@@ -258,12 +258,14 @@ describe('pubmed literature profile', () => {
     const profile = await searchPubMedLiteratureProfile('centella asiatica');
     const broadSearchUrl = String(fetchMock.mock.calls[0][0]);
     const clinicalSearchUrl = String(fetchMock.mock.calls[1][0]);
+    const fetchUrl = String(fetchMock.mock.calls[2][0]);
 
     expect(broadSearchUrl).toContain(encodeURIComponent('"gotu kola"[Title/Abstract]'));
     expect(broadSearchUrl).toContain(encodeURIComponent('"Centella asiatica extract"[Title/Abstract]'));
     expect(clinicalSearchUrl).toContain(encodeURIComponent('"venous insufficiency"[Title/Abstract]'));
     expect(clinicalSearchUrl).toContain(encodeURIComponent('"wound healing"[Title/Abstract]'));
     expect(clinicalSearchUrl).toContain(encodeURIComponent('"Randomized Controlled Trial"[Publication Type]'));
+    expect(fetchUrl).toContain('11106141,35328954,23533507,35204098,3544968,7936334');
     expect(profile?.totalCount).toBe(1324);
     expect(profile?.articles.map((article) => article.pmid)).toEqual([
       '11106141',

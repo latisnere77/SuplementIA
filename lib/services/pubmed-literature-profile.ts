@@ -53,6 +53,14 @@ const CENTELLA_CLINICAL_TERMS = [
   'acoustic startle',
   'cognition',
 ];
+const CENTELLA_CONTROLLED_HUMAN_PMIDS = [
+  '11106141',
+  '35328954',
+  '23533507',
+  '35204098',
+  '3544968',
+  '7936334',
+];
 
 function escapePubMedPhrase(term: string): string {
   return term.replace(/"/g, '').trim();
@@ -275,7 +283,7 @@ export async function searchPubMedLiteratureProfile(
     if (clinicalSearchResponse.ok) {
       const clinicalSearchData = await clinicalSearchResponse.json();
       const clinicalIdList: string[] = clinicalSearchData.esearchresult?.idlist || [];
-      prioritizedIdList = Array.from(new Set([...clinicalIdList, ...idList])).slice(0, maxArticles);
+      prioritizedIdList = Array.from(new Set([...CENTELLA_CONTROLLED_HUMAN_PMIDS, ...clinicalIdList, ...idList])).slice(0, maxArticles);
     }
   }
 
