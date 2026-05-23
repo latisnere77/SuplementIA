@@ -37,6 +37,10 @@ let bedrockClient: any | null = null;
 let bedrockInitAttempted = false;
 const DEBUG_ABBREVIATION = process.env.DEBUG_ABBREVIATION === 'true' || process.env.NEXT_PUBLIC_DEBUG_PORTAL === 'true';
 
+const CONTROLLED_CANONICAL_ALIASES: Record<string, string> = {
+  'gotu kola': 'Centella asiatica',
+};
+
 function debugAbbreviation(message: string, details?: unknown): void {
   if (!DEBUG_ABBREVIATION) return;
   if (details === undefined) {
@@ -280,12 +284,32 @@ export async function expandAbbreviation(
 ): Promise<AbbreviationExpansion> {
   const trimmed = term.trim();
   const startTime = Date.now();
+  const controlledAlias = CONTROLLED_CANONICAL_ALIASES[trimmed.toLowerCase()];
 
   debugAbbreviationEvent({
     event: 'ABBREVIATION_EXPANSION_START',
     term: trimmed,
     timestamp: new Date().toISOString(),
   });
+
+  if (controlledAlias) {
+    const totalDuration = Date.now() - startTime;
+    debugAbbreviationEvent({
+      event: 'CONTROLLED_CANONICAL_ALIAS',
+      term: trimmed,
+      canonical: controlledAlias,
+      totalDuration,
+      timestamp: new Date().toISOString(),
+    });
+
+    return {
+      original: trimmed,
+      isAbbreviation: false,
+      alternatives: [controlledAlias],
+      confidence: 0.95,
+      source: 'heuristic',
+    };
+  }
 
   // 1. Check if it's an abbreviation
   const isAbbr = isLikelyAbbreviation(trimmed);

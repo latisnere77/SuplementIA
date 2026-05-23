@@ -6,6 +6,7 @@ import * as pubmedSearch from '@/lib/services/pubmed-search';
 import { NextRequest } from 'next/server';
 import { searchSupplements } from '@/lib/search-service';
 import { closeJobStoreClientsForTests } from '@/lib/portal/job-store';
+import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 
 // Mock the pubmed-search service
 jest.mock('@/lib/services/pubmed-search');
@@ -62,6 +63,7 @@ jest.mock('@/lib/search-service', () => ({
 
 const mockedSearchPubMed = pubmedSearch.searchPubMed as jest.Mock;
 const mockedSearchSupplements = searchSupplements as jest.Mock;
+const mockedExpandAbbreviation = expandAbbreviation as jest.Mock;
 const { __mockLambdaSend: mockLambdaSend } = jest.requireMock('@aws-sdk/client-lambda');
 
 const criticalLocalCatalogCases = [
@@ -274,6 +276,52 @@ describe('/api/portal/quiz POST', () => {
         body: expect.stringContaining('"category":"Piper auritum"'),
       })
     );
+  });
+
+  it('uses the controlled Centella canonical name when users search for gotu kola', async () => {
+    mockedExpandAbbreviation.mockResolvedValueOnce({
+      original: 'gotu kola',
+      expanded: 'Centella asiatica',
+      alternatives: ['Centella asiatica'],
+      confidence: 0.95,
+    });
+    mockedSearchSupplements.mockResolvedValueOnce([]);
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: true,
+          recommendation: {
+            supplement: {
+              name: 'Centella asiatica',
+              worksFor: [
+                {
+                  condition: 'Chronic venous insufficiency',
+                  evidenceGrade: 'B',
+                },
+              ],
+            },
+          },
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'gotu kola', searchIntent: 'supplement' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+    const recommendBody = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(recommendBody.category).toBe('Centella asiatica');
   });
 
   it('uses the incoming request origin for internal recommendation fallback in local smoke runs', async () => {

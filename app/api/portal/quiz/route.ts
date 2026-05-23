@@ -1347,12 +1347,12 @@ export async function POST(request: NextRequest) {
     }
 
     // BENEFIT SEARCH LOGIC
-    let supplementName = sanitizedCategory;
+    let supplementName = searchTerm;
     let benefitQuery: string | undefined = undefined;
     const benefitKeywords = [' for ', ' para '];
     for (const keyword of benefitKeywords) {
-      if (sanitizedCategory.toLowerCase().includes(keyword)) {
-        const parts = sanitizedCategory.split(new RegExp(keyword, 'i'));
+      if (searchTerm.toLowerCase().includes(keyword)) {
+        const parts = searchTerm.split(new RegExp(keyword, 'i'));
         supplementName = parts[0].trim();
         benefitQuery = parts.slice(1).join(keyword).trim();
         break;
