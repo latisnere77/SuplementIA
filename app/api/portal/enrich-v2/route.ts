@@ -7,6 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { expandAbbreviation } from '@/lib/services/abbreviation-expander';
 import {
   formatLiteratureProfileMessage,
@@ -19,6 +20,10 @@ import { logPortalSupplementOutcome, logStructured } from '@/lib/portal/structur
 export const runtime = 'nodejs';
 export const maxDuration = 180; // Increased to 180s for complex supplements with many studies
 export const dynamic = 'force-dynamic';
+
+const lambdaClient = new LambdaClient({
+  region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1',
+});
 
 // Simple UUID generator
 function generateRequestId(): string {
@@ -50,6 +55,35 @@ function shouldTreatStudiesFailureAsInsufficientData(term: string): boolean {
 
 function isTransientUpstreamStatus(status: number): boolean {
   return [401, 403, 408, 429, 502, 503, 504].includes(status);
+}
+
+function getContentEnricherFunctionName() {
+  return process.env.ENRICHER_LAMBDA || 'production-content-enricher';
+}
+
+async function invokeContentEnricherLambda(payload: Record<string, unknown>) {
+  const lambdaResponse = await lambdaClient.send(
+    new InvokeCommand({
+      FunctionName: getContentEnricherFunctionName(),
+      InvocationType: 'RequestResponse',
+      Payload: Buffer.from(JSON.stringify({
+        httpMethod: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })),
+    })
+  );
+
+  const rawPayload = Buffer.from(lambdaResponse.Payload || []).toString();
+  const lambdaEnvelope = rawPayload ? JSON.parse(rawPayload) : {};
+  const statusCode = Number(lambdaEnvelope.statusCode || lambdaResponse.StatusCode || 500);
+  const body = typeof lambdaEnvelope.body === 'string'
+    ? JSON.parse(lambdaEnvelope.body || '{}')
+    : lambdaEnvelope.body || lambdaEnvelope;
+
+  return { statusCode, body };
 }
 
 function logEnrichOutcome(data: {
@@ -541,33 +575,58 @@ export async function POST(request: NextRequest) {
       'https://l7mve4qnytdpxfcyu46cyly5le0vdqgx.lambda-url.us-east-1.on.aws/';
     
     console.log(`[enrich-v2] Enriching with Claude via: ${enricherUrl}`);
-    
+
+    const enrichmentPayload = {
+      supplementId: benefitQuery ? `${supplementName}-${benefitQuery}` : supplementName, // Unique cache key for benefit queries
+      category: category || 'general',
+      forceRefresh: benefitQuery ? true : (forceRefresh || false), // Force refresh for benefit queries to avoid English cached data
+      studies: humanClinicalStudies.slice(0, 8), // Only human clinical evidence can drive benefit claims
+      benefitQuery: benefitQuery || undefined, // Pass benefitQuery to enricher for focused analysis
+    };
+
     const enrichResponse = await fetch(enricherUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Request-ID': requestId,
       },
-      body: JSON.stringify({
-        supplementId: benefitQuery ? `${supplementName}-${benefitQuery}` : supplementName, // Unique cache key for benefit queries
-        category: category || 'general',
-        forceRefresh: benefitQuery ? true : (forceRefresh || false), // Force refresh for benefit queries to avoid English cached data
-        studies: humanClinicalStudies.slice(0, 8), // Only human clinical evidence can drive benefit claims
-        benefitQuery: benefitQuery || undefined, // Pass benefitQuery to enricher for focused analysis
-      }),
+      body: JSON.stringify(enrichmentPayload),
       signal: AbortSignal.timeout(150000), // 150s timeout for Claude (complex supplements can take longer)
     });
-    
+
+    let enrichedData: any;
     if (!enrichResponse.ok) {
       const errorText = await enrichResponse.text();
       console.error(`[enrich-v2] Enrichment failed: ${enrichResponse.status}`, errorText);
-      if (isTransientUpstreamStatus(enrichResponse.status) || [401, 403].includes(enrichResponse.status)) {
+      if ([401, 403].includes(enrichResponse.status)) {
+        try {
+          console.warn(`[enrich-v2] Enricher URL returned ${enrichResponse.status}; retrying via IAM Lambda invoke`);
+          const lambdaEnrichment = await invokeContentEnricherLambda(enrichmentPayload);
+          if (lambdaEnrichment.statusCode >= 200 && lambdaEnrichment.statusCode < 300 && lambdaEnrichment.body?.success !== false) {
+            enrichedData = lambdaEnrichment.body;
+          } else {
+            return upstreamUnavailableResponse(
+              supplementName,
+              requestId,
+              lambdaEnrichment.statusCode,
+              JSON.stringify(lambdaEnrichment.body).slice(0, 500),
+              startTime,
+              searchTerm
+            );
+          }
+        } catch (lambdaError: any) {
+          return upstreamUnavailableResponse(supplementName, requestId, enrichResponse.status, lambdaError?.message || errorText, startTime, searchTerm);
+        }
+      } else if (isTransientUpstreamStatus(enrichResponse.status)) {
         return upstreamUnavailableResponse(supplementName, requestId, enrichResponse.status, errorText, startTime, searchTerm);
+      } else {
+        throw new Error(`Enrichment failed: ${enrichResponse.status}`);
       }
-      throw new Error(`Enrichment failed: ${enrichResponse.status}`);
     }
-    
-    const enrichedData = await enrichResponse.json();
+
+    if (!enrichedData) {
+      enrichedData = await enrichResponse.json();
+    }
     const duration = Date.now() - startTime;
     
     console.log(`[enrich-v2] Success in ${duration}ms`);
