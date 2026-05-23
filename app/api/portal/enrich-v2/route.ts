@@ -394,6 +394,7 @@ export async function POST(request: NextRequest) {
     console.log(`[enrich-v2] Fetching studies from: ${studiesUrl}`);
     
     let studiesResponse: Response;
+    let studies: any[] = [];
     try {
       studiesResponse = await fetchStudiesFromService({
         studiesUrl,
@@ -407,11 +408,23 @@ export async function POST(request: NextRequest) {
       const details = error?.message || String(error);
       console.warn(`[enrich-v2] Studies fetch unavailable for ${supplementName}: ${details}`);
 
-      if (shouldTreatStudiesFailureAsInsufficientData(supplementName)) {
-        return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+      if (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm)) {
+        studies = await fetchCentellaLocalPubMedClinicalStudies(supplementName);
+        if (studies.length > 0) {
+          console.log(`[enrich-v2] Centella local PubMed fallback recovered ${studies.length} human clinical studies after studies fetch error`);
+        }
       }
 
-      return upstreamUnavailableResponse(supplementName, requestId, 0, details, startTime, searchTerm);
+      if (studies.length > 0) {
+        studiesResponse = new Response(JSON.stringify({ success: true, data: { studies } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } else if (shouldTreatStudiesFailureAsInsufficientData(supplementName)) {
+        return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+      } else {
+        return upstreamUnavailableResponse(supplementName, requestId, 0, details, startTime, searchTerm);
+      }
     }
     
     if (!studiesResponse.ok) {
@@ -422,22 +435,38 @@ export async function POST(request: NextRequest) {
         shouldTreatStudiesFailureAsInsufficientData(supplementName) &&
         [403, 404, 422, 500].includes(studiesResponse.status)
       ) {
-        console.warn(`[enrich-v2] Treating botanical studies failure as insufficient data: ${supplementName}`);
-        return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+        if (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm)) {
+          studies = await fetchCentellaLocalPubMedClinicalStudies(supplementName);
+          if (studies.length > 0) {
+            console.log(`[enrich-v2] Centella local PubMed fallback recovered ${studies.length} human clinical studies after studies fetch ${studiesResponse.status}`);
+          }
+        }
+
+        if (studies.length > 0) {
+          studiesResponse = new Response(JSON.stringify({ success: true, data: { studies } }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        } else {
+          console.warn(`[enrich-v2] Treating botanical studies failure as insufficient data: ${supplementName}`);
+          return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
+        }
       }
 
-      if (isTransientUpstreamStatus(studiesResponse.status)) {
-        console.warn(`[enrich-v2] Treating studies fetch ${studiesResponse.status} as upstream unavailable for ${supplementName}`);
-        return upstreamUnavailableResponse(supplementName, requestId, studiesResponse.status, errorText, startTime, searchTerm);
-      }
+      if (!studiesResponse.ok) {
+        if (isTransientUpstreamStatus(studiesResponse.status)) {
+          console.warn(`[enrich-v2] Treating studies fetch ${studiesResponse.status} as upstream unavailable for ${supplementName}`);
+          return upstreamUnavailableResponse(supplementName, requestId, studiesResponse.status, errorText, startTime, searchTerm);
+        }
 
-      throw new Error(`Studies fetch failed: ${studiesResponse.status}`);
+        throw new Error(`Studies fetch failed: ${studiesResponse.status}`);
+      }
     }
     
     const studiesData = await studiesResponse.json();
     
     // Lambda returns { success: true, data: { studies: [...] } }
-    let studies = studiesData.data?.studies || studiesData.studies || [];
+    studies = studies.length > 0 ? studies : studiesData.data?.studies || studiesData.studies || [];
     let centellaRecallAttempted = false;
     console.log(`[enrich-v2] Found ${studies.length} studies`);
     
