@@ -66,6 +66,97 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(body.message).toContain('Fadogia agrestis');
   });
 
+  it('uses local PubMed Centella recall when studies fetch returns a botanical error', async () => {
+    const fetchMock = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ message: 'No studies found' }), {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ esearchresult: { count: '1347', idlist: ['9001'] } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ esearchresult: { count: '2', idlist: [] } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          `
+          <PubmedArticle>
+            <PMID>3544968</PMID>
+            <ArticleTitle>Titrated extract of Centella asiatica (TECA) in the treatment of venous insufficiency of the lower limbs.</ArticleTitle>
+            <AbstractText>Ninety-four patients participated in a multicenter, double-blind versus placebo study.</AbstractText>
+            <PublicationType>Clinical Trial</PublicationType>
+            <PublicationType>Randomized Controlled Trial</PublicationType>
+            <MeshHeading><DescriptorName>Humans</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          <PubmedArticle>
+            <PMID>7936334</PMID>
+            <ArticleTitle>The microcirculatory activity of Centella asiatica in venous insufficiency. A double-blind study.</ArticleTitle>
+            <AbstractText>In 87 patients the efficacy of oral FTTCA versus placebo was assessed in a double blind study.</AbstractText>
+            <PublicationType>Clinical Trial</PublicationType>
+            <PublicationType>Randomized Controlled Trial</PublicationType>
+            <MeshHeading><DescriptorName>Humans</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          `,
+          { status: 200, headers: { 'Content-Type': 'application/xml' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              name: 'Centella asiatica',
+              worksFor: [
+                {
+                  condition: 'Chronic venous insufficiency',
+                  evidenceGrade: 'B',
+                  studyCount: 2,
+                },
+              ],
+              totalStudies: 2,
+            },
+            metadata: {
+              hasRealData: true,
+              studiesUsed: 2,
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'centella asiatica',
+        category: 'centella asiatica',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.error).not.toBe('insufficient_data');
+    expect(body.metadata.humanClinicalStudiesCount).toBe(2);
+
+    const enricherCall = fetchMock.mock.calls[4];
+    const enricherBody = JSON.parse(enricherCall[1]?.body as string);
+    expect(enricherBody.studies.map((study: any) => study.pmid)).toEqual(['3544968', '7936334']);
+  });
+
   it('includes a broad PubMed literature profile for botanical no-data responses', async () => {
     jest
       .spyOn(global, 'fetch')
