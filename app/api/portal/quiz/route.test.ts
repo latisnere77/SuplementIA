@@ -291,14 +291,29 @@ describe('/api/portal/quiz POST', () => {
         JSON.stringify({
           success: true,
           recommendation: {
+            category: 'Centella asiatica',
             supplement: {
               name: 'Centella asiatica',
+              primaryUses: [
+                'apoyo estudiado para insuficiencia venosa cronica - reduce edema en 60-70% de pacientes',
+                'Cicatrizacion de heridas - acelera cierre de heridas en 30-40%',
+              ],
               worksFor: [
                 {
                   condition: 'Chronic venous insufficiency',
+                  evidenceGrade: 'A',
+                  magnitude: 'Mejora 60-70%',
+                },
+                {
+                  condition: 'Cognition from PK/PD phase 1',
                   evidenceGrade: 'B',
+                  magnitude: 'Mejora 5-15%',
                 },
               ],
+              safety: {
+                longTermSafety: 'No reportes de hepatotoxicidad en literatura clinica.',
+                contraindications: [],
+              },
             },
           },
         }),
@@ -322,6 +337,20 @@ describe('/api/portal/quiz POST', () => {
     expect(response.status).toBe(200);
     expect(body.success).toBe(true);
     expect(recommendBody.category).toBe('Centella asiatica');
+    const supplement = body.recommendation.supplement;
+    const serialized = JSON.stringify(supplement).toLowerCase();
+    expect(supplement.worksFor).toHaveLength(1);
+    expect(supplement.worksFor[0].evidenceGrade).toBe('B');
+    expect(supplement.limitedEvidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          evidenceGrade: 'C',
+          condition: expect.stringContaining('Cognition'),
+        }),
+      ])
+    );
+    expect(serialized).not.toMatch(/60-70%|30-40%|5-15%/);
+    expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
   });
 
   it('uses the incoming request origin for internal recommendation fallback in local smoke runs', async () => {

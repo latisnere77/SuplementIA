@@ -88,4 +88,70 @@ describe('Portal status route', () => {
     expect(body.recommendation.evidence_summary.ingredients[0].grade).toBe('B');
     expect(body.recommendation._enrichment_metadata.source).toBe('lambda_async');
   });
+
+  it('calibrates raw Centella Lambda responses before status polling returns them', async () => {
+    mockedGetJob.mockResolvedValue({
+      id: 'job_centella',
+      status: 'completed',
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 60_000,
+      recommendation: {
+        metadata: {
+          supplementId: 'gotu kola',
+          studiesUsed: 8,
+        },
+        data: {
+          name: 'Centella asiatica',
+          whatIsIt: 'Gotu kola con eficacia demostrada en el tratamiento de insuficiencia venosa.',
+          totalStudies: 8,
+          primaryUses: [
+            'apoyo estudiado para insuficiencia venosa cronica - reduce edema en 60-70% de pacientes',
+            'Estudios in vitro demuestran aumento de 30-40% en sintesis de colageno',
+          ],
+          worksFor: [
+            {
+              condition: 'Insuficiencia venosa cronica',
+              evidenceGrade: 'A',
+              magnitude: 'Mejora 60-70%',
+            },
+            {
+              condition: 'Cognition from PK/PD phase 1',
+              evidenceGrade: 'B',
+              magnitude: 'Mejora 5-15%',
+            },
+          ],
+          limitedEvidence: [],
+          mechanisms: ['aumento de 30-40% en sintesis de colageno'],
+          safety: {
+            longTermSafety: 'No reportes de hepatotoxicidad.',
+            contraindications: [],
+          },
+        },
+      },
+    } as any);
+
+    const response = await GET(createRequest('job_centella'), {
+      params: Promise.resolve({ id: 'job_centella' }),
+    });
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    const supplement = body.recommendation.supplement;
+    const serialized = JSON.stringify(supplement).toLowerCase();
+
+    expect(supplement.worksFor).toHaveLength(1);
+    expect(supplement.worksFor[0].evidenceGrade).toBe('B');
+    expect(supplement.limitedEvidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          evidenceGrade: 'C',
+          condition: expect.stringContaining('Cognition'),
+        }),
+      ])
+    );
+    expect(serialized).not.toMatch(/60-70%|30-40%|5-15%/);
+    expect(serialized).not.toContain('eficacia demostrada');
+    expect(serialized).not.toContain('tratamiento de');
+    expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
+  });
 });
