@@ -138,6 +138,21 @@ export function classifyLiteratureArticle(input: {
   const text = `${input.title} ${input.abstract || ''}`.toLowerCase();
   const types = (input.publicationTypes || []).map((type) => type.toLowerCase());
   const meshHeadings = (input.meshHeadings || []).map((heading) => heading.toLowerCase());
+  const hasHumanMesh = meshHeadings.some((heading) => heading === 'humans' || heading === 'human');
+  const hasClinicalPublicationType = types.some((type) =>
+    type.includes('randomized controlled trial') ||
+    type.includes('clinical trial') ||
+    type.includes('controlled clinical trial')
+  );
+  const hasClinicalTrialText = /\b(clinical trial|randomi[sz]ed trial|placebo-controlled|double-blind)\b/.test(text);
+  const hasHumanParticipantText = /\b(patients|healthy adults|older adults|volunteers|participants|human subjects|subjects were randomized|adult participants|older adult participants)\b/.test(text);
+
+  if (
+    (hasClinicalPublicationType && hasHumanMesh) ||
+    (hasClinicalTrialText && hasHumanParticipantText)
+  ) {
+    return 'human_clinical';
+  }
 
   if (
     meshHeadings.some((heading) =>
@@ -160,17 +175,13 @@ export function classifyLiteratureArticle(input: {
   }
 
   if (
-    types.some((type) =>
-      type.includes('randomized controlled trial') ||
-      type.includes('clinical trial') ||
-      type.includes('controlled clinical trial')
-    ) ||
-    /\b(clinical trial|randomi[sz]ed trial|placebo-controlled|double-blind)\b/.test(text)
+    hasClinicalPublicationType ||
+    hasClinicalTrialText
   ) {
     return 'human_clinical';
   }
 
-  if (/\b(patients|healthy adults|volunteers|participants|human subjects|subjects were randomized)\b/.test(text)) {
+  if (hasHumanParticipantText) {
     return 'human_clinical';
   }
 
