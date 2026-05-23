@@ -466,7 +466,13 @@ export async function POST(request: NextRequest) {
     // Transform enriched data to recommendation format
     const enrichedContent = calibrateEnrichedContent(enrichData.data, searchTerm);
     const metadata = enrichData.metadata || {};
-    const calibratedEnrichData = { ...enrichData, data: enrichedContent };
+    const calibratedEnrichData = {
+      ...enrichData,
+      data: enrichedContent,
+      synergies: isCentellaContent(enrichedContent, searchTerm)
+        ? sanitizeCentellaItem(enrichData.synergies || [])
+        : enrichData.synergies,
+    };
 
     // CRITICAL VALIDATION: Ensure we have real scientific data
     // Check multiple indicators: metadata flags OR actual content presence
@@ -745,9 +751,14 @@ function calibrateCentellaWorksFor(content: any) {
       item.notes = `${sanitizeCentellaClaimText(item.notes) || ''} Interpretar como apoyo estudiado para síntomas, no como sustituto de tratamiento médico.`.trim();
       item.magnitude = 'Mejoras significativas frente a placebo en algunos estudios; magnitud exacta variable y dependiente del estudio.';
     } else {
-      item.evidenceGrade = capEvidenceGrade(item.evidenceGrade || item.grade, 'C');
-      item.grade = item.evidenceGrade;
-      item.magnitude = 'Magnitud clínica no establecida.';
+      limitedEvidence.push({
+        ...item,
+        evidenceGrade: 'C',
+        grade: 'C',
+        notes: `${sanitizeCentellaClaimText(item.notes) || ''} Evidencia limitada: no debe presentarse como beneficio clínico confirmado.`.trim(),
+        magnitude: 'Magnitud clínica no establecida.',
+      });
+      continue;
     }
 
     calibratedWorksFor.push(item);
