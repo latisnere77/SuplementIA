@@ -65,4 +65,115 @@ describe('/api/portal/recommend POST', () => {
       }
     }
   });
+
+  it('calibrates Centella claims from the content enricher to avoid overclaiming', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            name: 'Centella asiatica',
+            whatIsIt: 'Centella asiatica tiene eficacia demostrada en el tratamiento de insuficiencia venosa y efectos cognitivos.',
+            dosage: {
+              standard: '60-120 mg/dia de TECA para insuficiencia venosa.',
+              notes: 'Usado en estudios clinicos.',
+            },
+            worksFor: [
+              {
+                condition: 'Insuficiencia venosa cronica - tratamiento de edema y dolor',
+                evidenceGrade: 'A',
+                notes: 'PMID 3544968 y 7936334 documentan eficacia demostrada.',
+                magnitude: 'Mejora 60-70% y 25-35% en parametros microcirculatorios.',
+                studyCount: 8,
+                rctCount: 4,
+              },
+              {
+                condition: 'Cicatrizacion topica de heridas',
+                evidenceGrade: 'A',
+                notes: 'Acelera cierre de heridas.',
+                magnitude: 'Acelera cierre en 30-40%.',
+                studyCount: 4,
+                rctCount: 2,
+              },
+              {
+                condition: 'Reduccion de ansiedad por sobresalto acustico',
+                evidenceGrade: 'B',
+                notes: 'PMID 11106141 en sujetos sanos.',
+                magnitude: 'Reduccion 10-20%.',
+                studyCount: 1,
+                rctCount: 1,
+              },
+              {
+                condition: 'Soporte cognitivo por estudio PK/PD fase 1',
+                evidenceGrade: 'B',
+                notes: 'PMID 35204098 mostro farmacocinetica en cuatro adultos mayores.',
+                magnitude: 'Mejora 5-15%.',
+                studyCount: 1,
+                rctCount: 1,
+              },
+            ],
+            limitedEvidence: [],
+            safety: {
+              longTermSafety: 'No reportes de hepatotoxicidad, nefrotoxicidad o toxicidad sistemica en literatura clinica.',
+              notes: 'Generalmente seguro.',
+              contraindications: [],
+            },
+            totalStudies: 8,
+          },
+          metadata: {
+            hasRealData: true,
+            studiesUsed: 8,
+          },
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/recommend', {
+      method: 'POST',
+      body: JSON.stringify({
+        category: 'gotu kola',
+        age: 35,
+        gender: 'male',
+        location: 'CDMX',
+        quiz_id: 'quiz_centella_calibration_test',
+        jobId: 'job_centella_calibration_test',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+    const supplement = body.recommendation.supplement;
+    const serialized = JSON.stringify(supplement).toLowerCase();
+
+    expect(response.status).toBe(200);
+    expect(supplement.worksFor).toHaveLength(2);
+    expect(supplement.worksFor.every((item: any) => item.evidenceGrade !== 'A')).toBe(true);
+    expect(supplement.worksFor.map((item: any) => item.condition.toLowerCase())).not.toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('cognitivo'),
+        expect.stringContaining('ansiedad'),
+      ])
+    );
+    expect(supplement.limitedEvidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          evidenceGrade: 'C',
+          condition: expect.stringContaining('ansiedad'),
+        }),
+        expect.objectContaining({
+          evidenceGrade: 'C',
+          condition: expect.stringContaining('cognitivo'),
+        }),
+      ])
+    );
+    expect(serialized).not.toMatch(/60-70%|25-35%|30-40%|10-20%|5-15%/);
+    expect(serialized).not.toContain('eficacia demostrada');
+    expect(serialized).not.toContain('tratamiento de');
+    expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
+  });
 });
