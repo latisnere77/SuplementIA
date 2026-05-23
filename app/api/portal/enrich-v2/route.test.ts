@@ -4,6 +4,15 @@
 import { NextRequest } from 'next/server';
 import { POST } from './route';
 
+jest.mock('@aws-sdk/client-lambda', () => ({
+  LambdaClient: jest.fn(() => {
+    const send = jest.fn();
+    (globalThis as any).__mockLambdaSend = send;
+    return { send };
+  }),
+  InvokeCommand: jest.fn((input) => input),
+}));
+
 jest.mock('@/lib/services/abbreviation-expander', () => ({
   expandAbbreviation: jest.fn(async (term: string) => ({
     original: term,
@@ -17,6 +26,7 @@ jest.mock('@/lib/services/abbreviation-expander', () => ({
 describe('/api/portal/enrich-v2 POST', () => {
   afterEach(() => {
     jest.restoreAllMocks();
+    (globalThis as any).__mockLambdaSend?.mockReset();
   });
 
   it('returns insufficient_data for scientific botanical names when studies fetch is unavailable', async () => {
@@ -476,7 +486,33 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(enricherBody.studies[0].pmid).toBe('333');
   });
 
-  it('returns controlled upstream_unavailable when the benefit enricher is forbidden', async () => {
+  it('falls back to IAM Lambda invocation when the benefit enricher URL is forbidden', async () => {
+    const mockLambdaSend = (globalThis as any).__mockLambdaSend;
+    mockLambdaSend.mockResolvedValueOnce({
+      StatusCode: 200,
+      Payload: Buffer.from(JSON.stringify({
+        statusCode: 200,
+        body: JSON.stringify({
+          success: true,
+          data: {
+            name: 'Centella asiatica',
+            worksFor: [
+              {
+                condition: 'Chronic venous insufficiency',
+                evidenceGrade: 'B',
+                studyCount: 1,
+              },
+            ],
+            totalStudies: 1,
+          },
+          metadata: {
+            hasRealData: true,
+            studiesUsed: 1,
+          },
+        }),
+      })),
+    });
+
     jest
       .spyOn(global, 'fetch')
       .mockResolvedValueOnce(
@@ -518,9 +554,11 @@ describe('/api/portal/enrich-v2 POST', () => {
     const response = await POST(request);
     const body = await response.json();
 
-    expect(response.status).toBe(503);
-    expect(body.error).toBe('upstream_unavailable');
-    expect(body.statusCode).toBe(403);
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.error).not.toBe('upstream_unavailable');
+    expect(body.metadata.humanClinicalStudiesCount).toBe(1);
+    expect(mockLambdaSend).toHaveBeenCalledTimes(1);
   });
 
   it('recovers Centella asiatica human clinical evidence with controlled clinical recall search', async () => {
