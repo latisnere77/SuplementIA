@@ -476,6 +476,53 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(enricherBody.studies[0].pmid).toBe('333');
   });
 
+  it('returns controlled upstream_unavailable when the benefit enricher is forbidden', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              studies: [
+                {
+                  pmid: '3544968',
+                  title: 'Titrated extract of Centella asiatica in venous insufficiency.',
+                  abstract: 'Ninety-four patients participated in a double-blind placebo study.',
+                  publicationTypes: ['Clinical Trial', 'Randomized Controlled Trial'],
+                  meshHeadings: ['Humans'],
+                },
+              ],
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ message: 'Forbidden' }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      );
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'centella asiatica',
+        category: 'centella asiatica',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body.error).toBe('upstream_unavailable');
+    expect(body.statusCode).toBe(403);
+  });
+
   it('recovers Centella asiatica human clinical evidence with controlled clinical recall search', async () => {
     const fetchMock = jest
       .spyOn(global, 'fetch')

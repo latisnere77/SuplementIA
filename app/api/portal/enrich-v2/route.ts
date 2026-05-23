@@ -561,6 +561,9 @@ export async function POST(request: NextRequest) {
     if (!enrichResponse.ok) {
       const errorText = await enrichResponse.text();
       console.error(`[enrich-v2] Enrichment failed: ${enrichResponse.status}`, errorText);
+      if (isTransientUpstreamStatus(enrichResponse.status) || [401, 403].includes(enrichResponse.status)) {
+        return upstreamUnavailableResponse(supplementName, requestId, enrichResponse.status, errorText, startTime, searchTerm);
+      }
       throw new Error(`Enrichment failed: ${enrichResponse.status}`);
     }
     
