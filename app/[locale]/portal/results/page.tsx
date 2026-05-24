@@ -44,6 +44,7 @@ import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } fro
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
 import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
 import { buildIHerbAffiliateUrl, findIHerbAffiliateMatch } from '@/lib/portal/iherb-affiliate';
+import { trackGAEvent } from '@/lib/analytics/ga4';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -544,12 +545,25 @@ function buildAffiliateAwareProducts(recommendation: Recommendation | null, quer
   return buildIHerbAffiliateProducts(recommendation, query, language);
 }
 
+function getLinkHostname(link?: string) {
+  if (!link) {
+    return undefined;
+  }
+
+  try {
+    return new URL(link).hostname;
+  } catch {
+    return undefined;
+  }
+}
+
 function ResultsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   // Use ref to keep router stable across renders (prevents infinite loops in useEffect)
   const routerRef = useRef(router);
   routerRef.current = router;
+  const trackedResultsRef = useRef<string | null>(null);
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [conditionResult, setConditionResult] = useState<PubMedQueryResult | null>(null);
   const [searchType, setSearchType] = useState<'ingredient' | 'condition' | null>(null);
@@ -729,6 +743,41 @@ function ResultsPageContent() {
   const localizedSupplementName = recommendation?.category
     ? getLocalizedSupplementName(recommendation.category, language as 'en' | 'es')
     : query || 'supplement';
+
+  useEffect(() => {
+    if (isLoading || error) {
+      return;
+    }
+
+    const resultType = recommendation ? 'ingredient' : conditionResult ? 'condition' : null;
+
+    if (!resultType) {
+      return;
+    }
+
+    const resultId = recommendation?.recommendation_id || `${resultType}:${query || urlJobId || 'unknown'}`;
+
+    if (trackedResultsRef.current === resultId) {
+      return;
+    }
+
+    trackedResultsRef.current = resultId;
+
+    const products = buildAffiliateAwareProducts(recommendation, query, language);
+    const metadata = (recommendation as any)?._enrichment_metadata || {};
+
+    trackGAEvent('view_search_results', {
+      search_term: query || recommendation?.category || urlJobId || 'unknown',
+      result_type: resultType,
+      recommendation_id: recommendation?.recommendation_id,
+      supplement_name: recommendation?.category,
+      language,
+      total_studies: recommendation?.evidence_summary?.totalStudies || 0,
+      studies_used: metadata.studiesUsed || 0,
+      has_affiliate_products: products.length > 0,
+      affiliate_product_count: products.length,
+    });
+  }, [conditionResult, error, isLoading, language, query, recommendation, urlJobId]);
 
   // Transform evidence data when recommendation changes (CLIENT-SIDE, instant)
   useEffect(() => {
@@ -1475,12 +1524,28 @@ function ResultsPageContent() {
     // Continue with the current recommendation (no variant filtering)
   };
 
-  const handleBuyClick = (product: { tier?: string; isAnkonere?: boolean; isAffiliate?: boolean; directLink?: string; affiliateLink?: string }) => {
+  const handleBuyClick = (product: RecommendationProduct) => {
     if (isFreeUser && product.tier !== 'budget' && product.isAnkonere && !product.isAffiliate) {
+      trackGAEvent('cta_clicked', {
+        cta_name: 'paywall_opened',
+        product_tier: product.tier,
+        product_name: product.name,
+        supplement_name: recommendation?.category || query || undefined,
+        language,
+      });
       setShowPaywall(true);
     } else {
       const link = product.isAnkonere ? product.directLink : product.affiliateLink;
       if (link) {
+        trackGAEvent(product.isAffiliate || product.affiliateLink ? 'affiliate_click' : 'outbound_click', {
+          product_tier: product.tier,
+          product_name: product.name,
+          provider: product.affiliateProvider || product.whereToBuy,
+          link_domain: getLinkHostname(link),
+          supplement_name: recommendation?.category || query || undefined,
+          recommendation_id: recommendation?.recommendation_id,
+          language,
+        });
         window.open(link, '_blank', 'noopener,noreferrer');
       }
     }

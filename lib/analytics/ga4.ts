@@ -1,4 +1,4 @@
-type GAEventParams = Record<string, string | number | boolean | undefined | null>;
+export type GAEventParams = Record<string, string | number | boolean | undefined | null>;
 
 declare global {
   interface Window {
@@ -7,7 +7,14 @@ declare global {
   }
 }
 
-export type GAEventName = 'search_started' | 'category_clicked' | 'supplement_viewed' | 'cta_clicked';
+export type GAEventName =
+  | 'search_started'
+  | 'category_clicked'
+  | 'supplement_viewed'
+  | 'cta_clicked'
+  | 'view_search_results'
+  | 'affiliate_click'
+  | 'outbound_click';
 
 export function trackGAEvent(eventName: GAEventName, params: GAEventParams = {}) {
   if (typeof window === 'undefined') {
@@ -20,7 +27,10 @@ export function trackGAEvent(eventName: GAEventName, params: GAEventParams = {})
 
   const sendEvent = (attempt = 0) => {
     if (typeof window.gtag === 'function') {
-      window.gtag('event', eventName, cleanParams);
+      window.gtag('event', eventName, {
+        transport_type: 'beacon',
+        ...cleanParams,
+      });
       return;
     }
 

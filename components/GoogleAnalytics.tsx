@@ -2,7 +2,7 @@
 
 import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
 declare global {
   interface Window {
@@ -22,6 +22,7 @@ function PageViewTracker({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const lastPageViewRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isReady || !pathname || typeof window.gtag !== 'function') {
@@ -30,11 +31,26 @@ function PageViewTracker({
 
     const query = searchParams.toString();
     const pagePath = query ? `${pathname}?${query}` : pathname;
+    const pageLocation = window.location.href;
+
+    if (lastPageViewRef.current === pageLocation) {
+      return;
+    }
+
+    lastPageViewRef.current = pageLocation;
 
     window.gtag('config', measurementId, {
       page_path: pagePath,
-      page_location: window.location.href,
+      page_location: pageLocation,
       page_title: document.title,
+      send_page_view: false,
+    });
+
+    window.gtag('event', 'page_view', {
+      page_path: pagePath,
+      page_location: pageLocation,
+      page_title: document.title,
+      send_to: measurementId,
     });
   }, [isReady, measurementId, pathname, searchParams]);
 
