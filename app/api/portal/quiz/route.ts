@@ -867,9 +867,9 @@ function parseSupplementQuery(query: string): ParsedQuery {
   let baseSupplement = query;
 
   for (const variant of variantKeywords) {
-    if (normalized.includes(variant)) {
+    if (hasVariantToken(normalized, variant)) {
       detectedVariant = variant;
-      baseSupplement = query.replace(new RegExp(variant, 'gi'), '').trim();
+      baseSupplement = removeVariantToken(query, variant);
       break;
     }
   }
@@ -880,6 +880,26 @@ function parseSupplementQuery(query: string): ParsedQuery {
     fullQuery: query,
     isVariantSpecific: detectedVariant !== null
   };
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function variantTokenPattern(variant: string, flags: string): RegExp {
+  const escaped = escapeRegExp(variant);
+  return new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}(?=$|[^\\p{L}\\p{N}])`, flags);
+}
+
+function hasVariantToken(normalizedQuery: string, variant: string): boolean {
+  return variantTokenPattern(variant, 'iu').test(normalizedQuery);
+}
+
+function removeVariantToken(query: string, variant: string): string {
+  return query
+    .replace(variantTokenPattern(variant, 'giu'), '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function generateVariantDescription(
