@@ -35,13 +35,13 @@ export interface SupplementEvidenceData {
 export const SUPPLEMENTS_EVIDENCE_CACHE: Record<string, SupplementEvidenceData> = {
   // ASHWAGANDHA
   ashwagandha: {
-    overallGrade: 'A',
-    whatIsItFor: 'Reduce el estrés y la ansiedad de forma natural, mejora la calidad del sueño y ayuda a controlar los niveles de cortisol.',
+    overallGrade: 'B',
+    whatIsItFor: 'Se ha estudiado para estrés, ansiedad percibida, sueño y marcadores de cortisol; la magnitud depende del extracto, dosis y población.',
     worksFor: [
       {
         condition: 'Reducir el estrés y la ansiedad',
-        grade: 'A',
-        description: 'Múltiples RCTs muestran reducción significativa del cortisol (hasta 28%)',
+        grade: 'B',
+        description: 'Estudios clínicos reportan mejoras en estrés percibido y marcadores de cortisol; la magnitud varía por extracto, dosis y población.',
       },
       {
         condition: 'Mejorar la calidad del sueño',

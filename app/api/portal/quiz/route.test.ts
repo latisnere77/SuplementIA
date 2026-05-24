@@ -53,6 +53,7 @@ jest.mock('@/lib/portal/supplements-database', () => ({
     { name: 'Vitamin D', aliases: ['vitamin d3'], category: 'ingredient' },
     { name: 'Melatonin', aliases: [], category: 'ingredient' },
     { name: 'Psyllium', aliases: ['psyllium husk', 'psyllium fiber'], category: 'ingredient' },
+    { name: 'Ashwagandha', aliases: ['withania somnifera'], category: 'ingredient' },
   ],
 }));
 
@@ -507,6 +508,42 @@ describe('/api/portal/quiz POST', () => {
         expect(mockLambdaSend).not.toHaveBeenCalled();
       }
     );
+
+    it('does not treat ashwagandha as a DHA variant or keep untraced cortisol percentages', async () => {
+      mockedSearchSupplements.mockResolvedValueOnce([
+        localCatalogHit(
+          'Ashwagandha',
+          'Ashwagandha (Withania somnifera) is an adaptogenic botanical studied for stress and sleep.'
+        ),
+      ]);
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: 'ashwagandha', searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+      const serialized = JSON.stringify(body);
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.status).toBe('completed');
+      expect(body.source).toBe('local_catalog_fallback');
+      expect(body.recommendation.supplement.description).toContain('Withania somnifera');
+      expect(serialized).not.toMatch(/\bDHA\b|docosahexaenoic|forma específica de ashwagan/i);
+      expect(serialized).not.toMatch(/28%|hasta\s+28/i);
+      expect(body.recommendation.supplement.worksFor).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            condition: 'Reducir el estrés y la ansiedad',
+            evidenceGrade: 'B',
+            notes: expect.stringContaining('la magnitud varía'),
+          }),
+        ])
+      );
+    });
 
     it.each(criticalAsyncCases)(
       'starts controlled async enrichment for mixed-evidence canary %s without immediate claims',
