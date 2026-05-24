@@ -6,7 +6,10 @@ const intlProxy = createMiddleware({
   locales: ['en', 'es'],
   defaultLocale: 'es',
   localeDetection: true,
-  localePrefix: 'always'
+  localePrefix: 'always',
+  // Next metadata owns canonical/hreflang tags for SEO pages. The middleware
+  // x-default header points to unprefixed paths even with localePrefix: always.
+  alternateLinks: false
 });
 
 export default intlProxy;
