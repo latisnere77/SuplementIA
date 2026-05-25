@@ -183,7 +183,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           '@type': 'ListItem',
           position: 1,
           name: 'SuplementAI',
-          item: localizedPath(seoLocale),
+          item: localizedPath(seoLocale, '/portal'),
         },
         {
           '@type': 'ListItem',

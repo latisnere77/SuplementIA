@@ -15,25 +15,10 @@ function localizedAlternates(path = '') {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes: MetadataRoute.Sitemap = [
-    {
-      url: siteUrl,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 1,
-      alternates: localizedAlternates(),
-    },
-  ];
+  const routes: MetadataRoute.Sitemap = [];
 
   for (const locale of seoLocales) {
     routes.push(
-      {
-        url: localizedPath(locale),
-        lastModified: now,
-        changeFrequency: 'daily',
-        priority: locale === 'es' ? 1 : 0.9,
-        alternates: localizedAlternates(),
-      },
       {
         url: localizedPath(locale, '/portal'),
         lastModified: now,

@@ -9,9 +9,9 @@ export type SeoLocale = (typeof seoLocales)[number];
 export const defaultSeoLocale: SeoLocale = 'es';
 
 export const localeAlternates = {
-  es: `${siteUrl}/es`,
-  en: `${siteUrl}/en`,
-  'x-default': `${siteUrl}/es`,
+  es: `${siteUrl}/es/portal`,
+  en: `${siteUrl}/en/portal`,
+  'x-default': `${siteUrl}/es/portal`,
 };
 
 export const mexicanSeoKeywords = [
