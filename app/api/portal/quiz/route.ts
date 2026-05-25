@@ -699,6 +699,123 @@ function hasStrongWorksForEvidence(recommendation: any): boolean {
   );
 }
 
+async function preflightControlledNoDataResponse(params: {
+  request: NextRequest;
+  requestId: string;
+  jobId: string;
+  quizId: string;
+  supplementName: string;
+  originalQuery: string;
+  startTime: number;
+}): Promise<NextResponse | null> {
+  const {
+    request,
+    requestId,
+    jobId,
+    quizId,
+    supplementName,
+    originalQuery,
+    startTime,
+  } = params;
+
+  try {
+    const directEnrichResponse = await fetch(`${getBaseUrl(request)}/api/portal/enrich-v2`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'User-Agent': 'SuplementIA-Portal-API/1.0',
+        'X-Request-ID': requestId,
+        'X-Job-ID': jobId,
+      },
+      body: JSON.stringify({
+        supplementName,
+        category: supplementName,
+        forceRefresh: false,
+        maxStudies: 10,
+        rctOnly: false,
+        yearFrom: 2010,
+        jobId,
+      }),
+      signal: AbortSignal.timeout(120000),
+    });
+
+    if (directEnrichResponse.ok) {
+      return null;
+    }
+
+    const directErrorText = await directEnrichResponse.text();
+    let directErrorData: any = {};
+    try {
+      directErrorData = JSON.parse(directErrorText);
+    } catch {
+      directErrorData = { message: directErrorText };
+    }
+
+    if (directEnrichResponse.status === 404 && directErrorData.error === 'insufficient_data') {
+      logQuizOutcome({
+        requestId,
+        jobId,
+        quizId,
+        supplementName,
+        originalQuery,
+        normalizedQuery: supplementName,
+        status: 'insufficient_data',
+        finalStatusCode: 404,
+        fallback: 'insufficient_data',
+        errorCode: 'insufficient_data',
+        upstreamStatus: directEnrichResponse.status,
+        source: 'enrich-v2-preflight',
+        startTime,
+      });
+
+      return NextResponse.json({
+        success: false,
+        error: 'insufficient_data',
+        message: directErrorData.message || `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${supplementName}".`,
+        suggestion: directErrorData.suggestion || 'Verifica la ortografía, intenta con una forma o extracto específico, o explora un tema clínico o componente específico.',
+        requestId,
+        category: supplementName,
+        metadata: directErrorData.metadata,
+      }, { status: 404 });
+    }
+
+    if (directEnrichResponse.status === 503 && directErrorData.error === 'upstream_unavailable') {
+      logQuizOutcome({
+        requestId,
+        jobId,
+        quizId,
+        supplementName,
+        originalQuery,
+        normalizedQuery: supplementName,
+        status: 'upstream_unavailable',
+        finalStatusCode: 503,
+        fallback: 'upstream_unavailable',
+        errorCode: 'upstream_unavailable',
+        upstreamStatus: directErrorData.statusCode || directEnrichResponse.status,
+        source: 'enrich-v2-preflight',
+        startTime,
+      });
+
+      return NextResponse.json({
+        success: false,
+        error: 'upstream_unavailable',
+        message: directErrorData.message || 'No pudimos consultar temporalmente la base de estudios. Intenta de nuevo en unos minutos.',
+        details: directErrorData.details || directErrorData.error || 'Studies service unavailable',
+        requestId,
+        category: supplementName,
+      }, { status: 503 });
+    }
+  } catch (error: any) {
+    console.warn('[Quiz] enrich-v2 preflight failed; preserving existing async fallback.', {
+      supplementName,
+      message: error?.message,
+    });
+  }
+
+  return null;
+}
+
 /**
  * Get the base URL for internal API calls
  * Auto-detects the current request origin in production and local dev.
@@ -818,16 +935,7 @@ function transformHitsToRecommendation(
       adjustedDose: 'Ver sección de dosis',
       adjustmentReason: 'Dosis estándar recomendada basada en evidencia',
     })),
-    products: [{
-      tier: 'premium',
-      name: `Suplemento Premium de ${query}`,
-      price: 0, // In standard UI, 0 can be handled as 'Consultar'
-      currency: 'MXN',
-      contains: topIngredients.map(i => i.name),
-      whereToBuy: 'Consultar Proveedor Certificado',
-      description: `Fórmula de alta pureza optimizada según la evidencia científica para ${query}.`,
-      isAnkonere: true // Mark as Ankonere to trigger correct UI
-    }],
+    products: [],
     personalization_factors: {
       altitude: 2250,
       climate: 'tropical',
@@ -1213,8 +1321,25 @@ export async function POST(request: NextRequest) {
             console.log(`🔬 [STUDIES_RANKING] Fetching ranked studies for "${searchTerm}"...`);
             const rankingData = await invokeStudiesFetcher(searchTerm);
 
+            const hasHumanClinicalRanking = hasHumanClinicalRankedEvidence(rankingData);
+            if (!hasHumanClinicalRanking) {
+              const controlledNoDataResponse = await preflightControlledNoDataResponse({
+                request,
+                requestId,
+                jobId,
+                quizId,
+                supplementName: searchTerm,
+                originalQuery: sanitizedCategory,
+                startTime,
+              });
+
+              if (controlledNoDataResponse) {
+                return controlledNoDataResponse;
+              }
+            }
+
             if (
-              !hasHumanClinicalRankedEvidence(rankingData) &&
+              !hasHumanClinicalRanking &&
               shouldUseNoDataFallbackForEmptyRanking(rec, searchTerm)
             ) {
               console.log(`⚠️ [STUDIES_RANKING] No human clinical ranking data for known limited-evidence supplement "${searchTerm}"; continuing to backend no-data fallback.`);

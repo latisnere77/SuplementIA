@@ -556,9 +556,10 @@ describe('/api/portal/quiz POST', () => {
           .mockResolvedValueOnce(studiesFetcherPayload([
             {
               pmid: '456',
-              title: `${query} extract in rats`,
-              abstract: 'A rat model evaluated inflammatory markers.',
-              publicationTypes: ['Journal Article'],
+              title: `${query} randomized controlled trial in adults`,
+              abstract: 'A double-blind placebo-controlled clinical trial randomized healthy adults and measured symptom endpoints.',
+              publicationTypes: ['Randomized Controlled Trial'],
+              meshHeadings: ['Humans'],
             },
           ]))
           .mockResolvedValueOnce({});
@@ -577,10 +578,86 @@ describe('/api/portal/quiz POST', () => {
         expect(body.status).toBe('processing');
         expect(body.source).toBe('lancedb_enriching_async');
         expect(body.recommendation.supplement.worksFor).toEqual([]);
+        expect(body.recommendation.products).toEqual([]);
         expect(body.message).toContain('Enrichment in progress');
         expect(mockLambdaSend).toHaveBeenCalledTimes(2);
       }
     );
+
+    it('returns insufficient_data for Garcinia instead of processing when clinical preflight finds no sufficient human evidence', async () => {
+      const query = 'Garcinia Cambogia';
+      mockedSearchSupplements
+        .mockResolvedValueOnce([
+          lancedbHit(
+            query,
+            'Garcinia cambogia has PubMed literature, but weight loss evidence is mixed and not sufficient for a clinical recommendation.'
+          ),
+        ])
+        .mockResolvedValueOnce([lancedbHit(query)]);
+
+      mockLambdaSend.mockResolvedValueOnce(studiesFetcherPayload([
+        {
+          pmid: '789',
+          title: 'Garcinia cambogia extract in rats',
+          abstract: 'A rat model evaluated metabolic markers after botanical extract exposure.',
+          publicationTypes: ['Journal Article'],
+          meshHeadings: ['Animals', 'Rats'],
+        },
+      ]));
+
+      const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: false,
+            error: 'insufficient_data',
+            message: 'Encontramos literatura publicada sobre "Garcinia Cambogia" en PubMed, pero no evidencia clínica humana suficiente para confirmar beneficios.',
+            metadata: {
+              literatureProfile: {
+                totalCount: 271,
+                sampledCount: 8,
+                categories: {
+                  human_clinical: 1,
+                  preclinical: 3,
+                  phytochemical: 1,
+                  review: 2,
+                  other: 1,
+                },
+              },
+            },
+          }),
+          {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(body.success).toBe(false);
+      expect(body.error).toBe('insufficient_data');
+      expect(body.status).not.toBe('processing');
+      expect(body.recommendation).toBeUndefined();
+      expect(body.products).toBeUndefined();
+      expect(body.metadata?.literatureProfile?.sampledCount).toBe(8);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringContaining('/api/portal/enrich-v2'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"supplementName":"Garcinia Cambogia"'),
+        })
+      );
+      expect(mockLambdaSend).toHaveBeenCalledTimes(1);
+    });
 
     it.each(criticalInsufficientDataCases)(
       'returns insufficient_data without claims for low human-evidence canary %s',
@@ -675,10 +752,10 @@ describe('/api/portal/quiz POST', () => {
         expect(body.success).toBe(false);
         expect(body.error).toBe('insufficient_data');
         expect(fetchMock).toHaveBeenCalledWith(
-          expect.stringContaining('/api/portal/recommend'),
+          expect.stringContaining('/api/portal/enrich-v2'),
           expect.objectContaining({
             method: 'POST',
-            body: expect.stringContaining('"category":"Fadogia agrestis"'),
+            body: expect.stringContaining('"supplementName":"Fadogia agrestis"'),
           })
         );
       } finally {
