@@ -781,30 +781,11 @@ async function preflightControlledNoDataResponse(params: {
     }
 
     if (directEnrichResponse.status === 503 && directErrorData.error === 'upstream_unavailable') {
-      logQuizOutcome({
-        requestId,
-        jobId,
-        quizId,
+      console.warn('[Quiz] enrich-v2 preflight returned upstream_unavailable; preserving existing async fallback.', {
         supplementName,
-        originalQuery,
-        normalizedQuery: supplementName,
-        status: 'upstream_unavailable',
-        finalStatusCode: 503,
-        fallback: 'upstream_unavailable',
-        errorCode: 'upstream_unavailable',
         upstreamStatus: directErrorData.statusCode || directEnrichResponse.status,
-        source: 'enrich-v2-preflight',
-        startTime,
       });
-
-      return NextResponse.json({
-        success: false,
-        error: 'upstream_unavailable',
-        message: directErrorData.message || 'No pudimos consultar temporalmente la base de estudios. Intenta de nuevo en unos minutos.',
-        details: directErrorData.details || directErrorData.error || 'Studies service unavailable',
-        requestId,
-        category: supplementName,
-      }, { status: 503 });
+      return null;
     }
   } catch (error: any) {
     console.warn('[Quiz] enrich-v2 preflight failed; preserving existing async fallback.', {
@@ -1322,7 +1303,8 @@ export async function POST(request: NextRequest) {
             const rankingData = await invokeStudiesFetcher(searchTerm);
 
             const hasHumanClinicalRanking = hasHumanClinicalRankedEvidence(rankingData);
-            if (!hasHumanClinicalRanking) {
+            const hasPreliminaryWorksForEvidence = hasStrongWorksForEvidence(rec);
+            if (!hasHumanClinicalRanking && !hasPreliminaryWorksForEvidence) {
               const controlledNoDataResponse = await preflightControlledNoDataResponse({
                 request,
                 requestId,
@@ -1340,6 +1322,7 @@ export async function POST(request: NextRequest) {
 
             if (
               !hasHumanClinicalRanking &&
+              !hasPreliminaryWorksForEvidence &&
               shouldUseNoDataFallbackForEmptyRanking(rec, searchTerm)
             ) {
               console.log(`⚠️ [STUDIES_RANKING] No human clinical ranking data for known limited-evidence supplement "${searchTerm}"; continuing to backend no-data fallback.`);
