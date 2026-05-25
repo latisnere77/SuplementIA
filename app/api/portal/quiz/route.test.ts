@@ -659,6 +659,57 @@ describe('/api/portal/quiz POST', () => {
       expect(mockLambdaSend).toHaveBeenCalledTimes(1);
     });
 
+    it('keeps async fallback when clinical preflight is temporarily unavailable', async () => {
+      const query = 'Boswellia';
+      mockedSearchSupplements
+        .mockResolvedValueOnce([lancedbHit(query)])
+        .mockResolvedValueOnce([lancedbHit(query)]);
+
+      mockLambdaSend
+        .mockResolvedValueOnce(studiesFetcherPayload([
+          {
+            pmid: '790',
+            title: 'Boswellia extract in vitro cell culture study',
+            abstract: 'An in vitro cell culture model evaluated inflammatory markers after boswellia extract exposure, with no human participants.',
+            publicationTypes: ['Journal Article'],
+            meshHeadings: ['Cells, Cultured'],
+          },
+        ]))
+        .mockResolvedValueOnce({});
+
+      const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: false,
+            error: 'upstream_unavailable',
+            message: 'No pudimos consultar temporalmente la base de estudios para "Boswellia". Intenta de nuevo en unos minutos.',
+            details: 'Studies service returned 503',
+          }),
+          {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.status).toBe('processing');
+      expect(body.error).toBeUndefined();
+      expect(body.recommendation.products).toEqual([]);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(mockLambdaSend).toHaveBeenCalledTimes(2);
+    });
+
     it.each(criticalInsufficientDataCases)(
       'returns insufficient_data without claims for low human-evidence canary %s',
       async (query) => {
