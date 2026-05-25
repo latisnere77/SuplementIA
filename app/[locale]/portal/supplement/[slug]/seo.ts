@@ -109,7 +109,7 @@ export function buildSupplementStructuredData(data: SupplementSeoData, locale: S
           '@type': 'ListItem',
           position: 1,
           name: 'SuplementAI',
-          item: localizedPath(locale),
+          item: localizedPath(locale, '/portal'),
         },
         {
           '@type': 'ListItem',
