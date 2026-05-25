@@ -23,7 +23,7 @@ Operational checks:
 - Studies-fetcher or PubMed availability issues should appear as `status="upstream_unavailable"`, `finalStatusCode=503`, and `fallback="upstream_unavailable"`.
 - Botanicals without enough human clinical evidence should appear as `status="insufficient_data"` and `fallback="insufficient_data"`, not as a completed recommendation.
 - Local canaries such as Magnesium, Creatine, Vitamin D, Melatonin, and Psyllium should usually complete through `fallback="local_catalog_fallback"` when served from curated local evidence.
-- Async canaries such as Turmeric, Berberine, and Green tea extract should be visible as `status="processing"` with `fallback="async_enrichment"` while enrichment is running.
+- Async canaries such as Turmeric and Berberine should be visible as `status="processing"` with `fallback="async_enrichment"` while enrichment is running.
 
 For studies-fetcher failures that do not end the user request, search:
 

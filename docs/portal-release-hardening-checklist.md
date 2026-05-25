@@ -64,8 +64,8 @@ Expected canary outcomes:
 | Canary group | Supplements | Expected production outcome |
 | --- | --- | --- |
 | Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium | `200 completed`, useful nested `recommendation.supplement.worksFor`, no `500` |
-| Async enrichment | Turmeric, Berberine, Green tea extract | `200 processing` or controlled `completed`, no `500` |
-| Insufficient human clinical evidence | Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims |
+| Async enrichment | Turmeric, Berberine | `200 processing` or controlled `completed`, no `500` |
+| Insufficient human clinical evidence | Green tea extract, Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims |
 
 If AWS production returns `Hybrid Search Failed` or `hybrid_search_debug_fail`, the request is hitting stale code or a legacy endpoint. Confirm the base URL is `https://suplementai.com`, then verify Amplify app `d2yn3faih4ykom` deployed the latest green `main`.
 
