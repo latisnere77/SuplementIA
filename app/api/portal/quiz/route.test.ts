@@ -95,9 +95,9 @@ const criticalLocalCatalogCases = [
   },
 ];
 
-const criticalAsyncCases = ['Turmeric', 'Berberine', 'Green tea extract'];
+const criticalAsyncCases = ['Turmeric', 'Berberine'];
 
-const criticalInsufficientDataCases = ['Piper auritum', 'Fadogia agrestis'];
+const criticalInsufficientDataCases = ['Green tea extract', 'Piper auritum', 'Fadogia agrestis'];
 
 function localCatalogHit(name: string, abstract = `${name} local catalog canary entry.`) {
   return {

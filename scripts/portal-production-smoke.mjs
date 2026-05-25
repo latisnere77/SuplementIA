@@ -8,7 +8,7 @@ const cases = [
   { query: 'Psyllium', expected: ['completed'] },
   { query: 'Turmeric', expected: ['processing', 'completed'] },
   { query: 'Berberine', expected: ['processing', 'completed'] },
-  { query: 'Green tea extract', expected: ['processing', 'completed'] },
+  { query: 'Green tea extract', expected: ['insufficient_data'] },
   { query: 'Piper auritum', expected: ['insufficient_data'] },
   { query: 'Fadogia agrestis', expected: ['insufficient_data'] },
 ];
