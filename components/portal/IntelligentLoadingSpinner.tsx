@@ -171,7 +171,7 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
               <div className="mt-0.5">💡</div>
               <p>
                 {isLongRunning
-                  ? 'La investigación sigue activa. No cierres la pestaña si quieres esperar aquí; recargar puede recuperar el resultado cuando el proceso termine.'
+                  ? 'La investigación sigue activa. Puedes seguir esperando aquí o recargar esta página más tarde para revisar si el resultado ya quedó listo.'
                   : 'Estamos analizando estudios científicos reales de fuentes globales. Este proceso puede tomar 30-60 segundos para garantizar información precisa y verificable.'}
               </p>
             </div>
