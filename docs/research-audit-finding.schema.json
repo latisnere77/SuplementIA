@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://suplementai.com/schemas/research-audit-finding.schema.json",
+  "title": "ResearchAuditFinding",
+  "description": "Non-runtime schema for asynchronous research audit agent findings. Findings are advisory, blocked from production, and require deterministic verification plus human review before any product change.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "findingId",
+    "createdAt",
+    "provider",
+    "model",
+    "taskType",
+    "severity",
+    "supplementName",
+    "originalQueries",
+    "problemDetected",
+    "evidenceBoundary",
+    "suggestedAliases",
+    "candidatePmids",
+    "validatedPmids",
+    "pmidVerificationStatus",
+    "proposedClassification",
+    "clinicalRisk",
+    "recommendedAction",
+    "blockedFromProduction",
+    "requiresHumanReview",
+    "confidence",
+    "redactionApplied",
+    "costEstimateUsd",
+    "tokenEstimate"
+  ],
+  "properties": {
+    "findingId": {
+      "type": "string",
+      "pattern": "^raf_[a-z0-9_-]{8,80}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "kimi",
+        "openai",
+        "google",
+        "anthropic"
+      ]
+    },
+    "model": {
+      "type": "string",
+      "enum": [
+        "kimi-k2.6",
+        "kimi-k2.5",
+        "gpt-5.4-nano",
+        "gpt-5.4-mini",
+        "gemini-flash-lite",
+        "claude-haiku-4.5"
+      ]
+    },
+    "taskType": {
+      "type": "string",
+      "enum": [
+        "alias_gap",
+        "recall_gap",
+        "clinical_claim_risk",
+        "pipeline_failure",
+        "seo_opportunity"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "supplementName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[^\\n\\r<>]{1,120}$"
+    },
+    "originalQueries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "pattern": "^[^\\n\\r<>]{1,120}$"
+      }
+    },
+    "problemDetected": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "evidenceBoundary": {
+      "type": "string",
+      "enum": [
+        "human_clinical_required",
+        "preclinical_only",
+        "editorial_only",
+        "operational_only"
+      ]
+    },
+    "suggestedAliases": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "pattern": "^[^\\n\\r<>]{1,120}$"
+      }
+    },
+    "candidatePmids": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{0,9}$"
+      }
+    },
+    "validatedPmids": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{0,9}$"
+      }
+    },
+    "pmidVerificationStatus": {
+      "type": "string",
+      "enum": [
+        "not_checked",
+        "all_valid",
+        "partially_valid",
+        "none_valid",
+        "entity_mismatch"
+      ]
+    },
+    "proposedClassification": {
+      "type": "string",
+      "enum": [
+        "needs_human_review",
+        "likely_insufficient_data",
+        "possible_recall_gap",
+        "operational_bug"
+      ]
+    },
+    "clinicalRisk": {
+      "type": "string",
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "recommendedAction": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200,
+      "not": {
+        "pattern": "(worksFor|worksfor|sirve para|treats|cures|buy now|affiliate|Affiliate|checkout|iherb|iHerb|amazon|Amazon|recommend this supplement to users)"
+      }
+    },
+    "blockedFromProduction": {
+      "const": true
+    },
+    "requiresHumanReview": {
+      "const": true
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "redactionApplied": {
+      "const": true
+    },
+    "costEstimateUsd": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "tokenEstimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input",
+        "output"
+      ],
+      "properties": {
+        "input": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8000
+        },
+        "output": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1500
+        }
+      }
+    },
+    "notesForReviewer": {
+      "type": "string",
+      "maxLength": 1200
+    }
+  }
+}

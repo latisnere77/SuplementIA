@@ -154,6 +154,8 @@ test.describe('portal real supplement searches', () => {
           visibleText,
           `${searchCase.query} insufficient-data state should not make unsafe clinical claims`
         ).not.toMatch(/sirve para|treats|cures|beneficio comprobado|clinical benefit/i);
+        expect.soft(visibleText, `${searchCase.query} insufficient-data state should not render products`).not.toContain('Product Recommendations');
+        expect.soft(visibleText, `${searchCase.query} insufficient-data state should not render affiliate links`).not.toContain('iHerb');
         return;
       }
 
@@ -163,11 +165,10 @@ test.describe('portal real supplement searches', () => {
       expect.soft(latestApiResponse?.body?.success, `${searchCase.query} API success flag`).toBe(true);
       expect.soft(latestApiResponse?.body?.recommendation?.evidence_summary?.totalStudies ?? 0, `${searchCase.query} should include study count`).toBeGreaterThan(0);
       expect.soft(visibleText, `${searchCase.query} should render study summary`).toContain('studies');
-      expect.soft(
-        visibleText.includes('Dosage in Clinical Studies') || visibleText.includes('Dosificación según Estudios Clínicos'),
-        `${searchCase.query} should render dosage section`
-      ).toBe(true);
-      expect.soft(visibleText, `${searchCase.query} should render products`).toContain('Product Recommendations');
+        expect.soft(
+          visibleText.includes('Dosage in Clinical Studies') || visibleText.includes('Dosificación según Estudios Clínicos'),
+          `${searchCase.query} should render dosage section`
+        ).toBe(true);
       expect.soft(visibleText, `${searchCase.query} should not expose local catalog internals`).not.toContain('catálogo local');
       expect.soft(visibleText, `${searchCase.query} should not expose local catalog internals`).not.toContain('catalogo local');
       expect.soft(visibleText, `${searchCase.query} should not expose local catalog internals`).not.toContain('local catalog');

@@ -21,8 +21,9 @@ Operational checks:
 
 - A critical supplement returning `500` should have `status="failed"` and `fallback="backend_service_error"` with an `errorCode`.
 - Studies-fetcher or PubMed availability issues should appear as `status="upstream_unavailable"`, `finalStatusCode=503`, and `fallback="upstream_unavailable"`.
-- Botanicals without enough human clinical evidence should appear as `status="insufficient_data"` and `fallback="insufficient_data"`, not as a completed recommendation.
-- Local canaries such as Magnesium, Creatine, Vitamin D, Melatonin, and Psyllium should usually complete through `fallback="local_catalog_fallback"` when served from curated local evidence.
+- Botanicals or mixed/negative evidence cases without enough human clinical support should appear as `status="insufficient_data"` and `fallback="insufficient_data"`, not as a completed recommendation or product opportunity.
+- Local canaries such as Magnesium, Creatine, Vitamin D, Melatonin, Psyllium, and Ashwagandha should complete with supported `worksFor` when served from curated/local evidence.
+- Centella asiatica and gotu kola should complete with calibrated moderate/preliminary evidence and should not show entity mix, untraced percentages, or `EvidenceGrade A`.
 - Async canaries such as Turmeric and Berberine should be visible as `status="processing"` with `fallback="async_enrichment"` while enrichment is running.
 
 For studies-fetcher failures that do not end the user request, search:

@@ -548,7 +548,7 @@ function mergeEnrichedData(recommendation: any, enrichedData: any): any {
   // Update products if present (NEW)
   const enrichedProducts = enrichedData?.products || enrichedData?.data?.products;
   if (enrichedProducts && enrichedProducts.length > 0) {
-    recommendation.products = enrichedProducts;
+    recommendation.products = hasStrongWorksForEvidence(recommendation) ? enrichedProducts : [];
   }
 
   // **CRITICAL**: Resolve and Copy studies.ranked data
