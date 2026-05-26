@@ -10,6 +10,8 @@
 
 // Dynamic import to avoid loading AWS SDK when credentials are not available
 // This prevents CredentialsProviderError during module load in Amplify environment
+import { canonicalizeBotanicalTerm } from './botanical-identity';
+
 type BedrockRuntimeClient = any;
 type InvokeModelCommand = any;
 
@@ -284,7 +286,7 @@ export async function expandAbbreviation(
 ): Promise<AbbreviationExpansion> {
   const trimmed = term.trim();
   const startTime = Date.now();
-  const controlledAlias = CONTROLLED_CANONICAL_ALIASES[trimmed.toLowerCase()];
+  const controlledAlias = CONTROLLED_CANONICAL_ALIASES[trimmed.toLowerCase()] || canonicalizeBotanicalTerm(trimmed);
 
   debugAbbreviationEvent({
     event: 'ABBREVIATION_EXPANSION_START',

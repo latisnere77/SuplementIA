@@ -454,7 +454,10 @@ export async function POST(request: NextRequest) {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
         });
-      } else if (shouldTreatStudiesFailureAsInsufficientData(supplementName)) {
+      } else if (
+        shouldTreatStudiesFailureAsInsufficientData(supplementName) ||
+        shouldTreatStudiesFailureAsInsufficientData(searchTerm)
+      ) {
         return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
       } else {
         return upstreamUnavailableResponse(supplementName, requestId, 0, details, startTime, searchTerm);
@@ -466,7 +469,8 @@ export async function POST(request: NextRequest) {
       console.error(`[enrich-v2] Studies fetch failed: ${studiesResponse.status}`, errorText);
 
       if (
-        shouldTreatStudiesFailureAsInsufficientData(supplementName) &&
+        (shouldTreatStudiesFailureAsInsufficientData(supplementName) ||
+          shouldTreatStudiesFailureAsInsufficientData(searchTerm)) &&
         [403, 404, 422, 500].includes(studiesResponse.status)
       ) {
         if (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm)) {

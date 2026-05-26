@@ -285,6 +285,72 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(JSON.stringify(body)).not.toMatch(/sirve para|treats|cures|beneficio clinico|beneficio clínico/i);
   });
 
+  it('canonicalizes tepezcohuite to Mimosa tenuiflora and falls back to literature profile without products', async () => {
+    const { expandAbbreviation } = jest.requireMock('@/lib/services/abbreviation-expander');
+    expandAbbreviation.mockResolvedValueOnce({
+      original: 'tepezcohuite',
+      alternatives: ['Mimosa tenuiflora'],
+      confidence: 0.95,
+      source: 'heuristic',
+    });
+
+    const fetchMock = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ message: 'Backend error' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ esearchresult: { count: '1', idlist: ['22128789'] } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          `
+          <PubmedArticle>
+            <PMID>22128789</PMID>
+            <ArticleTitle>A randomized comparative trial on the use of a hydrogel with tepescohuite extract in venous leg ulcers.</ArticleTitle>
+            <AbstractText>Patients with chronic venous leg ulcers were randomized to hydrogel with Mimosa tenuiflora cortex extract or hydrogel alone.</AbstractText>
+            <PubDate><Year>2012</Year></PubDate>
+            <PublicationType>Randomized Controlled Trial</PublicationType>
+            <MeshHeading><DescriptorName>Humans</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          `,
+          { status: 200, headers: { 'Content-Type': 'application/xml' } }
+        )
+      );
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'tepezcohuite',
+        category: 'tepezcohuite',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+    const studiesRequestBody = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    const pubmedSearchUrl = fetchMock.mock.calls[1][0] as string;
+
+    expect(studiesRequestBody.supplementName).toBe('Mimosa tenuiflora');
+    expect(pubmedSearchUrl).toContain(encodeURIComponent('"Mimosa tenuiflora"[Title/Abstract]'));
+    expect(pubmedSearchUrl).toContain(encodeURIComponent('"Mimosa hostilis"[Title/Abstract]'));
+    expect(pubmedSearchUrl).toContain(encodeURIComponent('"tepescohuite"[Title/Abstract]'));
+    expect(response.status).toBe(404);
+    expect(body.error).toBe('insufficient_data');
+    expect(body.metadata.literatureProfile.categories.human_clinical).toBe(1);
+    expect(body.worksFor || []).toHaveLength(0);
+    expect(body.products || []).toHaveLength(0);
+    expect(JSON.stringify(body)).not.toMatch(/sirve para quemaduras|treats burns|cures wounds/i);
+  });
+
   it('returns controlled upstream_unavailable when studies fetch is forbidden for a common supplement', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'Forbidden' }), {

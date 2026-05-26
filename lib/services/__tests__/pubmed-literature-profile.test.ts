@@ -204,6 +204,34 @@ describe('pubmed literature profile', () => {
     expect(getPubMedQueryPhrases('Piper auritum')).toEqual(['Piper auritum']);
   });
 
+  it('expands Mimosa tenuiflora and tepezcohuite queries to controlled botanical aliases', () => {
+    expect(getPubMedQueryPhrases('tepezcohuite')).toEqual(expect.arrayContaining([
+      'tepezcohuite',
+      'Mimosa tenuiflora',
+      'Mimosa hostilis',
+      'tepescohuite',
+      'Mimosa tenuiflora bark',
+      'Mimosa tenuiflora cortex',
+      'Mimosae tenuiflorae cortex',
+      'Mimosa tenuiflora extract',
+      'Mimosa tenuiflora hydrogel',
+      'Mimosa tenuiflora MTC-2G',
+    ]));
+    expect(getPubMedQueryPhrases('Mimosa hostilis')).toEqual(expect.arrayContaining([
+      'Mimosa hostilis',
+      'Mimosa tenuiflora',
+      'tepezcohuite',
+      'tepescohuite',
+    ]));
+    expect(getPubMedQueryPhrases('Piper auritum')).toEqual(['Piper auritum']);
+    expect(getPubMedQueryPhrases('Fadogia agrestis')).toEqual(['Fadogia agrestis']);
+    expect(getPubMedQueryPhrases('hoja de aguacate')).toEqual([
+      'hoja de aguacate',
+      'avocado leaf',
+      'Persea americana leaf',
+    ]);
+  });
+
   it('expands Centella asiatica and gotu kola to controlled PubMed aliases', () => {
     expect(getPubMedQueryPhrases('centella asiatica')).toEqual([
       'centella asiatica',
@@ -219,6 +247,47 @@ describe('pubmed literature profile', () => {
       'total triterpenic fraction of Centella asiatica',
       'TECA Centella asiatica',
     ]);
+  });
+
+  it('uses Mimosa botanical aliases in PubMed literature profile search without changing clinical classification', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          json: async () => ({ esearchresult: { count: '12', idlist: ['22128789'] } }),
+        } as Response
+      )
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          text: async () => `
+          <PubmedArticle>
+            <PMID>22128789</PMID>
+            <ArticleTitle>A randomized comparative trial on the use of a hydrogel with tepescohuite extract in venous leg ulcers.</ArticleTitle>
+            <AbstractText>Patients with chronic venous leg ulcers were randomized to hydrogel with Mimosa tenuiflora cortex extract or hydrogel alone.</AbstractText>
+            <PubDate><Year>2012</Year></PubDate>
+            <PublicationType>Randomized Controlled Trial</PublicationType>
+            <MeshHeading><DescriptorName>Humans</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          `,
+        } as Response
+      ) as jest.Mock;
+    global.fetch = fetchMock;
+
+    const profile = await searchPubMedLiteratureProfile('tepezcohuite');
+    const searchUrl = fetchMock.mock.calls[0][0] as string;
+
+    expect(searchUrl).toContain(encodeURIComponent('"Mimosa tenuiflora"[Title/Abstract]'));
+    expect(searchUrl).toContain(encodeURIComponent('"Mimosa hostilis"[Title/Abstract]'));
+    expect(searchUrl).toContain(encodeURIComponent('"tepescohuite"[Title/Abstract]'));
+    expect(searchUrl).toContain(encodeURIComponent('"Mimosa tenuiflora cortex"[Title/Abstract]'));
+    expect(searchUrl).not.toContain(encodeURIComponent('"burns"[Title/Abstract]'));
+    expect(profile?.categories.human_clinical).toBe(1);
+    expect(profile?.articles[0]).toMatchObject({
+      pmid: '22128789',
+      category: 'human_clinical',
+    });
   });
 
   it('prioritizes human clinical Centella articles in the PubMed literature sample', async () => {
