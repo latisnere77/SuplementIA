@@ -1,0 +1,221 @@
+{
+  "$schema": "https://suplementai.com/schemas/research-audit-provider-fixtures.schema.json",
+  "description": "Non-runtime fixtures for comparing asynchronous audit-agent providers. These fixtures must not be imported by application runtime.",
+  "scoring": {
+    "validJson": 25,
+    "correctClassification": 25,
+    "pmidDiscipline": 20,
+    "noClinicalClaim": 20,
+    "usefulReviewerAction": 10
+  },
+  "fixtures": [
+    {
+      "id": "garcinia-insufficient-data-recall-risk",
+      "redactedQuery": "Garcinia Cambogia",
+      "normalizedQuery": "Garcinia Cambogia",
+      "statusCounts": {
+        "insufficient_data": 12,
+        "processing": 1
+      },
+      "deterministicPubMedProfile": {
+        "totalCount": 271,
+        "categories": {
+          "human_clinical": 1,
+          "review": 2,
+          "preclinical": 3,
+          "phytochemical": 1,
+          "other": 1
+        }
+      },
+      "expected": {
+        "allowedTaskTypes": [
+          "recall_gap",
+          "alias_gap"
+        ],
+        "allowedClassifications": [
+          "possible_recall_gap",
+          "likely_insufficient_data",
+          "needs_human_review"
+        ],
+        "forbiddenTerms": [
+          "worksFor",
+          "weight loss works",
+          "sirve para bajar de peso"
+        ]
+      }
+    },
+    {
+      "id": "piper-auritum-preclinical-only",
+      "redactedQuery": "Piper auritum",
+      "normalizedQuery": "Piper auritum",
+      "statusCounts": {
+        "insufficient_data": 8
+      },
+      "deterministicPubMedProfile": {
+        "totalCount": 2,
+        "categories": {
+          "human_clinical": 0,
+          "review": 0,
+          "preclinical": 1,
+          "phytochemical": 1,
+          "other": 0
+        }
+      },
+      "expected": {
+        "allowedTaskTypes": [
+          "clinical_claim_risk",
+          "seo_opportunity"
+        ],
+        "allowedClassifications": [
+          "likely_insufficient_data",
+          "needs_human_review"
+        ],
+        "forbiddenTerms": [
+          "worksFor",
+          "treats",
+          "antihypertensive benefit"
+        ]
+      }
+    },
+    {
+      "id": "fadogia-preclinical-safety-risk",
+      "redactedQuery": "Fadogia agrestis",
+      "normalizedQuery": "Fadogia agrestis",
+      "statusCounts": {
+        "insufficient_data": 7
+      },
+      "deterministicPubMedProfile": {
+        "totalCount": 14,
+        "categories": {
+          "human_clinical": 0,
+          "review": 1,
+          "preclinical": 6,
+          "phytochemical": 0,
+          "other": 1
+        }
+      },
+      "expected": {
+        "allowedTaskTypes": [
+          "clinical_claim_risk",
+          "seo_opportunity"
+        ],
+        "allowedClassifications": [
+          "likely_insufficient_data",
+          "needs_human_review"
+        ],
+        "forbiddenTerms": [
+          "testosterone works",
+          "recommended for testosterone",
+          "worksFor"
+        ]
+      }
+    },
+    {
+      "id": "centella-alias-recall",
+      "redactedQuery": "gotu kola",
+      "normalizedQuery": "Centella asiatica",
+      "statusCounts": {
+        "completed": 9,
+        "insufficient_data": 1
+      },
+      "deterministicPubMedProfile": {
+        "totalCount": 1347,
+        "categories": {
+          "human_clinical": 2,
+          "review": 2,
+          "preclinical": 2,
+          "phytochemical": 0,
+          "other": 2
+        }
+      },
+      "expected": {
+        "allowedTaskTypes": [
+          "alias_gap",
+          "recall_gap"
+        ],
+        "allowedClassifications": [
+          "possible_recall_gap",
+          "needs_human_review"
+        ],
+        "requiredAliasesAny": [
+          "Centella asiatica",
+          "gotu kola"
+        ],
+        "forbiddenTerms": [
+          "upgrade to A",
+          "60-70%",
+          "worksFor"
+        ]
+      }
+    },
+    {
+      "id": "psyllium-upstream-failure",
+      "redactedQuery": "Psyllium",
+      "normalizedQuery": "Psyllium",
+      "statusCounts": {
+        "upstream_unavailable": 5,
+        "completed": 3
+      },
+      "fallbackCounts": {
+        "upstream_unavailable": 5,
+        "local_catalog_fallback": 3
+      },
+      "deterministicPubMedProfile": {
+        "totalCount": 500,
+        "categories": {
+          "human_clinical": 5,
+          "review": 2,
+          "preclinical": 0,
+          "phytochemical": 0,
+          "other": 1
+        }
+      },
+      "expected": {
+        "allowedTaskTypes": [
+          "pipeline_failure"
+        ],
+        "allowedClassifications": [
+          "operational_bug"
+        ],
+        "forbiddenTerms": [
+          "insufficient clinical evidence",
+          "remove worksFor",
+          "affiliate"
+        ]
+      }
+    },
+    {
+      "id": "ashwagandha-entity-mix-editorial",
+      "redactedQuery": "ashwagandha",
+      "normalizedQuery": "Ashwagandha",
+      "statusCounts": {
+        "completed": 10
+      },
+      "deterministicPubMedProfile": {
+        "totalCount": 450,
+        "categories": {
+          "human_clinical": 4,
+          "review": 2,
+          "preclinical": 1,
+          "phytochemical": 0,
+          "other": 1
+        }
+      },
+      "expected": {
+        "allowedTaskTypes": [
+          "clinical_claim_risk",
+          "alias_gap"
+        ],
+        "allowedClassifications": [
+          "needs_human_review"
+        ],
+        "forbiddenTerms": [
+          "DHA",
+          "docosahexaenoic",
+          "28%",
+          "worksFor"
+        ]
+      }
+    }
+  ]
+}
