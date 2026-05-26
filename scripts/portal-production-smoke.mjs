@@ -6,9 +6,14 @@ const cases = [
   { query: 'Vitamin D', expected: ['completed'] },
   { query: 'Melatonin', expected: ['completed'] },
   { query: 'Psyllium', expected: ['completed'] },
+  { query: 'Ashwagandha', expected: ['completed'] },
+  { query: 'Centella asiatica', expected: ['completed'] },
+  { query: 'gotu kola', expected: ['completed'] },
   { query: 'Turmeric', expected: ['processing', 'completed'] },
   { query: 'Berberine', expected: ['processing', 'completed'] },
   { query: 'Green tea extract', expected: ['insufficient_data'] },
+  { query: 'Garcinia Cambogia', expected: ['insufficient_data'] },
+  { query: 'hoja de aguacate', expected: ['insufficient_data'] },
   { query: 'Piper auritum', expected: ['insufficient_data'] },
   { query: 'Fadogia agrestis', expected: ['insufficient_data'] },
 ];
@@ -48,13 +53,19 @@ for (const c of cases) {
     body.recommendation?.works_for ||
     body.supplement?.worksFor ||
     [];
+  const products =
+    body.recommendation?.products ||
+    body.products ||
+    [];
   const hasOldHybridSearchError =
     text.includes('Hybrid Search Failed') || text.includes('hybrid_search_debug_fail');
+  const expectsInsufficientData = c.expected.includes('insufficient_data');
   const ok =
     c.expected.includes(state) &&
     res.status < 500 &&
     !unsafeClaimPattern.test(text) &&
-    !hasOldHybridSearchError;
+    !hasOldHybridSearchError &&
+    (!expectsInsufficientData || !Array.isArray(products) || products.length === 0);
 
   if (!ok) failures += 1;
 
@@ -65,6 +76,7 @@ for (const c of cases) {
     success: body.success,
     fallback,
     worksForCount: Array.isArray(worksFor) ? worksFor.length : 0,
+    productsCount: Array.isArray(products) ? products.length : 0,
     error: body.error,
     oldHybridSearchError: hasOldHybridSearchError,
     durationMs: Date.now() - started,

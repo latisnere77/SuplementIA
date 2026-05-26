@@ -27,10 +27,17 @@ import {
   isCentellaRecommendation,
   sanitizeCentellaItem,
 } from '@/lib/portal/centella-editorial-calibration';
+import { isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 120; // 2 minutes for enrichment
+
+function hasSupportedWorksForItems(worksFor: any): boolean {
+  return Array.isArray(worksFor) && worksFor.some((item: any) =>
+    isStrongEvidenceGrade(normalizeEvidenceGrade(item?.evidenceGrade || item?.grade))
+  );
+}
 
 function logRecommendOutcome(data: {
   requestId: string;
@@ -772,7 +779,7 @@ function transformToRecommendation(
       duration: enrichedContent.duration || 'Según necesidad',
       considerations: enrichedContent.considerations || [],
     },
-    products: enrichedContent.products || [],
+    products: hasSupportedWorksForItems(enrichedContent.worksFor) ? (enrichedContent.products || []) : [],
     // Ingredients (required for ingredient adjustments)
     ingredients: enrichedContent.ingredients || [],
     // Metadata

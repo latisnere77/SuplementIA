@@ -67,6 +67,13 @@ describe('Portal status route', () => {
           buyingGuidance: {
             preferredForm: 'Standardized extract',
           },
+          products: [
+            {
+              name: 'Standardized Garcinia extract',
+              brand: 'Test Brand',
+              price: '$19.99',
+            },
+          ],
         },
       },
     } as any);
@@ -82,7 +89,7 @@ describe('Portal status route', () => {
     expect(body.recommendation.supplement.worksFor).toHaveLength(1);
     expect(body.recommendation.supplement.dosage.standard).toBe('1500 mg/day');
     expect(body.recommendation.supplement.sideEffects).toHaveLength(1);
-    expect(body.recommendation.products).toEqual([]);
+    expect(body.recommendation.products).toHaveLength(1);
     expect(body.recommendation.recommendation_id).toBeTruthy();
     expect(body.recommendation.evidence_summary.totalStudies).toBe(12);
     expect(body.recommendation.evidence_summary.ingredients[0].grade).toBe('B');
@@ -153,5 +160,55 @@ describe('Portal status route', () => {
     expect(serialized).not.toContain('eficacia demostrada');
     expect(serialized).not.toContain('tratamiento de');
     expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
+  });
+
+  it('drops Lambda products when there are no A/B supported uses', async () => {
+    mockedGetJob.mockResolvedValue({
+      id: 'job_insufficient',
+      status: 'completed',
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 60_000,
+      recommendation: {
+        metadata: {
+          supplementId: 'hoja de aguacate',
+          studiesUsed: 4,
+        },
+        data: {
+          name: 'hoja de aguacate',
+          whatIsIt: 'Literatura contextual preclínica sobre hoja de aguacate.',
+          totalStudies: 4,
+          worksFor: [],
+          doesntWorkFor: [],
+          limitedEvidence: [
+            {
+              condition: 'Presión arterial en modelos animales',
+              evidenceGrade: 'C',
+            },
+          ],
+          products: [
+            {
+              name: 'Generic avocado leaf capsules',
+              brand: 'Placeholder',
+              price: '$12.99',
+            },
+          ],
+          safety: {
+            sideEffects: [],
+            contraindications: [],
+            interactions: [],
+          },
+        },
+      },
+    } as any);
+
+    const response = await GET(createRequest('job_insufficient'), {
+      params: Promise.resolve({ id: 'job_insufficient' }),
+    });
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+
+    expect(body.recommendation.supplement.worksFor).toEqual([]);
+    expect(body.recommendation.products).toEqual([]);
   });
 });

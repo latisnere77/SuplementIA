@@ -11,16 +11,18 @@ Keep deterministic unit/integration checks separate from live browser diagnostic
 
 | Group | Supplements | Expected behavior |
 | --- | --- | --- |
-| Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium | `200 completed`, `local_catalog_fallback`, curated `worksFor`, no backend fetcher dependency |
+| Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium, Ashwagandha | `200 completed`, curated `worksFor`, no backend fetcher dependency |
+| Human clinical enrichment | Centella asiatica, gotu kola | `200 completed`, canonicalized evidence result, calibrated moderate/preliminary claims |
 | Async enrichment | Turmeric, Berberine | `200 processing` or controlled completion, no immediate preclinical `worksFor`, no 500 |
-| Insufficient human clinical evidence | Green tea extract, Piper auritum, Fadogia agrestis | `404 insufficient_data`, no clinical claims |
+| Insufficient human clinical evidence | Green tea extract, Garcinia Cambogia, hoja de aguacate, Piper auritum, Fadogia agrestis | `404 insufficient_data`, no clinical claims, no products |
 | Transient upstream failure | studies-fetcher 403/429/5xx class failures | `503 upstream_unavailable`, not `backend_service_error`/500 |
 
 ## Why these supplements
 
-- `Green tea extract`, `Piper auritum`, and `Fadogia agrestis` guard against converting animal, in vitro, phytochemical, botanical, mixed, or agricultural literature into human clinical claims.
+- `Green tea extract`, `Garcinia Cambogia`, `hoja de aguacate`, `Piper auritum`, and `Fadogia agrestis` guard against converting animal, in vitro, phytochemical, botanical, safety-only, mixed, or agricultural literature into human clinical claims or product recommendations.
 - `Psyllium` guards against a known studies-fetcher 403 path and verifies common high-evidence supplements can be served without a fragile upstream dependency.
-- `Magnesium`, `Creatine`, `Vitamin D`, and `Melatonin` guard the fast local evidence path for common supplements.
+- `Magnesium`, `Creatine`, `Vitamin D`, `Melatonin`, and `Ashwagandha` guard the fast evidence path for common supplements.
+- `Centella asiatica` and `gotu kola` guard canonicalization plus calibrated clinical recall, where moderate human evidence must not become overclaims.
 - `Turmeric` and `Berberine` guard mixed-evidence supplements that should not be blocked too aggressively and should not return 500 while async enrichment runs.
 
 When adding a new canary, prefer a deterministic route test first. Add it to the live browser matrix only if the value of testing the deployed network path outweighs the extra runtime and flake risk.

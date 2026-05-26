@@ -505,7 +505,20 @@ interface Recommendation {
 
 type RecommendationProduct = Recommendation['products'][number];
 
+function hasSupportedWorksFor(recommendation: Recommendation | null): boolean {
+  const worksFor = (recommendation?.supplement as { worksFor?: unknown } | undefined)?.worksFor;
+
+  return Array.isArray(worksFor) && worksFor.some((item: any) => {
+    const grade = normalizeEvidenceGrade(item.evidenceGrade || item.grade);
+    return isStrongEvidenceGrade(grade);
+  });
+}
+
 function buildIHerbAffiliateProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
+  if (!hasSupportedWorksFor(recommendation)) {
+    return [];
+  }
+
   const supplementName = recommendation?.category || query || 'suplemento';
   const ingredientNames = recommendation?.evidence_summary?.ingredients
     ?.map(ingredient => ingredient.name)

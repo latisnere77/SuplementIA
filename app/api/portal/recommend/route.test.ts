@@ -176,4 +176,63 @@ describe('/api/portal/recommend POST', () => {
     expect(serialized).not.toContain('tratamiento de');
     expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
   });
+
+  it('does not pass through enriched products without A/B supported uses', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            name: 'Garcinia Cambogia',
+            whatIsIt: 'Extracto investigado con evidencia mixta o no concluyente.',
+            worksFor: [
+              {
+                condition: 'Pérdida de peso',
+                evidenceGrade: 'C',
+                notes: 'La evidencia humana disponible no es concluyente.',
+                studyCount: 4,
+              },
+            ],
+            limitedEvidence: [],
+            products: [
+              {
+                name: 'Generic Garcinia capsules',
+                brand: 'Placeholder',
+                price: '$19.99',
+              },
+            ],
+            totalStudies: 4,
+          },
+          metadata: {
+            hasRealData: true,
+            studiesUsed: 4,
+          },
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/recommend', {
+      method: 'POST',
+      body: JSON.stringify({
+        category: 'Garcinia Cambogia',
+        age: 35,
+        gender: 'female',
+        location: 'CDMX',
+        quiz_id: 'quiz_product_gate_test',
+        jobId: 'job_product_gate_test',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.recommendation.supplement.worksFor[0].evidenceGrade).toBe('C');
+    expect(body.recommendation.products).toEqual([]);
+  });
 });

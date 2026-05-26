@@ -8,9 +8,16 @@ import { portalLogger } from '@/lib/portal/api-logger';
 import { getJob, cleanupExpired } from '@/lib/portal/job-store';
 import { logPortalSupplementOutcome } from '@/lib/portal/structured-logger';
 import { calibrateCentellaRecommendation } from '@/lib/portal/centella-editorial-calibration';
+import { isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+
+function hasSupportedWorksForItems(worksFor: any): boolean {
+  return Array.isArray(worksFor) && worksFor.some((item: any) =>
+    isStrongEvidenceGrade(normalizeEvidenceGrade(item?.evidenceGrade || item?.grade))
+  );
+}
 
 function normalizeLambdaRecommendation(recommendation: any): any {
   if (!recommendation?.data || recommendation.supplement) {
@@ -23,9 +30,10 @@ function normalizeLambdaRecommendation(recommendation: any): any {
   const safety = data.safety || {};
   const worksFor = Array.isArray(data.worksFor) ? data.worksFor : [];
   const limitedEvidence = Array.isArray(data.limitedEvidence) ? data.limitedEvidence : [];
-  const products = Array.isArray(data.products)
+  const rawProducts = Array.isArray(data.products)
     ? data.products
     : (Array.isArray(recommendation.products) ? recommendation.products : []);
+  const products = hasSupportedWorksForItems(worksFor) ? rawProducts : [];
 
   return {
     ...recommendation,

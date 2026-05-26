@@ -528,6 +528,45 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('iHerb')).not.toBeVisible();
   });
 
+  test('results do not render affiliate products when supported uses are empty', async ({ page }) => {
+    await page.route('**/api/portal/quiz**', async (route) => {
+      const body = route.request().postDataJSON() as QuizRequest;
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          searchType: 'ingredient',
+          jobId: body.jobId,
+          recommendation: {
+            ...recommendation,
+            supplement: {
+              ...recommendation.supplement,
+              worksFor: [],
+              limitedEvidence: [
+                {
+                  condition: 'Sleep quality',
+                  evidenceGrade: 'C',
+                  notes: 'Human evidence is limited or indirect.',
+                },
+              ],
+            },
+            products: [],
+          },
+        }),
+      });
+    });
+
+    await page.goto('/en/portal/results?q=Magnesium&supplement=Magnesium');
+
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /What it may help with/i })).toBeVisible();
+    await expect(page.getByText(/We did not find uses with sufficient human clinical evidence/i)).toBeVisible();
+    await expect(page.getByText('Product Recommendations')).not.toBeVisible();
+    await expect(page.getByText('iHerb')).not.toBeVisible();
+  });
+
   test('search submission polls until async enrichment returns final evidence', async ({ page }) => {
     const quizRequests: QuizRequest[] = [];
     let statusCalls = 0;

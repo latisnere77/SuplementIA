@@ -63,9 +63,10 @@ Expected canary outcomes:
 
 | Canary group | Supplements | Expected production outcome |
 | --- | --- | --- |
-| Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium | `200 completed`, useful nested `recommendation.supplement.worksFor`, no `500` |
+| Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium, Ashwagandha | `200 completed`, useful nested `recommendation.supplement.worksFor`, no `500` |
+| Human clinical enrichment | Centella asiatica, gotu kola | `200 completed`, calibrated evidence result, no timeout or entity mix |
 | Async enrichment | Turmeric, Berberine | `200 processing` or controlled `completed`, no `500` |
-| Insufficient human clinical evidence | Green tea extract, Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims |
+| Insufficient human clinical evidence | Green tea extract, Garcinia Cambogia, hoja de aguacate, Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims, no products |
 
 If AWS production returns `Hybrid Search Failed` or `hybrid_search_debug_fail`, the request is hitting stale code or a legacy endpoint. Confirm the base URL is `https://suplementai.com`, then verify Amplify app `d2yn3faih4ykom` deployed the latest green `main`.
 
@@ -100,7 +101,7 @@ Expected signals:
 
 - Common evidence canaries should show `status="completed"` and often `fallback="local_catalog_fallback"`.
 - Async canaries can show `status="processing"` with `fallback="async_enrichment"`.
-- Piper auritum and Fadogia agrestis should show `status="insufficient_data"` and `fallback="insufficient_data"`.
+- Green tea extract, Garcinia Cambogia, hoja de aguacate, Piper auritum, and Fadogia agrestis should show `status="insufficient_data"` and `fallback="insufficient_data"` with no products.
 - Studies-fetcher/PubMed outage should show `status="upstream_unavailable"`, `finalStatusCode=503`, and `fallback="upstream_unavailable"`, not a raw `500`.
 
 ## If a supplement starts returning 500

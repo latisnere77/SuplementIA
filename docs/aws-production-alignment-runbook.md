@@ -179,11 +179,12 @@ Expected canary outcomes:
 
 | Canary group | Supplements | Expected production outcome |
 | --- | --- | --- |
-| Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium | `200 completed`, useful evidence result, no `500` |
+| Local catalog evidence | Magnesium, Creatine, Vitamin D, Melatonin, Psyllium, Ashwagandha | `200 completed`, useful evidence result, no `500` |
+| Human clinical enrichment | Centella asiatica, gotu kola | `200 completed`, calibrated evidence result, no timeout or entity mix |
 | Async enrichment | Turmeric, Berberine | `200 processing` or controlled `completed`, no `500` |
-| Insufficient human clinical evidence | Green tea extract, Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims |
+| Insufficient human clinical evidence | Green tea extract, Garcinia Cambogia, hoja de aguacate, Piper auritum, Fadogia agrestis | `404 insufficient_data`, no human clinical claims, no products |
 
-The smoke fails if any canary returns raw `500`, `Hybrid Search Failed`, `hybrid_search_debug_fail`, or unsafe clinical wording.
+The smoke fails if any canary returns raw `500`, `Hybrid Search Failed`, `hybrid_search_debug_fail`, unsafe clinical wording, or products in an `insufficient_data` response.
 
 ## Logs to inspect
 

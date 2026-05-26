@@ -357,22 +357,21 @@ export default function EvidenceAnalysisPanelNew({
         </div>
       </div>
 
+      <WorksForSection
+        worksFor={localizedWorksFor}
+        doesntWorkFor={localizedDoesntWorkFor}
+        limitedEvidence={localizedLimitedEvidence}
+        language={language}
+      />
+
       {/* NEW: Evidence by Benefit Section */}
-      {evidenceSummary.evidenceByBenefit && evidenceSummary.evidenceByBenefit.length > 0 ? (
+      {evidenceSummary.evidenceByBenefit && evidenceSummary.evidenceByBenefit.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-gray-900">{labels.evidenceByBenefit}</h2>
           {evidenceSummary.evidenceByBenefit.map((benefit, index) => (
             <BenefitEvidenceCard key={index} {...benefit} />
           ))}
         </div>
-      ) : (
-        // Fallback to old WorksForSection if new data structure is not present
-        <WorksForSection
-          worksFor={localizedWorksFor}
-          doesntWorkFor={localizedDoesntWorkFor}
-          limitedEvidence={localizedLimitedEvidence}
-          language={language}
-        />
       )}
 
       {/* Dosage Information */}

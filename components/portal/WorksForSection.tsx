@@ -213,17 +213,17 @@ export default function WorksForSection({
 }: WorksForSectionProps) {
   const labels = language === 'en'
     ? {
-      title: 'What has evidence?',
-      noStrongBenefits: 'No benefits with confirmed A/B human clinical evidence in PubMed are available to show as supported.',
-      worksFor: 'Supported for',
+      title: 'What it may help with',
+      noStrongBenefits: 'We did not find uses with sufficient human clinical evidence to show as supported.',
+      worksFor: 'Supported uses',
       doesntWorkFor: 'Not supported for',
       limitedEvidence: 'Limited Evidence',
       limitedIntro: 'The following effects have promising evidence but need more research:',
     }
     : {
-      title: '¿Para qué funciona?',
-      noStrongBenefits: 'No hay beneficios con evidencia clínica A/B confirmada en PubMed para mostrar como funciona.',
-      worksFor: 'Funciona para',
+      title: 'Para qué sí sirve',
+      noStrongBenefits: 'No encontramos usos con evidencia clínica humana suficiente para mostrarlos como respaldados.',
+      worksFor: 'Usos respaldados',
       doesntWorkFor: 'No funciona para',
       limitedEvidence: 'Evidencia Limitada',
       limitedIntro: 'Los siguientes efectos tienen evidencia prometedora pero necesitan más investigación:',
@@ -244,26 +244,18 @@ export default function WorksForSection({
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {sortedWorksFor.length === 0 && sortedDoesntWorkFor.length === 0 && sortedLimitedEvidence.length === 0 && (
-          <div className="md:col-span-2 bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-700">
-              {labels.noStrongBenefits}
-            </p>
-          </div>
-        )}
-
         {/* FUNCIONA PARA */}
-        {sortedWorksFor.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-green-100 p-2 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold text-green-800">
-                ✅ {labels.worksFor}
-              </h3>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-green-100 p-2 rounded-lg">
+              <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
+            <h3 className="text-xl font-bold text-green-800">
+              {labels.worksFor}
+            </h3>
+          </div>
 
+          {sortedWorksFor.length > 0 ? (
             <ul className="space-y-3">
               {sortedWorksFor.map((item, index) => (
                 <li
@@ -288,8 +280,14 @@ export default function WorksForSection({
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          ) : (
+            <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+              <p className="text-sm text-gray-700">
+                {labels.noStrongBenefits}
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* NO FUNCIONA PARA */}
         {sortedDoesntWorkFor.length > 0 && (
