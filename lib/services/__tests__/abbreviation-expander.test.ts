@@ -9,4 +9,15 @@ describe('expandAbbreviation controlled aliases', () => {
       source: 'heuristic',
     });
   });
+
+  it('canonicalizes tepezcohuite variants to Mimosa tenuiflora without LLM expansion', async () => {
+    for (const term of ['tepezcohuite', 'tepescohuite', 'Mimosa hostilis']) {
+      await expect(expandAbbreviation(term)).resolves.toMatchObject({
+        original: term,
+        alternatives: ['Mimosa tenuiflora'],
+        confidence: 0.95,
+        source: 'heuristic',
+      });
+    }
+  });
 });

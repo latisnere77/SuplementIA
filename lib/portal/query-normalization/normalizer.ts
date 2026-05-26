@@ -33,6 +33,8 @@
  * @see backend/lambda/search-api - Vector search implementation
  */
 
+import { getBotanicalPubMedQueryPhrases } from '@/lib/services/botanical-identity';
+
 export type SupplementCategory =
   | 'amino_acid'
   | 'vitamin'
@@ -270,6 +272,10 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'ashwagandha': { canonical: 'Ashwagandha', category: 'herb' },
   'ashwaganda': { canonical: 'Ashwagandha', category: 'herb' },
   'withania': { canonical: 'Ashwagandha', category: 'herb' },
+  'mimosa tenuiflora': { canonical: 'Mimosa tenuiflora', category: 'herb' },
+  'mimosa hostilis': { canonical: 'Mimosa tenuiflora', category: 'herb' },
+  'tepezcohuite': { canonical: 'Mimosa tenuiflora', category: 'herb' },
+  'tepescohuite': { canonical: 'Mimosa tenuiflora', category: 'herb' },
 
   'ginseng': { canonical: 'Ginseng', category: 'herb' },
   'ginseng coreano': { canonical: 'Ginseng', category: 'herb' },
@@ -475,6 +481,7 @@ const VARIATION_GENERATORS: Record<string, (canonical: string) => string[]> = {
     'Echinacea supplementation',
     '(Echinacea OR Echinacea purpurea OR Purple coneflower)',
   ],
+  'Mimosa tenuiflora': () => getBotanicalPubMedQueryPhrases('Mimosa tenuiflora'),
 };
 
 /**

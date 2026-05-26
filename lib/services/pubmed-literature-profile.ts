@@ -1,3 +1,5 @@
+import { getBotanicalPubMedQueryPhrases } from './botanical-identity';
+
 export type LiteratureStudyCategory =
   | 'human_clinical'
   | 'review'
@@ -106,6 +108,11 @@ function buildClinicalRecallQuery(term: string): string | null {
 
 export function getPubMedQueryPhrases(term: string): string[] {
   const phrase = escapePubMedPhrase(term);
+  const botanicalPhrases = getBotanicalPubMedQueryPhrases(phrase);
+  if (botanicalPhrases.length > 0) {
+    return botanicalPhrases;
+  }
+
   const normalized = phrase
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')

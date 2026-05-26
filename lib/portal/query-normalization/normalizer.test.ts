@@ -149,11 +149,28 @@ describe('Query Normalizer', () => {
     it('normalizes herbs', () => {
       expect(normalizeQuery('ashwagandha').normalized).toBe('Ashwagandha');
       expect(normalizeQuery('ashwaganda').normalized).toBe('Ashwagandha');
+      expect(normalizeQuery('tepezcohuite').normalized).toBe('Mimosa tenuiflora');
+      expect(normalizeQuery('tepescohuite').normalized).toBe('Mimosa tenuiflora');
+      expect(normalizeQuery('Mimosa hostilis').normalized).toBe('Mimosa tenuiflora');
       expect(normalizeQuery('curcuma').normalized).toBe('Turmeric');
       expect(normalizeQuery('turmeric').normalized).toBe('Turmeric');
       expect(normalizeQuery('equinacea').normalized).toBe('Echinacea');
       expect(normalizeQuery('equinácea').normalized).toBe('Echinacea');
       expect(normalizeQuery('echinacea').normalized).toBe('Echinacea');
+    });
+
+    it('uses controlled botanical variations for tepezcohuite', () => {
+      const result = normalizeQuery('tepezcohuite');
+
+      expect(result.category).toBe('herb');
+      expect(result.variations).toEqual(expect.arrayContaining([
+        'Mimosa tenuiflora',
+        'Mimosa hostilis',
+        'tepezcohuite',
+        'tepescohuite',
+        'Mimosa tenuiflora cortex',
+      ]));
+      expect(result.variations).not.toContain('burns');
     });
   });
 
