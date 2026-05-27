@@ -12,8 +12,26 @@ function isCentellaText(...values: unknown[]): boolean {
   return /\b(centella asiatica|gotu kola)\b/.test(haystack);
 }
 
+function isLionsManeText(...values: unknown[]): boolean {
+  const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
+  return /\b(lion'?s mane|lions mane|hericium erinaceus|melena de leon)\b/.test(haystack);
+}
+
 export function isCentellaRecommendation(value: any, category?: string): boolean {
   return isCentellaText(
+    category,
+    value?.category,
+    value?.supplement?.name,
+    value?.supplement?.description,
+    value?.data?.name,
+    value?.data?.whatIsIt,
+    value?.data?.description,
+    value?.metadata?.supplementId
+  );
+}
+
+function isLionsManeRecommendation(value: any, category?: string): boolean {
+  return isLionsManeText(
     category,
     value?.category,
     value?.supplement?.name,
@@ -37,6 +55,18 @@ export function sanitizeCentellaClaimText(value: unknown): unknown {
     .replace(/\b(?:60|25|30|10|5)\s*[-–]\s*(?:70|35|40|20|15)\s*%/gi, 'mejoras reportadas');
 }
 
+export function sanitizeLionsManePreclinicalClaimText(value: unknown): unknown {
+  if (typeof value !== 'string') return value;
+
+  const preclinicalContext = /\b((?:modelos?|estudios?)\s+animales?|animals?|ratas?|rats?|in\s+vitro|precl[ií]nic[oa]s?|c[eé]lulas?|cell(?:ular)?|laboratorio)\b/i;
+  if (!preclinicalContext.test(value)) return value;
+
+  return value
+    .replace(/\bse ha observado (?:una )?(?:reducci[oó]n|aumento|mejora|incremento)\s+de\s+\d+\s*[-–]\s*\d+\s*%/gi, 'se han observado cambios')
+    .replace(/\b(reducci[oó]n|aumento|mejora|incremento)\s+de\s+\d+\s*[-–]\s*\d+\s*%/gi, '$1 observada')
+    .replace(/\b\d+\s*[-–]\s*\d+\s*%/g, 'cambios cuantificados');
+}
+
 export function sanitizeCentellaItem<T>(item: T): T {
   if (Array.isArray(item)) {
     return item.map(sanitizeCentellaItem) as T;
@@ -50,6 +80,23 @@ export function sanitizeCentellaItem<T>(item: T): T {
     Object.entries(item as Record<string, unknown>).map(([key, value]) => [
       key,
       sanitizeCentellaItem(value),
+    ])
+  ) as T;
+}
+
+function sanitizeLionsManeItem<T>(item: T): T {
+  if (Array.isArray(item)) {
+    return item.map(sanitizeLionsManeItem) as T;
+  }
+
+  if (!item || typeof item !== 'object') {
+    return sanitizeLionsManePreclinicalClaimText(item) as T;
+  }
+
+  return Object.fromEntries(
+    Object.entries(item as Record<string, unknown>).map(([key, value]) => [
+      key,
+      sanitizeLionsManeItem(value),
     ])
   ) as T;
 }
@@ -212,4 +259,16 @@ export function calibrateCentellaRecommendation<T>(recommendation: T, category?:
   }
 
   return calibrated as T;
+}
+
+export function calibrateLionsManeRecommendation<T>(recommendation: T, category?: string): T {
+  if (!recommendation || !isLionsManeRecommendation(recommendation, category)) return recommendation;
+  return sanitizeLionsManeItem(recommendation);
+}
+
+export function calibratePortalRecommendation<T>(recommendation: T, category?: string): T {
+  return calibrateLionsManeRecommendation(
+    calibrateCentellaRecommendation(recommendation, category),
+    category
+  );
 }

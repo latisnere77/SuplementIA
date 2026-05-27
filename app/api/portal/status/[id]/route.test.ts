@@ -162,6 +162,61 @@ describe('Portal status route', () => {
     expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
   });
 
+  it("smooths untraced preclinical Lion's Mane percentages before status polling returns them", async () => {
+    mockedGetJob.mockResolvedValue({
+      id: 'job_lions_mane',
+      status: 'completed',
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 60_000,
+      recommendation: {
+        metadata: {
+          supplementId: "Lion's Mane",
+          studiesUsed: 12,
+        },
+        data: {
+          name: "Lion's Mane",
+          whatIsIt: "Lion's Mane (Hericium erinaceus) tiene evidencia humana preliminar para cognición.",
+          totalStudies: 12,
+          worksFor: [
+            {
+              condition: 'Deterioro cognitivo leve en adultos mayores',
+              evidenceGrade: 'B',
+              notes: 'Estudios humanos pequeños sugieren apoyo cognitivo limitado.',
+            },
+          ],
+          limitedEvidence: [
+            {
+              condition: 'Neuropatía diabética',
+              evidenceGrade: 'C',
+              notes: 'Evidencia limitada a estudios animales con reducción de 30-40% en marcadores de dolor.',
+            },
+          ],
+          mechanisms: [
+            'Estudios in vitro muestran reducción de marcadores inflamatorios.',
+            'En modelos animales se ha observado reducción de 30-40% en marcadores de peroxidación lipídica.',
+          ],
+          safety: {
+            contraindications: [],
+          },
+        },
+      },
+    } as any);
+
+    const response = await GET(createRequest('job_lions_mane'), {
+      params: Promise.resolve({ id: 'job_lions_mane' }),
+    });
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    const serialized = JSON.stringify(body.recommendation.supplement).toLowerCase();
+
+    expect(body.recommendation.supplement.worksFor).toHaveLength(1);
+    expect(serialized).not.toMatch(/30-40%/);
+    expect(serialized).toContain('estudios animales');
+    expect(serialized).toContain('modelos animales');
+    expect(serialized).toContain('cambios');
+  });
+
   it('drops Lambda products when there are no A/B supported uses', async () => {
     mockedGetJob.mockResolvedValue({
       id: 'job_insufficient',

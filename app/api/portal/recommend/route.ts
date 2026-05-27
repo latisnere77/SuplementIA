@@ -23,7 +23,7 @@ import {
 } from '@/lib/portal/structured-logger';
 import {
   calibrateCentellaEnrichedContent,
-  calibrateCentellaRecommendation,
+  calibratePortalRecommendation,
   isCentellaRecommendation,
   sanitizeCentellaItem,
 } from '@/lib/portal/centella-editorial-calibration';
@@ -555,7 +555,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const recommendation = calibrateCentellaRecommendation(
+    const recommendation = calibratePortalRecommendation(
       transformToRecommendation(
         calibratedEnrichData, // Pass the whole object
         sanitizedCategory,
