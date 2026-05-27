@@ -59,10 +59,12 @@ export function sanitizeLionsManePreclinicalClaimText(value: unknown): unknown {
   if (typeof value !== 'string') return value;
 
   const preclinicalContext = /\b((?:modelos?|estudios?)\s+animales?|animals?|ratas?|rats?|in\s+vitro|precl[ií]nic[oa]s?|c[eé]lulas?|cell(?:ular)?|laboratorio)\b/i;
-  if (!preclinicalContext.test(value)) return value;
+  const untracedEffectRange = /\b(reducci[oó]n|aumento|mejora|incremento)\b[^.]{0,120}?\b\d+\s*[-–]\s*\d+\s*%/i;
+  if (!preclinicalContext.test(value) && !untracedEffectRange.test(value)) return value;
 
   return value
     .replace(/\bse ha observado (?:una )?(?:reducci[oó]n|aumento|mejora|incremento)\s+de\s+\d+\s*[-–]\s*\d+\s*%/gi, 'se han observado cambios')
+    .replace(/\b(reducci[oó]n|aumento|mejora|incremento)\b[^.]{0,120}?\b\d+\s*[-–]\s*\d+\s*%/gi, '$1 observada')
     .replace(/\b(reducci[oó]n|aumento|mejora|incremento)\s+de\s+\d+\s*[-–]\s*\d+\s*%/gi, '$1 observada')
     .replace(/\b\d+\s*[-–]\s*\d+\s*%/g, 'cambios cuantificados');
 }

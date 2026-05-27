@@ -195,7 +195,12 @@ describe('Portal status route', () => {
             'Estudios in vitro muestran reducción de marcadores inflamatorios.',
             'En modelos animales se ha observado reducción de 30-40% en marcadores de peroxidación lipídica.',
           ],
+          primaryUses: [
+            'Mejora de síntomas digestivos y protección de mucosa gástrica con reducción de molestias en 30-40% según estudios pequeños.',
+            'Dosis estudiada: 500-3000 mg/día de extracto estandarizado.',
+          ],
           safety: {
+            sideEffects: ['Malestar gastrointestinal leve reportado por 5-10% de participantes en algunos estudios.'],
             contraindications: [],
           },
         },
@@ -212,6 +217,8 @@ describe('Portal status route', () => {
 
     expect(body.recommendation.supplement.worksFor).toHaveLength(1);
     expect(serialized).not.toMatch(/30-40%/);
+    expect(serialized).toContain('5-10%');
+    expect(serialized).toContain('500-3000 mg');
     expect(serialized).toContain('estudios animales');
     expect(serialized).toContain('modelos animales');
     expect(serialized).toContain('cambios');
