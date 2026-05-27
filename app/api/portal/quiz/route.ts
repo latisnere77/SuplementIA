@@ -740,16 +740,50 @@ async function preflightControlledNoDataResponse(params: {
       signal: AbortSignal.timeout(120000),
     });
 
-    if (directEnrichResponse.ok) {
-      return null;
-    }
-
     const directErrorText = await directEnrichResponse.text();
     let directErrorData: any = {};
     try {
       directErrorData = JSON.parse(directErrorText);
     } catch {
       directErrorData = { message: directErrorText };
+    }
+
+    if (directEnrichResponse.ok) {
+      const directRecommendation = calibratePortalRecommendation(
+        directErrorData.recommendation || directErrorData.data || directErrorData,
+        supplementName
+      );
+
+      if (directRecommendation && directRecommendation.success !== false) {
+        if (!directRecommendation.recommendation_id) {
+          directRecommendation.recommendation_id = jobId;
+        }
+        await storeJobResult(jobId, 'completed', { recommendation: directRecommendation });
+        logQuizOutcome({
+          requestId,
+          jobId,
+          quizId,
+          supplementName,
+          originalQuery,
+          normalizedQuery: supplementName,
+          status: 'completed',
+          finalStatusCode: 200,
+          fallback: 'none',
+          source: 'enrich-v2-preflight',
+          startTime,
+        });
+
+        return NextResponse.json({
+          success: true,
+          jobId,
+          quiz_id: quizId,
+          recommendation: directRecommendation,
+          status: 'completed',
+          source: 'enrich-v2-preflight',
+        }, { status: 200 });
+      }
+
+      return null;
     }
 
     if (directEnrichResponse.status === 404 && directErrorData.error === 'insufficient_data') {

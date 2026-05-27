@@ -15,7 +15,12 @@ import {
   searchPubMedLiteratureProfile,
   type PubMedLiteratureProfile,
 } from '@/lib/services/pubmed-literature-profile';
+import {
+  canonicalizeClinicalRecallTerm,
+  getClinicalRecallRequests,
+} from '@/lib/services/clinical-recall-identity';
 import { logPortalSupplementOutcome, logStructured } from '@/lib/portal/structured-logger';
+import { calibrateCannabisEnrichedContent } from '@/lib/portal/centella-editorial-calibration';
 
 export const runtime = 'nodejs';
 export const maxDuration = 180; // Increased to 180s for complex supplements with many studies
@@ -115,40 +120,8 @@ function logEnrichOutcome(data: {
   });
 }
 
-function isCentellaRecallCandidate(term: string): boolean {
-  const normalized = term
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-
-  return /\b(centella asiatica|gotu kola|centella asiatica extract)\b/.test(normalized);
-}
-
-function getCentellaClinicalRecallRequests() {
-  const clinicalBenefitQuery = [
-    'clinical trial',
-    'randomized controlled trial',
-    'humans',
-    'systematic review',
-    'venous insufficiency',
-    'wound healing',
-    'acoustic startle',
-    'cognition',
-  ].join(' ');
-
-  return [
-    { supplementName: 'Centella asiatica', benefitQuery: clinicalBenefitQuery },
-    { supplementName: 'gotu kola', benefitQuery: clinicalBenefitQuery },
-    { supplementName: 'Centella asiatica extract', benefitQuery: clinicalBenefitQuery },
-    {
-      supplementName: 'total triterpenic fraction of Centella asiatica',
-      benefitQuery: 'clinical trial randomized controlled trial humans venous insufficiency',
-    },
-    {
-      supplementName: 'TECA Centella asiatica',
-      benefitQuery: 'clinical trial randomized controlled trial humans venous insufficiency',
-    },
-  ];
+function isClinicalRecallCandidate(term: string): boolean {
+  return getClinicalRecallRequests(term).length > 0;
 }
 
 function upstreamUnavailableResponse(
@@ -316,7 +289,7 @@ async function fetchStudiesFromService(params: {
   });
 }
 
-async function fetchCentellaClinicalRecallStudies(params: {
+async function fetchControlledClinicalRecallStudies(params: {
   studiesUrl: string;
   requestId: string;
   originalSupplementName: string;
@@ -324,7 +297,7 @@ async function fetchCentellaClinicalRecallStudies(params: {
   const collectedStudies: any[] = [];
   const seenPmids = new Set<string>();
 
-  for (const recallRequest of getCentellaClinicalRecallRequests()) {
+  for (const recallRequest of getClinicalRecallRequests(params.originalSupplementName)) {
     try {
       const response = await fetchStudiesFromService({
         studiesUrl: params.studiesUrl,
@@ -335,7 +308,7 @@ async function fetchCentellaClinicalRecallStudies(params: {
       });
 
       if (!response.ok) {
-        console.warn(`[enrich-v2] Centella clinical recall search failed for ${recallRequest.supplementName}: ${response.status}`);
+        console.warn(`[enrich-v2] Clinical recall search failed for ${recallRequest.supplementName}: ${response.status}`);
         continue;
       }
 
@@ -354,14 +327,14 @@ async function fetchCentellaClinicalRecallStudies(params: {
         break;
       }
     } catch (error) {
-      console.warn(`[enrich-v2] Centella clinical recall unavailable for ${params.originalSupplementName}:`, error);
+      console.warn(`[enrich-v2] Clinical recall unavailable for ${params.originalSupplementName}:`, error);
     }
   }
 
   return collectedStudies;
 }
 
-async function fetchCentellaLocalPubMedClinicalStudies(supplementName: string) {
+async function fetchLocalPubMedClinicalRecallStudies(supplementName: string) {
   try {
     const profile = await searchPubMedLiteratureProfile(supplementName, {
       maxArticles: 16,
@@ -377,7 +350,7 @@ async function fetchCentellaLocalPubMedClinicalStudies(supplementName: string) {
       })
     );
   } catch (error) {
-    console.warn(`[enrich-v2] Local Centella PubMed clinical recall unavailable for ${supplementName}:`, error);
+    console.warn(`[enrich-v2] Local PubMed clinical recall unavailable for ${supplementName}:`, error);
     return [];
   }
 }
@@ -442,10 +415,10 @@ export async function POST(request: NextRequest) {
       const details = error?.message || String(error);
       console.warn(`[enrich-v2] Studies fetch unavailable for ${supplementName}: ${details}`);
 
-      if (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm)) {
-        studies = await fetchCentellaLocalPubMedClinicalStudies(supplementName);
+      if (isClinicalRecallCandidate(supplementName) || isClinicalRecallCandidate(searchTerm)) {
+        studies = await fetchLocalPubMedClinicalRecallStudies(supplementName);
         if (studies.length > 0) {
-          console.log(`[enrich-v2] Centella local PubMed fallback recovered ${studies.length} human clinical studies after studies fetch error`);
+          console.log(`[enrich-v2] Local PubMed fallback recovered ${studies.length} human clinical studies after studies fetch error`);
         }
       }
 
@@ -473,10 +446,10 @@ export async function POST(request: NextRequest) {
           shouldTreatStudiesFailureAsInsufficientData(searchTerm)) &&
         [403, 404, 422, 500].includes(studiesResponse.status)
       ) {
-        if (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm)) {
-          studies = await fetchCentellaLocalPubMedClinicalStudies(supplementName);
+        if (isClinicalRecallCandidate(supplementName) || isClinicalRecallCandidate(searchTerm)) {
+          studies = await fetchLocalPubMedClinicalRecallStudies(supplementName);
           if (studies.length > 0) {
-            console.log(`[enrich-v2] Centella local PubMed fallback recovered ${studies.length} human clinical studies after studies fetch ${studiesResponse.status}`);
+            console.log(`[enrich-v2] Local PubMed fallback recovered ${studies.length} human clinical studies after studies fetch ${studiesResponse.status}`);
           }
         }
 
@@ -505,14 +478,14 @@ export async function POST(request: NextRequest) {
     
     // Lambda returns { success: true, data: { studies: [...] } }
     studies = studies.length > 0 ? studies : studiesData.data?.studies || studiesData.studies || [];
-    let centellaRecallAttempted = false;
+    let clinicalRecallAttempted = false;
     console.log(`[enrich-v2] Found ${studies.length} studies`);
     
     // Check if we have studies
     if (studies.length === 0) {
-      if (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm)) {
-        centellaRecallAttempted = true;
-        const recalledStudies = await fetchCentellaClinicalRecallStudies({
+      if (isClinicalRecallCandidate(supplementName) || isClinicalRecallCandidate(searchTerm)) {
+        clinicalRecallAttempted = true;
+        const recalledStudies = await fetchControlledClinicalRecallStudies({
           studiesUrl,
           requestId,
           originalSupplementName: supplementName,
@@ -520,7 +493,7 @@ export async function POST(request: NextRequest) {
         studies = recalledStudies;
 
         if (studies.length === 0) {
-          studies = await fetchCentellaLocalPubMedClinicalStudies(supplementName);
+          studies = await fetchLocalPubMedClinicalRecallStudies(supplementName);
         }
       }
 
@@ -532,8 +505,8 @@ export async function POST(request: NextRequest) {
 
     let humanClinicalStudies = filterHumanClinicalStudies(studies);
     if (humanClinicalStudies.length === 0) {
-      if (!centellaRecallAttempted && (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm))) {
-        const recalledStudies = await fetchCentellaClinicalRecallStudies({
+      if (!clinicalRecallAttempted && (isClinicalRecallCandidate(supplementName) || isClinicalRecallCandidate(searchTerm))) {
+        const recalledStudies = await fetchControlledClinicalRecallStudies({
           studiesUrl,
           requestId,
           originalSupplementName: supplementName,
@@ -551,8 +524,8 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      if (humanClinicalStudies.length === 0 && (isCentellaRecallCandidate(supplementName) || isCentellaRecallCandidate(searchTerm))) {
-        const localPubMedStudies = await fetchCentellaLocalPubMedClinicalStudies(supplementName);
+      if (humanClinicalStudies.length === 0 && (isClinicalRecallCandidate(supplementName) || isClinicalRecallCandidate(searchTerm))) {
+        const localPubMedStudies = await fetchLocalPubMedClinicalRecallStudies(supplementName);
         if (localPubMedStudies.length > 0) {
           const mergedByPmid = new Map<string, any>();
           for (const study of [...studies, ...localPubMedStudies]) {
@@ -567,7 +540,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (humanClinicalStudies.length > 0) {
-        console.log(`[enrich-v2] Centella clinical recall recovered ${humanClinicalStudies.length} human clinical studies for ${supplementName}`);
+        console.log(`[enrich-v2] Clinical recall recovered ${humanClinicalStudies.length} human clinical studies for ${supplementName}`);
       } else {
         console.log(`[enrich-v2] Studies found for ${supplementName}, but none passed local human-clinical evidence screening`);
         return insufficientDataResponse(supplementName, requestId, startTime, searchTerm);
@@ -581,7 +554,7 @@ export async function POST(request: NextRequest) {
     console.log(`[enrich-v2] Enriching with Claude via: ${enricherUrl}`);
 
     const enrichmentPayload = {
-      supplementId: benefitQuery ? `${supplementName}-${benefitQuery}` : supplementName, // Unique cache key for benefit queries
+      supplementId: benefitQuery ? `${supplementName}-${benefitQuery}` : (canonicalizeClinicalRecallTerm(supplementName) || supplementName), // Unique cache key for benefit queries
       category: category || 'general',
       forceRefresh: benefitQuery ? true : (forceRefresh || false), // Force refresh for benefit queries to avoid English cached data
       studies: humanClinicalStudies.slice(0, 8), // Only human clinical evidence can drive benefit claims
@@ -630,6 +603,12 @@ export async function POST(request: NextRequest) {
 
     if (!enrichedData) {
       enrichedData = await enrichResponse.json();
+    }
+    if (enrichedData?.data) {
+      enrichedData = {
+        ...enrichedData,
+        data: calibrateCannabisEnrichedContent(enrichedData.data, supplementName),
+      };
     }
     const duration = Date.now() - startTime;
     

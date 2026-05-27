@@ -273,4 +273,51 @@ describe('Portal status route', () => {
     expect(body.recommendation.supplement.worksFor).toEqual([]);
     expect(body.recommendation.products).toEqual([]);
   });
+
+  it('blocks Cannabis/CBD products and generic supplement wording even with B-grade worksFor', async () => {
+    mockedGetJob.mockResolvedValue({
+      id: 'job_cannabis',
+      status: 'completed',
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 60_000,
+      recommendation: {
+        metadata: {
+          supplementId: 'cannabis sativa',
+          studiesUsed: 4,
+        },
+        data: {
+          name: 'Cannabis sativa',
+          whatIsIt: 'Cannabis sativa sirve para espasticidad segun marketing.',
+          totalStudies: 4,
+          worksFor: [
+            {
+              condition: 'Cannabis sativa sirve para multiple sclerosis spasticity',
+              evidenceGrade: 'B',
+              studyCount: 1,
+            },
+          ],
+          products: [
+            {
+              name: 'CBD suplemento recomendado',
+              affiliateLink: 'https://example.com/cbd',
+            },
+          ],
+          practicalRecommendations: ['Comprar CBD como suplemento recomendado.'],
+        },
+      },
+    } as any);
+
+    const response = await GET(createRequest('job_cannabis'), {
+      params: Promise.resolve({ id: 'job_cannabis' }),
+    });
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    const serialized = JSON.stringify(body.recommendation).toLowerCase();
+
+    expect(body.recommendation.supplement.worksFor[0].condition).toContain('Nabiximols');
+    expect(body.recommendation.products).toEqual([]);
+    expect(serialized).toContain('formulaciones especificas');
+    expect(serialized).not.toMatch(/suplemento recomendado|comprar|sirve para/);
+  });
 });

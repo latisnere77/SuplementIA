@@ -659,6 +659,95 @@ describe('/api/portal/quiz POST', () => {
       expect(mockLambdaSend).toHaveBeenCalledTimes(1);
     });
 
+    it('returns completed when clinical preflight recovers controlled human evidence for a broad botanical entity', async () => {
+      const query = 'cannabis sativa';
+      mockedSearchSupplements
+        .mockResolvedValueOnce([
+          lancedbHit(
+            query,
+            'Cannabis sativa has broad plant literature, including phytochemistry and clinical cannabinoid research.'
+          ),
+        ])
+        .mockResolvedValueOnce([lancedbHit(query)]);
+
+      mockLambdaSend.mockResolvedValueOnce(studiesFetcherPayload([
+        {
+          pmid: '9101',
+          title: 'Cannabis sativa extract in rats',
+          abstract: 'Animal model in rats evaluated extract activity.',
+          publicationTypes: ['Journal Article'],
+          meshHeadings: ['Animals', 'Rats'],
+        },
+      ]));
+
+      const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              name: 'Cannabis sativa',
+              worksFor: [
+                {
+                  condition: 'Cannabis sativa sirve para multiple sclerosis spasticity',
+                  evidenceGrade: 'B',
+                  studyCount: 1,
+                  pmids: ['19961570'],
+                },
+              ],
+              limitedEvidence: [
+                {
+                  condition: 'Chronic pain',
+                  evidenceGrade: 'C',
+                  pmids: ['35982439'],
+                },
+              ],
+              products: [
+                {
+                  name: 'CBD suplemento recomendado',
+                  affiliateLink: 'https://example.com/cbd',
+                },
+              ],
+              practicalRecommendations: ['Comprar CBD como suplemento recomendado.'],
+            },
+            metadata: {
+              humanClinicalStudiesCount: 2,
+            },
+          }),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.status).toBe('completed');
+      expect(body.source).toBe('enrich-v2-preflight');
+      expect(body.recommendation.name).toBe('Cannabis sativa');
+      expect(body.recommendation.worksFor).toHaveLength(1);
+      expect(body.recommendation.products).toEqual([]);
+      expect(body.recommendation.worksFor[0].condition).toContain('Nabiximols');
+      expect(JSON.stringify(body.recommendation).toLowerCase()).not.toMatch(/suplemento recomendado|comprar|sirve para/);
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringContaining('/api/portal/enrich-v2'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"supplementName":"cannabis sativa"'),
+        })
+      );
+      expect(mockLambdaSend).toHaveBeenCalledTimes(1);
+    });
+
     it('keeps async fallback when clinical preflight is temporarily unavailable', async () => {
       const query = 'Boswellia';
       mockedSearchSupplements

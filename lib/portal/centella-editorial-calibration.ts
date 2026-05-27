@@ -17,6 +17,11 @@ function isLionsManeText(...values: unknown[]): boolean {
   return /\b(lion'?s mane|lions mane|hericium erinaceus|melena de leon)\b/.test(haystack);
 }
 
+function isCannabisText(...values: unknown[]): boolean {
+  const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
+  return /\b(cannabis sativa|medical cannabis|medical marijuana|marijuana|marihuana|cannabinoids?|cannabidiol|cbd|tetrahydrocannabinol|thc|nabiximols|sativex|dronabinol|nabilone)\b/.test(haystack);
+}
+
 export function isCentellaRecommendation(value: any, category?: string): boolean {
   return isCentellaText(
     category,
@@ -43,6 +48,19 @@ function isLionsManeRecommendation(value: any, category?: string): boolean {
   );
 }
 
+function isCannabisRecommendation(value: any, category?: string): boolean {
+  return isCannabisText(
+    category,
+    value?.category,
+    value?.supplement?.name,
+    value?.supplement?.description,
+    value?.data?.name,
+    value?.data?.whatIsIt,
+    value?.data?.description,
+    value?.metadata?.supplementId
+  );
+}
+
 export function sanitizeCentellaClaimText(value: unknown): unknown {
   if (typeof value !== 'string') return value;
 
@@ -53,6 +71,19 @@ export function sanitizeCentellaClaimText(value: unknown): unknown {
     .replace(/\btreat(?:s|ment)?\b/gi, 'studied support')
     .replace(/\bcures?\b/gi, 'is studied for')
     .replace(/\b(?:60|25|30|10|5)\s*[-–]\s*(?:70|35|40|20|15)\s*%/gi, 'mejoras reportadas');
+}
+
+function sanitizeCannabisClaimText(value: unknown): unknown {
+  if (typeof value !== 'string') return value;
+
+  return value
+    .replace(/\bsuplemento recomendado\b/gi, 'formulacion cannabinoide estudiada')
+    .replace(/\brecommended supplement\b/gi, 'studied cannabinoid formulation')
+    .replace(/\bcomprar\b/gi, 'evaluar con profesional de salud')
+    .replace(/\bbuy\b/gi, 'review with a health professional')
+    .replace(/\bsirve para\b/gi, 'tiene evidencia clinica especifica para')
+    .replace(/\btreats?\b/gi, 'has been studied for')
+    .replace(/\bcures?\b/gi, 'has been studied for');
 }
 
 export function sanitizeLionsManePreclinicalClaimText(value: unknown): unknown {
@@ -99,6 +130,23 @@ function sanitizeLionsManeItem<T>(item: T): T {
     Object.entries(item as Record<string, unknown>).map(([key, value]) => [
       key,
       sanitizeLionsManeItem(value),
+    ])
+  ) as T;
+}
+
+function sanitizeCannabisItem<T>(item: T): T {
+  if (Array.isArray(item)) {
+    return item.map(sanitizeCannabisItem) as T;
+  }
+
+  if (!item || typeof item !== 'object') {
+    return sanitizeCannabisClaimText(item) as T;
+  }
+
+  return Object.fromEntries(
+    Object.entries(item as Record<string, unknown>).map(([key, value]) => [
+      key,
+      sanitizeCannabisItem(value),
     ])
   ) as T;
 }
@@ -217,6 +265,65 @@ function calibrateCentellaDataShape(data: any) {
   return calibrated;
 }
 
+const CANNABIS_CONTEXT_NOTICE = 'Evidencia sobre cannabinoides medicos o formulaciones especificas; no equivale a recomendar Cannabis sativa/CBD como suplemento.';
+
+function cannabisConditionLabel(item: EvidenceItem): string {
+  const text = normalizeClinicalText([
+    item?.condition,
+    item?.use,
+    item?.benefit,
+    item?.notes,
+    item?.description,
+  ].filter(Boolean).join(' '));
+
+  if (/\b(spasticity|espasticidad|multiple sclerosis|esclerosis multiple|nabiximols|sativex)\b/.test(text)) {
+    return 'Nabiximols/cannabinoides medicos para espasticidad en esclerosis multiple';
+  }
+  if (/\b(nausea|vomiting|nausea|vomito|vomitos|quimioterapia|chemotherapy|dronabinol|nabilone)\b/.test(text)) {
+    return 'Dronabinol/nabilone para nausea y vomito inducidos por quimioterapia';
+  }
+  if (/\b(epilepsy|epilepsia|seizures?|convulsiones|cannabidiol|cbd)\b/.test(text)) {
+    return 'Cannabidiol farmaceutico para ciertos trastornos convulsivos';
+  }
+  if (/\b(pain|dolor|neuropathic|neuropatico|cancer pain)\b/.test(text)) {
+    return 'Cannabinoides medicos para dolor cronico o neuropatico';
+  }
+
+  const original = sanitizeCannabisClaimText(item?.condition || item?.use || item?.benefit);
+  return `Formulaciones cannabinoides especificas: ${original || 'uso clinico estudiado'}`;
+}
+
+function calibrateCannabisWorksFor(worksFor: any[]): any[] {
+  return (Array.isArray(worksFor) ? worksFor : []).map((rawItem) => {
+    const item = sanitizeCannabisItem({ ...rawItem }) as any;
+    item.condition = cannabisConditionLabel(item);
+    item.notes = `${sanitizeCannabisClaimText(item.notes) || ''} ${CANNABIS_CONTEXT_NOTICE}`.trim();
+    return item;
+  });
+}
+
+function calibrateCannabisDataShape(data: any) {
+  if (!data || typeof data !== 'object') return data;
+
+  const calibrated: any = sanitizeCannabisItem({ ...data });
+  calibrated.worksFor = calibrateCannabisWorksFor(calibrated.worksFor);
+  calibrated.products = [];
+  calibrated.buyingGuidance = undefined;
+  calibrated.regulatoryNotice = CANNABIS_CONTEXT_NOTICE;
+  calibrated.evidenceSummary = `${sanitizeCannabisClaimText(calibrated.evidenceSummary) || ''} ${CANNABIS_CONTEXT_NOTICE}`.trim();
+  calibrated.practicalRecommendations = [
+    ...(Array.isArray(calibrated.practicalRecommendations) ? calibrated.practicalRecommendations : []),
+    CANNABIS_CONTEXT_NOTICE,
+  ];
+
+  return calibrated;
+}
+
+export function calibrateCannabisEnrichedContent(content: any, category: string): any {
+  if (!content || !isCannabisText(category, content?.name, content?.whatIsIt, content?.description)) return content;
+  return calibrateCannabisDataShape(content);
+}
+
 export function calibrateCentellaEnrichedContent(content: any, category: string): any {
   if (!content || !isCentellaText(category, content?.name, content?.whatIsIt, content?.description)) return content;
   return calibrateCentellaDataShape(content);
@@ -268,9 +375,53 @@ export function calibrateLionsManeRecommendation<T>(recommendation: T, category?
   return sanitizeLionsManeItem(recommendation);
 }
 
+export function calibrateCannabisRecommendation<T>(recommendation: T, category?: string): T {
+  if (!recommendation || !isCannabisRecommendation(recommendation, category)) return recommendation;
+
+  const calibrated: any = sanitizeCannabisItem(recommendation);
+
+  if (!calibrated.data && !calibrated.supplement && (calibrated.name || calibrated.worksFor || calibrated.products)) {
+    return calibrateCannabisDataShape(calibrated) as T;
+  }
+
+  if (calibrated.data) {
+    calibrated.data = calibrateCannabisDataShape(calibrated.data);
+  }
+
+  if (calibrated.supplement) {
+    calibrated.supplement.worksFor = calibrateCannabisWorksFor(calibrated.supplement.worksFor);
+    calibrated.supplement.products = [];
+    calibrated.supplement.buyingGuidance = undefined;
+    calibrated.supplement.regulatoryNotice = CANNABIS_CONTEXT_NOTICE;
+    calibrated.supplement.practicalRecommendations = [
+      ...(Array.isArray(calibrated.supplement.practicalRecommendations) ? calibrated.supplement.practicalRecommendations : []),
+      CANNABIS_CONTEXT_NOTICE,
+    ];
+    calibrated.supplement.benefits = calibrated.supplement.worksFor.map((item: any) =>
+      `${item.condition || item.use || item.benefit} (Evidencia: ${item.evidenceGrade || item.grade || 'B'})`
+    );
+  }
+
+  calibrated.products = [];
+
+  if (calibrated.evidence) {
+    calibrated.evidence.summary = `${sanitizeCannabisClaimText(calibrated.evidence.summary) || ''} ${CANNABIS_CONTEXT_NOTICE}`.trim();
+  }
+
+  calibrated._enrichment_metadata = {
+    ...(calibrated._enrichment_metadata || {}),
+    regulatedCannabinoidNotice: CANNABIS_CONTEXT_NOTICE,
+  };
+
+  return calibrated as T;
+}
+
 export function calibratePortalRecommendation<T>(recommendation: T, category?: string): T {
-  return calibrateLionsManeRecommendation(
-    calibrateCentellaRecommendation(recommendation, category),
+  return calibrateCannabisRecommendation(
+    calibrateLionsManeRecommendation(
+      calibrateCentellaRecommendation(recommendation, category),
+      category
+    ),
     category
   );
 }
