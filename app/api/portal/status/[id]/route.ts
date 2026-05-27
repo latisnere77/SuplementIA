@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { portalLogger } from '@/lib/portal/api-logger';
 import { getJob, cleanupExpired } from '@/lib/portal/job-store';
 import { logPortalSupplementOutcome } from '@/lib/portal/structured-logger';
-import { calibrateCentellaRecommendation } from '@/lib/portal/centella-editorial-calibration';
+import { calibratePortalRecommendation } from '@/lib/portal/centella-editorial-calibration';
 import { isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
 
 export const dynamic = 'force-dynamic';
@@ -188,7 +188,7 @@ export async function GET(
     };
 
     if (job.recommendation) {
-      response.recommendation = calibrateCentellaRecommendation(
+      response.recommendation = calibratePortalRecommendation(
         normalizeLambdaRecommendation(job.recommendation)
       );
     }
