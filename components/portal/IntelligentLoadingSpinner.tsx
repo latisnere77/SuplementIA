@@ -6,6 +6,8 @@ interface IntelligentLoadingSpinnerProps {
   supplementName?: string;
 }
 
+export const LONG_PROCESSING_THRESHOLD_MS = 75000;
+
 const LOADING_STAGES = [
   {
     icon: '🔍',
@@ -42,6 +44,7 @@ const LOADING_STAGES = [
 export default function IntelligentLoadingSpinner({ supplementName }: IntelligentLoadingSpinnerProps) {
   const [currentStage, setCurrentStage] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [isLongRunning, setIsLongRunning] = useState(false);
 
   useEffect(() => {
     const startTime = Date.now();
@@ -50,6 +53,9 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
     // This prevents the bar from getting stuck at 60-70% when response arrives
     const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
+      if (elapsed >= LONG_PROCESSING_THRESHOLD_MS) {
+        setIsLongRunning(true);
+      }
 
       // Fast progress to 95% in 45 seconds, then slow crawl to 99%
       let newProgress;
@@ -86,6 +92,10 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
   }, []);
 
   const stage = LOADING_STAGES[currentStage];
+  const stageMessage = isLongRunning ? 'Esto está tardando más de lo normal' : stage.message;
+  const stageDetail = isLongRunning
+    ? 'Puedes esperar; si prefieres, recarga esta página para revisar si el resultado ya quedó listo.'
+    : stage.detail;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4" data-testid="loading-spinner">
@@ -113,10 +123,10 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
           {/* Main message */}
           <div className="text-center space-y-2">
             <h2 className="text-lg font-semibold text-gray-900">
-              {stage.message}
+              {stageMessage}
             </h2>
             <p className="text-sm text-gray-600">
-              {stage.detail}
+              {stageDetail}
             </p>
           </div>
 
@@ -160,12 +170,28 @@ export default function IntelligentLoadingSpinner({ supplementName }: Intelligen
             <div className="flex items-start gap-2 text-xs text-gray-500">
               <div className="mt-0.5">💡</div>
               <p>
-                Estamos analizando estudios científicos reales de fuentes globales.
-                Este proceso puede tomar 30-60 segundos para garantizar
-                información precisa y verificable.
+                {isLongRunning
+                  ? 'La investigación sigue activa. Puedes seguir esperando aquí o recargar esta página más tarde para revisar si el resultado ya quedó listo.'
+                  : 'Estamos analizando estudios científicos reales de fuentes globales. Este proceso puede tomar 30-60 segundos para garantizar información precisa y verificable.'}
               </p>
             </div>
           </div>
+
+          {isLongRunning && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+              <p className="font-medium">La búsqueda sigue en proceso.</p>
+              <p className="mt-1">
+                Algunas búsquedas toman más tiempo cuando la evidencia requiere enriquecimiento adicional.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="mt-3 rounded-md bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+              >
+                Recargar esta página
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Fun facts mientras esperan */}
