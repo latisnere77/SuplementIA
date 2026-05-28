@@ -313,7 +313,9 @@ describe('/api/portal/quiz POST', () => {
               ],
               safety: {
                 longTermSafety: 'No reportes de hepatotoxicidad en literatura clinica.',
-                contraindications: [],
+                contraindications: [
+                  'Enfermedad hepatica severa - metabolismo hepatico de triterpenos, usar con precaucion aunque no hay reportes de hepatotoxicidad',
+                ],
               },
             },
           },
