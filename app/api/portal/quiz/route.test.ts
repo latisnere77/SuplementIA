@@ -70,7 +70,7 @@ const { __mockLambdaSend: mockLambdaSend } = jest.requireMock('@aws-sdk/client-l
 const criticalLocalCatalogCases = [
   {
     query: 'Magnesium',
-    expectedCondition: 'Reducir calambres musculares',
+    expectedCondition: 'Corregir ingesta baja o deficiencia de magnesio',
     expectedGrade: 'B',
   },
   {
@@ -447,11 +447,20 @@ describe('/api/portal/quiz POST', () => {
     expect(body.recommendation.supplement.worksFor).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          condition: 'Reducir calambres musculares',
+          condition: 'Corregir ingesta baja o deficiencia de magnesio',
           evidenceGrade: 'B',
         }),
       ])
     );
+    expect(body.recommendation.supplement.dosage).toEqual(
+      expect.objectContaining({
+        standard: expect.stringMatching(/100-400 mg\/día/i),
+        effectiveDose: expect.stringMatching(/200-400 mg\/día/i),
+      })
+    );
+    expect(JSON.stringify(body.recommendation.supplement.dosage)).not.toMatch(/ver análisis de evidencia|consultar con profesional/i);
+    expect(body.recommendation.supplement.doesntWorkFor.length).toBeGreaterThanOrEqual(3);
+    expect(body.recommendation.supplement.limitedEvidence.length).toBeGreaterThanOrEqual(2);
     expect(body.recommendation.supplement.worksFor).not.toEqual(
       expect.arrayContaining([
         expect.objectContaining({

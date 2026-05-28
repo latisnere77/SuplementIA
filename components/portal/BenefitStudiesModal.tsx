@@ -16,6 +16,7 @@ interface BenefitStudiesModalProps {
   isOpen: boolean;
   onClose: () => void;
   supplementName: string;
+  displaySupplementName?: string;
   benefitQuery: string;
   benefitQueryEs: string; // Spanish display name
   recommendation?: any; // Pass existing recommendation data instead of fetching new
@@ -54,10 +55,51 @@ const EVIDENCE_LABELS = {
   'Insuficiente': 'Evidencia Insuficiente',
 };
 
+function mapItems(items: any[], defaultLevel: BenefitEvidence['evidence_level'], defaultGrade: BenefitEvidence['grade']): BenefitEvidence[] {
+  return items.map((item: any) => ({
+    benefit: item.condition || item.benefit || '',
+    evidence_level: item.evidenceLevel || item.evidence_level || defaultLevel,
+    grade: item.evidenceGrade || item.grade || defaultGrade,
+    studies_found: item.studyCount || item.studies_found || 0,
+    total_participants: item.totalParticipants || item.total_participants || 0,
+    summary: item.notes || item.summary || item.description || '',
+  }));
+}
+
+function recommendationToBenefitData(recommendation: any, benefitQuery?: string): BenefitData | null {
+  if (!recommendation) return null;
+
+  const filtered = benefitQuery ? filterByBenefit(recommendation, benefitQuery) : recommendation;
+  const supplement = filtered?.supplement || {};
+  const data = filtered?.data || {};
+  const evidenceSummary = filtered?.evidence_summary || {};
+
+  const rawWorksFor = data.worksFor || supplement.worksFor || [];
+  const rawDoesntWorkFor = data.doesntWorkFor || supplement.doesntWorkFor || [];
+  const rawLimitedEvidence = data.limitedEvidence || supplement.limitedEvidence || [];
+
+  return {
+    worksFor: mapItems(rawWorksFor, 'Moderada', 'B'),
+    doesntWorkFor: mapItems(rawDoesntWorkFor, 'Limitada', 'D'),
+    limitedEvidence: mapItems(rawLimitedEvidence, 'Limitada', 'C'),
+    totalStudies: data.totalStudies || evidenceSummary.totalStudies || 0,
+    totalParticipants: evidenceSummary.totalParticipants || 0,
+  };
+}
+
+function getControlledBenefitError(status?: number): string {
+  if (status === 503) {
+    return 'La consulta por tema está temporalmente limitada. Mostramos la evidencia disponible en la ficha principal cuando es posible.';
+  }
+
+  return 'No pudimos cargar evidencia adicional por tema en este momento. Revisa la ficha principal o intenta de nuevo más tarde.';
+}
+
 export default function BenefitStudiesModal({
   isOpen,
   onClose,
   supplementName,
+  displaySupplementName,
   benefitQuery,
   benefitQueryEs,
   recommendation: passedRecommendation,
@@ -100,85 +142,31 @@ export default function BenefitStudiesModal({
           }),
         });
 
-        if (!response.ok) {
-          throw new Error(`Error fetching studies: ${response.status}`);
-        }
-
         const apiData = await response.json();
 
-        if (!apiData.success) {
-          throw new Error(apiData.error || 'Failed to fetch studies');
+        if (!response.ok) {
+          throw new Error(getControlledBenefitError(response.status));
         }
 
-        // Use the API response data
-        const recommendation = apiData;
-        const evidenceSummary = recommendation.evidence_summary || {};
+        if (!apiData.success) {
+          throw new Error(getControlledBenefitError());
+        }
 
-        // CORRECT PATH: API returns data in data.worksFor, NOT supplement.worksFor
-        const data = recommendation.data || {};
-
-        // Backend already filtered studies by benefitQuery - use them directly
-        const rawWorksFor = data.worksFor || [];
-        const rawDoesntWorkFor = data.doesntWorkFor || [];
-        const rawLimitedEvidence = data.limitedEvidence || [];
-
-        console.log('[Benefit Modal] Raw data from API:', {
-          worksForCount: rawWorksFor.length,
-          sampleWorksFor: rawWorksFor[0],
-        });
-
-        // Map API fields to UI expected format
-        // API returns: condition, evidenceGrade, notes, studyCount
-        // UI expects: benefit, grade, summary, studies_found
-        const worksFor = rawWorksFor.map((item: any) => ({
-          benefit: item.condition || item.benefit || '',
-          evidence_level: item.evidenceLevel || 'Moderada',
-          grade: item.evidenceGrade || item.grade || 'C',
-          studies_found: item.studyCount || item.studies_found || 0,
-          total_participants: item.totalParticipants || item.total_participants || 0,
-          summary: item.notes || item.summary || '',
-        }));
-
-        const doesntWorkFor = rawDoesntWorkFor.map((item: any) => ({
-          benefit: item.condition || item.benefit || '',
-          evidence_level: item.evidenceLevel || 'Limitada',
-          grade: item.evidenceGrade || item.grade || 'D',
-          studies_found: item.studyCount || item.studies_found || 0,
-          total_participants: item.totalParticipants || item.total_participants || 0,
-          summary: item.notes || item.summary || '',
-        }));
-
-        const limitedEvidence = rawLimitedEvidence.map((item: any) => ({
-          benefit: item.condition || item.benefit || '',
-          evidence_level: item.evidenceLevel || 'Limitada',
-          grade: item.evidenceGrade || item.grade || 'C',
-          studies_found: item.studyCount || item.studies_found || 0,
-          total_participants: item.totalParticipants || item.total_participants || 0,
-          summary: item.notes || item.summary || '',
-        }));
-
-        console.log('[Benefit Modal] Mapped data for UI:', {
-          worksForCount: worksFor.length,
-          sampleMapped: worksFor[0],
-        });
-
-        setData({
-          worksFor,
-          doesntWorkFor,
-          limitedEvidence,
-          totalStudies: data.totalStudies || evidenceSummary.totalStudies || 0,
-          totalParticipants: evidenceSummary.totalParticipants || 0,
-        });
+        setData(recommendationToBenefitData(apiData, undefined));
       } catch (err: any) {
         console.error('[Benefit Modal] Error:', err);
-        setError(err.message || 'Error al cargar los estudios');
+        const fallbackData = recommendationToBenefitData(passedRecommendation, benefitQuery);
+        if (fallbackData) {
+          setData(fallbackData);
+        }
+        setError(err.message || getControlledBenefitError());
       } finally {
         setLoading(false);
       }
     };
 
     fetchBenefitStudies();
-  }, [isOpen, supplementName, benefitQuery, benefitQueryEs]);
+  }, [isOpen, supplementName, benefitQuery, benefitQueryEs, passedRecommendation]);
 
   if (!isOpen) return null;
 
@@ -189,7 +177,7 @@ export default function BenefitStudiesModal({
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {supplementName} para {benefitQueryEs}
+              {displaySupplementName || supplementName} para {benefitQueryEs}
             </h2>
             <p className="text-sm text-gray-600 mt-1">
               Estudios científicos específicos sobre este beneficio
@@ -214,11 +202,11 @@ export default function BenefitStudiesModal({
           )}
 
           {error && (
-            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg mb-6">
+              <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-red-900">Error</p>
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="font-semibold text-amber-900">Consulta por tema limitada</p>
+                <p className="text-sm text-amber-800">{error}</p>
               </div>
             </div>
           )}
@@ -298,13 +286,13 @@ export default function BenefitStudiesModal({
                       No encontramos estudios específicos de {supplementName} para {benefitQueryEs}
                     </p>
                     <p className="text-gray-600 mb-4">
-                      Nuestra base de datos tiene {data.totalStudies} estudios sobre {supplementName},
+                      Nuestra base de datos tiene {data.totalStudies} estudios sobre {displaySupplementName || supplementName},
                       pero ninguno enfocado específicamente en {benefitQueryEs.toLowerCase()}.
                     </p>
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-left max-w-lg mx-auto">
                       <p className="text-sm text-blue-900 font-medium mb-2">💡 ¿Qué puedes hacer?</p>
                       <ul className="text-sm text-blue-800 space-y-1">
-                        <li>• Cierra este popup y revisa todos los beneficios disponibles de {supplementName}</li>
+                        <li>• Cierra este popup y revisa todos los beneficios disponibles de {displaySupplementName || supplementName}</li>
                         <li>• Busca otros suplementos que SÍ tengan estudios para {benefitQueryEs.toLowerCase()}</li>
                         <li>• Consulta fuentes científicas globales directamente</li>
                       </ul>
@@ -314,30 +302,8 @@ export default function BenefitStudiesModal({
                       (es un uso popular), nuestra base de datos aún no incluye estudios científicos específicos sobre esta combinación.
                     </p>
 
-                    {/* DEBUG: Show what data we have */}
-                    <details className="text-left bg-gray-50 border border-gray-200 rounded p-4 mb-4">
-                      <summary className="cursor-pointer font-medium text-gray-700 mb-2">
-                        🔍 Debug: Ver estructura de datos
-                      </summary>
-                      <pre className="text-xs text-gray-600 overflow-auto max-h-96 whitespace-pre-wrap">
-                        {JSON.stringify({
-                          hasRecommendation: !!passedRecommendation,
-                          hasSupplement: !!(passedRecommendation?.supplement),
-                          hasWorksFor: !!(passedRecommendation?.supplement?.worksFor),
-                          worksForLength: passedRecommendation?.supplement?.worksFor?.length || 0,
-                          doesntWorkForLength: passedRecommendation?.supplement?.doesntWorkFor?.length || 0,
-                          limitedEvidenceLength: passedRecommendation?.supplement?.limitedEvidence?.length || 0,
-                          hasMetadata: !!(passedRecommendation as any)?._enrichment_metadata,
-                          hasStudies: !!(passedRecommendation as any)?._enrichment_metadata?.studies,
-                          supplementKeys: passedRecommendation?.supplement
-                            ? Object.keys(passedRecommendation.supplement).slice(0, 10)
-                            : [],
-                        }, null, 2)}
-                      </pre>
-                    </details>
-
                     <p className="text-sm text-gray-500">
-                      Por favor toma un screenshot de la sección Debug arriba y compártela con el desarrollador.
+                      Esta vista no debe interpretarse como recomendación de uso. Es una herramienta para explorar cómo está organizada la evidencia disponible.
                     </p>
                   </div>
                 )}

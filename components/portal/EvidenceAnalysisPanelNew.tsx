@@ -18,6 +18,7 @@ import IntelligentRankingSection from './IntelligentRankingSection';
 import { BenefitEvidenceCard } from './BenefitEvidenceCard';
 import { SynergiesSection } from './SynergiesSection';
 import type { Synergy } from '@/types/synergies';
+import { isPlaceholderDosageText } from '@/lib/portal/visible-evidence-metadata';
 
 interface EvidenceBadge {
   type: 'rct' | 'meta' | 'longterm' | 'safe';
@@ -382,7 +383,7 @@ export default function EvidenceAnalysisPanelNew({
           </h2>
           <div className="space-y-4">
             {/* Only show effective dose if it has actual content */}
-            {evidenceSummary.dosage.effectiveDose && !evidenceSummary.dosage.effectiveDose.toLowerCase().includes('no disponible') && (
+            {evidenceSummary.dosage.effectiveDose && !isPlaceholderDosageText(evidenceSummary.dosage.effectiveDose) && (
               <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
                 <h4 className="text-sm font-semibold text-blue-900 mb-2">
                   {labels.effectiveDose}
@@ -394,7 +395,7 @@ export default function EvidenceAnalysisPanelNew({
             )}
 
             {/* Only show common dose if it has actual content */}
-            {evidenceSummary.dosage.commonDose && !evidenceSummary.dosage.commonDose.toLowerCase().includes('no disponible') && (
+            {evidenceSummary.dosage.commonDose && !isPlaceholderDosageText(evidenceSummary.dosage.commonDose) && (
               <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
                 <h4 className="text-sm font-semibold text-green-900 mb-2">
                   {labels.commonDose}
@@ -407,8 +408,7 @@ export default function EvidenceAnalysisPanelNew({
 
             {/* Only show timing if it has useful info (not vague phrases) */}
             {evidenceSummary.dosage.timing &&
-             !evidenceSummary.dosage.timing.toLowerCase().includes('según indicaciones') &&
-             !evidenceSummary.dosage.timing.toLowerCase().includes('sin preferencia') && (
+             !isPlaceholderDosageText(evidenceSummary.dosage.timing) && (
               <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
                 <h4 className="text-sm font-semibold text-purple-900 mb-2">
                   {labels.timing}
@@ -421,7 +421,7 @@ export default function EvidenceAnalysisPanelNew({
 
             {/* Only show notes if they have useful content (not placeholders) */}
             {evidenceSummary.dosage.notes &&
-             !evidenceSummary.dosage.notes.toLowerCase().includes('seguir indicaciones') &&
+             !isPlaceholderDosageText(evidenceSummary.dosage.notes) &&
              evidenceSummary.dosage.notes.length > 20 && (
               <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
                 <p className="text-sm text-amber-800">

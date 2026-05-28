@@ -681,6 +681,13 @@ function applyCachedPubMedEvidence(recommendation: any, supplementName: string):
           notes: item.description || '',
         }))
         : recommendation.supplement?.limitedEvidence || [],
+      dosage: cachedEvidence.dosage || recommendation.supplement?.dosage,
+      sideEffects: Array.isArray(cachedEvidence.sideEffects)
+        ? cachedEvidence.sideEffects
+        : recommendation.supplement?.sideEffects || [],
+      interactions: Array.isArray(cachedEvidence.interactions)
+        ? cachedEvidence.interactions
+        : recommendation.supplement?.interactions || [],
     },
     evidence_summary: {
       ...recommendation.evidence_summary,

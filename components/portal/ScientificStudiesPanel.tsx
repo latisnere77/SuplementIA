@@ -29,6 +29,7 @@ interface StudiesData {
 
 interface ScientificStudiesPanelProps {
   supplementName: string;
+  displaySupplementName?: string;
   maxStudies?: number;
   filters?: {
     rctOnly?: boolean;
@@ -55,8 +56,32 @@ const STUDY_TYPE_LABELS: Record<string, string> = {
   'review': 'Revisión',
 };
 
+function normalizeStudiesResponse(data: any, supplementName: string): StudiesData | null {
+  const payload = data?.data || data;
+  const studies = Array.isArray(payload?.studies) ? payload.studies : [];
+
+  if (!data?.success || !Array.isArray(studies)) {
+    return null;
+  }
+
+  return {
+    studies,
+    totalFound: Number(payload.totalFound || payload.count || studies.length || 0),
+    searchQuery: String(payload.searchQuery || payload.query || supplementName),
+  };
+}
+
+function getControlledStudiesError(status?: number): string {
+  if (status === 503) {
+    return 'La consulta de estudios está temporalmente limitada. Puedes revisar la ficha principal o abrir PubMed directamente mientras se restablece.';
+  }
+
+  return 'No pudimos cargar estudios verificables en este momento. Intenta de nuevo o revisa PubMed directamente.';
+}
+
 export default function ScientificStudiesPanel({
   supplementName,
+  displaySupplementName,
   maxStudies = 5,
   filters = DEFAULT_FILTERS,
   autoLoad = false,
@@ -86,20 +111,22 @@ export default function ScientificStudiesPanel({
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to load studies');
-      }
-
       const data = await response.json();
 
-      if (data.success && data.data) {
-        setStudies(data.data);
+      if (!response.ok) {
+        throw new Error(getControlledStudiesError(response.status));
+      }
+
+      const normalized = normalizeStudiesResponse(data, supplementName);
+
+      if (normalized) {
+        setStudies(normalized);
       } else {
-        throw new Error(data.error || 'Failed to load studies');
+        throw new Error(getControlledStudiesError());
       }
     } catch (err: any) {
       console.error('Error loading studies:', err);
-      setError(err.message || 'Failed to load studies');
+      setError(err.message || getControlledStudiesError());
     } finally {
       setIsLoading(false);
     }
@@ -115,6 +142,47 @@ export default function ScientificStudiesPanel({
     setExpandedStudy(expandedStudy === pmid ? null : pmid);
   };
 
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando estudios científicos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    const pubmedUrl = `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(supplementName)}`;
+
+    return (
+      <div className="bg-amber-50 rounded-xl border-2 border-amber-200 p-6">
+        <div className="flex items-start gap-4">
+          <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
+          <div>
+            <h3 className="font-semibold text-amber-900 mb-1">Estudios no disponibles temporalmente</h3>
+            <p className="text-amber-800">{error}</p>
+            <a
+              href={pubmedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 mr-4 inline-flex items-center gap-2 text-amber-700 hover:text-amber-900 font-medium"
+            >
+              Abrir PubMed <ExternalLink className="w-4 h-4" />
+            </a>
+            <button
+              onClick={loadStudies}
+              className="mt-3 text-amber-700 hover:text-amber-900 font-medium"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!autoLoad && !studies && !isLoading) {
     return (
       <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
@@ -127,7 +195,7 @@ export default function ScientificStudiesPanel({
               Estudios Científicos Reales
             </h3>
             <p className="text-gray-600 mb-4">
-              Consulta estudios verificables sobre {supplementName}
+              Consulta estudios verificables sobre {displaySupplementName || supplementName}
             </p>
             <button
               onClick={loadStudies}
@@ -142,43 +210,24 @@ export default function ScientificStudiesPanel({
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando estudios científicos...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 rounded-xl border-2 border-red-200 p-6">
-        <div className="flex items-start gap-4">
-          <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0" />
-          <div>
-            <h3 className="font-semibold text-red-900 mb-1">Error al cargar estudios</h3>
-            <p className="text-red-700">{error}</p>
-            <button
-              onClick={loadStudies}
-              className="mt-3 text-red-600 hover:text-red-700 font-medium"
-            >
-              Reintentar
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (!studies || studies.studies.length === 0) {
+    const pubmedUrl = `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(supplementName)}`;
+
     return (
       <div className="bg-gray-50 rounded-xl border-2 border-gray-200 p-6">
         <p className="text-gray-600 text-center">
-          No se encontraron estudios para {supplementName}
+          No se encontraron estudios para {displaySupplementName || supplementName}
         </p>
+        <div className="text-center mt-4">
+          <a
+            href={pubmedUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Buscar en PubMed <ExternalLink className="w-4 h-4" />
+          </a>
+        </div>
       </div>
     );
   }

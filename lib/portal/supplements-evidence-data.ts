@@ -13,6 +13,27 @@ export interface SupplementEvidenceData {
   worksFor: WorksForItem[];
   doesntWorkFor: WorksForItem[];
   limitedEvidence?: WorksForItem[];
+  dosage?: {
+    standard?: string;
+    effectiveDose?: string;
+    timing?: string;
+    notes?: string;
+  };
+  sideEffects?: string[] | {
+    common: string[];
+    rare: string[];
+    severity: 'Generally mild' | 'Moderate' | 'Severe' | 'None reported';
+    notes?: string;
+  };
+  interactions?: string[] | {
+    medications: Array<{
+      medication: string;
+      severity: 'Mild' | 'Moderate' | 'Severe';
+      description: string;
+    }>;
+    supplements: string[];
+    foods?: string;
+  };
   qualityBadges: {
     hasRCTs: boolean;
     hasMetaAnalysis: boolean;
@@ -300,22 +321,27 @@ export const SUPPLEMENTS_EVIDENCE_CACHE: Record<string, SupplementEvidenceData> 
   // MAGNESIO
   magnesium: {
     overallGrade: 'B',
-    whatIsItFor: 'Apoya la función muscular y nerviosa, mejora el sueño y ayuda a reducir calambres.',
+    whatIsItFor: 'Mineral esencial investigado para deficiencia o ingesta baja, migraña, presión arterial, estreñimiento con sales específicas y función neuromuscular.',
     worksFor: [
       {
-        condition: 'Reducir calambres musculares',
+        condition: 'Corregir ingesta baja o deficiencia de magnesio',
         grade: 'B',
-        description: 'Efectivo en personas con deficiencia',
+        description: 'El beneficio es más claro cuando hay ingesta insuficiente, pérdidas aumentadas o deficiencia documentada.',
       },
       {
-        condition: 'Mejorar el sueño',
+        condition: 'Prevenir migraña en algunas personas',
         grade: 'B',
-        description: 'Ayuda a relajar el sistema nervioso',
+        description: 'Guías y ensayos clínicos respaldan uso preventivo en algunos perfiles; no es tratamiento agudo de crisis.',
       },
       {
-        condition: 'Reducir migrañas',
+        condition: 'Mejorar estreñimiento ocasional con sales osmóticas específicas',
         grade: 'B',
-        description: 'Prevención de migrañas en algunas personas',
+        description: 'Formas como citrato, hidróxido o sulfato pueden tener efecto laxante; no se extrapola a todas las formas.',
+      },
+      {
+        condition: 'Apoyo modesto a presión arterial en ciertos perfiles',
+        grade: 'B',
+        description: 'Meta-análisis reportan reducciones modestas, especialmente cuando la ingesta basal es baja o hay riesgo cardiometabólico.',
       },
     ],
     doesntWorkFor: [
@@ -324,6 +350,53 @@ export const SUPPLEMENTS_EVIDENCE_CACHE: Record<string, SupplementEvidenceData> 
         grade: 'F',
         description: 'No es un estimulante',
       },
+      {
+        condition: 'Pérdida de peso directa',
+        grade: 'D',
+        description: 'No hay evidencia consistente de que produzca pérdida de grasa por sí solo.',
+      },
+      {
+        condition: 'Aumentar testosterona en personas sin deficiencia',
+        grade: 'D',
+        description: 'No hay respaldo clínico sólido para elevar testosterona en adultos con niveles normales.',
+      },
+      {
+        condition: 'Curar hipertensión, arritmias o enfermedad cardiovascular',
+        grade: 'F',
+        description: 'Puede tener efectos modestos en marcadores, pero no sustituye diagnóstico ni tratamiento médico.',
+      },
+    ],
+    limitedEvidence: [
+      {
+        condition: 'Mejorar sueño o relajación subjetiva',
+        grade: 'C',
+        description: 'Hay estudios pequeños y resultados heterogéneos; parece más plausible si hay ingesta baja o déficit.',
+      },
+      {
+        condition: 'Calambres musculares en población general',
+        grade: 'C',
+        description: 'La evidencia es mixta; puede tener más sentido si hay deficiencia, embarazo o pérdidas aumentadas.',
+      },
+      {
+        condition: 'Marcadores de glucosa o sensibilidad a insulina',
+        grade: 'C',
+        description: 'Resultados preliminares en personas con riesgo metabólico; no equivale a tratamiento de diabetes.',
+      },
+    ],
+    dosage: {
+      standard: '100-400 mg/día de magnesio elemental, según forma, tolerancia y objetivo.',
+      effectiveDose: 'La mayoría de estudios usa rangos aproximados de 200-400 mg/día de magnesio elemental; formas laxantes se individualizan.',
+      timing: 'Con comida para tolerancia digestiva; separar de antibióticos, levotiroxina y bisfosfonatos.',
+      notes: 'Evitar dosis altas sin supervisión, especialmente en enfermedad renal. La etiqueta debe indicar magnesio elemental, no solo peso total del compuesto.',
+    },
+    sideEffects: [
+      'Molestias gastrointestinales o diarrea, especialmente con citrato, óxido, hidróxido o dosis altas.',
+      'Somnolencia, náusea o presión baja pueden aparecer en personas sensibles.',
+      'Riesgo de hipermagnesemia en enfermedad renal o con dosis altas sin supervisión.',
+    ],
+    interactions: [
+      'Puede reducir absorción de tetraciclinas, quinolonas, levotiroxina y bisfosfonatos; separar varias horas.',
+      'Usar con cautela junto con medicamentos cardiovasculares o diuréticos si hay enfermedad renal o alteraciones electrolíticas.',
     ],
     qualityBadges: {
       hasRCTs: true,

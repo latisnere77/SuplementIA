@@ -45,6 +45,11 @@ import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay
 import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
 import { buildIHerbAffiliateUrl, findIHerbAffiliateMatch } from '@/lib/portal/iherb-affiliate';
 import { trackGAEvent } from '@/lib/analytics/ga4';
+import {
+  cleanDosageValue,
+  getDefaultDosageMessage,
+  getVisibleEvidenceMetadata,
+} from '@/lib/portal/visible-evidence-metadata';
 
 // ====================================
 // CACHE VALIDATION HELPER
@@ -114,6 +119,14 @@ function isValidCache(cachedRecommendation: any): boolean {
   return isValid;
 }
 
+function attachResponseSource(recommendation: any, source?: string): any {
+  if (!recommendation || !source) return recommendation;
+  return {
+    ...recommendation,
+    _response_source: source,
+  };
+}
+
 // ====================================
 // ADAPTER FUNCTION - Client-Side Transformation
 // ====================================
@@ -125,7 +138,7 @@ function isValidCache(cachedRecommendation: any): boolean {
  * The new intelligent system (/api/portal/recommend → /enrich → Lambdas) already
  * provides all the data we need. We just need to map it to the visual format.
  */
-function transformRecommendationToEvidence(recommendation: Recommendation): any {
+function transformRecommendationToEvidence(recommendation: Recommendation, language: 'en' | 'es' = 'es'): any {
   // Extract supplement data from recommendation (defensive)
   const supplement = (recommendation as any).supplement || {};
   const evidenceSummary = recommendation.evidence_summary || {};
@@ -227,11 +240,17 @@ function transformRecommendationToEvidence(recommendation: Recommendation): any 
     : ('C' as any);
 
   // Transform dosage
-  const transformedDosage = typeof supplement.dosage === 'object' && supplement.dosage !== null ? {
-    effectiveDose: supplement.dosage.effectiveDose || supplement.dosage.optimalDose || 'No especificado',
-    commonDose: supplement.dosage.standard || supplement.dosage.optimalDose || 'Consultar con profesional',
-    timing: supplement.dosage.timing || 'Según indicaciones',
-    notes: supplement.dosage.notes || '',
+  const rawDosage = typeof supplement.dosage === 'object' && supplement.dosage !== null ? supplement.dosage : {};
+  const shouldShowDosage = Object.keys(rawDosage).length > 0 || worksFor.length > 0 || limitedEvidence.length > 0;
+  const effectiveDose = cleanDosageValue(rawDosage.effectiveDose || rawDosage.optimalDose);
+  const commonDose = cleanDosageValue(rawDosage.standard || rawDosage.commonDose || rawDosage.optimalDose);
+  const timing = cleanDosageValue(rawDosage.timing);
+  const notes = cleanDosageValue(rawDosage.notes);
+  const transformedDosage = shouldShowDosage ? {
+    effectiveDose: effectiveDose || getDefaultDosageMessage(language),
+    commonDose: commonDose || getDefaultDosageMessage(language),
+    timing: timing || '',
+    notes: notes || getDefaultDosageMessage(language),
   } : undefined;
 
   // DEBUG: Log dosage transformation
@@ -756,6 +775,7 @@ function ResultsPageContent() {
   const localizedSupplementName = recommendation?.category
     ? getLocalizedSupplementName(recommendation.category, language as 'en' | 'es')
     : query || 'supplement';
+  const researchSupplementName = recommendation?.category || query || localizedSupplementName;
 
   useEffect(() => {
     if (isLoading || error) {
@@ -817,7 +837,7 @@ function ResultsPageContent() {
     }
 
     // Simple client-side transformation (no API calls needed)
-    const transformed = transformRecommendationToEvidence(recommendation);
+    const transformed = transformRecommendationToEvidence(recommendation, language as 'en' | 'es');
 
     // Log section availability
     const _supplement = (recommendation as any).supplement || {};
@@ -843,7 +863,7 @@ function ResultsPageContent() {
     // Also transform to Examine format
     const examineFormatted = transformToExamineFormat(recommendation);
     setExamineContent(examineFormatted);
-  }, [recommendation]);
+  }, [language, recommendation]);
 
   useEffect(() => {
     let isMounted = true;
@@ -1139,9 +1159,10 @@ function ResultsPageContent() {
                 });
 
                 if (statusData.status === 'completed' && statusData.recommendation) {
+                  const statusRecommendation = attachResponseSource(statusData.recommendation, statusData.source);
                   const finalRecommendation = submittedBenefitQuery
-                    ? filterByBenefit(statusData.recommendation, submittedBenefitQuery)
-                    : statusData.recommendation;
+                    ? filterByBenefit(statusRecommendation, submittedBenefitQuery)
+                    : statusRecommendation;
 
                   setError(null);
                   setRecommendation(finalRecommendation);
@@ -1218,7 +1239,7 @@ function ResultsPageContent() {
           } else if (data.success && data.recommendation) {
             // LEGACY SYNC PATTERN or ingredient search
             console.log('[Data Fetch] ✅ Received INGREDIENT result:', data.recommendation);
-            setRecommendation(data.recommendation);
+            setRecommendation(attachResponseSource(data.recommendation, data.source));
             setConditionResult(null); // Clear other state
             setSearchType('ingredient');
           } else {
@@ -1365,9 +1386,10 @@ function ResultsPageContent() {
               console.log('[State Update] Setting recommendation from quiz API');
 
               // Apply client-side benefit filter if benefitQuery exists
+              const recommendationWithSource = attachResponseSource(data.recommendation, data.source);
               const finalRecommendation = submittedBenefitQuery
-                ? filterByBenefit(data.recommendation, submittedBenefitQuery)
-                : data.recommendation;
+                ? filterByBenefit(recommendationWithSource, submittedBenefitQuery)
+                : recommendationWithSource;
 
               setRecommendation(finalRecommendation);
               console.log('[State Update] Setting isLoading to false');
@@ -1676,46 +1698,19 @@ function ResultsPageContent() {
             {t('results.title')} {localizedSupplementName}
           </h1>
           {(() => {
-            // Extract study data with fallbacks
-            const totalStudies = recommendation?.evidence_summary?.totalStudies || 0;
-            const totalParticipants = recommendation?.evidence_summary?.totalParticipants || 0;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const metadata = (recommendation as any)?._enrichment_metadata || {};
-            const studiesUsed = metadata.studiesUsed || 0;
+            const visibleMetadata = getVisibleEvidenceMetadata(recommendation, language as 'en' | 'es');
 
-            // Log study data availability
-            console.log('[Study Data Display]', {
-              totalStudies,
-              totalParticipants,
-              studiesUsed,
-              hasEvidenceSummary: !!recommendation?.evidence_summary,
-              category: recommendation?.category,
-            });
-
-            // Check if we have real study data
-            const hasRealStudyData = totalStudies > 0 || studiesUsed > 0;
-
-            if (!hasRealStudyData) {
-              console.log('[Study Data Display] ⚠️ No real study data found for:', recommendation?.category);
-            }
-
-            // Display study data if available
-            if (hasRealStudyData) {
-              return (
-                <p className="text-gray-600" data-testid="study-data-summary">
-                  {t('results.based.on')} {totalStudies.toLocaleString()} {t('results.studies')}
-                  {totalParticipants > 0 && (
-                    <> {totalParticipants.toLocaleString()} {t('results.participants')}</>
-                  )}
+            return (
+              <div className="text-gray-600" data-testid="study-data-summary">
+                <p className="font-medium text-gray-700">
+                  {visibleMetadata.label}
+                  {visibleMetadata.count ? (
+                    <> · {visibleMetadata.count.toLocaleString()} {visibleMetadata.countLabel}</>
+                  ) : null}
                 </p>
-              );
-            } else {
-              return (
-                <p className="text-yellow-700 font-medium" data-testid="no-study-data-warning">
-                  ⚠️ Esta información no está respaldada por estudios científicos verificados
-                </p>
-              );
-            }
+                <p className="text-sm">{visibleMetadata.detail}</p>
+              </div>
+            );
           })()}
         </div>
 
@@ -1811,7 +1806,8 @@ function ResultsPageContent() {
 
             <div className="mb-8">
               <ScientificStudiesPanel
-                supplementName={localizedSupplementName}
+                supplementName={researchSupplementName}
+                displaySupplementName={localizedSupplementName}
                 maxStudies={5}
                 filters={{ rctOnly: false, yearFrom: 2010 }}
                 autoLoad={false}
@@ -1985,7 +1981,8 @@ function ResultsPageContent() {
             setIsBenefitModalOpen(false);
             setSelectedBenefit(null);
           }}
-          supplementName={localizedSupplementName}
+          supplementName={researchSupplementName}
+          displaySupplementName={localizedSupplementName}
           benefitQuery={selectedBenefit.en}
           benefitQueryEs={selectedBenefit.es}
           recommendation={recommendation}
