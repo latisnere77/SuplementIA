@@ -1,5 +1,7 @@
 type EvidenceItem = Record<string, any>;
 
+const CENTELLA_LIVER_WARNING = 'Generalmente bien tolerada, pero existen reportes raros de lesion hepatica/hepatotoxicidad; precaucion en enfermedad hepatica o con farmacos hepatotoxicos.';
+
 function normalizeClinicalText(value: unknown): string {
   return String(value || '')
     .normalize('NFD')
@@ -65,6 +67,10 @@ export function sanitizeCentellaClaimText(value: unknown): unknown {
   if (typeof value !== 'string') return value;
 
   return value
+    .replace(/\baunque\s+(?:no hay|no existen)\s+reportes de hepatotoxicidad[^.]*\./gi, `aunque ${CENTELLA_LIVER_WARNING}`)
+    .replace(/\b(?:no hay|no existen|no)\s+reportes de hepatotoxicidad[^.]*\./gi, CENTELLA_LIVER_WARNING)
+    .replace(/\bNo reportes de hepatotoxicidad[^.]*\./gi, CENTELLA_LIVER_WARNING)
+    .replace(/\bsin reportes de toxicidad hep[aá]tica[^.]*\./gi, CENTELLA_LIVER_WARNING)
     .replace(/\beficacia demostrada\b/gi, 'evidencia humana disponible')
     .replace(/\btratamiento m[eé]dico\b/gi, 'atencion medica')
     .replace(/\btratamiento cl[ií]nico\b/gi, 'uso clinico estudiado')
@@ -188,7 +194,7 @@ function isCentellaVenousOrWoundItem(item: EvidenceItem): boolean {
 
 function addCentellaSafetyCaution(safety: any = {}) {
   const calibratedSafety = sanitizeCentellaItem({ ...safety });
-  const liverWarning = 'Generalmente bien tolerada, pero existen reportes raros de lesion hepatica/hepatotoxicidad; precaucion en enfermedad hepatica o con farmacos hepatotoxicos.';
+  const liverWarning = CENTELLA_LIVER_WARNING;
   const existingSafetyText = normalizeClinicalText(JSON.stringify(calibratedSafety));
 
   if (!existingSafetyText.includes('hepatotoxic') && !existingSafetyText.includes('lesion hepatica')) {
