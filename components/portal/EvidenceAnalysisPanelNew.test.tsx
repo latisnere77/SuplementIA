@@ -60,7 +60,7 @@ describe('EvidenceAnalysisPanelNew', () => {
     expect(screen.getByText(/no encontramos usos con evidencia clínica humana suficiente/i)).toBeInTheDocument();
     expect(screen.getByText(/no funciona para/i)).toBeInTheDocument();
     expect(screen.getByText('Pérdida de peso')).toBeInTheDocument();
-    expect(screen.getByText(/evidencia limitada/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/evidencia limitada/i).length).toBeGreaterThan(0);
     expect(screen.getByText('Marcadores metabólicos')).toBeInTheDocument();
     expect(screen.getByText(/evidencia por beneficio/i)).toBeInTheDocument();
     expect(screen.getByText('Peso corporal')).toBeInTheDocument();
@@ -84,5 +84,117 @@ describe('EvidenceAnalysisPanelNew', () => {
 
     expect(screen.getByRole('heading', { name: /what it may help with/i })).toBeInTheDocument();
     expect(screen.getByText(/we did not find uses with sufficient human clinical evidence/i)).toBeInTheDocument();
+  });
+
+  it('renders a complete Centella research structure without editorial garbage', () => {
+    render(
+      <EvidenceAnalysisPanelNew
+        language="es"
+        supplementName="Centella asiatica"
+        evidenceSummary={{
+          overallGrade: 'B',
+          whatIsItFor: [
+            'Extracto vegetal investigado para síntomas venosos.',
+            'Interpretar como apoyo estudiado para sintomas, no como sustituto de tratamiento medico.',
+            'Interpretar como apoyo estudiado para sintomas, no como sustituto de tratamiento medico.',
+          ].join(' '),
+          worksFor: [
+            {
+              condition: 'Insuficiencia venosa crónica',
+              grade: 'B',
+              description: 'Apoyo estudiado para síntomas, no como sustituto de tratamiento médico.',
+            },
+          ],
+          doesntWorkFor: [
+            {
+              condition: 'Depresión mayor',
+              grade: 'D',
+              description: 'apoyo estudiado para depresión mayor clínica',
+            },
+          ],
+          limitedEvidence: [
+            {
+              condition: 'Ansiedad',
+              grade: 'C',
+              description: 'Evidencia pequeña y preliminar.',
+            },
+          ],
+          ingredients: [],
+          evidenceByBenefit: [
+            {
+              benefit: 'Microcirculación',
+              evidenceLevel: 'Moderada',
+              studiesFound: 3,
+              totalParticipants: 140,
+              summary: 'mejoras reportadas en síntesis de señales vasculares.',
+            },
+          ],
+          dosage: {
+            effectiveDose: '60 mg/día en estudios seleccionados',
+            commonDose: '60-120 mg/día',
+            timing: 'Con alimentos',
+            notes: 'No sustituye uso estudiado medico.',
+          },
+          sideEffects: {
+            common: ['Molestias gastrointestinales leves'],
+            rare: ['No reportes de hepatotoxicidad en estudios revisados.'],
+            severity: 'Generally Safe' as any,
+            notes: 'sin reportes de toxicidad hepática en la muestra.',
+          },
+          interactions: {
+            medications: [
+              {
+                medication: 'Fármacos hepatotóxicos',
+                severity: 'Moderate',
+                description: 'Revisar con profesional de salud.',
+              },
+            ],
+            supplements: ['uso estudiado medico'],
+            foods: 'Sin interacción alimentaria relevante.',
+          },
+          contraindications: ['Evitar con enfermedad hepática activa y uso estudiado medico.'],
+          mechanisms: [
+            {
+              name: 'Síntesis de colágeno',
+              description: 'mejoras reportadas en síntesis de colágeno.',
+              evidenceLevel: 'weak',
+            },
+          ],
+          buyingGuidance: {
+            preferredForm: 'Extracto estandarizado',
+            keyCompounds: [
+              {
+                name: 'Triterpenos',
+                source: 'Centella asiatica',
+                lookFor: 'Asiaticósidos declarados',
+              },
+            ],
+            avoidFlags: ['Claims de tratamiento médico'],
+            qualityIndicators: ['Estandarización clara'],
+            notes: 'Revisar con atención médica si hay enfermedad hepática.',
+          },
+        }}
+      />
+    );
+
+    expect(screen.getByRole('heading', { name: /qué es/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /para qué sí sirve/i })).toBeInTheDocument();
+    expect(screen.getByText(/no funciona para/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/evidencia limitada/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole('heading', { name: /dosificación/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /efectos secundarios/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /interacciones/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /contraindicaciones/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /mecanismos/i })).toBeInTheDocument();
+
+    const bodyText = document.body.textContent || '';
+    expect(bodyText.match(/Interpretar como apoyo estudiado/g)).toHaveLength(1);
+    expect(bodyText).toMatch(/reportes raros de lesión hepática/i);
+    expect(bodyText).toContain('Generalmente leve');
+    expect(bodyText).toContain('Exploratoria');
+    expect(bodyText).not.toMatch(/uso estudiado medico/i);
+    expect(bodyText).not.toMatch(/Generally Safe/i);
+    expect(bodyText).not.toMatch(/apoyo estudiado para depresión mayor clínica/i);
+    expect(bodyText).not.toMatch(/mejoras reportadas en síntesis/i);
   });
 });

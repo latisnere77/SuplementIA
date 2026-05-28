@@ -519,6 +519,122 @@ test.describe('portal browser flows', () => {
     });
   });
 
+  test('Spanish completed results keep Centella research brief readable and Magnesium metadata honest', async ({ page }) => {
+    await page.route('**/api/portal/quiz**', async (route) => {
+      const body = route.request().postDataJSON() as QuizRequest;
+      const category = body.category.toLowerCase();
+      const isCentella = category.includes('centella');
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          searchType: 'ingredient',
+          jobId: body.jobId,
+          recommendation: isCentella
+            ? {
+              ...recommendation,
+              category: 'Centella asiatica',
+              evidence_summary: {
+                ...recommendation.evidence_summary,
+                totalStudies: 18,
+                ingredients: [
+                  { name: 'Centella asiatica extract', grade: 'B', studyCount: 12, rctCount: 4 },
+                ],
+              },
+              supplement: {
+                name: 'Centella asiatica',
+                description: 'Botanical extract studied for venous symptoms. Interpretar como apoyo estudiado para sintomas, no como sustituto de tratamiento medico. Interpretar como apoyo estudiado para sintomas, no como sustituto de tratamiento medico.',
+                worksFor: [
+                  {
+                    condition: 'Insuficiencia venosa crónica',
+                    evidenceGrade: 'B',
+                    notes: 'Apoyo estudiado para síntomas, no como sustituto de tratamiento médico.',
+                    studyCount: 4,
+                  },
+                ],
+                doesntWorkFor: [
+                  {
+                    condition: 'Depresión mayor',
+                    evidenceGrade: 'D',
+                    notes: 'apoyo estudiado para depresión mayor clínica',
+                    studyCount: 1,
+                  },
+                ],
+                limitedEvidence: [
+                  {
+                    condition: 'Ansiedad',
+                    evidenceGrade: 'C',
+                    notes: 'Evidencia humana preliminar.',
+                    studyCount: 1,
+                  },
+                ],
+                dosage: {
+                  effectiveDose: '60 mg/día en estudios seleccionados',
+                  standard: '60-120 mg/día',
+                  timing: 'Con alimentos',
+                  notes: 'No sustituye uso estudiado medico.',
+                },
+                sideEffects: [
+                  {
+                    effect: 'Molestias gastrointestinales leves',
+                    frequency: 'Common',
+                    notes: 'No reportes de hepatotoxicidad en estudios revisados.',
+                  },
+                ],
+                safety: { overallRating: 'Generally Safe' },
+                contraindications: ['Evitar con enfermedad hepática activa y uso estudiado medico.'],
+                mechanisms: [
+                  {
+                    name: 'Síntesis de colágeno',
+                    description: 'mejoras reportadas en síntesis de colágeno.',
+                    evidenceLevel: 'weak',
+                  },
+                ],
+                synergies: [
+                  {
+                    supplement: 'Complementary supplement combination',
+                    type: 'general_synergy',
+                    mechanism: 'Complementary supplement combination',
+                    effect: 'possible support',
+                    score: 70,
+                    tier: 3,
+                    categories: [],
+                    direction: 'positive',
+                  },
+                ],
+              },
+              products: [],
+            }
+            : recommendation,
+        }),
+      });
+    });
+
+    await page.goto('/es/portal/results?q=Centella%20asiatica&supplement=Centella%20asiatica');
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Para qué sí sirve/i })).toBeVisible();
+    await expect(page.getByText(/Insuficiencia venosa crónica/i).first()).toBeVisible();
+    await expect(page.getByText(/reportes raros de lesión hepática/i).first()).toBeVisible();
+    await expect(page.getByText(/Combinación exploratoria/i).first()).toBeVisible();
+
+    const centellaText = await page.locator('body').innerText();
+    expect(centellaText).not.toContain('uso estudiado medico');
+    expect(centellaText).not.toContain('Generally Safe');
+    expect(centellaText).not.toContain('Complementary supplement combination');
+    expect(centellaText).not.toMatch(/\bBase\b/);
+    expect(centellaText).not.toMatch(/\bGeneral\b/);
+    expect(centellaText).not.toMatch(/\b70\b/);
+
+    await page.goto('/es/portal/results?q=Magnesium&supplement=Magnesium');
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Recomendaciones para Magnesio/i })).toBeVisible();
+    const magnesiumText = await page.locator('body').innerText();
+    expect(magnesiumText).not.toContain('Basado en 2 estudios');
+    expect(magnesiumText).toMatch(/evidencia clínica (seleccionada|revisada)|catálogo local|muestra revisada/i);
+  });
+
   test('results render iHerb affiliate card only for clear supplement matches', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, '__openedUrls', {

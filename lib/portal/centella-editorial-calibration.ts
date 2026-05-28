@@ -66,8 +66,11 @@ export function sanitizeCentellaClaimText(value: unknown): unknown {
 
   return value
     .replace(/\beficacia demostrada\b/gi, 'evidencia humana disponible')
+    .replace(/\btratamiento m[eé]dico\b/gi, 'atencion medica')
+    .replace(/\btratamiento cl[ií]nico\b/gi, 'uso clinico estudiado')
     .replace(/\btratamiento de\b/gi, 'apoyo estudiado para')
     .replace(/\btratamiento\b/gi, 'uso estudiado')
+    .replace(/\buso estudiado m[eé]dico\b/gi, 'atencion medica')
     .replace(/\btreat(?:s|ment)?\b/gi, 'studied support')
     .replace(/\bcures?\b/gi, 'is studied for')
     .replace(/\b(?:60|25|30|10|5)\s*[-–]\s*(?:70|35|40|20|15)\s*%/gi, 'mejoras reportadas');
@@ -185,7 +188,7 @@ function isCentellaVenousOrWoundItem(item: EvidenceItem): boolean {
 
 function addCentellaSafetyCaution(safety: any = {}) {
   const calibratedSafety = sanitizeCentellaItem({ ...safety });
-  const liverWarning = 'Reportes raros de lesion hepatica/hepatotoxicidad han sido descritos para Centella asiatica; evitar en enfermedad hepatica activa y suspender ante ictericia, orina oscura o sintomas hepaticos.';
+  const liverWarning = 'Generalmente bien tolerada, pero existen reportes raros de lesion hepatica/hepatotoxicidad; precaucion en enfermedad hepatica o con farmacos hepatotoxicos.';
   const existingSafetyText = normalizeClinicalText(JSON.stringify(calibratedSafety));
 
   if (!existingSafetyText.includes('hepatotoxic') && !existingSafetyText.includes('lesion hepatica')) {
@@ -197,13 +200,16 @@ function addCentellaSafetyCaution(safety: any = {}) {
 
   if (typeof calibratedSafety.longTermSafety === 'string') {
     calibratedSafety.longTermSafety = calibratedSafety.longTermSafety
-      .replace(/No reportes de hepatotoxicidad[^.]*\./gi, 'Existen reportes raros de lesion hepatica/hepatotoxicidad; el uso prolongado debe ser prudente, especialmente en personas con enfermedad hepatica.')
-      .replace(/sin reportes de toxicidad hep[aá]tica[^.]*\./gi, 'Existen reportes raros de lesion hepatica/hepatotoxicidad; el uso prolongado debe ser prudente, especialmente en personas con enfermedad hepatica.');
+      .replace(/No reportes de hepatotoxicidad[^.]*\./gi, liverWarning)
+      .replace(/sin reportes de toxicidad hep[aá]tica[^.]*\./gi, liverWarning);
   } else {
     calibratedSafety.longTermSafety = liverWarning;
   }
 
-  calibratedSafety.notes = `${calibratedSafety.notes || ''} ${liverWarning}`.trim();
+  const existingNotes = normalizeClinicalText(calibratedSafety.notes);
+  calibratedSafety.notes = existingNotes.includes('lesion hepatica') || existingNotes.includes('hepatotoxic')
+    ? calibratedSafety.notes
+    : `${calibratedSafety.notes || ''} ${liverWarning}`.trim();
   return calibratedSafety;
 }
 
@@ -239,7 +245,11 @@ function calibrateWorksForList(worksFor: any[], limitedEvidence: any[] = []) {
 
     item.evidenceGrade = capEvidenceGrade(item.evidenceGrade || item.grade, 'B');
     item.grade = item.evidenceGrade;
-    item.notes = `${sanitizeCentellaClaimText(item.notes) || ''} Interpretar como apoyo estudiado para sintomas, no como sustituto de tratamiento medico.`.trim();
+    const interpretationNote = 'Interpretar como apoyo estudiado para sintomas, no como sustituto de atencion medica.';
+    const existingNotes = String(sanitizeCentellaClaimText(item.notes) || '').trim();
+    item.notes = normalizeClinicalText(existingNotes).includes(normalizeClinicalText(interpretationNote))
+      ? existingNotes
+      : `${existingNotes} ${interpretationNote}`.trim();
     item.magnitude = 'Mejoras significativas frente a placebo en algunos estudios; magnitud exacta variable y dependiente del estudio.';
     calibratedWorksFor.push(item);
   }
