@@ -67,6 +67,7 @@ export function sanitizeCentellaClaimText(value: unknown): unknown {
   if (typeof value !== 'string') return value;
 
   return value
+    .replace(/\busar con precauci[oó]n\s+aunque\s+(?:no hay|no existen)\s+reportes de hepatotoxicidad\b[^.;]*/gi, CENTELLA_LIVER_WARNING)
     .replace(/\baunque\s+(?:no hay|no existen)\s+reportes de hepatotoxicidad\b[^.;]*/gi, `y ${CENTELLA_LIVER_WARNING}`)
     .replace(/\b(?:no hay|no existen|no)\s+reportes de hepatotoxicidad\b[^.;]*/gi, CENTELLA_LIVER_WARNING)
     .replace(/\bNo reportes de hepatotoxicidad\b[^.;]*/gi, CENTELLA_LIVER_WARNING)

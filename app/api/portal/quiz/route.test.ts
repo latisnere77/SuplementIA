@@ -354,7 +354,7 @@ describe('/api/portal/quiz POST', () => {
     );
     expect(serialized).not.toMatch(/60-70%|30-40%|5-15%/);
     expect(serialized).not.toMatch(/no hay reportes de hepatotoxicidad|no reportes de hepatotoxicidad/);
-    expect(serialized).not.toMatch(/aunque generalmente bien tolerada/);
+    expect(serialized).not.toMatch(/aunque generalmente bien tolerada|y generalmente bien tolerada/);
     expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
   });
 
