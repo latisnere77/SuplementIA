@@ -882,4 +882,154 @@ describe('/api/portal/enrich-v2 POST', () => {
     ]);
     expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9003');
   });
+
+  it('recovers Cannabis sativa human clinical evidence with the generic controlled recall search', async () => {
+    const fetchMock = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              studies: [
+                {
+                  pmid: '9101',
+                  title: 'Cannabis sativa extract in rats',
+                  abstract: 'A rat model evaluated extract activity.',
+                  publicationTypes: ['Journal Article'],
+                  meshHeadings: ['Animals', 'Rats'],
+                },
+                {
+                  pmid: '9102',
+                  title: 'Chemical constituents of Cannabis sativa',
+                  abstract: 'Phytochemical characterization of plant material.',
+                  publicationTypes: ['Journal Article'],
+                },
+              ],
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              studies: [
+                {
+                  pmid: '19961570',
+                  title: 'Whole plant cannabis extracts in the treatment of spasticity in multiple sclerosis: a systematic review.',
+                  abstract: 'Randomized controlled trials in patients with multiple sclerosis were reviewed.',
+                  publicationTypes: ['Systematic Review'],
+                  meshHeadings: ['Humans'],
+                },
+                {
+                  pmid: '35982439',
+                  title: 'Medical cannabinoids: a pharmacology-based systematic review and meta-analysis for chronic pain, nausea, vomiting, and spasticity.',
+                  abstract: 'The review summarizes clinical studies in humans.',
+                  publicationTypes: ['Systematic Review', 'Meta-Analysis'],
+                  meshHeadings: ['Humans'],
+                },
+                {
+                  pmid: '37283486',
+                  title: 'Cannabis-based medicines and medical cannabis for adults with cancer pain.',
+                  abstract: 'Randomized controlled trials in adult patients were analyzed.',
+                  publicationTypes: ['Meta-Analysis'],
+                  meshHeadings: ['Humans'],
+                },
+                {
+                  pmid: '31948424',
+                  title: 'Medicinal cannabis for psychiatric disorders: a clinically-focused systematic review.',
+                  abstract: 'Clinical studies in humans were reviewed for anxiety and related disorders.',
+                  publicationTypes: ['Systematic Review'],
+                  meshHeadings: ['Humans'],
+                },
+              ],
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              name: 'Cannabis sativa',
+              whatIsIt: 'Cannabis sativa sirve para dolor segun marketing de suplementos.',
+              worksFor: [
+                {
+                  condition: 'Cannabis sativa sirve para multiple sclerosis spasticity',
+                  evidenceGrade: 'B',
+                  studyCount: 1,
+                },
+              ],
+              limitedEvidence: [
+                {
+                  condition: 'Chronic pain',
+                  evidenceGrade: 'C',
+                },
+              ],
+              products: [
+                {
+                  name: 'CBD suplemento recomendado',
+                  affiliateLink: 'https://example.com/cbd',
+                },
+              ],
+              practicalRecommendations: ['Comprar CBD como suplemento recomendado.'],
+              totalStudies: 4,
+            },
+            metadata: {
+              hasRealData: true,
+              studiesUsed: 4,
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName: 'cannabis sativa',
+        category: 'cannabis sativa',
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.error).not.toBe('insufficient_data');
+    expect(body.metadata.humanClinicalStudiesCount).toBe(4);
+    expect(body.data.products).toEqual([]);
+
+    const recallStudiesCall = fetchMock.mock.calls[1];
+    const recallStudiesBody = JSON.parse(recallStudiesCall[1]?.body as string);
+    expect(recallStudiesBody.supplementName).toBe('Cannabis sativa');
+    expect(recallStudiesBody.benefitQuery).toContain('spasticity');
+    expect(recallStudiesBody.benefitQuery).toContain('chronic pain');
+    expect(recallStudiesBody.humanStudiesOnly).toBe(true);
+
+    const enricherCall = fetchMock.mock.calls[2];
+    const enricherBody = JSON.parse(enricherCall[1]?.body as string);
+    expect(enricherBody.supplementId).toBe('Cannabis sativa');
+    expect(enricherBody.studies.map((study: any) => study.pmid)).toEqual([
+      '19961570',
+      '35982439',
+      '37283486',
+      '31948424',
+    ]);
+    expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9101');
+    expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9102');
+
+    const serialized = JSON.stringify(body.data).toLowerCase();
+    expect(body.data.worksFor[0].condition).toContain('Nabiximols');
+    expect(serialized).toContain('formulaciones especificas');
+    expect(serialized).not.toMatch(/suplemento recomendado|comprar|sirve para/);
+  });
 });

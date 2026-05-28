@@ -286,7 +286,9 @@ export async function expandAbbreviation(
 ): Promise<AbbreviationExpansion> {
   const trimmed = term.trim();
   const startTime = Date.now();
-  const controlledAlias = CONTROLLED_CANONICAL_ALIASES[trimmed.toLowerCase()] || canonicalizeBotanicalTerm(trimmed);
+  const controlledAlias =
+    CONTROLLED_CANONICAL_ALIASES[trimmed.toLowerCase()] ||
+    canonicalizeBotanicalTerm(trimmed);
 
   debugAbbreviationEvent({
     event: 'ABBREVIATION_EXPANSION_START',

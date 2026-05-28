@@ -87,6 +87,15 @@ describe('pubmed literature profile', () => {
         meshHeadings: ['Animals', 'Rats', 'Rats, Wistar'],
       })
     ).toBe('preclinical');
+
+    expect(
+      classifyLiteratureArticle({
+        title: 'Medical cannabinoids: a pharmacology-based systematic review and meta-analysis for chronic pain and nausea.',
+        abstract: 'The review summarizes therapeutic outcomes in patients.',
+        publicationTypes: ['Systematic Review', 'Meta-Analysis'],
+        meshHeadings: ['Humans', 'Chronic Pain', 'Nausea', 'Vomiting'],
+      })
+    ).toBe('human_clinical');
   });
 
   it('keeps human clinical trials human even when abstracts mention animal background', () => {
@@ -249,6 +258,44 @@ describe('pubmed literature profile', () => {
     ]);
   });
 
+  it('expands Cannabis sativa to controlled cannabinoid clinical recall aliases', () => {
+    expect(getPubMedQueryPhrases('cannabis sativa')).toEqual(expect.arrayContaining([
+      'cannabis sativa',
+      'cannabis',
+      'medical cannabis',
+      'medical marijuana',
+      'cannabinoids',
+    ]));
+    expect(getPubMedQueryPhrases('cannabis sativa')).not.toEqual(expect.arrayContaining([
+      'cannabidiol',
+      'nabiximols',
+      'dronabinol',
+      'nabilone',
+    ]));
+    expect(getPubMedQueryPhrases('hemp seed')).toEqual(['hemp seed']);
+  });
+
+  it('keeps CBD PubMed query phrases scoped away from THC and synthetic cannabinoid lanes', () => {
+    const phrases = getPubMedQueryPhrases('CBD');
+
+    expect(phrases).toEqual(expect.arrayContaining(['CBD', 'cannabidiol']));
+    expect(phrases).not.toEqual(expect.arrayContaining([
+      'dronabinol',
+      'nabilone',
+      'nabiximols',
+      'Sativex',
+      'THC',
+      'tetrahydrocannabinol',
+    ]));
+  });
+
+  it('keeps nabiximols PubMed query phrases scoped away from CBD lanes', () => {
+    const phrases = getPubMedQueryPhrases('nabiximols');
+
+    expect(phrases).toEqual(expect.arrayContaining(['nabiximols', 'Sativex']));
+    expect(phrases).not.toEqual(expect.arrayContaining(['CBD', 'cannabidiol']));
+  });
+
   it('uses Mimosa botanical aliases in PubMed literature profile search without changing clinical classification', async () => {
     const fetchMock = jest
       .fn()
@@ -365,6 +412,87 @@ describe('pubmed literature profile', () => {
     expect(profile?.categories.human_clinical).toBe(3);
     expect(profile?.categories.review).toBe(1);
     expect(profile?.categories.preclinical).toBe(0);
+  });
+
+  it('prioritizes human clinical Cannabis/cannabinoid articles in the PubMed literature sample', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          json: async () => ({ esearchresult: { count: '4079', idlist: ['9001', '9002'] } }),
+        } as Response
+      )
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          json: async () => ({ esearchresult: { count: '31837', idlist: ['35982439', '37283486', '31948424'] } }),
+        } as Response
+      )
+      .mockResolvedValueOnce(
+        {
+          ok: true,
+          text: async () => `
+          <PubmedArticle>
+            <PMID>19961570</PMID>
+            <ArticleTitle>Whole plant cannabis extracts in the treatment of spasticity in multiple sclerosis: a systematic review.</ArticleTitle>
+            <AbstractText>Randomized controlled trials in patients with multiple sclerosis were reviewed.</AbstractText>
+            <PubDate><Year>2009</Year></PubDate>
+            <PublicationType>Systematic Review</PublicationType>
+            <MeshHeading><DescriptorName>Humans</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          <PubmedArticle>
+            <PMID>35982439</PMID>
+            <ArticleTitle>Medical cannabinoids: a pharmacology-based systematic review and meta-analysis for chronic pain, nausea, vomiting, and spasticity.</ArticleTitle>
+            <AbstractText>The review summarizes clinical studies in humans.</AbstractText>
+            <PubDate><Year>2022</Year></PubDate>
+            <PublicationType>Systematic Review</PublicationType>
+            <PublicationType>Meta-Analysis</PublicationType>
+            <MeshHeading><DescriptorName>Humans</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          <PubmedArticle>
+            <PMID>37283486</PMID>
+            <ArticleTitle>Cannabis-based medicines and medical cannabis for adults with cancer pain.</ArticleTitle>
+            <AbstractText>Randomized controlled trials in adult patients were analyzed.</AbstractText>
+            <PubDate><Year>2023</Year></PubDate>
+            <PublicationType>Meta-Analysis</PublicationType>
+            <MeshHeading><DescriptorName>Humans</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          <PubmedArticle>
+            <PMID>9001</PMID>
+            <ArticleTitle>Cannabis sativa extract in rat models.</ArticleTitle>
+            <AbstractText>Animal model in rats.</AbstractText>
+            <PubDate><Year>2026</Year></PubDate>
+            <PublicationType>Journal Article</PublicationType>
+            <MeshHeading><DescriptorName>Animals</DescriptorName></MeshHeading>
+          </PubmedArticle>
+          `,
+        } as Response
+      );
+    global.fetch = fetchMock as jest.Mock;
+
+    const profile = await searchPubMedLiteratureProfile('cannabis sativa');
+    const broadSearchUrl = String(fetchMock.mock.calls[0][0]);
+    const clinicalSearchUrl = String(fetchMock.mock.calls[1][0]);
+    const fetchUrl = String(fetchMock.mock.calls[2][0]);
+
+    expect(broadSearchUrl).toContain(encodeURIComponent('"medical cannabis"[Title/Abstract]'));
+    expect(broadSearchUrl).toContain(encodeURIComponent('"cannabinoids"[Title/Abstract]'));
+    expect(broadSearchUrl).not.toContain(encodeURIComponent('"cannabidiol"[Title/Abstract]'));
+    expect(broadSearchUrl).not.toContain(encodeURIComponent('"nabiximols"[Title/Abstract]'));
+    expect(clinicalSearchUrl).toContain(encodeURIComponent('"spasticity"[Title/Abstract]'));
+    expect(clinicalSearchUrl).toContain(encodeURIComponent('"chronic pain"[Title/Abstract]'));
+    expect(clinicalSearchUrl).toContain(encodeURIComponent('"Systematic Review"[Publication Type]'));
+    expect(fetchUrl).toContain('19961570,35982439,37283486,31948424,28349316');
+    expect(profile?.totalCount).toBe(4079);
+    expect(profile?.articles.map((article) => article.pmid)).toEqual([
+      '19961570',
+      '35982439',
+      '37283486',
+      '9001',
+    ]);
+    expect(profile?.categories.human_clinical).toBe(3);
+    expect(profile?.categories.preclinical).toBe(1);
   });
 
   it('uses avocado leaf aliases for PubMed profiles and keeps rat literature preclinical', async () => {

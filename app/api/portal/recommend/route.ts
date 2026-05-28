@@ -22,6 +22,7 @@ import {
   logPortalSupplementOutcome,
 } from '@/lib/portal/structured-logger';
 import {
+  calibrateCannabisEnrichedContent,
   calibrateCentellaEnrichedContent,
   calibratePortalRecommendation,
   isCentellaRecommendation,
@@ -667,7 +668,10 @@ export async function POST(request: NextRequest) {
 }
 
 function calibrateEnrichedContent(content: any, category: string): any {
-  return calibrateCentellaEnrichedContent(content, category);
+  return calibrateCannabisEnrichedContent(
+    calibrateCentellaEnrichedContent(content, category),
+    category
+  );
 }
 
 /**

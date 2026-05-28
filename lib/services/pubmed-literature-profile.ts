@@ -1,4 +1,9 @@
 import { getBotanicalPubMedQueryPhrases } from './botanical-identity';
+import {
+  getClinicalRecallSearchAliases,
+  getClinicalRecallTerms,
+  getControlledHumanPmids,
+} from './clinical-recall-identity';
 
 export type LiteratureStudyCategory =
   | 'human_clinical'
@@ -38,32 +43,6 @@ const EMPTY_CATEGORIES: Record<LiteratureStudyCategory, number> = {
 };
 
 const HUMAN_CLINICAL_REVIEW_PATTERN = /\b(randomi[sz]ed controlled trials?|controlled clinical trials?|clinical trials?|human trials?|patients|healthy adults|volunteers|participants|human subjects|subjects were randomized|placebo-controlled|double-blind)\b/;
-const CENTELLA_ALIASES = [
-  'Centella asiatica',
-  'gotu kola',
-  'Centella asiatica extract',
-  'total triterpenic fraction of Centella asiatica',
-  'TECA Centella asiatica',
-];
-const CENTELLA_CLINICAL_TERMS = [
-  'clinical trial',
-  'randomized controlled trial',
-  'humans',
-  'systematic review',
-  'venous insufficiency',
-  'wound healing',
-  'acoustic startle',
-  'cognition',
-];
-const CENTELLA_CONTROLLED_HUMAN_PMIDS = [
-  '11106141',
-  '35328954',
-  '23533507',
-  '35204098',
-  '3544968',
-  '7936334',
-];
-
 function escapePubMedPhrase(term: string): string {
   return term.replace(/"/g, '').trim();
 }
@@ -76,24 +55,17 @@ function buildBroadQuery(term: string): string {
     .join(' OR ');
 }
 
-function isCentellaQuery(term: string): boolean {
-  const normalized = term
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-
-  return /\b(centella asiatica|gotu kola|centella asiatica extract)\b/.test(normalized);
-}
-
 function buildClinicalRecallQuery(term: string): string | null {
-  if (!isCentellaQuery(term)) {
+  const aliases = getClinicalRecallSearchAliases(term);
+  const clinicalTerms = getClinicalRecallTerms(term);
+  if (aliases.length === 0 || clinicalTerms.length === 0) {
     return null;
   }
 
-  const aliasQuery = CENTELLA_ALIASES
+  const aliasQuery = aliases
     .flatMap((phrase) => [`"${phrase}"[Title/Abstract]`, `"${phrase}"[All Fields]`])
     .join(' OR ');
-  const clinicalQuery = CENTELLA_CLINICAL_TERMS
+  const clinicalQuery = clinicalTerms
     .map((phrase) => `"${phrase}"[Title/Abstract]`)
     .concat([
       '"Clinical Trial"[Publication Type]',
@@ -117,16 +89,14 @@ export function getPubMedQueryPhrases(term: string): string[] {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
+  const clinicalRecallAliases = getClinicalRecallSearchAliases(phrase).filter((alias) => alias !== phrase);
   const aliases: Record<string, string[]> = {
     'hoja de aguacate': ['avocado leaf', 'Persea americana leaf'],
     'hojas de aguacate': ['avocado leaf', 'Persea americana leaf'],
-    'centella asiatica': CENTELLA_ALIASES.filter((alias) => alias !== phrase),
-    'gotu kola': CENTELLA_ALIASES.filter((alias) => alias !== phrase),
-    'centella asiatica extract': CENTELLA_ALIASES.filter((alias) => alias !== phrase),
   };
 
   const seen = new Set<string>();
-  return [phrase, ...(aliases[normalized] || [])].filter((candidate) => {
+  return [phrase, ...clinicalRecallAliases, ...(aliases[normalized] || [])].filter((candidate) => {
     const key = candidate.toLowerCase();
     if (seen.has(key)) {
       return false;
@@ -153,10 +123,17 @@ export function classifyLiteratureArticle(input: {
   );
   const hasClinicalTrialText = /\b(clinical trial|randomi[sz]ed trial|placebo-controlled|double-blind)\b/.test(text);
   const hasHumanParticipantText = /\b(patients|healthy adults|older adults|volunteers|participants|human subjects|subjects were randomized|adult participants|older adult participants)\b/.test(text);
+  const hasHumanClinicalReviewType = types.some((type) =>
+    type.includes('systematic review') ||
+    type.includes('meta-analysis')
+  );
+  const hasClinicalConditionContext =
+    /\b(pain|spasticity|multiple sclerosis|nausea|vomiting|epilepsy|seizure|seizures|sleep|anxiety|patients|clinical|treatment|therapy|therapeutic|symptoms?|disorders?)\b/.test(text);
 
   if (
     (hasClinicalPublicationType && hasHumanMesh) ||
-    (hasClinicalTrialText && hasHumanParticipantText)
+    (hasClinicalTrialText && hasHumanParticipantText) ||
+    (hasHumanClinicalReviewType && hasHumanMesh && hasClinicalConditionContext)
   ) {
     return 'human_clinical';
   }
@@ -301,7 +278,7 @@ export async function searchPubMedLiteratureProfile(
     if (clinicalSearchResponse.ok) {
       const clinicalSearchData = await clinicalSearchResponse.json();
       const clinicalIdList: string[] = clinicalSearchData.esearchresult?.idlist || [];
-      prioritizedIdList = Array.from(new Set([...CENTELLA_CONTROLLED_HUMAN_PMIDS, ...clinicalIdList, ...idList])).slice(0, maxArticles);
+      prioritizedIdList = Array.from(new Set([...getControlledHumanPmids(term), ...clinicalIdList, ...idList])).slice(0, maxArticles);
     }
   }
 

@@ -7,6 +7,7 @@ const cases = [
   { query: 'Melatonin', expected: ['completed'] },
   { query: 'Psyllium', expected: ['completed'] },
   { query: 'Ashwagandha', expected: ['completed'] },
+  { query: 'Cannabis sativa', expected: ['processing', 'completed'] },
   { query: 'Centella asiatica', expected: ['completed'] },
   { query: 'gotu kola', expected: ['completed'] },
   { query: 'Turmeric', expected: ['processing', 'completed'] },
