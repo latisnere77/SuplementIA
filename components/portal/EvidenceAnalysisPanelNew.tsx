@@ -19,6 +19,12 @@ import { BenefitEvidenceCard } from './BenefitEvidenceCard';
 import { SynergiesSection } from './SynergiesSection';
 import type { Synergy } from '@/types/synergies';
 import { isPlaceholderDosageText } from '@/lib/portal/visible-evidence-metadata';
+import {
+  localizeMechanismEvidenceLabel,
+  localizeSeverityLabel,
+  sanitizeResearchBriefList,
+  sanitizeResearchBriefText,
+} from '@/lib/portal/research-brief-presentation';
 
 interface EvidenceBadge {
   type: 'rct' | 'meta' | 'longterm' | 'safe';
@@ -275,6 +281,23 @@ export default function EvidenceAnalysisPanelNew({
       sideEffectsTitle: 'Possible Side Effects',
       common: 'Common:',
       rare: 'Rare:',
+      severity: 'Severity:',
+      interactionsTitle: 'Medication Interactions',
+      medications: 'Medications:',
+      supplements: 'Supplements:',
+      foods: 'Foods:',
+      interactionWarning: 'Consult a clinician if you take any of these medications.',
+      contraindicationsTitle: 'Contraindications',
+      contraindicationsWarning: 'Do not use this supplement in these situations without medical supervision.',
+      mechanismsTitle: 'Mechanisms of Action',
+      buyingTitle: 'What to Look For',
+      preferredForm: 'Preferred Form',
+      keyCompounds: 'Key Compounds to Look For',
+      source: 'Source:',
+      lookFor: 'Look for:',
+      qualityIndicators: 'Quality Indicators',
+      avoidFlags: 'Warning Signs',
+      note: 'Note:',
       supplementFallback: 'this supplement',
     }
     : {
@@ -289,12 +312,44 @@ export default function EvidenceAnalysisPanelNew({
       sideEffectsTitle: 'Efectos Secundarios Posibles',
       common: 'Comunes:',
       rare: 'Raros:',
+      severity: 'Severidad:',
+      interactionsTitle: 'Interacciones con Medicamentos',
+      medications: 'Medicamentos:',
+      supplements: 'Suplementos:',
+      foods: 'Alimentos:',
+      interactionWarning: 'Consulta con tu médico si estás tomando alguno de estos medicamentos.',
+      contraindicationsTitle: 'Contraindicaciones',
+      contraindicationsWarning: 'No uses este suplemento en estas condiciones sin supervisión médica.',
+      mechanismsTitle: 'Mecanismos de Acción',
+      buyingTitle: 'Qué Buscar',
+      preferredForm: 'Forma Preferida',
+      keyCompounds: 'Compuestos Activos a Buscar',
+      source: 'Fuente:',
+      lookFor: 'Buscar:',
+      qualityIndicators: 'Indicadores de Calidad',
+      avoidFlags: 'Señales de Alerta',
+      note: 'Nota:',
       supplementFallback: 'este suplemento',
     };
 
-  const localizedWorksFor = localizeWorksForItems(evidenceSummary.worksFor, language);
-  const localizedDoesntWorkFor = localizeWorksForItems(evidenceSummary.doesntWorkFor, language);
-  const localizedLimitedEvidence = localizeWorksForItems(evidenceSummary.limitedEvidence || [], language);
+  const localizedWorksFor = sanitizeResearchBriefList(localizeWorksForItems(evidenceSummary.worksFor, language), language);
+  const localizedDoesntWorkFor = sanitizeResearchBriefList(localizeWorksForItems(evidenceSummary.doesntWorkFor, language), language);
+  const localizedLimitedEvidence = sanitizeResearchBriefList(localizeWorksForItems(evidenceSummary.limitedEvidence || [], language), language);
+  const displayWhatIsIt = sanitizeResearchBriefText(evidenceSummary.whatIsItFor, language) || evidenceSummary.whatIsItFor;
+  const sanitizedEvidenceByBenefit = (evidenceSummary.evidenceByBenefit || []).map((benefit) => ({
+    ...benefit,
+    benefit: sanitizeResearchBriefText(benefit.benefit, language) || benefit.benefit,
+    summary: sanitizeResearchBriefText(benefit.summary, language) || benefit.summary,
+  }));
+  const sanitizedSideEffects = {
+    common: (evidenceSummary.sideEffects?.common || []).map((effect) => sanitizeResearchBriefText(effect, language)).filter(Boolean),
+    rare: (evidenceSummary.sideEffects?.rare || []).map((effect) => sanitizeResearchBriefText(effect, language)).filter(Boolean),
+    severity: localizeSeverityLabel(evidenceSummary.sideEffects?.severity, language),
+    notes: sanitizeResearchBriefText(evidenceSummary.sideEffects?.notes, language),
+  };
+  const sanitizedContraindications = (evidenceSummary.contraindications || [])
+    .map((contraindication) => sanitizeResearchBriefText(contraindication, language))
+    .filter(Boolean);
 
   return (
     <div className="space-y-6">
@@ -325,7 +380,7 @@ export default function EvidenceAnalysisPanelNew({
               {labels.whatIsIt}
             </h3>
             <p className="text-xl text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
-              {evidenceSummary.whatIsItFor}
+              {displayWhatIsIt}
             </p>
           </div>
 
@@ -366,10 +421,10 @@ export default function EvidenceAnalysisPanelNew({
       />
 
       {/* NEW: Evidence by Benefit Section */}
-      {evidenceSummary.evidenceByBenefit && evidenceSummary.evidenceByBenefit.length > 0 && (
+      {sanitizedEvidenceByBenefit.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-gray-900">{labels.evidenceByBenefit}</h2>
-          {evidenceSummary.evidenceByBenefit.map((benefit, index) => (
+          {sanitizedEvidenceByBenefit.map((benefit, index) => (
             <BenefitEvidenceCard key={index} {...benefit} />
           ))}
         </div>
@@ -389,7 +444,7 @@ export default function EvidenceAnalysisPanelNew({
                   {labels.effectiveDose}
                 </h4>
                 <p className="text-lg text-blue-800">
-                  {localizeInlineText(evidenceSummary.dosage.effectiveDose, language)}
+                  {sanitizeResearchBriefText(localizeInlineText(evidenceSummary.dosage.effectiveDose, language), language)}
                 </p>
               </div>
             )}
@@ -401,7 +456,7 @@ export default function EvidenceAnalysisPanelNew({
                   {labels.commonDose}
                 </h4>
                 <p className="text-lg text-green-800">
-                  {localizeInlineText(evidenceSummary.dosage.commonDose, language)}
+                  {sanitizeResearchBriefText(localizeInlineText(evidenceSummary.dosage.commonDose, language), language)}
                 </p>
               </div>
             )}
@@ -414,7 +469,7 @@ export default function EvidenceAnalysisPanelNew({
                   {labels.timing}
                 </h4>
                 <p className="text-lg text-purple-800">
-                  {localizeInlineText(evidenceSummary.dosage.timing, language)}
+                  {sanitizeResearchBriefText(localizeInlineText(evidenceSummary.dosage.timing, language), language)}
                 </p>
               </div>
             )}
@@ -425,7 +480,7 @@ export default function EvidenceAnalysisPanelNew({
              evidenceSummary.dosage.notes.length > 20 && (
               <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
                 <p className="text-sm text-amber-800">
-                  <strong>{labels.considerations}</strong> {localizeInlineText(evidenceSummary.dosage.notes, language)}
+                  <strong>{labels.considerations}</strong> {sanitizeResearchBriefText(localizeInlineText(evidenceSummary.dosage.notes, language), language)}
                 </p>
               </div>
             )}
@@ -445,21 +500,22 @@ export default function EvidenceAnalysisPanelNew({
           synergies={evidenceSummary.synergies}
           supplementName={supplementName || labels.supplementFallback}
           isFallback={evidenceSummary.synergiesSource === 'claude_fallback'}
+          language={language}
         />
       )}
 
       {/* Side Effects */}
-      {evidenceSummary.sideEffects && (evidenceSummary.sideEffects.common?.length > 0 || evidenceSummary.sideEffects.rare?.length > 0) && (
+      {evidenceSummary.sideEffects && (sanitizedSideEffects.common.length > 0 || sanitizedSideEffects.rare.length > 0 || sanitizedSideEffects.notes) && (
         <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             {labels.sideEffectsTitle}
           </h2>
 
-          {evidenceSummary.sideEffects.common?.length > 0 && (
+          {sanitizedSideEffects.common.length > 0 && (
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">{labels.common}</h3>
               <ul className="space-y-3">
-                {evidenceSummary.sideEffects.common.map((effect, index) => (
+                {sanitizedSideEffects.common.map((effect, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></span>
                     <span className="text-gray-700 text-base break-words">{effect}</span>
@@ -469,11 +525,11 @@ export default function EvidenceAnalysisPanelNew({
             </div>
           )}
 
-          {evidenceSummary.sideEffects.rare?.length > 0 && (
+          {sanitizedSideEffects.rare.length > 0 && (
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">{labels.rare}</h3>
               <ul className="space-y-3">
-                {evidenceSummary.sideEffects.rare.map((effect, index) => (
+                {sanitizedSideEffects.rare.map((effect, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="inline-block w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></span>
                     <span className="text-gray-700 text-base break-words">{effect}</span>
@@ -485,11 +541,11 @@ export default function EvidenceAnalysisPanelNew({
 
           <div className="mt-4 bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
             <p className="text-sm font-medium text-gray-700">
-              <strong>Severidad:</strong> {evidenceSummary.sideEffects.severity}
+              <strong>{labels.severity}</strong> {sanitizedSideEffects.severity}
             </p>
-            {evidenceSummary.sideEffects.notes && (
+            {sanitizedSideEffects.notes && (
               <p className="mt-2 text-sm text-gray-600 italic">
-                {evidenceSummary.sideEffects.notes}
+                {sanitizedSideEffects.notes}
               </p>
             )}
           </div>
@@ -501,12 +557,12 @@ export default function EvidenceAnalysisPanelNew({
         <div className="bg-white rounded-xl border-2 border-red-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <Shield className="h-6 w-6 text-red-600" />
-            Interacciones con Medicamentos
+            {labels.interactionsTitle}
           </h2>
 
           {evidenceSummary.interactions.medications?.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Medicamentos:</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">{labels.medications}</h3>
               <div className="space-y-4">
                 {evidenceSummary.interactions.medications.map((interaction, index) => (
                   <div key={index} className={`border-2 rounded-lg p-4 ${interaction.severity === 'Severe' ? 'border-red-300 bg-red-50' :
@@ -514,15 +570,15 @@ export default function EvidenceAnalysisPanelNew({
                       'border-yellow-300 bg-yellow-50'
                     }`}>
                     <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{interaction.medication}</h4>
+                      <h4 className="font-semibold text-gray-900">{sanitizeResearchBriefText(interaction.medication, language) || interaction.medication}</h4>
                       <span className={`text-xs font-bold px-2 py-1 rounded ${interaction.severity === 'Severe' ? 'bg-red-200 text-red-800' :
                         interaction.severity === 'Moderate' ? 'bg-orange-200 text-orange-800' :
                           'bg-yellow-200 text-yellow-800'
                         }`}>
-                        {interaction.severity}
+                        {localizeSeverityLabel(interaction.severity, language)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-700 break-words">{interaction.description}</p>
+                    <p className="text-sm text-gray-700 break-words">{sanitizeResearchBriefText(interaction.description, language) || interaction.description}</p>
                   </div>
                 ))}
               </div>
@@ -531,12 +587,12 @@ export default function EvidenceAnalysisPanelNew({
 
           {evidenceSummary.interactions.supplements?.length > 0 && (
             <div className="mb-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Suplementos:</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">{labels.supplements}</h3>
               <ul className="space-y-2">
                 {evidenceSummary.interactions.supplements.map((supplement, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span className="text-gray-700 text-base">{supplement}</span>
+                    <span className="text-gray-700 text-base">{sanitizeResearchBriefText(supplement, language) || supplement}</span>
                   </li>
                 ))}
               </ul>
@@ -545,26 +601,26 @@ export default function EvidenceAnalysisPanelNew({
 
           {evidenceSummary.interactions.foods && (
             <div className="mb-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Alimentos:</h3>
-              <p className="text-gray-700">{evidenceSummary.interactions.foods}</p>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">{labels.foods}</h3>
+              <p className="text-gray-700">{sanitizeResearchBriefText(evidenceSummary.interactions.foods, language) || evidenceSummary.interactions.foods}</p>
             </div>
           )}
 
           <p className="mt-4 text-sm text-red-700 font-medium">
-            ⚠️ Consulta con tu médico si estás tomando alguno de estos medicamentos.
+            ⚠️ {labels.interactionWarning}
           </p>
         </div>
       )}
 
       {/* Contraindications */}
-      {evidenceSummary.contraindications && evidenceSummary.contraindications.length > 0 && (
+      {sanitizedContraindications.length > 0 && (
         <div className="bg-white rounded-xl border-2 border-red-300 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <Shield className="h-6 w-6 text-red-600" />
-            Contraindicaciones
+            {labels.contraindicationsTitle}
           </h2>
           <ul className="space-y-3">
-            {evidenceSummary.contraindications.map((contraindication, index) => (
+            {sanitizedContraindications.map((contraindication, index) => (
               <li key={index} className="flex items-start gap-3">
                 <span className="inline-block w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></span>
                 <span className="text-gray-700 text-base">{contraindication}</span>
@@ -572,7 +628,7 @@ export default function EvidenceAnalysisPanelNew({
             ))}
           </ul>
           <p className="mt-4 text-sm text-red-700 font-medium">
-            ⚠️ No uses este suplemento en estas condiciones sin supervisión médica.
+            ⚠️ {labels.contraindicationsWarning}
           </p>
         </div>
       )}
@@ -581,26 +637,32 @@ export default function EvidenceAnalysisPanelNew({
       {evidenceSummary.mechanisms && evidenceSummary.mechanisms.length > 0 && (
         <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Mecanismos de Acción
+            {labels.mechanismsTitle}
           </h2>
           <div className="space-y-4">
-            {evidenceSummary.mechanisms.map((mechanism, index) => (
-              <div key={index} className={`border-2 rounded-lg p-4 ${mechanism.evidenceLevel === 'strong' ? 'border-green-300 bg-green-50' :
-                mechanism.evidenceLevel === 'moderate' ? 'border-blue-300 bg-blue-50' :
-                  'border-gray-300 bg-gray-50'
-                }`}>
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-gray-900">{mechanism.name}</h4>
-                  <span className={`text-xs font-bold px-2 py-1 rounded ${mechanism.evidenceLevel === 'strong' ? 'bg-green-200 text-green-800' :
-                    mechanism.evidenceLevel === 'moderate' ? 'bg-blue-200 text-blue-800' :
-                      'bg-gray-200 text-gray-800'
-                    }`}>
-                    {mechanism.evidenceLevel}
-                  </span>
+            {evidenceSummary.mechanisms.map((mechanism, index) => {
+              const mechanismName = sanitizeResearchBriefText(mechanism.name, language) || mechanism.name;
+              const mechanismDescription = sanitizeResearchBriefText(mechanism.description, language) || mechanism.description;
+              const mechanismEvidenceLabel = localizeMechanismEvidenceLabel(mechanism.evidenceLevel, language);
+
+              return (
+                <div key={index} className={`border-2 rounded-lg p-4 ${mechanism.evidenceLevel === 'strong' ? 'border-green-300 bg-green-50' :
+                  mechanism.evidenceLevel === 'moderate' ? 'border-blue-300 bg-blue-50' :
+                    'border-gray-300 bg-gray-50'
+                  }`}>
+                  <div className="flex items-start justify-between mb-2 gap-3">
+                    <h4 className="font-semibold text-gray-900 break-words">{mechanismName}</h4>
+                    <span className={`text-xs font-bold px-2 py-1 rounded flex-shrink-0 ${mechanism.evidenceLevel === 'strong' ? 'bg-green-200 text-green-800' :
+                      mechanism.evidenceLevel === 'moderate' ? 'bg-blue-200 text-blue-800' :
+                        'bg-gray-200 text-gray-800'
+                      }`}>
+                      {mechanismEvidenceLabel}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700 break-words">{mechanismDescription}</p>
                 </div>
-                <p className="text-sm text-gray-700 break-words">{mechanism.description}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -611,7 +673,7 @@ export default function EvidenceAnalysisPanelNew({
           <div className="flex items-center gap-3 mb-6">
             <ShoppingCart className="w-7 h-7 text-purple-600" />
             <h2 className="text-2xl font-bold text-gray-900">
-              Qué Buscar al Comprar
+              {labels.buyingTitle}
             </h2>
           </div>
 
@@ -621,9 +683,9 @@ export default function EvidenceAnalysisPanelNew({
               <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
                 <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
                   <CheckCircle className="w-5 h-5" />
-                  Forma Preferida
+                  {labels.preferredForm}
                 </h4>
-                <p className="text-purple-800">{evidenceSummary.buyingGuidance.preferredForm}</p>
+                <p className="text-purple-800">{sanitizeResearchBriefText(evidenceSummary.buyingGuidance.preferredForm, language) || evidenceSummary.buyingGuidance.preferredForm}</p>
               </div>
             )}
 
@@ -632,18 +694,18 @@ export default function EvidenceAnalysisPanelNew({
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <FlaskConical className="w-5 h-5 text-blue-600" />
-                  Compuestos Activos a Buscar
+                  {labels.keyCompounds}
                 </h4>
                 <div className="grid gap-3">
                   {evidenceSummary.buyingGuidance.keyCompounds.map((compound, idx) => (
                     <div key={idx} className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <div className="font-medium text-blue-900">{compound.name}</div>
+                      <div className="font-medium text-blue-900">{sanitizeResearchBriefText(compound.name, language) || compound.name}</div>
                       {compound.source && (
-                        <div className="text-sm text-blue-700">Fuente: {compound.source}</div>
+                        <div className="text-sm text-blue-700">{labels.source} {sanitizeResearchBriefText(compound.source, language) || compound.source}</div>
                       )}
                       {compound.lookFor && (
                         <div className="text-sm text-blue-800 mt-1">
-                          <span className="font-medium">Buscar:</span> {compound.lookFor}
+                          <span className="font-medium">{labels.lookFor}</span> {sanitizeResearchBriefText(compound.lookFor, language) || compound.lookFor}
                         </div>
                       )}
                     </div>
@@ -657,13 +719,13 @@ export default function EvidenceAnalysisPanelNew({
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  Indicadores de Calidad
+                  {labels.qualityIndicators}
                 </h4>
                 <ul className="space-y-2">
                   {evidenceSummary.buyingGuidance.qualityIndicators.map((indicator, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-green-800 bg-green-50 p-2 rounded-lg border border-green-200">
                       <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span>{indicator}</span>
+                      <span>{sanitizeResearchBriefText(indicator, language) || indicator}</span>
                     </li>
                   ))}
                 </ul>
@@ -675,13 +737,13 @@ export default function EvidenceAnalysisPanelNew({
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-amber-600" />
-                  Señales de Alerta (Evitar)
+                  {labels.avoidFlags}
                 </h4>
                 <ul className="space-y-2">
                   {evidenceSummary.buyingGuidance.avoidFlags.map((flag, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200">
                       <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span>{flag}</span>
+                      <span>{sanitizeResearchBriefText(flag, language) || flag}</span>
                     </li>
                   ))}
                 </ul>
@@ -691,7 +753,7 @@ export default function EvidenceAnalysisPanelNew({
             {/* Notes */}
             {evidenceSummary.buyingGuidance.notes && (
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
-                <span className="font-medium">Nota:</span> {evidenceSummary.buyingGuidance.notes}
+                <span className="font-medium">{labels.note}</span> {sanitizeResearchBriefText(evidenceSummary.buyingGuidance.notes, language) || evidenceSummary.buyingGuidance.notes}
               </div>
             )}
           </div>
