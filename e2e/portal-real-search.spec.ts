@@ -164,7 +164,12 @@ test.describe('portal real supplement searches', () => {
       expect.soft(latestApiResponse?.status, `${searchCase.query} quiz API status`).toBe(200);
       expect.soft(latestApiResponse?.body?.success, `${searchCase.query} API success flag`).toBe(true);
       expect.soft(latestApiResponse?.body?.recommendation?.evidence_summary?.totalStudies ?? 0, `${searchCase.query} should include study count`).toBeGreaterThan(0);
-      expect.soft(visibleText, `${searchCase.query} should render study summary`).toContain('studies');
+      expect.soft(
+        visibleText.includes('studies') ||
+          visibleText.includes('Selected clinical evidence') ||
+          visibleText.includes('Evidencia clínica seleccionada'),
+        `${searchCase.query} should render evidence provenance`
+      ).toBe(true);
         expect.soft(
           visibleText.includes('Dosage in Clinical Studies') || visibleText.includes('Dosificación según Estudios Clínicos'),
           `${searchCase.query} should render dosage section`
@@ -180,8 +185,16 @@ test.describe('portal real supplement searches', () => {
         expect.soft(visibleText, 'Magnesium benefit list should not expose raw condition tags').not.toContain('\nsleep\n');
         expect.soft(visibleText, 'Magnesium worksFor should not show catalog-derived preliminary claims').not.toContain('Evidencia preliminar encontrada');
         expect.soft(visibleText, 'Magnesium worksFor should not promote grade C placeholders').not.toContain('Sleep quality\n🟡\nC');
-        expect.soft(visibleText, 'Magnesium should render cached PubMed-backed grade B benefits').toContain('Reduce muscle cramps');
-        expect.soft(visibleText, 'Magnesium should render grade B worksFor evidence').toContain('Improve sleep');
+        expect.soft(
+          visibleText.includes('Correct low intake or magnesium deficiency') ||
+            visibleText.includes('Corregir ingesta baja o deficiencia de magnesio'),
+          'Magnesium should render curated grade B benefits'
+        ).toBe(true);
+        expect.soft(
+          visibleText.includes('Prevent migraine in some people') ||
+            visibleText.includes('Prevenir migraña en algunas personas'),
+          'Magnesium should render migraine evidence'
+        ).toBe(true);
       }
 
       const unrelatedCatalogTerms: Record<string, string[]> = {

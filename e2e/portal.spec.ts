@@ -446,6 +446,79 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Search Magnesium Glycinate on iHerb')).toBeVisible();
   });
 
+  test('Spanish results keep localized display while research actions use canonical supplement name', async ({ page }) => {
+    await mockSuccessfulQuiz(page);
+
+    const studyRequests: Array<{ supplementName?: string }> = [];
+    const benefitRequests: Array<{ supplementName?: string; benefitQuery?: string }> = [];
+
+    await page.route('**/api/portal/studies', async (route) => {
+      const body = route.request().postDataJSON() as { supplementName?: string };
+      studyRequests.push(body);
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          studies: [
+            {
+              pmid: '12345',
+              title: 'Magnesium clinical evidence',
+              abstract: 'Clinical context.',
+              authors: ['A Author'],
+              year: 2024,
+              studyType: 'review',
+              pubmedUrl: 'https://pubmed.ncbi.nlm.nih.gov/12345/',
+            },
+          ],
+          totalFound: 1,
+          searchQuery: 'Magnesium',
+        }),
+      });
+    });
+
+    await page.route('**/api/portal/enrich-v2', async (route) => {
+      const body = route.request().postDataJSON() as { supplementName?: string; benefitQuery?: string };
+      benefitRequests.push(body);
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: {
+            worksFor: [
+              {
+                condition: 'Sleep quality',
+                evidenceGrade: 'B',
+                notes: 'Clinical evidence is context dependent.',
+                studyCount: 3,
+              },
+            ],
+            doesntWorkFor: [],
+            limitedEvidence: [],
+            totalStudies: 3,
+          },
+        }),
+      });
+    });
+
+    await page.goto('/es/portal/results?q=Magnesium&supplement=Magnesium');
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Recomendaciones para Magnesio/i })).toBeVisible();
+
+    await page.getByRole('button', { name: /Ver Estudios/i }).click();
+    await expect(page.getByText('Magnesium clinical evidence')).toBeVisible();
+    expect(studyRequests[0]?.supplementName).toBe('Magnesium');
+
+    await page.getByPlaceholder(/Busca beneficios específicos/i).fill('sueño');
+    await page.getByTitle('Buscar estudios científicos sobre este beneficio').click();
+    await expect(page.getByText(/Magnesio para sueño/i)).toBeVisible();
+    expect(benefitRequests[0]).toMatchObject({
+      supplementName: 'Magnesium',
+      benefitQuery: 'sleep',
+    });
+  });
+
   test('results render iHerb affiliate card only for clear supplement matches', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, '__openedUrls', {
