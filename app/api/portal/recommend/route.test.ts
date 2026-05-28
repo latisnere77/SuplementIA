@@ -177,6 +177,7 @@ describe('/api/portal/recommend POST', () => {
     expect(serialized).not.toContain('eficacia demostrada');
     expect(serialized).not.toContain('tratamiento de');
     expect(serialized).not.toMatch(/no hay reportes de hepatotoxicidad|no reportes de hepatotoxicidad/);
+    expect(serialized).not.toMatch(/aunque generalmente bien tolerada/);
     expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
   });
 
