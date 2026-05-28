@@ -40,6 +40,8 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 180; // 3 minutes to allow for complex supplements with many studies
 
+const ENRICH_V2_PREFLIGHT_TIMEOUT_MS = 8000;
+
 // Check if we're in demo mode
 const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
 
@@ -737,7 +739,7 @@ async function preflightControlledNoDataResponse(params: {
         yearFrom: 2010,
         jobId,
       }),
-      signal: AbortSignal.timeout(120000),
+      signal: AbortSignal.timeout(ENRICH_V2_PREFLIGHT_TIMEOUT_MS),
     });
 
     const directErrorText = await directEnrichResponse.text();
