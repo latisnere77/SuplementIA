@@ -116,7 +116,9 @@ describe('/api/portal/recommend POST', () => {
             safety: {
               longTermSafety: 'No reportes de hepatotoxicidad, nefrotoxicidad o toxicidad sistemica en literatura clinica.',
               notes: 'Generalmente seguro.',
-              contraindications: [],
+              contraindications: [
+                'Enfermedad hepatica severa - metabolismo hepatico de triterpenos, usar con precaucion aunque no hay reportes de hepatotoxicidad',
+              ],
             },
             totalStudies: 8,
           },
