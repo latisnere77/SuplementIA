@@ -294,6 +294,11 @@ function isCbdText(...values: unknown[]): boolean {
   return /\b(cbd|cannabidiol)\b/.test(haystack);
 }
 
+function isCbdIdentityText(...values: unknown[]): boolean {
+  const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
+  return /\b(cbd|cannabidiol)\b/.test(haystack) && !/\b(cannabis sativa|medical cannabis|medical marijuana|cannabinoids)\b/.test(haystack);
+}
+
 function stripCannabisContextNotice(value: unknown): unknown {
   if (typeof value !== 'string') return value;
   return value
@@ -392,6 +397,17 @@ function hideUncontextualizedCbdStudyCount(calibrated: any): void {
     calibrated.evidence_summary.totalStudies = 0;
   }
 
+  if (Array.isArray(calibrated.evidence_summary?.ingredients)) {
+    calibrated.evidence_summary.ingredients = calibrated.evidence_summary.ingredients.map((ingredient: any) => {
+      if (!isCbdText(ingredient?.name, ingredient?.description)) return ingredient;
+      return {
+        ...ingredient,
+        studyCount: 0,
+        rctCount: 0,
+      };
+    });
+  }
+
   if (calibrated.studies && Number(calibrated.studies.total || 0) >= 50) {
     calibrated.studies.total = 0;
   }
@@ -401,7 +417,7 @@ function calibrateCannabisDataShape(data: any, category?: string) {
   if (!data || typeof data !== 'object') return data;
 
   const calibrated: any = sanitizeCannabisItem({ ...data });
-  const cbdScoped = isCbdText(category, calibrated.name, calibrated.whatIsIt, calibrated.description, calibrated.whatIsItFor);
+  const cbdScoped = isCbdIdentityText(category, calibrated.name);
   const calibratedEvidence = calibrateCannabisWorksFor(calibrated.worksFor, { cbdScoped });
   calibrated.worksFor = calibratedEvidence.worksFor;
   calibrated.limitedEvidence = [
@@ -505,13 +521,10 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
   }
 
   if (calibrated.supplement) {
-    const cbdScoped = isCbdText(
+    const cbdScoped = isCbdIdentityText(
       category,
       calibrated.category,
-      calibrated.supplement.name,
-      calibrated.supplement.whatIsIt,
-      calibrated.supplement.description,
-      calibrated.supplement.whatIsItFor
+      calibrated.supplement.name
     );
     const calibratedEvidence = calibrateCannabisWorksFor(calibrated.supplement.worksFor, { cbdScoped });
     calibrated.supplement.worksFor = calibratedEvidence.worksFor;
@@ -554,7 +567,7 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
     calibrated.evidence.summary = String(stripCannabisContextNotice(sanitizeCannabisClaimText(calibrated.evidence.summary)) || '').trim();
   }
 
-  if (isCbdText(category, calibrated.category, calibrated.name)) {
+  if (isCbdIdentityText(category, calibrated.category, calibrated.name)) {
     hideUncontextualizedCbdStudyCount(calibrated);
   }
 
