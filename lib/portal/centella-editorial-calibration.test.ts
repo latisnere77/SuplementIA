@@ -12,6 +12,7 @@ describe('cannabis and CBD editorial calibration', () => {
       category: 'Cannabis sativa',
       supplement: {
         name: 'Cannabis sativa',
+        description: CANNABIS_NOTICE,
         worksFor: [
           {
             condition: 'Cannabis sativa sirve para multiple sclerosis spasticity',
@@ -31,6 +32,7 @@ describe('cannabis and CBD editorial calibration', () => {
     expect(calibrated.products).toEqual([]);
     expect(calibrated.supplement.products).toEqual([]);
     expect(countCannabisNotices(calibrated.supplement.whatIsIt)).toBe(1);
+    expect(calibrated.supplement.description).not.toContain('Cannabidiol (CBD) es un cannabinoide estudiado');
     expect(countCannabisNotices(calibrated.supplement.worksFor)).toBe(0);
     expect(countCannabisNotices(calibrated.supplement.practicalRecommendations)).toBe(1);
     expect(countCannabisNotices(calibrated.evidence.summary)).toBe(0);
@@ -56,7 +58,12 @@ describe('cannabis and CBD editorial calibration', () => {
         studies: { total: 100 },
         totalStudies: 100,
       },
-      evidence_summary: { totalStudies: 100 },
+      evidence_summary: {
+        totalStudies: 100,
+        ingredients: [
+          { name: 'Cannabidiol (CBD)', grade: 'B', studyCount: 156, rctCount: 34 },
+        ],
+      },
     }, 'CBD');
 
     const serialized = JSON.stringify(calibrated).toLowerCase();
@@ -67,6 +74,8 @@ describe('cannabis and CBD editorial calibration', () => {
     expect(calibrated.supplement.totalStudies).toBe(0);
     expect(calibrated.supplement.studies.total).toBe(0);
     expect(calibrated.evidence_summary.totalStudies).toBe(0);
+    expect(calibrated.evidence_summary.ingredients[0].studyCount).toBe(0);
+    expect(calibrated.evidence_summary.ingredients[0].rctCount).toBe(0);
     expect(serialized).not.toContain('dietary supplement ingredient');
     expect(serialized).not.toContain('propiedades antiinflamatorias comprobadas');
     expect(serialized).not.toContain('100 estudios');
