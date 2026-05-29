@@ -307,6 +307,19 @@ function stripCannabisContextNotice(value: unknown): unknown {
     .trim();
 }
 
+function stripCannabisContextNoticeDeep<T>(value: T): T {
+  if (typeof value === 'string') return stripCannabisContextNotice(value) as T;
+  if (Array.isArray(value)) return value.map((item) => stripCannabisContextNoticeDeep(item)) as T;
+  if (!value || typeof value !== 'object') return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+      key,
+      stripCannabisContextNoticeDeep(item),
+    ])
+  ) as T;
+}
+
 function withCannabisContextNotice(value: unknown): string {
   const base = String(stripCannabisContextNotice(sanitizeCannabisClaimText(value)) || '').trim();
   return base ? `${base} ${CANNABIS_CONTEXT_NOTICE}` : CANNABIS_CONTEXT_NOTICE;
@@ -413,6 +426,29 @@ function hideUncontextualizedCbdStudyCount(calibrated: any): void {
   }
 }
 
+function stripCannabisNoticeFromEvidenceSummary(calibrated: any): void {
+  if (!Array.isArray(calibrated?.evidence_summary?.ingredients)) return;
+  calibrated.evidence_summary.ingredients = calibrated.evidence_summary.ingredients.map((ingredient: any) => ({
+    ...ingredient,
+    description: stripCannabisContextNotice(sanitizeCannabisClaimText(ingredient?.description)),
+  }));
+}
+
+function keepSingleBroadCannabisNotice(calibrated: any, cbdScoped: boolean): any {
+  const cleaned = stripCannabisContextNoticeDeep(calibrated);
+  if (cbdScoped) return cleaned;
+
+  if (cleaned?.supplement) {
+    cleaned.supplement.whatIsIt = withCannabisContextNotice(
+      cleaned.supplement.whatIsIt || cleaned.supplement.description || cleaned.supplement.whatIsItFor
+    );
+    return cleaned;
+  }
+
+  cleaned.whatIsIt = withCannabisContextNotice(cleaned.whatIsIt || cleaned.description || cleaned.whatIsItFor);
+  return cleaned;
+}
+
 function calibrateCannabisDataShape(data: any, category?: string) {
   if (!data || typeof data !== 'object') return data;
 
@@ -426,7 +462,7 @@ function calibrateCannabisDataShape(data: any, category?: string) {
   ];
   calibrated.products = [];
   calibrated.buyingGuidance = undefined;
-  calibrated.regulatoryNotice = CANNABIS_CONTEXT_NOTICE;
+  calibrated.regulatoryNotice = undefined;
   calibrated.evidenceSummary = String(stripCannabisContextNotice(sanitizeCannabisClaimText(calibrated.evidenceSummary)) || '').trim();
   calibrated.practicalRecommendations = [
     ...(Array.isArray(calibrated.practicalRecommendations)
@@ -434,8 +470,8 @@ function calibrateCannabisDataShape(data: any, category?: string) {
         .map((item: unknown) => stripCannabisContextNotice(sanitizeCannabisClaimText(item)))
         .filter(Boolean)
       : []),
-    CANNABIS_CONTEXT_NOTICE,
   ];
+  stripCannabisNoticeFromEvidenceSummary(calibrated);
 
   if (cbdScoped) {
     calibrated.whatIsIt = CBD_RESEARCH_DESCRIPTION;
@@ -448,7 +484,7 @@ function calibrateCannabisDataShape(data: any, category?: string) {
     calibrated.whatIsItFor = String(stripCannabisContextNotice(sanitizeCannabisClaimText(calibrated.whatIsItFor)) || '').trim();
   }
 
-  return calibrated;
+  return keepSingleBroadCannabisNotice(calibrated, cbdScoped);
 }
 
 export function calibrateCannabisEnrichedContent(content: any, category: string): any {
@@ -534,14 +570,13 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
     ];
     calibrated.supplement.products = [];
     calibrated.supplement.buyingGuidance = undefined;
-    calibrated.supplement.regulatoryNotice = CANNABIS_CONTEXT_NOTICE;
+    calibrated.supplement.regulatoryNotice = undefined;
     calibrated.supplement.practicalRecommendations = [
       ...(Array.isArray(calibrated.supplement.practicalRecommendations)
         ? calibrated.supplement.practicalRecommendations
           .map((item: unknown) => stripCannabisContextNotice(sanitizeCannabisClaimText(item)))
           .filter(Boolean)
         : []),
-      CANNABIS_CONTEXT_NOTICE,
     ];
     calibrated.supplement.benefits = calibrated.supplement.worksFor.map((item: any) =>
       `${item.condition || item.use || item.benefit} (Evidencia: ${item.evidenceGrade || item.grade || 'B'})`
@@ -571,12 +606,18 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
     hideUncontextualizedCbdStudyCount(calibrated);
   }
 
-  calibrated._enrichment_metadata = {
-    ...(calibrated._enrichment_metadata || {}),
-    regulatedCannabinoidNotice: CANNABIS_CONTEXT_NOTICE,
-  };
+  if (calibrated._enrichment_metadata?.regulatedCannabinoidNotice) {
+    calibrated._enrichment_metadata = {
+      ...calibrated._enrichment_metadata,
+      regulatedCannabinoidNotice: undefined,
+    };
+  }
+  stripCannabisNoticeFromEvidenceSummary(calibrated);
 
-  return calibrated as T;
+  return keepSingleBroadCannabisNotice(
+    calibrated,
+    isCbdIdentityText(category, calibrated.category, calibrated.name, calibrated.supplement?.name)
+  ) as T;
 }
 
 export function calibratePortalRecommendation<T>(recommendation: T, category?: string): T {

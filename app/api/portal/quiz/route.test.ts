@@ -751,7 +751,8 @@ describe('/api/portal/quiz POST', () => {
       expect(body.recommendation.products).toEqual([]);
       expect(body.recommendation.worksFor[0].condition).toContain('Nabiximols');
       expect(JSON.stringify(body.recommendation.worksFor)).not.toContain('no equivale a recomendar Cannabis sativa/CBD como suplemento');
-      expect((JSON.stringify(body.recommendation.practicalRecommendations).match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || [])).toHaveLength(1);
+      expect((JSON.stringify(body.recommendation).match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || [])).toHaveLength(1);
+      expect((JSON.stringify(body.recommendation.practicalRecommendations).match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || [])).toHaveLength(0);
       expect(JSON.stringify(body.recommendation).toLowerCase()).not.toMatch(/suplemento recomendado|comprar|sirve para/);
       expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining('/api/portal/enrich-v2'),
