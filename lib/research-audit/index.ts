@@ -4,6 +4,7 @@ export * from './fixtures';
 export * from './kimi-provider';
 export * from './packets';
 export * from './pmid';
+export * from './pmid-verifier';
 export * from './provider';
 export * from './provider-prompt';
 export * from './provider-runner';

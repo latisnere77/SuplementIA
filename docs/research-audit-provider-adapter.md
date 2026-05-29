@@ -50,9 +50,9 @@ Even when enabled, this remains report-only:
 - It writes local JSON/Markdown reports only.
 - It never writes findings to DB.
 - It never changes clinical runtime data.
-- It never marks PMIDs as verified.
-- `validatedPmids` remains `[]`.
-- `pmidVerificationStatus` remains `"not_checked"` until a deterministic E-utilities verifier is implemented.
+- Providers may only propose `candidatePmids`.
+- The runner verifies candidate PMIDs deterministically with PubMed E-utilities before copying any PMID into `validatedPmids`.
+- If PubMed verification fails, `validatedPmids` remains `[]` and `pmidVerificationStatus` becomes `"verification_failed"`.
 
 ## Safety Contract
 
@@ -63,8 +63,6 @@ Every provider response is normalized back into the `ResearchAuditFinding` Zod s
 - `blockedFromProduction: true`
 - `requiresHumanReview: true`
 - `redactionApplied: true`
-- `validatedPmids: []`
-- `pmidVerificationStatus: "not_checked"`
+- provider-supplied `validatedPmids` are discarded before deterministic verification
 
 Budget checks run before the provider call. If the estimated cost exceeds `AUDIT_AGENT_MAX_SPEND_USD_PER_RUN`, the packet is skipped before any external request.
-

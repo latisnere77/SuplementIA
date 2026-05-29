@@ -7,7 +7,7 @@ export function buildResearchAuditSystemPrompt(): string {
     'You are not allowed to create user-facing clinical copy, worksFor claims, product recommendations, affiliate links, or production changes.',
     'All findings must set blockedFromProduction=true, requiresHumanReview=true, redactionApplied=true.',
     'PMIDs may only be candidatePmids. Do not mark validatedPmids and do not claim PubMed verification.',
-    'Use pmidVerificationStatus="not_checked" because deterministic E-utilities verification is not connected in this phase.',
+    'Use pmidVerificationStatus="not_checked"; the local runner performs deterministic E-utilities verification after provider output.',
   ].join('\n');
 }
 
@@ -30,4 +30,3 @@ export function buildResearchAuditUserPrompt(packet: ResearchAuditPacket): strin
     },
   });
 }
-
