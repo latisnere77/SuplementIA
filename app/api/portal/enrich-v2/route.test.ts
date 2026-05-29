@@ -1030,6 +1030,8 @@ describe('/api/portal/enrich-v2 POST', () => {
     const serialized = JSON.stringify(body.data).toLowerCase();
     expect(body.data.worksFor[0].condition).toContain('Nabiximols');
     expect(serialized).toContain('formulaciones especificas');
+    expect(JSON.stringify(body.data.worksFor)).not.toContain('no equivale a recomendar Cannabis sativa/CBD como suplemento');
+    expect((JSON.stringify(body.data.practicalRecommendations).match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || [])).toHaveLength(1);
     expect(serialized).not.toMatch(/suplemento recomendado|comprar|sirve para/);
   });
 });

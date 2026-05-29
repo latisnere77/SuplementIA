@@ -635,6 +635,87 @@ test.describe('portal browser flows', () => {
     expect(magnesiumText).toMatch(/evidencia clínica (seleccionada|revisada)|catálogo local|muestra revisada/i);
   });
 
+  test('Spanish Cannabis and CBD results keep regulatory copy scoped and avoid generic supplement claims', async ({ page }) => {
+    const cannabisNotice = 'Evidencia sobre cannabinoides medicos o formulaciones especificas; no equivale a recomendar Cannabis sativa/CBD como suplemento.';
+
+    await page.route('**/api/portal/quiz**', async (route) => {
+      const body = route.request().postDataJSON() as QuizRequest;
+      const isCbd = body.category.toLowerCase().includes('cbd');
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          searchType: 'ingredient',
+          jobId: body.jobId,
+          recommendation: {
+            ...recommendation,
+            category: isCbd ? 'CBD' : 'Cannabis sativa',
+            evidence_summary: {
+              ...recommendation.evidence_summary,
+              totalStudies: isCbd ? 0 : 4,
+              ingredients: [],
+              studies: {
+                ...recommendation.evidence_summary.studies,
+                total: isCbd ? 0 : 4,
+              },
+            },
+            ingredients: [],
+            supplement: {
+              name: isCbd ? 'CBD' : 'Cannabis sativa',
+              description: isCbd
+                ? 'Cannabidiol (CBD) es un cannabinoide estudiado en formulaciones farmaceuticas especificas. Esta ficha no evalua ni recomienda productos comerciales de CBD como suplemento.'
+                : `Cannabis sativa se revisa aqui como fuente de cannabinoides medicos o formulaciones clinicas especificas. ${cannabisNotice}`,
+              worksFor: isCbd
+                ? []
+                : [
+                  {
+                    condition: 'Nabiximols/cannabinoides medicos para espasticidad en esclerosis multiple',
+                    evidenceGrade: 'B',
+                    notes: 'Uso formulacion-especifico; no equivale a recomendar cannabis comercial.',
+                    studyCount: 2,
+                  },
+                ],
+              limitedEvidence: isCbd
+                ? [
+                  {
+                    condition: 'Evidencia limitada sobre CBD comercial',
+                    evidenceGrade: 'C',
+                    notes: 'No debe interpretarse como beneficio clinico general de CBD comercial.',
+                    studyCount: 0,
+                  },
+                ]
+                : [],
+              doesntWorkFor: [],
+              products: [],
+              practicalRecommendations: [cannabisNotice],
+            },
+            products: [],
+          },
+        }),
+      });
+    });
+
+    await page.goto('/es/portal/results?q=Cannabis%20sativa&supplement=Cannabis%20sativa');
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByText(/Cannabis sativa se revisa aqui/i)).toBeVisible();
+    let visibleText = await page.locator('body').innerText();
+    expect((visibleText.match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || []).length).toBeLessThanOrEqual(1);
+    expect(visibleText).toMatch(/cannabinoides medicos|formulaciones clinicas especificas/i);
+    expect(visibleText).not.toMatch(/suplemento recomendado|comprar|treats|cures/i);
+
+    await page.goto('/es/portal/results?q=CBD&supplement=CBD');
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByText(/Cannabidiol \(CBD\) es un cannabinoide estudiado/i)).toBeVisible();
+    visibleText = await page.locator('body').innerText();
+    expect(visibleText).toContain('Cannabidiol (CBD) es un cannabinoide estudiado');
+    expect(visibleText).not.toContain('dietary supplement ingredient');
+    expect(visibleText).not.toContain('Propiedades antiinflamatorias comprobadas');
+    expect(visibleText).not.toContain('100 estudios científicos');
+    expect(visibleText).not.toMatch(/dronabinol|nabilone|nabiximols|sativex|suplemento recomendado|comprar|treats|cures/i);
+  });
+
   test('results render iHerb affiliate card only for clear supplement matches', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, '__openedUrls', {

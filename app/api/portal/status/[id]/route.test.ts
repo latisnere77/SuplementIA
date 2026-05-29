@@ -318,6 +318,8 @@ describe('Portal status route', () => {
     expect(body.recommendation.supplement.worksFor[0].condition).toContain('Nabiximols');
     expect(body.recommendation.products).toEqual([]);
     expect(serialized).toContain('formulaciones especificas');
+    expect(JSON.stringify(body.recommendation.supplement.worksFor)).not.toContain('no equivale a recomendar Cannabis sativa/CBD como suplemento');
+    expect((JSON.stringify(body.recommendation.supplement.practicalRecommendations).match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || [])).toHaveLength(1);
     expect(serialized).not.toMatch(/suplemento recomendado|comprar|sirve para/);
   });
 });
