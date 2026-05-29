@@ -87,12 +87,8 @@ function recommendationToBenefitData(recommendation: any, benefitQuery?: string)
   };
 }
 
-function getControlledBenefitError(status?: number): string {
-  if (status === 503) {
-    return 'La consulta por tema está temporalmente limitada. Mostramos la evidencia disponible en la ficha principal cuando es posible.';
-  }
-
-  return 'No pudimos cargar evidencia adicional por tema en este momento. Revisa la ficha principal o intenta de nuevo más tarde.';
+function getControlledBenefitError(_status?: number): string {
+  return 'No pudimos cargar estudios verificables sobre este tema en este momento. Puedes revisar la ficha principal o intentarlo más tarde.';
 }
 
 export default function BenefitStudiesModal({

@@ -14,15 +14,18 @@ interface ShareReferralCardProps {
   recommendationId: string;
   referralLink?: string;
   onShare?: (platform: string) => void;
+  mode?: 'recommendation' | 'research';
 }
 
 export default function ShareReferralCard({
   recommendationId,
   referralLink,
   onShare,
+  mode = 'recommendation',
 }: ShareReferralCardProps) {
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
+  const isResearchMode = mode === 'research';
 
   // Get supplement name from URL or page
   const supplementName = typeof window !== 'undefined'
@@ -39,6 +42,15 @@ export default function ShareReferralCard({
     default: `🔬 Descubrí información científica sobre ${supplementName} basada en estudios de PubMed`,
   };
 
+  const researchShareTexts = {
+    whatsapp: `🔬 Encontré una ficha de investigación sobre ${supplementName}\n\nResume evidencia, límites y seguridad con fuentes científicas.\n\nMírala aquí:`,
+    twitter: `🔬 Ficha de investigación sobre ${supplementName} | Evidencia, límites y seguridad`,
+    email: `🔬 Ficha de investigación sobre ${supplementName}\n\nHola,\n\nEncontré esta ficha de investigación sobre ${supplementName}. Resume evidencia, límites y seguridad sin sustituir consejo médico.\n\nPuedes verla aquí:`,
+    default: `🔬 Ficha de investigación sobre ${supplementName}`,
+  };
+
+  const activeShareTexts = isResearchMode ? researchShareTexts : shareTexts;
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(shareLink);
@@ -51,20 +63,20 @@ export default function ShareReferralCard({
   };
 
   const handleWhatsApp = () => {
-    const url = `https://wa.me/?text=${encodeURIComponent(`${shareTexts.whatsapp} ${shareLink}`)}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(`${activeShareTexts.whatsapp} ${shareLink}`)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
     if (onShare) onShare('whatsapp');
   };
 
   const handleEmail = () => {
     const subject = encodeURIComponent(`Información Científica sobre ${supplementName}`);
-    const body = encodeURIComponent(`${shareTexts.email}\n\n${shareLink}\n\n---\nEnviado desde SuplementAI - Recomendaciones basadas en evidencia científica`);
+    const body = encodeURIComponent(`${activeShareTexts.email}\n\n${shareLink}\n\n---\nEnviado desde SuplementAI`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
     if (onShare) onShare('email');
   };
 
   const handleTwitter = () => {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTexts.twitter)}&url=${encodeURIComponent(shareLink)}&hashtags=SuplementAI,CienciaBasadaEnEvidencia`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(activeShareTexts.twitter)}&url=${encodeURIComponent(shareLink)}&hashtags=SuplementAI,CienciaBasadaEnEvidencia`;
     window.open(url, '_blank', 'noopener,noreferrer');
     if (onShare) onShare('twitter');
   };
@@ -88,8 +100,12 @@ export default function ShareReferralCard({
           <Share2 className="h-6 w-6 text-blue-600" />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900">{t('share.title')}</h3>
-          <p className="text-sm text-gray-600">{t('share.subtitle')}</p>
+          <h3 className="text-xl font-bold text-gray-900">
+            {isResearchMode ? t('share.research.title') : t('share.title')}
+          </h3>
+          <p className="text-sm text-gray-600">
+            {isResearchMode ? t('share.research.subtitle') : t('share.subtitle')}
+          </p>
         </div>
       </div>
 
@@ -171,4 +187,3 @@ export default function ShareReferralCard({
     </div>
   );
 }
-

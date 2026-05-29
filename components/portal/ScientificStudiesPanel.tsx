@@ -71,12 +71,8 @@ function normalizeStudiesResponse(data: any, supplementName: string): StudiesDat
   };
 }
 
-function getControlledStudiesError(status?: number): string {
-  if (status === 503) {
-    return 'La consulta de estudios está temporalmente limitada. Puedes revisar la ficha principal o abrir PubMed directamente mientras se restablece.';
-  }
-
-  return 'No pudimos cargar estudios verificables en este momento. Intenta de nuevo o revisa PubMed directamente.';
+function getControlledStudiesError(_status?: number): string {
+  return 'No pudimos cargar estudios verificables en este momento. Puedes revisar la ficha principal o abrir PubMed.';
 }
 
 export default function ScientificStudiesPanel({

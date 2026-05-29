@@ -31,25 +31,22 @@ interface ProductRecommendationsGridProps {
 
 const TIER_CONFIG = {
   budget: {
-    label: 'Budget',
     color: 'from-gray-500 to-gray-600',
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-300',
-    badge: 'Best Value',
+    badgeKey: 'product.badges.budget',
   },
   value: {
-    label: 'Value',
     color: 'from-blue-500 to-blue-600',
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-300',
-    badge: 'Recommended',
+    badgeKey: 'product.badges.value',
   },
   premium: {
-    label: 'Premium',
     color: 'from-purple-500 to-purple-600',
     bgColor: 'bg-purple-50',
     borderColor: 'border-purple-300',
-    badge: 'ANKONERE',
+    badgeKey: 'product.badges.premium.ankonere',
   },
 };
 
@@ -93,7 +90,9 @@ export default function ProductRecommendationsGrid({
           const config = TIER_CONFIG[product.tier];
           const isHighlighted = product.tier === 'premium' && !product.isAffiliate;
           const contains = Array.isArray(product.contains) ? product.contains : [];
-          const badge = product.isAffiliate && product.tier === 'premium' ? 'Premium' : config.badge;
+          const badge = product.isAffiliate && product.tier === 'premium'
+            ? t('product.premium')
+            : t(config.badgeKey as any);
           const isIHerbAffiliate = product.affiliateProvider === 'iherb';
 
           return (
@@ -116,7 +115,7 @@ export default function ProductRecommendationsGrid({
               <div className="mb-4">
                 <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-1">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {t(`product.${product.tier}` as any)} {t('common.option')}
+                  {t(`product.${product.tier}` as any)}
                 </h3>
                 <h4 className="text-xl font-bold text-gray-900">{product.name}</h4>
               </div>
