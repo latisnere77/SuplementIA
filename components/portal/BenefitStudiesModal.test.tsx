@@ -45,6 +45,8 @@ describe('BenefitStudiesModal', () => {
 
     expect(screen.queryByText(/Error fetching studies: 503/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/^Error$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Basado en\s+4\s+estudios científicos/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Evidencia mostrada desde la ficha principal/i)).toBeInTheDocument();
     expect(screen.getByText('Prevenir migraña en algunas personas')).toBeInTheDocument();
   });
 });
