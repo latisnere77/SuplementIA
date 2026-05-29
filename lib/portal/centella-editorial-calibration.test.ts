@@ -59,6 +59,17 @@ describe('cannabis and CBD editorial calibration', () => {
         studies: { total: 100 },
         totalStudies: 100,
       },
+      data: {
+        name: 'CBD',
+        worksFor: [
+          {
+            condition: 'Nabiximols for multiple sclerosis spasticity',
+            grade: 'B',
+            notes: 'Sativex evidence.',
+          },
+        ],
+        products: [{ name: 'Sativex affiliate placeholder' }],
+      },
       evidence_summary: {
         totalStudies: 100,
         ingredients: [
@@ -71,6 +82,9 @@ describe('cannabis and CBD editorial calibration', () => {
     expect(calibrated.supplement.products).toEqual([]);
     expect(calibrated.supplement.worksFor).toHaveLength(0);
     expect(calibrated.supplement.limitedEvidence).toHaveLength(1);
+    expect(calibrated.data.worksFor).toHaveLength(0);
+    expect(calibrated.data.limitedEvidence || []).toHaveLength(0);
+    expect(calibrated.data.products).toEqual([]);
     expect(calibrated.supplement.description).toContain('Cannabidiol (CBD) es un cannabinoide estudiado');
     expect(calibrated.supplement.totalStudies).toBe(0);
     expect(calibrated.supplement.studies.total).toBe(0);
