@@ -319,7 +319,8 @@ describe('Portal status route', () => {
     expect(body.recommendation.products).toEqual([]);
     expect(serialized).toContain('formulaciones especificas');
     expect(JSON.stringify(body.recommendation.supplement.worksFor)).not.toContain('no equivale a recomendar Cannabis sativa/CBD como suplemento');
-    expect((JSON.stringify(body.recommendation.supplement.practicalRecommendations).match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || [])).toHaveLength(1);
+    expect((JSON.stringify(body.recommendation).match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || [])).toHaveLength(1);
+    expect((JSON.stringify(body.recommendation.supplement.practicalRecommendations).match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || [])).toHaveLength(0);
     expect(serialized).not.toMatch(/suplemento recomendado|comprar|sirve para/);
   });
 });

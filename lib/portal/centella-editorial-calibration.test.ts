@@ -34,8 +34,9 @@ describe('cannabis and CBD editorial calibration', () => {
     expect(countCannabisNotices(calibrated.supplement.whatIsIt)).toBe(1);
     expect(calibrated.supplement.description).not.toContain('Cannabidiol (CBD) es un cannabinoide estudiado');
     expect(countCannabisNotices(calibrated.supplement.worksFor)).toBe(0);
-    expect(countCannabisNotices(calibrated.supplement.practicalRecommendations)).toBe(1);
+    expect(countCannabisNotices(calibrated.supplement.practicalRecommendations)).toBe(0);
     expect(countCannabisNotices(calibrated.evidence.summary)).toBe(0);
+    expect(countCannabisNotices(calibrated)).toBe(1);
     expect(JSON.stringify(calibrated).toLowerCase()).not.toMatch(/suplemento recomendado|comprar|sirve para/);
   });
 
