@@ -149,6 +149,8 @@ export const translations = {
     // Share/Referral
     'share.title': 'Share Your Recommendation',
     'share.subtitle': 'Help others discover evidence-based solutions',
+    'share.research.title': 'Share this research brief',
+    'share.research.subtitle': 'Help others review the evidence, limits, and safety context',
     'share.referral.rewards': 'Referral Rewards',
     'share.referral.desc': 'Earn 500 points ($5) when a friend subscribes to Pro. They get 1 month free!',
     'share.whatsapp': 'WhatsApp',
@@ -342,6 +344,8 @@ export const translations = {
     // Share/Referral
     'share.title': 'Comparte Tu Recomendación',
     'share.subtitle': 'Ayuda a otros a descubrir soluciones basadas en evidencia',
+    'share.research.title': 'Comparte esta ficha de investigación',
+    'share.research.subtitle': 'Ayuda a otros a revisar la evidencia, límites y seguridad',
     'share.referral.rewards': 'Recompensas por Referidos',
     'share.referral.desc': 'Gana 500 puntos ($5) cuando un amigo se suscriba a Pro. ¡Ellos obtienen 1 mes gratis!',
     'share.whatsapp': 'WhatsApp',

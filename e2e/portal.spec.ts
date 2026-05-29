@@ -622,6 +622,7 @@ test.describe('portal browser flows', () => {
     const centellaText = await page.locator('body').innerText();
     expect(centellaText).not.toContain('uso estudiado medico');
     expect(centellaText).not.toContain('Generally Safe');
+    expect(centellaText).not.toContain('Bien Tolerado');
     expect(centellaText).not.toContain('Complementary supplement combination');
     expect(centellaText).not.toMatch(/\bBase\b/);
     expect(centellaText).not.toMatch(/\bGeneral\b/);
@@ -632,6 +633,8 @@ test.describe('portal browser flows', () => {
     await expect(page.getByRole('heading', { name: /Recomendaciones para Magnesio/i })).toBeVisible();
     const magnesiumText = await page.locator('body').innerText();
     expect(magnesiumText).not.toContain('Basado en 2 estudios');
+    expect(magnesiumText).not.toContain('Recommended');
+    expect(magnesiumText).not.toContain('OPCIÓN DE VALOR OPCIÓN');
     expect(magnesiumText).toMatch(/evidencia clínica (seleccionada|revisada)|catálogo local|muestra revisada/i);
   });
 
@@ -703,6 +706,8 @@ test.describe('portal browser flows', () => {
     let visibleText = await page.locator('body').innerText();
     expect((visibleText.match(/no equivale a recomendar Cannabis sativa\/CBD como suplemento/g) || []).length).toBeLessThanOrEqual(1);
     expect(visibleText).toMatch(/cannabinoides medicos|formulaciones clinicas especificas/i);
+    expect(visibleText).toContain('Comparte esta ficha de investigación');
+    expect(visibleText).not.toContain('Comparte Tu Recomendación');
     expect(visibleText).not.toMatch(/suplemento recomendado|comprar|treats|cures/i);
 
     await page.goto('/es/portal/results?q=CBD&supplement=CBD');
@@ -713,6 +718,8 @@ test.describe('portal browser flows', () => {
     expect(visibleText).not.toContain('dietary supplement ingredient');
     expect(visibleText).not.toContain('Propiedades antiinflamatorias comprobadas');
     expect(visibleText).not.toContain('100 estudios científicos');
+    expect(visibleText).toContain('Comparte esta ficha de investigación');
+    expect(visibleText).not.toContain('Comparte Tu Recomendación');
     expect(visibleText).not.toMatch(/dronabinol|nabilone|nabiximols|sativex|suplemento recomendado|comprar|treats|cures/i);
   });
 

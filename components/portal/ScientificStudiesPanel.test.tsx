@@ -47,7 +47,7 @@ describe('ScientificStudiesPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: /ver estudios/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/temporalmente limitada/i)).toBeInTheDocument();
+      expect(screen.getByText(/No pudimos cargar estudios verificables/i)).toBeInTheDocument();
     });
     expect(screen.queryByText(/503/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /abrir pubmed/i })).toHaveAttribute(

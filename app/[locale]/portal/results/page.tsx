@@ -533,6 +533,16 @@ function hasSupportedWorksFor(recommendation: Recommendation | null): boolean {
   });
 }
 
+function isCannabisResearchContext(recommendation: Recommendation | null, query: string | null): boolean {
+  const haystack = [
+    query,
+    recommendation?.category,
+    recommendation?.supplement?.name,
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  return /\b(cannabis sativa|cannabis|cannabinoids?|cbd|cannabidiol|thc|tetrahydrocannabinol|nabiximols|sativex|dronabinol|nabilone)\b/.test(haystack);
+}
+
 function buildIHerbAffiliateProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
   if (!hasSupportedWorksFor(recommendation)) {
     return [];
@@ -1923,7 +1933,10 @@ function ResultsPageContent() {
               />
             </div>
             <div className="mb-8">
-              <ShareReferralCard recommendationId={recommendation.recommendation_id} />
+              <ShareReferralCard
+                recommendationId={recommendation.recommendation_id}
+                mode={isCannabisResearchContext(recommendation, query) ? 'research' : 'recommendation'}
+              />
             </div>
           </>
         )}

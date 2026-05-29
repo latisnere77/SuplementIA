@@ -40,7 +40,7 @@ describe('BenefitStudiesModal', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/consulta por tema limitada/i)).toBeInTheDocument();
+      expect(screen.getByText(/No pudimos cargar estudios verificables sobre este tema/i)).toBeInTheDocument();
     });
 
     expect(screen.queryByText(/Error fetching studies: 503/i)).not.toBeInTheDocument();

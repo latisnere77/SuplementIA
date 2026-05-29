@@ -221,6 +221,9 @@
       "disclosure": "SuplementAI puede recibir comisiones por compras que califican a través de enlaces de afiliado, sin costo adicional para ti."
     },
     "badges": {
+      "budget": "Mejor valor",
+      "value": "Sugerido",
+      "premiumLabel": "Premium",
       "premium": {
         "ankonere": "Fórmula Premium ANKONERE"
       }
@@ -229,6 +232,10 @@
   "share": {
     "title": "Comparte Tu Recomendación",
     "subtitle": "Ayuda a otros a descubrir soluciones basadas en evidencia",
+    "research": {
+      "title": "Comparte esta ficha de investigación",
+      "subtitle": "Ayuda a otros a revisar la evidencia, límites y seguridad"
+    },
     "referral": {
       "rewards": "Recompensas por Referidos",
       "desc": "Gana 500 puntos ($5) cuando un amigo se suscriba a Pro. ¡Ellos obtienen 1 mes gratis!"

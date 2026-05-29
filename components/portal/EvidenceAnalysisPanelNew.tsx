@@ -187,10 +187,10 @@ const QUALITY_BADGES = [
   {
     key: 'safetyEstablished' as const,
     icon: Shield,
-    label: 'Bien Tolerado',
-    labelEn: 'Well Tolerated',
-    description: 'Perfil de seguridad favorable sin efectos adversos graves',
-    descriptionEn: 'Favorable safety profile without serious adverse effects',
+    label: 'Seguridad Revisada',
+    labelEn: 'Safety Reviewed',
+    description: 'Revisa efectos adversos, contraindicaciones e interacciones relevantes',
+    descriptionEn: 'Review relevant side effects, contraindications, and interactions',
     color: 'text-emerald-600',
     bgColor: 'bg-emerald-100',
   },
@@ -268,6 +268,8 @@ export default function EvidenceAnalysisPanelNew({
   language = 'es',
 }: EvidenceAnalysisPanelNewProps) {
   const [_expandedIngredient, _setExpandedIngredient] = useState<string | null>(null);
+  const isCannabisContext = /\b(cannabis sativa|cannabis|cannabinoids?|cbd|cannabidiol|thc|tetrahydrocannabinol|nabiximols|sativex|dronabinol|nabilone)\b/i
+    .test(String(supplementName || ''));
   const labels = language === 'en'
     ? {
       whatIsIt: 'What is it?',
@@ -288,7 +290,9 @@ export default function EvidenceAnalysisPanelNew({
       foods: 'Foods:',
       interactionWarning: 'Consult a clinician if you take any of these medications.',
       contraindicationsTitle: 'Contraindications',
-      contraindicationsWarning: 'Do not use this supplement in these situations without medical supervision.',
+      contraindicationsWarning: isCannabisContext
+        ? 'Do not use medical cannabinoids or cannabis/CBD products in these situations without professional supervision.'
+        : 'Do not use this supplement in these situations without medical supervision.',
       mechanismsTitle: 'Mechanisms of Action',
       buyingTitle: 'What to Look For',
       preferredForm: 'Preferred Form',
@@ -319,7 +323,9 @@ export default function EvidenceAnalysisPanelNew({
       foods: 'Alimentos:',
       interactionWarning: 'Consulta con tu médico si estás tomando alguno de estos medicamentos.',
       contraindicationsTitle: 'Contraindicaciones',
-      contraindicationsWarning: 'No uses este suplemento en estas condiciones sin supervisión médica.',
+      contraindicationsWarning: isCannabisContext
+        ? 'No uses cannabinoides médicos o productos con cannabis/CBD sin supervisión profesional cuando aplique.'
+        : 'No uses este suplemento en estas condiciones sin supervisión médica.',
       mechanismsTitle: 'Mecanismos de Acción',
       buyingTitle: 'Qué Buscar',
       preferredForm: 'Forma Preferida',

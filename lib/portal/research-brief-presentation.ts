@@ -32,7 +32,25 @@ export function sanitizeResearchBriefText(value: unknown, language: Language = '
   const studiedUse = language === 'es' ? 'uso clínico estudiado' : 'studied clinical use';
   const reportedChanges = language === 'es' ? 'cambios reportados' : 'reported changes';
 
-  return dedupeSentences(value)
+  let cleaned = dedupeSentences(value);
+
+  if (language === 'es') {
+    cleaned = cleaned
+      .replace(
+        /Magnesium is an essential mineral involved in nerve signaling, muscle contraction, energy production, protein synthesis, and electrolyte balance\.?/gi,
+        'El magnesio es un mineral esencial involucrado en la señalización nerviosa, la contracción muscular, la producción de energía, la síntesis de proteínas y el equilibrio de electrolitos.'
+      )
+      .replace(
+        /Omega-3 supplements provide long-chain fatty acids such as EPA and DHA, which are structural components of cell membranes and are studied for cardiovascular, inflammatory, and metabolic outcomes\.?/gi,
+        'Los suplementos de omega-3 aportan ácidos grasos de cadena larga como EPA y DHA, componentes de las membranas celulares estudiados en resultados cardiovasculares, inflamatorios y metabólicos.'
+      )
+      .replace(
+        /\b([A-Z][A-Za-z0-9+ -]+) is a dietary supplement ingredient indexed for evidence review in SuplementAI\.?/g,
+        '$1 es un ingrediente revisado por SuplementAI para organizar evidencia, límites y seguridad.'
+      );
+  }
+
+  return cleaned
     .replace(/\buso estudiado medico\b/gi, medicalCare)
     .replace(/\buso estudiado médico\b/gi, medicalCare)
     .replace(/\bapoyo estudiado para depresi[oó]n mayor cl[ií]nica\b/gi, limitedDepression)

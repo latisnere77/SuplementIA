@@ -221,6 +221,9 @@
       "disclosure": "SuplementAI may earn from qualifying purchases through affiliate links at no extra cost to you."
     },
     "badges": {
+      "budget": "Best Value",
+      "value": "Recommended",
+      "premiumLabel": "Premium",
       "premium": {
         "ankonere": "Premium ANKONERE Formula"
       }
@@ -229,6 +232,10 @@
   "share": {
     "title": "Share Your Recommendation",
     "subtitle": "Help others discover evidence-based solutions",
+    "research": {
+      "title": "Share this research brief",
+      "subtitle": "Help others review the evidence, limits, and safety context"
+    },
     "referral": {
       "rewards": "Referral Rewards",
       "desc": "Earn 500 points ($5) when a friend subscribes to Pro. They get 1 month free!"

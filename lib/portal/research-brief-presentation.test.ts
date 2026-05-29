@@ -33,6 +33,18 @@ describe('research brief presentation helpers', () => {
     expect(sanitized).not.toMatch(/No reportes de hepatotoxicidad/i);
   });
 
+  it('localizes common English catalog fallback descriptions for Spanish research pages', () => {
+    expect(sanitizeResearchBriefText(
+      'Magnesium is an essential mineral involved in nerve signaling, muscle contraction, energy production, protein synthesis, and electrolyte balance.',
+      'es'
+    )).toContain('El magnesio es un mineral esencial');
+
+    expect(sanitizeResearchBriefText(
+      'Omega-3 supplements provide long-chain fatty acids such as EPA and DHA, which are structural components of cell membranes and are studied for cardiovascular, inflammatory, and metabolic outcomes.',
+      'es'
+    )).toContain('Los suplementos de omega-3 aportan ácidos grasos');
+  });
+
   it('localizes visible evidence labels', () => {
     expect(localizeSeverityLabel('Generally Safe', 'es')).toBe('Generalmente leve');
     expect(localizeSeverityLabel('Moderate', 'es')).toBe('Moderada');
