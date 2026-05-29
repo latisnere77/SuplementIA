@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { localizedPath, seoLocales, siteUrl } from '@/lib/seo';
 import { getTranslations } from 'next-intl/server';
+import { buildCategorySeoContent, buildCategorySeoCopy } from './seo';
 
 // Tell Next.js about all possible category slugs to pre-render them
 export async function generateStaticParams() {
@@ -30,73 +31,6 @@ interface CategoryPageProps {
     locale: string;
     slug: string;
   }>;
-}
-
-function buildCategorySeoCopy({
-  slug,
-  categoryName,
-  categoryDescription,
-  locale,
-}: {
-  slug: string;
-  categoryName: string;
-  categoryDescription: string;
-  locale: 'es' | 'en';
-}) {
-  const targetedCopy: Record<string, Record<'es' | 'en', { title: string; description: string }>> = {
-    'cholesterol-triglycerides': {
-      es: {
-        title: 'Suplementos para colesterol y triglicéridos: evidencia y seguridad',
-        description:
-          'Compara suplementos estudiados para colesterol y triglicéridos, incluyendo evidencia, seguridad y uso responsable en México.',
-      },
-      en: {
-        title: 'Supplements for cholesterol and triglycerides: evidence and safety',
-        description:
-          'Compare supplements studied for cholesterol and triglycerides, including evidence level, safety context, and responsible use.',
-      },
-    },
-    sleep: {
-      es: {
-        title: 'Suplementos para dormir: evidencia, dosis y seguridad',
-        description:
-          'Compara suplementos para sueño como melatonina, magnesio y L-teanina por evidencia, seguridad y uso responsable.',
-      },
-      en: {
-        title: 'Supplements for sleep: evidence, dosage, and safety',
-        description:
-          'Compare sleep supplements such as melatonin, magnesium, and L-theanine by evidence level, safety context, and responsible use.',
-      },
-    },
-    'heart-health': {
-      es: {
-        title: 'Suplementos para salud cardiovascular: evidencia y seguridad',
-        description:
-          'Revisa suplementos estudiados para salud cardiovascular con enfoque en evidencia, seguridad y contexto de uso responsable.',
-      },
-      en: {
-        title: 'Supplements for heart health: evidence and safety',
-        description:
-          'Review supplements studied for heart health with evidence level, safety context, and responsible-use guidance.',
-      },
-    },
-  };
-
-  const targeted = targetedCopy[slug]?.[locale];
-
-  if (targeted) {
-    return targeted;
-  }
-
-  return locale === 'es'
-    ? {
-      title: `Suplementos para ${categoryName.toLowerCase()} con evidencia científica`,
-      description: `${categoryDescription} Compara suplementos por nivel de evidencia, estudios y uso responsable en México.`,
-    }
-    : {
-      title: `Evidence-based supplements for ${categoryName}`,
-      description: `${categoryDescription} Compare supplements by evidence level, studies, and responsible use.`,
-    };
 }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
@@ -155,6 +89,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const categoryName = t(`portal.categories.${category.slug}.name`);
   const categoryDescription = t(`portal.categories.${category.slug}.desc`);
   const categoryPath = `/portal/category/${category.slug}`;
+  const seoContent = buildCategorySeoContent(category.slug, seoLocale);
   const structuredData = [
     {
       '@context': 'https://schema.org',
@@ -173,6 +108,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         '@type': 'Thing',
         name: supplement.name,
         description: supplement.summary,
+      })),
+      hasPart: seoContent?.faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
       })),
     },
     {
@@ -221,7 +164,35 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       
       <h1 className="text-4xl font-bold text-gray-900 mb-2">{categoryName}</h1>
       <p className="text-lg text-gray-600 mb-8">{categoryDescription}</p>
+
+      {seoContent && (
+        <section className="mb-10 space-y-6" aria-labelledby="category-guide-heading">
+          <div>
+            <h2 id="category-guide-heading" className="text-2xl font-semibold text-gray-900 mb-3">
+              {seoLocale === 'es' ? 'Guía de evidencia' : 'Evidence guide'}
+            </h2>
+            <p className="text-base leading-7 text-gray-700">{seoContent.intro}</p>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              {seoLocale === 'es' ? 'Cómo interpretar esta categoría' : 'How to interpret this category'}
+            </h3>
+            <ul className="space-y-2 text-sm leading-6 text-gray-700">
+              {seoContent.highlights.map((highlight) => (
+                <li key={highlight} className="flex gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-gray-500" aria-hidden="true" />
+                  <span>{highlight}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
       
+      <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+        {seoLocale === 'es' ? 'Suplementos comparados' : 'Compared supplements'}
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
         {sortedSupplements.map(supplement => (
           <SupplementEvidenceCard 
@@ -232,6 +203,41 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           />
         ))}
       </div>
+
+      {seoContent && (
+        <section className="mt-10 space-y-8">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              {seoLocale === 'es' ? 'Guías de suplementos' : 'Supplement guides'}
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {sortedSupplements.map((supplement) => (
+                <Link
+                  key={supplement.slug}
+                  href={`/${seoLocale}/portal/supplement/${supplement.slug}?benefit=${category.slug}`}
+                  className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:border-gray-400 hover:text-gray-950"
+                >
+                  {supplement.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              {seoLocale === 'es' ? 'Preguntas frecuentes' : 'Frequently asked questions'}
+            </h2>
+            <div className="space-y-3">
+              {seoContent.faqs.map((faq) => (
+                <details key={faq.question} className="rounded-lg border border-gray-200 bg-white p-4">
+                  <summary className="cursor-pointer text-base font-semibold text-gray-900">{faq.question}</summary>
+                  <p className="mt-3 text-sm leading-6 text-gray-700">{faq.answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
