@@ -363,6 +363,18 @@ function isSpecificCbdClinicalItem(item: EvidenceItem): boolean {
   return /\b(epilepsy|epilepsia|seizures?|convulsiones|epidiolex|cannabidiol farmaceutico)\b/.test(text);
 }
 
+function isNonCbdCannabinoidClinicalItem(item: EvidenceItem): boolean {
+  const text = normalizeClinicalText([
+    item?.condition,
+    item?.use,
+    item?.benefit,
+    item?.notes,
+    item?.description,
+  ].filter(Boolean).join(' '));
+
+  return /\b(nabiximols|sativex|dronabinol|nabilone|tetrahydrocannabinol|thc)\b/.test(text);
+}
+
 function calibrateCannabisWorksFor(
   worksFor: any[],
   options: { cbdScoped?: boolean } = {}
@@ -372,6 +384,9 @@ function calibrateCannabisWorksFor(
 
   for (const rawItem of Array.isArray(worksFor) ? worksFor : []) {
     const item = sanitizeCannabisItem({ ...rawItem }) as any;
+    if (options.cbdScoped && isNonCbdCannabinoidClinicalItem(item)) {
+      continue;
+    }
     const shouldDemoteCbdItem = options.cbdScoped && !isSpecificCbdClinicalItem(item);
     item.condition = cannabisConditionLabel(item);
     item.notes = String(stripCannabisContextNotice(sanitizeCannabisClaimText(item.notes)) || '').trim();
@@ -553,7 +568,10 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
   }
 
   if (calibrated.data) {
-    calibrated.data = calibrateCannabisDataShape(calibrated.data, category);
+    calibrated.data = calibrateCannabisDataShape(
+      calibrated.data,
+      category || calibrated.category || calibrated.name || calibrated.supplement?.name
+    );
   }
 
   if (calibrated.supplement) {
