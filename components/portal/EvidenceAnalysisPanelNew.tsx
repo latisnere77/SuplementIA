@@ -151,6 +151,9 @@ interface EvidenceAnalysisPanelNewProps {
   supplementName?: string;
   onViewStudies?: (ingredientName: string) => void;
   language?: 'en' | 'es';
+  overviewLabel?: string;
+  overviewCount?: number;
+  overviewCountLabel?: string;
 }
 
 const QUALITY_BADGES = [
@@ -266,6 +269,9 @@ export default function EvidenceAnalysisPanelNew({
   supplementName,
   onViewStudies: _onViewStudies,
   language = 'es',
+  overviewLabel,
+  overviewCount,
+  overviewCountLabel,
 }: EvidenceAnalysisPanelNewProps) {
   const [_expandedIngredient, _setExpandedIngredient] = useState<string | null>(null);
   const isCannabisContext = /\b(cannabis sativa|cannabis|cannabinoids?|cbd|cannabidiol|thc|tetrahydrocannabinol|nabiximols|sativex|dronabinol|nabilone)\b/i
@@ -372,6 +378,9 @@ export default function EvidenceAnalysisPanelNew({
           {/* Evidence Overview - Objective research data */}
           <EvidenceOverview
             totalStudies={evidenceSummary.studies?.total || 0}
+            labelOverride={overviewLabel}
+            countOverride={overviewCount}
+            countLabelOverride={overviewCountLabel}
             topConditions={
               // Get top conditions from worksFor
               localizedWorksFor.slice(0, 3).map((w) => w.condition) || []

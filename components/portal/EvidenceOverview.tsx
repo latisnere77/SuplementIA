@@ -14,6 +14,9 @@ import { BookOpen } from 'lucide-react';
 interface EvidenceOverviewProps {
   // Research status
   totalStudies: number;
+  labelOverride?: string;
+  countOverride?: number;
+  countLabelOverride?: string;
 
   // Top conditions/uses studied
   topConditions: string[];
@@ -28,6 +31,9 @@ interface EvidenceOverviewProps {
  */
 export default function EvidenceOverview({
   totalStudies,
+  labelOverride,
+  countOverride,
+  countLabelOverride,
   topConditions,
   language = 'es',
 }: EvidenceOverviewProps) {
@@ -36,12 +42,18 @@ export default function EvidenceOverview({
       studies: 'scientific studies',
       limited: 'Limited research',
       mostStudied: 'Most studied for:',
+      researchBrief: 'Research brief',
     }
     : {
       studies: 'estudios científicos',
       limited: 'Investigación limitada',
       mostStudied: 'Más estudiado para:',
+      researchBrief: 'Ficha investigativa',
     };
+  const shouldShowOverrideCount = typeof countOverride === 'number' && countOverride > 0;
+  const overviewText = shouldShowOverrideCount
+    ? `${countOverride.toLocaleString()} ${countLabelOverride || labels.studies}`
+    : labelOverride || (totalStudies > 0 ? `${totalStudies.toLocaleString()} ${labels.studies}` : labels.limited);
 
   return (
     <div className="space-y-2">
@@ -49,11 +61,7 @@ export default function EvidenceOverview({
       <div className="inline-flex items-center gap-3 rounded-lg border-2 px-4 py-3 bg-blue-50 border-blue-300">
         <BookOpen className="h-5 w-5 text-blue-600" />
         <span className="font-semibold text-blue-800">
-          {totalStudies > 0 ? (
-            <>{totalStudies.toLocaleString()} {labels.studies}</>
-          ) : (
-            <>{labels.limited}</>
-          )}
+          {overviewText}
         </span>
       </div>
 

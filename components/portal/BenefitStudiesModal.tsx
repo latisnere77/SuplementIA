@@ -210,16 +210,11 @@ export default function BenefitStudiesModal({
           {data && !loading && (
             <div className="space-y-6">
               {/* Summary */}
-              {data.totalStudies > 0 && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-700">
-                    Basado en <strong>{data.totalStudies.toLocaleString()}</strong> estudios científicos
-                    {data.totalParticipants > 0 && (
-                      <> con <strong>{data.totalParticipants.toLocaleString()}</strong> participantes</>
-                    )}
-                  </p>
-                </div>
-              )}
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <p className="text-sm text-gray-700">
+                  Evidencia mostrada desde la ficha principal y estudios disponibles para orientar esta consulta.
+                </p>
+              </div>
 
               {/* Works For (Positive Evidence) */}
               {data.worksFor.length > 0 && (

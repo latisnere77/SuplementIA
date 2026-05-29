@@ -43,7 +43,6 @@ import type { GradeType } from '@/types/supplement-grade';
 import type { PubMedQueryResult, SupplementEvidence as _SupplementEvidence } from '@/lib/services/pubmed-search';
 import ConditionResultsDisplay from '@/components/portal/ConditionResultsDisplay';
 import { compareEvidenceGrades, isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
-import { buildIHerbAffiliateUrl, findIHerbAffiliateMatch } from '@/lib/portal/iherb-affiliate';
 import { trackGAEvent } from '@/lib/analytics/ga4';
 import {
   cleanDosageValue,
@@ -543,48 +542,16 @@ function isCannabisResearchContext(recommendation: Recommendation | null, query:
   return /\b(cannabis sativa|cannabis|cannabinoids?|cbd|cannabidiol|thc|tetrahydrocannabinol|nabiximols|sativex|dronabinol|nabilone)\b/.test(haystack);
 }
 
-function buildIHerbAffiliateProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
-  if (!hasSupportedWorksFor(recommendation)) {
+function buildAffiliateAwareProducts(recommendation: Recommendation | null, query: string | null, _language: string): RecommendationProduct[] {
+  if (!hasSupportedWorksFor(recommendation) || isCannabisResearchContext(recommendation, query)) {
     return [];
   }
 
-  const supplementName = recommendation?.category || query || 'suplemento';
-  const ingredientNames = recommendation?.evidence_summary?.ingredients
-    ?.map(ingredient => ingredient.name)
-    .filter(Boolean) || [supplementName];
-  const primaryIngredient = ingredientNames[0] || supplementName;
-  const isSpanish = language === 'es';
-  const match = findIHerbAffiliateMatch([
-    ...ingredientNames,
-    recommendation?.supplement?.name,
-    recommendation?.category,
-    query,
-  ]);
+  const providedProducts = Array.isArray(recommendation?.products)
+    ? recommendation.products.filter(Boolean)
+    : [];
 
-  if (!match) {
-    return [];
-  }
-
-  return [
-    {
-      tier: 'value',
-      name: isSpanish ? `Buscar ${primaryIngredient} en iHerb` : `Search ${primaryIngredient} on iHerb`,
-      price: 0,
-      currency: 'MXN',
-      contains: [match.canonicalName],
-      whereToBuy: 'iHerb México',
-      affiliateLink: buildIHerbAffiliateUrl(match.searchQuery, process.env.NEXT_PUBLIC_IHERB_AFFILIATE_TEMPLATE),
-      description: isSpanish
-        ? 'Match claro con el ingrediente analizado. Revisa etiqueta, dosis por porción, certificaciones y disponibilidad antes de comprar.'
-        : 'Clear match for the analyzed ingredient. Review the label, dose per serving, certifications, and availability before buying.',
-      isAffiliate: true,
-      affiliateProvider: 'iherb',
-    },
-  ];
-}
-
-function buildAffiliateAwareProducts(recommendation: Recommendation | null, query: string | null, language: string): RecommendationProduct[] {
-  return buildIHerbAffiliateProducts(recommendation, query, language);
+  return providedProducts;
 }
 
 function getLinkHostname(link?: string) {
@@ -786,6 +753,9 @@ function ResultsPageContent() {
     ? getLocalizedSupplementName(recommendation.category, language as 'en' | 'es')
     : query || 'supplement';
   const researchSupplementName = recommendation?.category || query || localizedSupplementName;
+  const visibleEvidenceMetadata = recommendation
+    ? getVisibleEvidenceMetadata(recommendation, language as 'en' | 'es')
+    : null;
 
   useEffect(() => {
     if (isLoading || error) {
@@ -1707,21 +1677,17 @@ function ResultsPageContent() {
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             {t('results.title')} {localizedSupplementName}
           </h1>
-          {(() => {
-            const visibleMetadata = getVisibleEvidenceMetadata(recommendation, language as 'en' | 'es');
-
-            return (
-              <div className="text-gray-600" data-testid="study-data-summary">
-                <p className="font-medium text-gray-700">
-                  {visibleMetadata.label}
-                  {visibleMetadata.count ? (
-                    <> · {visibleMetadata.count.toLocaleString()} {visibleMetadata.countLabel}</>
-                  ) : null}
-                </p>
-                <p className="text-sm">{visibleMetadata.detail}</p>
-              </div>
-            );
-          })()}
+          {visibleEvidenceMetadata && (
+            <div className="text-gray-600" data-testid="study-data-summary">
+              <p className="font-medium text-gray-700">
+                {visibleEvidenceMetadata.label}
+                {visibleEvidenceMetadata.count ? (
+                  <> · {visibleEvidenceMetadata.count.toLocaleString()} {visibleEvidenceMetadata.countLabel}</>
+                ) : null}
+              </p>
+              <p className="text-sm">{visibleEvidenceMetadata.detail}</p>
+            </div>
+          )}
         </div>
 
         {/* Warning banner if no real data - Only show if BOTH are 0 AND no evidence data */}
@@ -1776,6 +1742,9 @@ function ResultsPageContent() {
                         evidenceSummary={transformedEvidence}
                         supplementName={localizedSupplementName}
                         language={language}
+                        overviewLabel={visibleEvidenceMetadata?.label}
+                        overviewCount={visibleEvidenceMetadata?.count}
+                        overviewCountLabel={visibleEvidenceMetadata?.countLabel}
                       />
                     ) : (
                       examineContent && (

@@ -407,8 +407,7 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Possible Side Effects')).toBeVisible();
     await expect(page.getByText('Levothyroxine')).toBeVisible();
     await expect(page.getByText('Product Recommendations')).toBeVisible();
-    await expect(page.getByText('Search Magnesium Glycinate on iHerb')).toBeVisible();
-    await expect(page.getByText('Magnesium Glycinate Basic')).not.toBeVisible();
+    await expect(page.getByText('Magnesium Glycinate Basic')).toBeVisible();
   });
 
   test('results labels follow Spanish and English route locales', async ({ page }) => {
@@ -422,7 +421,7 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Vista Cuantitativa')).toBeVisible();
     await expect(page.getByText('Más estudiado para:')).toBeVisible();
     await expect(page.getByText('Recomendaciones de Productos')).toBeVisible();
-    await expect(page.getByText('Buscar Magnesium Glycinate en iHerb')).toBeVisible();
+    await expect(page.getByText('Magnesium Glycinate Basic')).toBeVisible();
 
     const spanishText = await page.locator('body').innerText();
     expect(spanishText).toContain('Buscar');
@@ -433,6 +432,7 @@ test.describe('portal browser flows', () => {
     expect(spanishText).not.toContain('Quantitative View');
     expect(spanishText).not.toContain('Product Recommendations');
     expect(spanishText).not.toContain('Search Magnesium Glycinate on iHerb');
+    expect(spanishText).not.toContain('Buscar Magnesium Glycinate en iHerb');
     expect(spanishText).not.toContain('Sign In');
 
     await page.goto('/en/portal/results?q=Magnesium&supplement=Magnesium');
@@ -443,7 +443,7 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Quantitative View')).toBeVisible();
     await expect(page.getByText('Most studied for:')).toBeVisible();
     await expect(page.getByText('Product Recommendations')).toBeVisible();
-    await expect(page.getByText('Search Magnesium Glycinate on iHerb')).toBeVisible();
+    await expect(page.getByText('Magnesium Glycinate Basic')).toBeVisible();
   });
 
   test('Spanish results keep localized display while research actions use canonical supplement name', async ({ page }) => {
@@ -607,7 +607,10 @@ test.describe('portal browser flows', () => {
               },
               products: [],
             }
-            : recommendation,
+            : {
+              ...recommendation,
+              products: [],
+            },
         }),
       });
     });
@@ -633,6 +636,7 @@ test.describe('portal browser flows', () => {
     await expect(page.getByRole('heading', { name: /Recomendaciones para Magnesio/i })).toBeVisible();
     const magnesiumText = await page.locator('body').innerText();
     expect(magnesiumText).not.toContain('Basado en 2 estudios');
+    expect(magnesiumText).not.toContain('2 estudios científicos');
     expect(magnesiumText).not.toContain('Recommended');
     expect(magnesiumText).not.toContain('OPCIÓN DE VALOR OPCIÓN');
     expect(magnesiumText).toMatch(/evidencia clínica (seleccionada|revisada)|catálogo local|muestra revisada/i);
@@ -723,7 +727,7 @@ test.describe('portal browser flows', () => {
     expect(visibleText).not.toMatch(/dronabinol|nabilone|nabiximols|sativex|suplemento recomendado|comprar|treats|cures/i);
   });
 
-  test('results render iHerb affiliate card only for clear supplement matches', async ({ page }) => {
+  test('results render affiliate product cards only when provided by the API', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, '__openedUrls', {
         value: [],
@@ -748,7 +752,20 @@ test.describe('portal browser flows', () => {
           jobId: body.jobId,
           recommendation: {
             ...recommendation,
-            products: [],
+            products: [
+              {
+                tier: 'value',
+                name: 'Magnesium Glycinate Test',
+                price: 0,
+                currency: 'MXN',
+                contains: ['Magnesium'],
+                whereToBuy: 'iHerb Mexico',
+                affiliateLink: 'https://example.com/magnesium',
+                description: 'Provided product from API response.',
+                isAffiliate: true,
+                affiliateProvider: 'iherb',
+              },
+            ],
           },
         }),
       });
@@ -759,15 +776,14 @@ test.describe('portal browser flows', () => {
     await expect(page.getByTestId('recommendation-display')).toBeVisible();
     await expect(page.getByText('Product Recommendations')).toBeVisible();
     await expect(page.getByText('SuplementAI may earn from qualifying purchases through affiliate links')).toBeVisible();
-    await expect(page.getByText('Search Magnesium Glycinate on iHerb')).toBeVisible();
-    await expect(page.getByText('View on iHerb')).toHaveCount(2);
+    await expect(page.getByText('Magnesium Glycinate Test')).toBeVisible();
+    await expect(page.getByRole('button', { name: /View on iHerb/i })).toHaveCount(1);
 
     await page.getByRole('button', { name: /View on iHerb/i }).click();
 
     await expect(page.getByText('Unlock Pro Features')).not.toBeVisible();
     const openedUrls = await page.evaluate(() => (window as typeof window & { __openedUrls: string[] }).__openedUrls);
-    expect(openedUrls[0]).toContain('https://mx.iherb.com/search?');
-    expect(openedUrls[0]).toContain('kw=magnesium');
+    expect(openedUrls[0]).toContain('https://example.com/magnesium');
   });
 
   test('results do not render affiliate products for broad health goals without clear ingredient matches', async ({ page }) => {
