@@ -116,28 +116,44 @@ export function ErrorState({
   const totalCount = literatureProfile?.totalCount || 0;
   const neutralComponentQuery = `${searchedFor} chemical composition`;
   const neutralTopicQuery = `${searchedFor} safety`;
+  const researchTerms = Array.from(new Set([
+    searchedFor,
+    neutralComponentQuery,
+    neutralTopicQuery,
+    `${searchedFor} PubMed`,
+  ])).filter(Boolean);
   const popularEvidenceSupplements = ['Magnesium', 'Creatine', 'Vitamin D', 'Psyllium'];
   const isTimeout = typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('timeout');
 
   // Render based on error type
   if (errorType === 'insufficient_scientific_data') {
+    const cardClassName = hasLiteratureProfile
+      ? 'max-w-4xl w-full overflow-hidden border-slate-200 bg-white'
+      : 'max-w-3xl w-full overflow-hidden border-yellow-200 bg-yellow-50';
+    const sectionClassName = hasLiteratureProfile
+      ? 'rounded-xl border border-slate-200 bg-slate-50 p-5'
+      : 'rounded-xl border-2 border-yellow-200 bg-white p-5';
+    const headingClassName = hasLiteratureProfile ? 'text-slate-950' : 'text-yellow-950';
+    const bodyClassName = hasLiteratureProfile ? 'text-slate-700' : 'text-yellow-900';
+    const accentClassName = hasLiteratureProfile ? 'text-blue-700' : 'text-yellow-600';
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" data-testid="error-state">
-        <Card className="max-w-3xl w-full overflow-hidden border-yellow-200 bg-yellow-50">
+        <Card className={cardClassName}>
           <CardContent className="pt-8 pb-8">
             <div className="space-y-6">
               {/* Scientific Data Not Found Icon */}
               <div className="text-center">
                 <div className="relative inline-block">
-                  <Microscope className="w-20 h-20 mx-auto mb-4 text-yellow-600" />
-                  <div className="absolute -top-1 -right-1 bg-yellow-500 rounded-full p-1">
+                  <Microscope className={`w-20 h-20 mx-auto mb-4 ${accentClassName}`} />
+                  <div className={`absolute -top-1 -right-1 rounded-full p-1 ${hasLiteratureProfile ? 'bg-blue-600' : 'bg-yellow-500'}`}>
                     <AlertCircle className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-yellow-950 mb-3">
-                  {t('title')}
+                <h3 className={`text-xl sm:text-2xl font-bold ${headingClassName} mb-3`}>
+                  {hasLiteratureProfile ? t('researchTitle') : t('title')}
                 </h3>
-                <p className="text-base text-yellow-900 max-w-2xl mx-auto leading-relaxed">
+                <p className={`text-base ${bodyClassName} max-w-2xl mx-auto leading-relaxed`}>
                   {isTimeout
                     ? t('timeoutMessage', { query: searchedFor })
                     : hasLiteratureProfile
@@ -148,27 +164,27 @@ export function ErrorState({
 
               {hasLiteratureProfile && (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  <div className="rounded-lg border border-yellow-200 bg-white p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">{t('pubmedResults')}</p>
-                    <p className="mt-1 text-2xl font-semibold text-yellow-950">{totalCount}</p>
-                    <p className="mt-1 text-xs text-yellow-800">{t('pubmedResultsDesc')}</p>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-600">{t('pubmedResults')}</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-950">{totalCount}</p>
+                    <p className="mt-1 text-xs text-slate-600">{t('pubmedResultsDesc')}</p>
                   </div>
-                  <div className="rounded-lg border border-yellow-200 bg-white p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">{t('reviewedSample')}</p>
-                    <p className="mt-1 text-2xl font-semibold text-yellow-950">{sampledCount}</p>
-                    <p className="mt-1 text-xs text-yellow-800">{t('reviewedSampleDesc')}</p>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-600">{t('reviewedSample')}</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-950">{sampledCount}</p>
+                    <p className="mt-1 text-xs text-slate-600">{t('reviewedSampleDesc')}</p>
                   </div>
-                  <div className="rounded-lg border border-yellow-200 bg-white p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-yellow-700">{t('conclusion')}</p>
-                    <p className="mt-2 text-sm font-semibold text-yellow-950">{t('doNotRecommend')}</p>
-                    <p className="mt-1 text-xs text-yellow-800">{t('thresholdDesc')}</p>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-600">{t('conclusion')}</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-950">{t('doNotConclude')}</p>
+                    <p className="mt-1 text-xs text-slate-600">{t('thresholdDesc')}</p>
                   </div>
                 </div>
               )}
 
               {hasLiteratureProfile && (
-                <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
-                  <h4 className="font-semibold text-yellow-950 mb-4 flex items-center gap-2">
+                <div className={sectionClassName}>
+                  <h4 className="font-semibold text-slate-950 mb-4 flex items-center gap-2">
                     <FlaskConical className="w-5 h-5" />
                     {t('literatureTypes')}
                   </h4>
@@ -178,18 +194,18 @@ export function ErrorState({
                       return (
                         <div
                           key={category}
-                          className="rounded-lg border border-yellow-200 bg-yellow-50 p-3"
+                          className="rounded-lg border border-slate-200 bg-white p-3"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div>
-                              <p className="text-sm font-semibold text-yellow-950">
+                              <p className="text-sm font-semibold text-slate-950">
                                 {t(`categoryLabels.${category}`)}
                               </p>
-                              <p className="mt-1 text-xs text-yellow-800">
+                              <p className="mt-1 text-xs text-slate-600">
                                 {t(`categoryDescriptions.${category}`)}
                               </p>
                             </div>
-                            <span className="rounded-full bg-white px-2.5 py-1 text-sm font-semibold text-yellow-900">
+                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-sm font-semibold text-slate-800">
                               {count}
                             </span>
                           </div>
@@ -197,19 +213,31 @@ export function ErrorState({
                       );
                     })}
                   </div>
-                  <p className="mt-4 text-xs text-yellow-800">
+                  <p className="mt-4 text-xs text-slate-600">
                     {t('nonClinicalWarning')}
                   </p>
                 </div>
               )}
 
+              {hasLiteratureProfile && (
+                <div className={sectionClassName}>
+                  <h4 className="font-semibold text-slate-950 mb-3 flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5" />
+                    {t('cannotConcludeTitle')}
+                  </h4>
+                  <p className="text-sm text-slate-700">
+                    {t('cannotConcludeBody', { query: searchedFor })}
+                  </p>
+                </div>
+              )}
+
               {literatureArticles.length > 0 && (
-                <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
-                  <h4 className="font-semibold text-yellow-950 mb-3 flex items-center gap-2">
+                <div className={sectionClassName}>
+                  <h4 className="font-semibold text-slate-950 mb-3 flex items-center gap-2">
                     <Microscope className="w-5 h-5" />
                     {t('representativeArticles')}
                   </h4>
-                  <p className="text-sm text-yellow-800 mb-4">
+                  <p className="text-sm text-slate-700 mb-4">
                     {t('representativeArticlesDesc', { query: searchedFor })}
                   </p>
                   <div className="space-y-3">
@@ -219,22 +247,22 @@ export function ErrorState({
                         href={`https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`}
                         target="_blank"
                         rel="noreferrer"
-                        className="block rounded-lg border border-yellow-200 bg-yellow-50 p-3 transition-colors hover:bg-yellow-100"
+                        className="block rounded-lg border border-slate-200 bg-white p-3 transition-colors hover:bg-slate-100"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-yellow-700">
-                              <span className="rounded-full bg-white px-2 py-0.5 font-medium">
+                            <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                              <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium">
                                 {t(`categoryLabels.${article.category || 'other'}`)}
                               </span>
                               {article.year && <span>{article.year}</span>}
                               <span>PMID {article.pmid}</span>
                             </div>
-                            <p className="text-sm font-medium leading-snug text-yellow-950 break-words [overflow-wrap:anywhere]">
+                            <p className="text-sm font-medium leading-snug text-slate-950 break-words [overflow-wrap:anywhere]">
                               {article.title}
                             </p>
                           </div>
-                          <ExternalLink className="mt-1 h-4 w-4 shrink-0 text-yellow-700" />
+                          <ExternalLink className="mt-1 h-4 w-4 shrink-0 text-slate-500" />
                         </div>
                       </a>
                     ))}
@@ -242,24 +270,49 @@ export function ErrorState({
                 </div>
               )}
 
+              {hasLiteratureProfile && (
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+                  <h4 className="font-semibold text-blue-950 mb-3 flex items-center gap-2">
+                    <Search className="w-5 h-5" />
+                    {t('usefulTermsTitle')}
+                  </h4>
+                  <p className="text-sm text-blue-800 mb-3">
+                    {t('usefulTermsDesc')}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {researchTerms.map((term) => (
+                      <button
+                        key={term}
+                        onClick={() => window.location.href = `/portal/results?q=${encodeURIComponent(term)}&supplement=${encodeURIComponent(term)}`}
+                        className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-medium text-blue-900 hover:bg-blue-100"
+                      >
+                        {term}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Why This Matters */}
-              <div className="bg-white rounded-xl p-5 border-2 border-yellow-200">
-                <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
+              <div className={sectionClassName}>
+                <h4 className={`font-semibold ${hasLiteratureProfile ? 'text-slate-950' : 'text-yellow-900'} mb-3 flex items-center gap-2`}>
                   <TrendingUp className="w-5 h-5" />
-                  {isTimeout ? t('timeoutWhyTitle') : t('whyTitle')}
+                  {isTimeout ? t('timeoutWhyTitle') : hasLiteratureProfile ? t('prudentConclusionTitle') : t('whyTitle')}
                 </h4>
-                <p className="text-sm text-yellow-800 mb-3">
+                <p className={`text-sm ${hasLiteratureProfile ? 'text-slate-700' : 'text-yellow-800'} mb-3`}>
                   {isTimeout ? (
                     t('whyTimeout', { query: searchedFor })
+                  ) : hasLiteratureProfile ? (
+                    t('prudentConclusionBody', { query: searchedFor })
                   ) : (
                     t('whyBody')
                   )}
                 </p>
-                <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
-                  <p className="text-xs text-yellow-700 font-medium mb-2">
+                <div className={`rounded-lg p-3 ${hasLiteratureProfile ? 'border border-slate-200 bg-white' : 'border border-yellow-200 bg-yellow-50'}`}>
+                  <p className={`text-xs ${hasLiteratureProfile ? 'text-slate-700' : 'text-yellow-700'} font-medium mb-2`}>
                     {isTimeout ? t('timeoutRecommendations') : t('reasonsTitle')}
                   </p>
-                  <ul className="text-xs text-yellow-700 space-y-1">
+                  <ul className={`text-xs ${hasLiteratureProfile ? 'text-slate-600' : 'text-yellow-700'} space-y-1`}>
                     {isTimeout ? (
                       <>
                         <li>• {t('timeoutTipSpecific')}</li>
