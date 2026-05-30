@@ -3,6 +3,7 @@ import path from 'path';
 import { loadAuditFixtures } from './fixtures';
 import { KimiResearchAuditProvider } from './kimi-provider';
 import { buildAuditPacketFromFixture } from './packets';
+import { verifyPubMedPmids, type PmidVerifierOptions } from './pmid-verifier';
 import type { ProviderAuditResult } from './provider';
 import type { ResearchAuditProviderConfig } from './config';
 
@@ -24,6 +25,7 @@ export interface ProviderAuditRunnerOptions {
   fixturePath?: string;
   outputDir?: string;
   limit?: number;
+  pmidVerifier?: PmidVerifierOptions | false;
 }
 
 export async function runProviderFixtureAudit(
@@ -53,7 +55,8 @@ export async function runProviderFixtureAudit(
       continue;
     }
 
-    results.push(await provider.evaluatePacket(packetResult.packet));
+    const result = await provider.evaluatePacket(packetResult.packet);
+    results.push(await verifyProviderAuditResultPmids(result, options.pmidVerifier));
   }
 
   const report: ProviderAuditReport = {
@@ -75,6 +78,30 @@ export async function runProviderFixtureAudit(
   return {
     report,
     reportPaths: writeProviderReport(report, options.outputDir || '.research-audit-reports'),
+  };
+}
+
+export async function verifyProviderAuditResultPmids(
+  result: ProviderAuditResult,
+  verifierOptions: PmidVerifierOptions | false = {}
+): Promise<ProviderAuditResult> {
+  if (verifierOptions === false || !result.valid || !result.finding) return result;
+  if (result.finding.candidatePmids.length === 0) return result;
+
+  const verification = await verifyPubMedPmids(result.finding.candidatePmids, verifierOptions);
+  const finding = {
+    ...result.finding,
+    validatedPmids: verification.validatedPmids,
+    pmidVerificationStatus: verification.status,
+  };
+
+  return {
+    ...result,
+    finding,
+    externalCalls: result.externalCalls + verification.externalCalls,
+    rejectionReasons: verification.error
+      ? [...result.rejectionReasons, `pmid verification failed: ${verification.error}`]
+      : result.rejectionReasons,
   };
 }
 

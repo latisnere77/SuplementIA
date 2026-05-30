@@ -71,6 +71,7 @@ export const researchAuditFindingSchema = z
       'partially_valid',
       'none_valid',
       'entity_mismatch',
+      'verification_failed',
     ]),
     proposedClassification: z.enum(auditClassifications),
     clinicalRisk: z.enum(['none', 'low', 'medium', 'high']),
@@ -148,4 +149,3 @@ export function validateResearchAuditFinding(input: unknown): FindingValidationR
     }),
   };
 }
-
