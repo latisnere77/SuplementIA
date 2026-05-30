@@ -187,6 +187,27 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               ))}
             </ul>
           </div>
+
+          {seoContent.priorityTopics && (
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                {seoLocale === 'es' ? 'Comparaciones prioritarias' : 'Priority comparisons'}
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {seoContent.priorityTopics.map((topic) => (
+                  <Link
+                    key={topic.supplementSlug}
+                    href={`/${seoLocale}/portal/supplement/${topic.supplementSlug}?benefit=${category.slug}`}
+                    className="rounded-lg border border-gray-200 bg-white p-4 hover:border-gray-400 hover:shadow-sm"
+                  >
+                    <span className="block text-base font-semibold text-gray-900">{topic.title}</span>
+                    <span className="mt-2 block text-sm leading-6 text-gray-700">{topic.description}</span>
+                    <span className="mt-3 block text-sm font-medium text-blue-700">{topic.searchLabel}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       )}
       
