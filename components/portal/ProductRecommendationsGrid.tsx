@@ -27,6 +27,12 @@ interface Product {
 interface ProductRecommendationsGridProps {
   products?: Product[];
   onBuyClick?: (product: Product) => void;
+  outboundSearch?: {
+    url: string;
+    domain: string;
+    query: string;
+  } | null;
+  onOutboundClick?: (outbound: { url: string; domain: string; query: string }) => void;
 }
 
 const TIER_CONFIG = {
@@ -53,12 +59,46 @@ const TIER_CONFIG = {
 export default function ProductRecommendationsGrid({
   products,
   onBuyClick,
+  outboundSearch,
+  onOutboundClick,
 }: ProductRecommendationsGridProps) {
   const t = useTranslations();
   const safeProducts = Array.isArray(products) ? products.filter(Boolean) : [];
 
-  if (safeProducts.length === 0) {
+  if (safeProducts.length === 0 && !outboundSearch) {
     return null;
+  }
+
+  if (safeProducts.length === 0 && outboundSearch) {
+    return (
+      <div className="bg-white rounded-xl border-2 border-gray-200 p-6 md:p-8 shadow-sm">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">{t('results.outbound.title')}</h2>
+        <p className="text-sm md:text-base text-gray-600 mb-6">
+          {t('results.outbound.desc')}
+        </p>
+
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-base font-semibold text-gray-900">{t('results.outbound.cardTitle')}</h3>
+              <p className="mt-1 text-sm text-gray-600">
+                {t('results.outbound.cardDesc', { query: outboundSearch.query })}
+              </p>
+              <p className="mt-2 text-xs text-gray-500">
+                {t('results.outbound.disclosure')}
+              </p>
+            </div>
+            <button
+              onClick={() => onOutboundClick?.(outboundSearch)}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-blue-700"
+            >
+              {t('results.outbound.button')}
+              <ExternalLink className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const handleBuyClick = (product: Product) => {

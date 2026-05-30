@@ -542,6 +542,15 @@ function isCannabisResearchContext(recommendation: Recommendation | null, query:
   return /\b(cannabis sativa|cannabis|cannabinoids?|cbd|cannabidiol|thc|tetrahydrocannabinol|nabiximols|sativex|dronabinol|nabilone)\b/.test(haystack);
 }
 
+function slugifyAnalyticsValue(value?: string | null): string | undefined {
+  const slug = String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+  return slug || undefined;
+}
+
 function buildAffiliateAwareProducts(recommendation: Recommendation | null, query: string | null, _language: string): RecommendationProduct[] {
   if (!hasSupportedWorksFor(recommendation) || isCannabisResearchContext(recommendation, query)) {
     return [];
@@ -552,6 +561,27 @@ function buildAffiliateAwareProducts(recommendation: Recommendation | null, quer
     : [];
 
   return providedProducts;
+}
+
+function buildOutboundSearchFallback(
+  recommendation: Recommendation | null,
+  query: string | null,
+  products: RecommendationProduct[]
+) {
+  if (!recommendation || products.length > 0 || !hasSupportedWorksFor(recommendation) || isCannabisResearchContext(recommendation, query)) {
+    return null;
+  }
+
+  const searchTerm = recommendation.category || recommendation.supplement?.name || query;
+  if (!searchTerm) {
+    return null;
+  }
+
+  return {
+    query: searchTerm,
+    url: `https://www.google.com/search?q=${encodeURIComponent(`${searchTerm} supplement`)}`,
+    domain: 'www.google.com',
+  };
 }
 
 function getLinkHostname(link?: string) {
@@ -1564,9 +1594,8 @@ function ResultsPageContent() {
           link_domain: getLinkHostname(link),
           outbound_domain: getLinkHostname(link),
           supplement_name: recommendation?.category || query || undefined,
-          supplement_slug: recommendation?.category
-            ? recommendation.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-            : undefined,
+          category_slug: searchParams.get('category') || searchParams.get('benefit') || undefined,
+          supplement_slug: slugifyAnalyticsValue(recommendation?.category || query),
           recommendation_id: recommendation?.recommendation_id,
           locale: language,
           language,
@@ -1575,6 +1604,24 @@ function ResultsPageContent() {
         window.open(link, '_blank', 'noopener,noreferrer');
       }
     }
+  };
+
+  const handleOutboundSearchClick = (outbound: { url: string; domain: string; query: string }) => {
+    trackGAEvent('outbound_click', {
+      outbound_domain: outbound.domain,
+      link_domain: outbound.domain,
+      destination_url: outbound.url,
+      search_term: outbound.query,
+      query: query || outbound.query,
+      supplement_name: recommendation?.category || outbound.query,
+      category_slug: searchParams.get('category') || searchParams.get('benefit') || undefined,
+      supplement_slug: slugifyAnalyticsValue(recommendation?.category || query || outbound.query),
+      recommendation_id: recommendation?.recommendation_id,
+      locale: language,
+      language,
+      page_type: 'search_results',
+    });
+    window.open(outbound.url, '_blank', 'noopener,noreferrer');
   };
 
   // ====================================
@@ -1907,10 +1954,17 @@ function ResultsPageContent() {
             </div>
 
             <div className="mb-8">
-              <ProductRecommendationsGrid
-                products={buildAffiliateAwareProducts(recommendation, query, language)}
-                onBuyClick={handleBuyClick}
-              />
+              {(() => {
+                const products = buildAffiliateAwareProducts(recommendation, query, language);
+                return (
+                  <ProductRecommendationsGrid
+                    products={products}
+                    outboundSearch={buildOutboundSearchFallback(recommendation, query, products)}
+                    onBuyClick={handleBuyClick}
+                    onOutboundClick={handleOutboundSearchClick}
+                  />
+                );
+              })()}
             </div>
             <div className="mb-8">
               <ShareReferralCard

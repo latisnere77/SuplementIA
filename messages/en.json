@@ -196,6 +196,14 @@
     "products": {
       "title": "Product Recommendations",
       "desc": "We show shopping searches for the analyzed ingredient. The evidence supports the ingredient, not specific brands; review the label, dose, and certifications."
+    },
+    "outbound": {
+      "title": "Explore external options",
+      "desc": "This is a neutral search link for the analyzed ingredient. It is not a brand endorsement or medical recommendation.",
+      "cardTitle": "Search outside SuplementAI",
+      "cardDesc": "Open a general web search for \"{query}\" and compare labels, forms, and certifications yourself.",
+      "disclosure": "SuplementAI does not verify or endorse the external results.",
+      "button": "Open external search"
     }
   },
   "product": {
