@@ -672,10 +672,17 @@ test.describe('portal browser flows', () => {
             supplement: {
               name: isCbd ? 'CBD' : 'Cannabis sativa',
               description: isCbd
-                ? 'Cannabidiol (CBD) es un cannabinoide estudiado en formulaciones farmaceuticas especificas. Esta ficha no evalua ni recomienda productos comerciales de CBD como suplemento.'
+                ? 'Cannabidiol (CBD) puede referirse a una formulacion farmaceutica especifica o a productos comerciales/OTC. Esta ficha separa esos carriles: Epidiolex/cannabidiol farmaceutico no equivale a aceites, gummies ni suplementos comerciales de CBD.'
                 : `Cannabis sativa se revisa aqui como fuente de cannabinoides medicos o formulaciones clinicas especificas. ${cannabisNotice}`,
               worksFor: isCbd
-                ? []
+                ? [
+                  {
+                    condition: 'Cannabidiol farmaceutico/Epidiolex para Lennox-Gastaut, Dravet o complejo de esclerosis tuberosa',
+                    evidenceGrade: 'A',
+                    notes: 'Carril farmaceutico: evidencia sobre cannabidiol farmaceutico/Epidiolex; no se extrapola a aceites, gummies ni CBD comercial/OTC.',
+                    studyCount: 3,
+                  },
+                ]
                 : [
                   {
                     condition: 'Nabiximols/cannabinoides medicos para espasticidad en esclerosis multiple',
@@ -687,11 +694,19 @@ test.describe('portal browser flows', () => {
               limitedEvidence: isCbd
                 ? [
                   {
-                    condition: 'Evidencia limitada sobre CBD comercial',
+                    condition: 'CBD comercial/OTC: evidencia limitada sobre ansiedad y sueno',
                     evidenceGrade: 'C',
-                    notes: 'No debe interpretarse como beneficio clinico general de CBD comercial.',
+                    notes: 'Carril CBD comercial/OTC: evidencia limitada o investigacional; no equivale a recomendacion clinica ni a efecto clinico establecido de productos comerciales.',
                     studyCount: 0,
                   },
+                ]
+                : [],
+              primaryUses: isCbd
+                ? [
+                  'CBD sirve para ansiedad con mejora 32-37%.',
+                  'CBD comercial mejora sueño 15-25%.',
+                  'CBD tiene beneficio confirmado para dolor 20-30%.',
+                  'Propiedades antiinflamatorias comprobadas.',
                 ]
                 : [],
               doesntWorkFor: [],
@@ -716,11 +731,16 @@ test.describe('portal browser flows', () => {
 
     await page.goto('/es/portal/results?q=CBD&supplement=CBD');
     await expect(page.getByTestId('recommendation-display')).toBeVisible();
-    await expect(page.getByText(/Cannabidiol \(CBD\) es un cannabinoide estudiado/i)).toBeVisible();
+    await expect(page.getByText(/Cannabidiol \(CBD\) puede referirse/i)).toBeVisible();
     visibleText = await page.locator('body').innerText();
-    expect(visibleText).toContain('Cannabidiol (CBD) es un cannabinoide estudiado');
+    expect(visibleText).toContain('Epidiolex/cannabidiol farmaceutico no equivale');
+    expect(visibleText).toContain('CBD comercial/OTC');
     expect(visibleText).not.toContain('dietary supplement ingredient');
     expect(visibleText).not.toContain('Propiedades antiinflamatorias comprobadas');
+    expect(visibleText).not.toContain('32-37%');
+    expect(visibleText).not.toContain('15-25%');
+    expect(visibleText).not.toContain('20-30%');
+    expect(visibleText).not.toMatch(/CBD sirve para|beneficio confirmado/i);
     expect(visibleText).not.toContain('100 estudios científicos');
     expect(visibleText).toContain('Comparte esta ficha de investigación');
     expect(visibleText).not.toContain('Comparte Tu Recomendación');

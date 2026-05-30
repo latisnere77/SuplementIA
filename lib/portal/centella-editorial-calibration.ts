@@ -286,8 +286,11 @@ function calibrateCentellaDataShape(data: any) {
 }
 
 const CANNABIS_CONTEXT_NOTICE = 'Evidencia sobre cannabinoides medicos o formulaciones especificas; no equivale a recomendar Cannabis sativa/CBD como suplemento.';
-const CBD_RESEARCH_DESCRIPTION = 'Cannabidiol (CBD) es un cannabinoide estudiado en formulaciones farmaceuticas especificas. Esta ficha no evalua ni recomienda productos comerciales de CBD como suplemento.';
-const CBD_LIMITED_NOTE = 'Evidencia limitada o formulacion-especifica; no debe interpretarse como beneficio clinico general de CBD comercial.';
+const CBD_RESEARCH_DESCRIPTION = 'Cannabidiol (CBD) puede referirse a una formulacion farmaceutica especifica o a productos comerciales/OTC. Esta ficha separa esos carriles: Epidiolex/cannabidiol farmaceutico no equivale a aceites, gummies ni suplementos comerciales de CBD.';
+const CBD_PHARMA_NOTICE = 'Carril farmaceutico: evidencia sobre cannabidiol farmaceutico/Epidiolex; no se extrapola a aceites, gummies ni CBD comercial/OTC.';
+const CBD_OTC_NOTICE = 'Carril CBD comercial/OTC: evidencia limitada o investigacional; no equivale a recomendacion clinica ni a efecto clinico establecido de productos comerciales.';
+const CBD_SAFETY_WARNING = 'Cannabidiol farmaceutico requiere supervision medica: puede elevar transaminasas y tiene interacciones relevantes con clobazam, valproato, antiepilepticos y sedantes.';
+const CBD_LIMITED_NOTE = CBD_OTC_NOTICE;
 
 function isCbdText(...values: unknown[]): boolean {
   const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
@@ -325,6 +328,27 @@ function withCannabisContextNotice(value: unknown): string {
   return base ? `${base} ${CANNABIS_CONTEXT_NOTICE}` : CANNABIS_CONTEXT_NOTICE;
 }
 
+function sanitizeCbdLaneText(value: unknown): unknown {
+  if (typeof value !== 'string') return value;
+
+  return String(stripCannabisContextNotice(sanitizeCannabisClaimText(value)) || '')
+    .replace(/\bCannabinoides medicos para\b/gi, 'CBD comercial/OTC: evidencia limitada sobre')
+    .replace(/\btiene evidencia clinica especifica para\b/gi, 'evidencia limitada sobre')
+    .replace(/\bpropiedades? antiinflamatorias? comprobadas?\b/gi, 'evidencia limitada sobre inflamacion')
+    .replace(/\b(?:reduccion|aumento|mejora|incremento)\s+(?:media\s+)?de\s+\d+(?:\.\d+)?\s*[-–]\s*\d+(?:\.\d+)?\s*%/gi, 'cambios reportados en estudios especificos')
+    .replace(/\b(?:reduccion|aumento|mejora|incremento)\s+(?:media\s+)?de\s+\d+(?:\.\d+)?\s*%/gi, 'cambios reportados en estudios especificos')
+    .replace(/\b\d+(?:\.\d+)?\s*[-–]\s*\d+(?:\.\d+)?\s*%/g, 'cifras reportadas en estudios especificos')
+    .replace(/\b\d+(?:\.\d+)?\s*%/g, 'cifras reportadas en estudios especificos')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function withCbdLaneNote(value: unknown, note: string): string {
+  const base = String(sanitizeCbdLaneText(value) || '').trim();
+  if (!base) return note;
+  return normalizeClinicalText(base).includes(normalizeClinicalText(note)) ? base : `${base} ${note}`;
+}
+
 function cannabisConditionLabel(item: EvidenceItem): string {
   const text = normalizeClinicalText([
     item?.condition,
@@ -351,6 +375,17 @@ function cannabisConditionLabel(item: EvidenceItem): string {
   return `Formulaciones cannabinoides especificas: ${original || 'uso clinico estudiado'}`;
 }
 
+function cbdLimitedConditionLabel(item: EvidenceItem): string {
+  const original = String(sanitizeCbdLaneText(item?.condition || item?.use || item?.benefit) || '').trim();
+  if (!original) return 'CBD comercial/OTC: evidencia limitada o investigacional';
+  if (/^CBD comercial\/OTC:/i.test(original)) return original;
+  return `CBD comercial/OTC: evidencia limitada sobre ${original}`;
+}
+
+function cbdPharmaceuticalConditionLabel(): string {
+  return 'Cannabidiol farmaceutico/Epidiolex para Lennox-Gastaut, Dravet o complejo de esclerosis tuberosa';
+}
+
 function isSpecificCbdClinicalItem(item: EvidenceItem): boolean {
   const text = normalizeClinicalText([
     item?.condition,
@@ -360,7 +395,10 @@ function isSpecificCbdClinicalItem(item: EvidenceItem): boolean {
     item?.description,
   ].filter(Boolean).join(' '));
 
-  return /\b(epilepsy|epilepsia|seizures?|convulsiones|epidiolex|cannabidiol farmaceutico)\b/.test(text);
+  const specificIndication = /\b(lennox|dravet|tuberous sclerosis|esclerosis tuberosa|tsc|epilepsy|epilepsia|seizures?|convulsiones|trastornos convulsivos)\b/.test(text);
+  const pharmaceuticalFormulation = /\b(epidiolex|pharmaceutical cannabidiol|cannabidiol farmaceutico|formulacion(?:es)? farmaceutic(?:a|as|o|os)|formulacion especifica|medicamento|prescription)\b/.test(text);
+  const namedEpidiolexIndication = /\b(lennox|dravet|tuberous sclerosis|esclerosis tuberosa|tsc)\b/.test(text);
+  return specificIndication && (pharmaceuticalFormulation || namedEpidiolexIndication);
 }
 
 function isNonCbdCannabinoidClinicalItem(item: EvidenceItem): boolean {
@@ -373,6 +411,54 @@ function isNonCbdCannabinoidClinicalItem(item: EvidenceItem): boolean {
   ].filter(Boolean).join(' '));
 
   return /\b(nabiximols|sativex|dronabinol|nabilone|tetrahydrocannabinol|thc)\b/.test(text);
+}
+
+function calibrateCbdLimitedEvidenceItem(rawItem: any): any | null {
+  const item = sanitizeCannabisItem({ ...rawItem }) as any;
+  if (isNonCbdCannabinoidClinicalItem(item)) return null;
+
+  item.condition = cbdLimitedConditionLabel(item);
+  item.use = item.condition;
+  item.benefit = item.condition;
+  item.evidenceGrade = 'C';
+  item.grade = 'C';
+  item.description = sanitizeCbdLaneText(item.description);
+  item.magnitude = sanitizeCbdLaneText(item.magnitude);
+  item.notes = withCbdLaneNote(item.notes || item.description || item.magnitude, CBD_OTC_NOTICE);
+  return item;
+}
+
+function calibrateCbdLimitedEvidenceList(items: unknown): any[] {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => calibrateCbdLimitedEvidenceItem(item))
+    .filter(Boolean);
+}
+
+function addCbdSafetyCaution(safety: any = {}) {
+  const calibratedSafety = sanitizeCannabisItem({ ...safety }) as any;
+  const safetyText = normalizeClinicalText(JSON.stringify(calibratedSafety));
+
+  if (!safetyText.includes('transaminasas') && !safetyText.includes('clobazam') && !safetyText.includes('valproato')) {
+    calibratedSafety.contraindications = [
+      ...(Array.isArray(calibratedSafety.contraindications) ? calibratedSafety.contraindications : []),
+      CBD_SAFETY_WARNING,
+    ];
+  }
+
+  calibratedSafety.interactions = [
+    ...(Array.isArray(calibratedSafety.interactions) ? calibratedSafety.interactions : []),
+    'Precaucion con clobazam, valproato, antiepilepticos y sedantes; requiere supervision profesional.',
+  ];
+  calibratedSafety.notes = withCbdLaneNote(calibratedSafety.notes, CBD_SAFETY_WARNING);
+  return calibratedSafety;
+}
+
+function cbdSafePrimaryUses(): string[] {
+  return [
+    'Cannabidiol farmaceutico/Epidiolex: uso estudiado para convulsiones asociadas a Lennox-Gastaut, Dravet o TSC.',
+    'CBD comercial/OTC: ansiedad, sueno, dolor e inflamacion tienen evidencia limitada/investigacional; no son usos clinicos establecidos.',
+  ];
 }
 
 function calibrateCannabisWorksFor(
@@ -388,17 +474,23 @@ function calibrateCannabisWorksFor(
       continue;
     }
     const shouldDemoteCbdItem = options.cbdScoped && !isSpecificCbdClinicalItem(item);
-    item.condition = cannabisConditionLabel(item);
-    item.notes = String(stripCannabisContextNotice(sanitizeCannabisClaimText(item.notes)) || '').trim();
+    item.condition = options.cbdScoped ? cbdPharmaceuticalConditionLabel() : cannabisConditionLabel(item);
+    item.notes = options.cbdScoped
+      ? withCbdLaneNote(item.notes || item.description || item.magnitude, CBD_PHARMA_NOTICE)
+      : String(stripCannabisContextNotice(sanitizeCannabisClaimText(item.notes)) || '').trim();
 
     if (shouldDemoteCbdItem) {
-      demotedLimitedEvidence.push({
-        ...item,
-        evidenceGrade: 'C',
-        grade: 'C',
-        notes: `${item.notes || ''} ${CBD_LIMITED_NOTE}`.trim(),
-      });
+      const limitedItem = calibrateCbdLimitedEvidenceItem(item);
+      if (limitedItem) demotedLimitedEvidence.push(limitedItem);
       continue;
+    }
+
+    if (options.cbdScoped) {
+      item.use = item.condition;
+      item.benefit = item.condition;
+      item.description = sanitizeCbdLaneText(item.description);
+      item.magnitude = sanitizeCbdLaneText(item.magnitude);
+      item.safety = addCbdSafetyCaution(item.safety || {});
     }
 
     calibratedWorksFor.push(item);
@@ -471,10 +563,15 @@ function calibrateCannabisDataShape(data: any, category?: string) {
   const cbdScoped = isCbdIdentityText(category, calibrated.name);
   const calibratedEvidence = calibrateCannabisWorksFor(calibrated.worksFor, { cbdScoped });
   calibrated.worksFor = calibratedEvidence.worksFor;
-  calibrated.limitedEvidence = [
-    ...(Array.isArray(calibrated.limitedEvidence) ? calibrated.limitedEvidence : []),
-    ...calibratedEvidence.limitedEvidence,
-  ];
+  calibrated.limitedEvidence = cbdScoped
+    ? [
+      ...calibrateCbdLimitedEvidenceList(calibrated.limitedEvidence),
+      ...calibratedEvidence.limitedEvidence.filter(Boolean),
+    ]
+    : [
+      ...(Array.isArray(calibrated.limitedEvidence) ? calibrated.limitedEvidence : []),
+      ...calibratedEvidence.limitedEvidence,
+    ];
   calibrated.products = [];
   calibrated.buyingGuidance = undefined;
   calibrated.regulatoryNotice = undefined;
@@ -492,6 +589,8 @@ function calibrateCannabisDataShape(data: any, category?: string) {
     calibrated.whatIsIt = CBD_RESEARCH_DESCRIPTION;
     calibrated.description = CBD_RESEARCH_DESCRIPTION;
     calibrated.whatIsItFor = CBD_RESEARCH_DESCRIPTION;
+    calibrated.primaryUses = cbdSafePrimaryUses();
+    calibrated.safety = addCbdSafetyCaution(calibrated.safety || {});
     hideUncontextualizedCbdStudyCount(calibrated);
   } else {
     calibrated.whatIsIt = withCannabisContextNotice(calibrated.whatIsIt || calibrated.description || calibrated.whatIsItFor);
@@ -582,10 +681,15 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
     );
     const calibratedEvidence = calibrateCannabisWorksFor(calibrated.supplement.worksFor, { cbdScoped });
     calibrated.supplement.worksFor = calibratedEvidence.worksFor;
-    calibrated.supplement.limitedEvidence = [
-      ...(Array.isArray(calibrated.supplement.limitedEvidence) ? calibrated.supplement.limitedEvidence : []),
-      ...calibratedEvidence.limitedEvidence,
-    ];
+    calibrated.supplement.limitedEvidence = cbdScoped
+      ? [
+        ...calibrateCbdLimitedEvidenceList(calibrated.supplement.limitedEvidence),
+        ...calibratedEvidence.limitedEvidence.filter(Boolean),
+      ]
+      : [
+        ...(Array.isArray(calibrated.supplement.limitedEvidence) ? calibrated.supplement.limitedEvidence : []),
+        ...calibratedEvidence.limitedEvidence,
+      ];
     calibrated.supplement.products = [];
     calibrated.supplement.buyingGuidance = undefined;
     calibrated.supplement.regulatoryNotice = undefined;
@@ -604,6 +708,8 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
       calibrated.supplement.whatIsIt = CBD_RESEARCH_DESCRIPTION;
       calibrated.supplement.description = CBD_RESEARCH_DESCRIPTION;
       calibrated.supplement.whatIsItFor = CBD_RESEARCH_DESCRIPTION;
+      calibrated.supplement.primaryUses = cbdSafePrimaryUses();
+      calibrated.supplement.safety = addCbdSafetyCaution(calibrated.supplement.safety || {});
       hideUncontextualizedCbdStudyCount(calibrated.supplement);
     } else {
       calibrated.supplement.whatIsIt = withCannabisContextNotice(
