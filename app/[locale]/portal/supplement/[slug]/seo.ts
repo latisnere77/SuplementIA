@@ -49,12 +49,70 @@ export function getSupplementSeoData(slug: string, locale: SeoLocale): Supplemen
 }
 
 export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale) {
+  const targetedTitles: Partial<Record<string, Record<SeoLocale, string>>> = {
+    'fiber-psyllium': {
+      es: 'Psyllium fiber: evidencia para LDL, digestión y seguridad',
+      en: 'Psyllium fiber: evidence for LDL cholesterol, digestion, and safety',
+    },
+    'coenzyme-q10': {
+      es: 'Coenzima Q10: evidencia cardiovascular, migraña y seguridad',
+      en: 'Coenzyme Q10: heart health, migraine evidence, and safety',
+    },
+    'hydrolyzed-collagen': {
+      es: 'Colágeno hidrolizado: evidencia para articulaciones, piel y seguridad',
+      en: 'Hydrolyzed collagen: evidence for joints, skin, and safety',
+    },
+    'rhodiola-rosea': {
+      es: 'Rhodiola rosea: evidencia para fatiga, estrés y seguridad',
+      en: 'Rhodiola rosea: evidence for fatigue, stress, and safety',
+    },
+    lavender: {
+      es: 'Lavanda: evidencia para sueño, calma y seguridad',
+      en: 'Lavender: evidence for sleep, calm, and safety',
+    },
+  };
+
+  const targetedTitle = targetedTitles[data.slug]?.[locale];
+
+  if (targetedTitle) {
+    return targetedTitle;
+  }
+
   return locale === 'es'
     ? `${data.localizedName}: evidencia, estudios y seguridad`
     : `${data.localizedName}: evidence, studies, and safety`;
 }
 
 export function buildSupplementDescription(data: SupplementSeoData, locale: SeoLocale) {
+  const targetedDescriptions: Partial<Record<string, Record<SeoLocale, string>>> = {
+    'fiber-psyllium': {
+      es: 'Revisa psyllium fiber para colesterol LDL, triglicéridos, digestión, tolerancia y uso responsable junto con dieta y laboratorios.',
+      en: 'Review psyllium fiber for LDL cholesterol, triglycerides, digestion, tolerance, and responsible use alongside diet and lab follow-up.',
+    },
+    'coenzyme-q10': {
+      es: 'Consulta evidencia prudente sobre coenzima Q10 en salud cardiovascular, migraña, energía celular, seguridad e interacciones.',
+      en: 'Review careful evidence for coenzyme Q10 in heart health, migraine, cellular energy, safety, and interactions.',
+    },
+    'hydrolyzed-collagen': {
+      es: 'Compara evidencia de colágeno hidrolizado para articulaciones, piel, tejidos conectivos, seguridad y expectativas realistas.',
+      en: 'Compare hydrolyzed collagen evidence for joints, skin, connective tissue, safety, and realistic expectations.',
+    },
+    'rhodiola-rosea': {
+      es: 'Revisa rhodiola rosea para fatiga, estrés, rendimiento mental, seguridad y diferencias entre extractos estudiados.',
+      en: 'Review rhodiola rosea for fatigue, stress, mental performance, safety, and differences between studied extracts.',
+    },
+    lavender: {
+      es: 'Consulta evidencia de lavanda para sueño, ansiedad leve, formas de uso, seguridad y precauciones con sedantes.',
+      en: 'Review lavender evidence for sleep, mild anxiety, forms of use, safety, and precautions with sedatives.',
+    },
+  };
+
+  const targetedDescription = targetedDescriptions[data.slug]?.[locale];
+
+  if (targetedDescription) {
+    return sanitizeSupplementSeoText(targetedDescription);
+  }
+
   const description = locale === 'es'
     ? `Consulta un resumen prudente sobre ${data.localizedName}, tipos de evidencia publicada, seguridad y contexto de uso responsable. Incluye analisis dinamico de literatura cuando esta disponible.`
     : `Review a careful summary for ${data.localizedName}, published evidence types, safety context, and responsible use. Includes dynamic literature analysis when available.`;

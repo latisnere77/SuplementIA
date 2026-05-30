@@ -1,6 +1,12 @@
 export type CategorySeoContent = {
   intro: string;
   highlights: string[];
+  priorityTopics?: Array<{
+    title: string;
+    description: string;
+    supplementSlug: string;
+    searchLabel: string;
+  }>;
   faqHeading: string;
   faqs: Array<{
     question: string;
@@ -25,12 +31,12 @@ export function buildCategorySeoCopy({
       es: {
         title: 'Suplementos para colesterol y triglicéridos: evidencia, seguridad y opciones',
         description:
-          'Compara omega-3, psyllium, esteroles vegetales y ajo para colesterol y triglicéridos con evidencia, seguridad y uso responsable.',
+          'Compara psyllium, omega-3, esteroles vegetales y ajo para colesterol y triglicéridos con evidencia, seguridad y uso responsable.',
       },
       en: {
-        title: 'Supplements for cholesterol and triglycerides: evidence, safety, and options',
+        title: 'Psyllium, omega-3, and supplements for cholesterol and triglycerides',
         description:
-          'Compare omega-3, psyllium, plant sterols, and garlic for cholesterol and triglycerides with evidence level and safety context.',
+          'Compare psyllium fiber, omega-3, plant sterols, and garlic for cholesterol and triglycerides with evidence level and safety context.',
       },
     },
     sleep: {
@@ -139,11 +145,34 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
     'cholesterol-triglycerides': {
       es: {
         intro:
-          'Esta página compara suplementos investigados para LDL, triglicéridos y otros marcadores de lípidos. La evidencia es más útil cuando se interpreta junto con dieta, actividad física, laboratorios y seguimiento médico.',
+          'Esta página compara suplementos investigados para LDL, triglicéridos y otros marcadores de lípidos. La guía prioriza fibra soluble como psyllium, omega-3 y esteroles vegetales sin prometer resultados clínicos.',
         highlights: [
-          'Omega-3 EPA/DHA tiene evidencia más fuerte para triglicéridos que para bajar LDL.',
           'Psyllium y esteroles vegetales se enfocan más en reducciones modestas de colesterol LDL.',
+          'Omega-3 EPA/DHA tiene evidencia más fuerte para triglicéridos que para bajar LDL.',
           'Ajo puede tener efectos pequeños y variables; la preparación y la dosis cambian mucho el resultado.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Psyllium fiber para LDL',
+            description:
+              'Fibra soluble con evidencia para reducciones modestas de LDL cuando se usa con constancia, dieta adecuada y seguimiento de laboratorios.',
+            supplementSlug: 'fiber-psyllium',
+            searchLabel: 'Ver guía de psyllium fiber',
+          },
+          {
+            title: 'Omega-3 para triglicéridos',
+            description:
+              'EPA/DHA tiene mejor encaje cuando el objetivo principal son triglicéridos; conviene revisar dosis, medicamentos y riesgo cardiovascular.',
+            supplementSlug: 'omega-3',
+            searchLabel: 'Ver guía de omega-3',
+          },
+          {
+            title: 'Esteroles vegetales para LDL',
+            description:
+              'Opción enfocada en absorción intestinal de colesterol, con efectos moderados y dependientes de uso consistente.',
+            supplementSlug: 'plant-sterols',
+            searchLabel: 'Ver guía de esteroles vegetales',
+          },
         ],
         faqHeading: 'Preguntas frecuentes sobre colesterol y triglicéridos',
         faqs: [
@@ -167,11 +196,34 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
       },
       en: {
         intro:
-          'This page compares supplements researched for LDL cholesterol, triglycerides, and other lipid markers. The evidence is most useful when interpreted alongside diet, physical activity, lab results, and medical follow-up.',
+          'This page compares supplements researched for LDL cholesterol, triglycerides, and other lipid markers. It gives psyllium fiber, omega-3, and plant sterols clearer context without promising clinical outcomes.',
         highlights: [
-          'Omega-3 EPA/DHA has stronger evidence for triglycerides than for lowering LDL cholesterol.',
           'Psyllium and plant sterols are more focused on modest LDL cholesterol reductions.',
+          'Omega-3 EPA/DHA has stronger evidence for triglycerides than for lowering LDL cholesterol.',
           'Garlic may have small and variable effects; preparation and dose can change results substantially.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Psyllium fiber for LDL',
+            description:
+              'Soluble fiber with evidence for modest LDL reductions when used consistently alongside diet changes and lab follow-up.',
+            supplementSlug: 'fiber-psyllium',
+            searchLabel: 'Open the psyllium fiber guide',
+          },
+          {
+            title: 'Omega-3 for triglycerides',
+            description:
+              'EPA/DHA is a better fit when triglycerides are the main target; dose, medications, and cardiovascular risk matter.',
+            supplementSlug: 'omega-3',
+            searchLabel: 'Open the omega-3 guide',
+          },
+          {
+            title: 'Plant sterols for LDL',
+            description:
+              'A cholesterol-absorption focused option with moderate, consistency-dependent effects.',
+            supplementSlug: 'plant-sterols',
+            searchLabel: 'Open the plant sterols guide',
+          },
         ],
         faqHeading: 'Frequently asked questions about cholesterol and triglycerides',
         faqs: [

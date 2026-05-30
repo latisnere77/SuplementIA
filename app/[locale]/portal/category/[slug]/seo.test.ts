@@ -30,10 +30,17 @@ describe('category page SEO', () => {
 
   it('adds localized editorial content for priority category pages', () => {
     const sleepContent = buildCategorySeoContent('sleep', 'en');
+    const lipidContent = buildCategorySeoContent('cholesterol-triglycerides', 'en');
     const heartContent = buildCategorySeoContent('heart-health', 'es');
 
     expect(sleepContent?.intro).toContain('sleep quality');
     expect(sleepContent?.faqs).toHaveLength(3);
+    expect(lipidContent?.intro).toContain('psyllium fiber');
+    expect(lipidContent?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'fiber-psyllium',
+      'omega-3',
+      'plant-sterols',
+    ]);
     expect(heartContent?.supplementLinksHeading).toBe('Guías de suplementos cardiovasculares');
   });
 
