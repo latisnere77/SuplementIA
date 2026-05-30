@@ -196,6 +196,14 @@
     "products": {
       "title": "Recomendaciones de Productos",
       "desc": "Te mostramos opciones de búsqueda para el ingrediente analizado. La evidencia respalda el ingrediente, no marcas específicas; revisa etiqueta, dosis y certificaciones."
+    },
+    "outbound": {
+      "title": "Explorar opciones externas",
+      "desc": "Este es un enlace de búsqueda neutral para el ingrediente analizado. No es respaldo de marca ni recomendación médica.",
+      "cardTitle": "Buscar fuera de SuplementAI",
+      "cardDesc": "Abre una búsqueda web general de \"{query}\" y compara etiquetas, formas y certificaciones por tu cuenta.",
+      "disclosure": "SuplementAI no verifica ni respalda los resultados externos.",
+      "button": "Abrir búsqueda externa"
     }
   },
   "product": {

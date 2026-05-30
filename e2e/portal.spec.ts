@@ -806,6 +806,81 @@ test.describe('portal browser flows', () => {
     expect(openedUrls[0]).toContain('https://example.com/magnesium');
   });
 
+  test('supported results without products expose a neutral outbound search and track outbound_click', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, '__openedUrls', {
+        value: [],
+        writable: true,
+      });
+      Object.defineProperty(window, '__gaEvents', {
+        value: [],
+        writable: true,
+      });
+
+      window.open = (url?: string | URL) => {
+        (window as typeof window & { __openedUrls: string[] }).__openedUrls.push(String(url));
+        return null;
+      };
+      window.gtag = (...args: unknown[]) => {
+        (window as typeof window & { __gaEvents: unknown[] }).__gaEvents.push(args);
+      };
+    });
+
+    await page.route('**/api/portal/quiz**', async (route) => {
+      const body = route.request().postDataJSON() as QuizRequest;
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          searchType: 'ingredient',
+          jobId: body.jobId,
+          recommendation: {
+            ...recommendation,
+            products: [],
+          },
+        }),
+      });
+    });
+
+    await page.goto('/es/portal/results?q=Magnesium&supplement=Magnesium');
+
+    await expect(page.getByTestId('recommendation-display')).toBeVisible();
+    await expect(page.getByText('Explorar opciones externas')).toBeVisible();
+    await expect(page.getByText(/No es respaldo de marca ni recomendación médica/i)).toBeVisible();
+    await expect(page.getByText('Magnesium Glycinate Basic')).not.toBeVisible();
+
+    await page.evaluate(() => {
+      window.gtag = (...args: unknown[]) => {
+        (window as typeof window & { __gaEvents: unknown[] }).__gaEvents.push(args);
+      };
+    });
+
+    await page.getByRole('button', { name: /Abrir búsqueda externa/i }).click();
+
+    const openedUrls = await page.evaluate(() => (window as typeof window & { __openedUrls: string[] }).__openedUrls);
+    expect(openedUrls[0]).toContain('https://www.google.com/search');
+    expect(openedUrls[0]).toContain('Magnesium');
+
+    await expect.poll(async () => page.evaluate(() => {
+      const events = (window as typeof window & { __gaEvents: unknown[][] }).__gaEvents;
+      return events.find((event) => event[0] === 'event' && event[1] === 'outbound_click');
+    }), { timeout: 5000 }).toBeTruthy();
+
+    const outboundEvent = await page.evaluate(() => {
+      const events = (window as typeof window & { __gaEvents: unknown[][] }).__gaEvents;
+      return events.find((event) => event[0] === 'event' && event[1] === 'outbound_click');
+    });
+    expect(outboundEvent?.[2]).toMatchObject({
+      outbound_domain: 'www.google.com',
+      page_type: 'search_results',
+      locale: 'es',
+      query: 'Magnesium',
+      supplement_slug: 'magnesium',
+    });
+  });
+
   test('results do not render affiliate products for broad health goals without clear ingredient matches', async ({ page }) => {
     await page.route('**/api/portal/quiz**', async (route) => {
       const body = route.request().postDataJSON() as QuizRequest;
