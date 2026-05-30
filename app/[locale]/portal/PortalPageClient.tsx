@@ -203,7 +203,9 @@ export default function PortalPage() {
       original_search_term: query.trim(),
       normalized: normalized.normalized,
       normalization_confidence: Number(normalized.confidence.toFixed(2)),
+      locale: language,
       language,
+      page_type: 'portal_home',
       source: 'portal_search',
     });
 
@@ -218,7 +220,9 @@ export default function PortalPage() {
     trackGAEvent('category_clicked', {
       category_slug: categoryId,
       category_name: category?.name,
+      locale: language,
       language,
+      page_type: 'portal_home',
       source: 'portal_category_grid',
     });
   };
@@ -228,14 +232,19 @@ export default function PortalPage() {
     trackGAEvent('search_started', {
       search_term: queryTerm,
       display_term: displayTerm,
+      locale: language,
       language,
+      page_type: 'portal_home',
       source: 'popular_search',
     });
   };
 
   const handleExploreNow = () => {
     trackGAEvent('cta_clicked', {
+      cta_name: 'portal_final_cta',
+      locale: language,
       language,
+      page_type: 'portal_home',
       source: 'portal_final_cta',
     });
 
