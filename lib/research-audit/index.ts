@@ -1,5 +1,6 @@
 export * from './cost-estimator';
 export * from './config';
+export * from './events';
 export * from './fixtures';
 export * from './kimi-provider';
 export * from './packets';
