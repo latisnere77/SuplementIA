@@ -3,6 +3,7 @@
 import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useRef, useState } from 'react';
+import { getGAPageContext } from '@/lib/analytics/page-context';
 
 declare global {
   interface Window {
@@ -32,6 +33,7 @@ function PageViewTracker({
     const query = searchParams.toString();
     const pagePath = query ? `${pathname}?${query}` : pathname;
     const pageLocation = window.location.href;
+    const pageContext = getGAPageContext(pathname, searchParams);
 
     if (lastPageViewRef.current === pageLocation) {
       return;
@@ -43,6 +45,7 @@ function PageViewTracker({
       page_path: pagePath,
       page_location: pageLocation,
       page_title: document.title,
+      ...pageContext,
       send_page_view: false,
     });
 
@@ -50,6 +53,7 @@ function PageViewTracker({
       page_path: pagePath,
       page_location: pageLocation,
       page_title: document.title,
+      ...pageContext,
       send_to: measurementId,
     });
   }, [isReady, measurementId, pathname, searchParams]);

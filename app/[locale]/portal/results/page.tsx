@@ -781,10 +781,13 @@ function ResultsPageContent() {
 
     trackGAEvent('view_search_results', {
       search_term: query || recommendation?.category || urlJobId || 'unknown',
+      query: query || undefined,
       result_type: resultType,
       recommendation_id: recommendation?.recommendation_id,
       supplement_name: recommendation?.category,
+      locale: language,
       language,
+      page_type: 'search_results',
       total_studies: recommendation?.evidence_summary?.totalStudies || 0,
       studies_used: metadata.studiesUsed || 0,
       has_affiliate_products: products.length > 0,
@@ -1546,7 +1549,9 @@ function ResultsPageContent() {
         product_tier: product.tier,
         product_name: product.name,
         supplement_name: recommendation?.category || query || undefined,
+        locale: language,
         language,
+        page_type: 'search_results',
       });
       setShowPaywall(true);
     } else {
@@ -1557,9 +1562,15 @@ function ResultsPageContent() {
           product_name: product.name,
           provider: product.affiliateProvider || product.whereToBuy,
           link_domain: getLinkHostname(link),
+          outbound_domain: getLinkHostname(link),
           supplement_name: recommendation?.category || query || undefined,
+          supplement_slug: recommendation?.category
+            ? recommendation.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+            : undefined,
           recommendation_id: recommendation?.recommendation_id,
+          locale: language,
           language,
+          page_type: 'search_results',
         });
         window.open(link, '_blank', 'noopener,noreferrer');
       }

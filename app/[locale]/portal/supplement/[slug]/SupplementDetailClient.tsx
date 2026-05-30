@@ -286,7 +286,10 @@ export default function SupplementDetailClient({ slug, locale }: SupplementDetai
       supplement_slug: slug,
       supplement_name: supplementName,
       benefit: benefit || 'general',
+      category_slug: benefit || undefined,
+      locale,
       language: locale,
+      page_type: 'supplement_detail',
       source: 'supplement_detail',
     });
   }, [benefit, locale, slug, supplementName]);
