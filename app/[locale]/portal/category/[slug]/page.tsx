@@ -208,6 +208,27 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               </div>
             </div>
           )}
+
+          {seoContent.relatedLinks && (
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                {seoLocale === 'es' ? 'Siguiente lectura recomendada' : 'Recommended next reading'}
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {seoContent.relatedLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={`/${seoLocale}${link.href}`}
+                    className="rounded-lg border border-gray-200 bg-white p-4 hover:border-gray-400 hover:shadow-sm"
+                  >
+                    <span className="block text-base font-semibold text-gray-900">{link.title}</span>
+                    <span className="mt-2 block text-sm leading-6 text-gray-700">{link.description}</span>
+                    <span className="mt-3 block text-sm font-medium text-blue-700">{link.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       )}
       
