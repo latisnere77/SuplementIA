@@ -37,6 +37,11 @@ interface KimiChatResponse {
   };
 }
 
+function temperatureForModel(model: ResearchAuditFinding['model']): number {
+  if (model === 'kimi-k2.6' || model === 'kimi-k2.5') return 1;
+  return 0;
+}
+
 export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
   provider = 'kimi' as const;
 
@@ -145,7 +150,7 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
             { role: 'user', content: promptPayload.user },
           ],
           response_format: { type: 'json_object' },
-          temperature: 0,
+          temperature: temperatureForModel(this.config.model),
           max_completion_tokens: this.config.maxOutputTokensPerEvent,
         }),
         signal: controller.signal,
