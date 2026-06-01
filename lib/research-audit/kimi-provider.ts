@@ -25,8 +25,10 @@ type FetchLike = (
 
 interface KimiChatChoice {
   message?: {
-    content?: string;
+    content?: unknown;
+    reasoning_content?: unknown;
   };
+  text?: unknown;
 }
 
 interface KimiChatResponse {
@@ -202,12 +204,12 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
   ): ProviderAuditResult {
     try {
       const parsed = JSON.parse(body) as KimiChatResponse;
-      const rawContent = parsed.choices?.[0]?.message?.content;
+      const rawContent = findKimiAuditJsonContent(parsed);
       if (!rawContent) {
         return {
           ...baseResult,
           valid: false,
-          rejectionReasons: ['provider response did not include message content'],
+          rejectionReasons: ['provider response did not include parseable audit JSON'],
           rejectedFinding: sanitizeProviderError(body),
           externalCalls: 1,
         };
@@ -242,6 +244,50 @@ function isAbortError(error: unknown): boolean {
   return error instanceof DOMException
     ? error.name === 'AbortError'
     : error instanceof Error && error.name === 'AbortError';
+}
+
+function findKimiAuditJsonContent(response: KimiChatResponse): string | undefined {
+  const choices = Array.isArray(response.choices) ? response.choices : [];
+  for (const choice of choices) {
+    const candidates = [
+      choice.message?.content,
+      choice.message?.reasoning_content,
+      choice.text,
+    ];
+
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string') continue;
+      const jsonText = extractJsonObjectText(candidate);
+      if (jsonText) return jsonText;
+    }
+  }
+
+  return undefined;
+}
+
+function extractJsonObjectText(value: string): string | undefined {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return undefined;
+
+  if (isJsonObjectString(trimmed)) return trimmed;
+
+  const start = trimmed.indexOf('{');
+  const end = trimmed.lastIndexOf('}');
+  if (start === -1 || end <= start) return undefined;
+
+  const possibleJson = trimmed.slice(start, end + 1);
+  if (isJsonObjectString(possibleJson)) return possibleJson;
+
+  return undefined;
+}
+
+function isJsonObjectString(value: string): boolean {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return !!parsed && typeof parsed === 'object' && !Array.isArray(parsed);
+  } catch {
+    return false;
+  }
 }
 
 function enforceReportOnlyFindingGuards(
