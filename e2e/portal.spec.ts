@@ -410,6 +410,34 @@ test.describe('portal browser flows', () => {
     await expect(page.getByText('Magnesium Glycinate Basic')).toBeVisible();
   });
 
+  test('Spanish portal search keeps CBD query scoped instead of normalizing to NAD+', async ({ page }) => {
+    await page.route('**/api/portal/autocomplete**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          suggestions: [{ text: 'CBD', type: 'supplement', score: 1 }],
+        }),
+      });
+    });
+
+    await page.goto('/es/portal');
+    const searchInput = page.getByLabel('Buscar suplementos');
+    const goButton = page.getByRole('button', { name: 'Ir' });
+
+    await searchInput.click();
+    await searchInput.fill('');
+    await searchInput.pressSequentially('CBD');
+    await expect(searchInput).toHaveValue('CBD');
+    await searchInput.press('Escape');
+    await expect(goButton).toBeEnabled();
+    await goButton.click();
+
+    await expect(page).toHaveURL(/\/es\/portal\/results\?q=CBD&supplement=CBD/);
+    expect(page.url()).not.toContain('NAD');
+  });
+
   test('results labels follow Spanish and English route locales', async ({ page }) => {
     await mockSuccessfulQuiz(page);
 

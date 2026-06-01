@@ -326,6 +326,8 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'ubidecarenone': { canonical: 'Coenzyme Q10', category: 'other' },
 
   // ========== OTHER COMMON MISSING ==========
+  'cbd': { canonical: 'CBD', category: 'other' },
+  'cannabidiol': { canonical: 'CBD', category: 'other' },
   'resveratrol': { canonical: 'Resveratrol', category: 'other' },
   'berberina': { canonical: 'Berberine', category: 'herb' },
   'berberine': { canonical: 'Berberine', category: 'herb' },
@@ -474,6 +476,12 @@ const VARIATION_GENERATORS: Record<string, (canonical: string) => string[]> = {
     'Creatine supplementation',
     '(Creatine OR Creatine Monohydrate)',
   ],
+  'CBD': () => [
+    'CBD',
+    'Cannabidiol',
+    'pharmaceutical cannabidiol',
+    '(CBD OR Cannabidiol)',
+  ],
   'Echinacea': () => [
     'Echinacea',
     'Echinacea purpurea',
@@ -566,6 +574,12 @@ function findFuzzyMatch(
 ): { key: string; confidence: number } | null {
   // Reject very short queries (< 3 chars) to avoid false positives
   if (query.length < 3) {
+    return null;
+  }
+
+  // Three-letter uppercase-style acronyms are too collision-prone for fuzzy
+  // matching (CBD vs NAD, NAC, DHA, EPA). Exact aliases above still normalize.
+  if (/^[a-z0-9+]{3,4}$/.test(query)) {
     return null;
   }
 

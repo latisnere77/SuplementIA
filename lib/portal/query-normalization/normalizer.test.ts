@@ -127,6 +127,22 @@ describe('Query Normalizer', () => {
 
   // ========== OTHER SUPPLEMENTS ==========
   describe('Other Supplements', () => {
+    it('keeps short acronyms scoped to exact known entities', () => {
+      expect(normalizeQuery('CBD').normalized).toBe('CBD');
+      expect(normalizeQuery('cbd').normalized).toBe('CBD');
+      expect(normalizeQuery('Cannabidiol').normalized).toBe('CBD');
+      expect(normalizeQuery('NAD').normalized).toBe('NAD+');
+      expect(normalizeQuery('nad').normalized).toBe('NAD+');
+      expect(normalizeQuery('NAD+').normalized).toBe('NAD+');
+    });
+
+    it('does not fuzzy-match unknown short acronyms into unrelated entities', () => {
+      const result = normalizeQuery('CBG');
+
+      expect(result.normalized).toBe('CBG');
+      expect(result.confidence).toBe(0.0);
+    });
+
     it('normalizes Omega-3 variations', () => {
       expect(normalizeQuery('omega 3').normalized).toBe('Omega-3');
       expect(normalizeQuery('omega-3').normalized).toBe('Omega-3');
