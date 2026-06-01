@@ -8,6 +8,7 @@ export * from './packets';
 export * from './pmid';
 export * from './pmid-verifier';
 export * from './provider';
+export * from './provider-error-sanitizer';
 export * from './provider-prompt';
 export * from './provider-runner';
 export * from './redaction';
