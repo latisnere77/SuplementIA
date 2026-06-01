@@ -14,6 +14,12 @@ export type SupplementSeoData = {
 export type SupplementSeoContent = {
   intro: string;
   highlights: string[];
+  relatedLinks?: Array<{
+    title: string;
+    description: string;
+    href: string;
+    label: string;
+  }>;
   faqHeading: string;
   faqs: Array<{
     question: string;
@@ -61,12 +67,24 @@ export function getSupplementSeoData(slug: string, locale: SeoLocale): Supplemen
 export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale) {
   const targetedTitles: Partial<Record<string, Record<SeoLocale, string>>> = {
     'fiber-psyllium': {
-      es: 'Psyllium fiber: evidencia para LDL, digestión y seguridad',
+      es: 'Psyllium para colesterol LDL: evidencia, fibra y seguridad',
       en: 'Psyllium fiber: evidence for LDL cholesterol, digestion, and safety',
     },
     'coenzyme-q10': {
-      es: 'Coenzima Q10: evidencia cardiovascular, migraña y seguridad',
+      es: 'Coenzima Q10 cardiovascular: evidencia, estatinas y seguridad',
       en: 'Coenzyme Q10: heart health, migraine evidence, and safety',
+    },
+    'omega-3': {
+      es: 'Omega-3 para triglicéridos: evidencia, EPA/DHA y seguridad',
+      en: 'Omega-3 for triglycerides: EPA/DHA evidence and safety',
+    },
+    'plant-sterols': {
+      es: 'Esteroles vegetales para colesterol: evidencia y seguridad',
+      en: 'Plant sterols for cholesterol: evidence and safety',
+    },
+    garlic: {
+      es: 'Ajo para presión y colesterol: evidencia y precauciones',
+      en: 'Garlic for blood pressure and cholesterol: evidence and precautions',
     },
     'hydrolyzed-collagen': {
       es: 'Colágeno hidrolizado: evidencia para articulaciones, piel y seguridad',
@@ -108,12 +126,24 @@ export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale)
 export function buildSupplementDescription(data: SupplementSeoData, locale: SeoLocale) {
   const targetedDescriptions: Partial<Record<string, Record<SeoLocale, string>>> = {
     'fiber-psyllium': {
-      es: 'Revisa psyllium fiber para colesterol LDL, triglicéridos, digestión, tolerancia y uso responsable junto con dieta y laboratorios.',
+      es: 'Revisa psyllium para colesterol LDL, fibra soluble, triglicéridos, digestión, laboratorios y uso responsable.',
       en: 'Review psyllium fiber for LDL cholesterol, triglycerides, digestion, tolerance, and responsible use alongside diet and lab follow-up.',
     },
     'coenzyme-q10': {
-      es: 'Consulta evidencia prudente sobre coenzima Q10 en salud cardiovascular, migraña, energía celular, seguridad e interacciones.',
+      es: 'Consulta coenzima Q10 cardiovascular: energía celular, estatinas, presión, seguridad, interacciones y evidencia prudente.',
       en: 'Review careful evidence for coenzyme Q10 in heart health, migraine, cellular energy, safety, and interactions.',
+    },
+    'omega-3': {
+      es: 'Revisa omega-3 EPA/DHA para triglicéridos, salud cardiovascular, dosis prudente, interacciones y laboratorios.',
+      en: 'Review omega-3 EPA/DHA for triglycerides, heart health, careful dosing, interactions, and lab follow-up.',
+    },
+    'plant-sterols': {
+      es: 'Consulta esteroles vegetales para colesterol LDL, absorción intestinal, dieta, seguridad y expectativas realistas.',
+      en: 'Review plant sterols for LDL cholesterol, intestinal absorption, diet context, safety, and realistic expectations.',
+    },
+    garlic: {
+      es: 'Revisa ajo para presión arterial, colesterol, preparación, tolerancia, anticoagulantes y seguridad cardiovascular.',
+      en: 'Review garlic for blood pressure, cholesterol, preparation, tolerance, anticoagulants, and cardiovascular safety.',
     },
     'hydrolyzed-collagen': {
       es: 'Compara evidencia de colágeno hidrolizado para articulaciones, piel, tejidos conectivos, seguridad y expectativas realistas.',
@@ -156,6 +186,312 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
 
 export function buildSupplementSeoContent(slug: string, locale: SeoLocale): SupplementSeoContent | null {
   const content: Partial<Record<string, Record<SeoLocale, SupplementSeoContent>>> = {
+    'fiber-psyllium': {
+      es: {
+        intro:
+          'Psyllium es una fibra soluble que conecta con búsquedas sobre psyllium colesterol, fibra para LDL y suplementos para triglicéridos. Esta guía ayuda a interpretar cuándo revisar psyllium junto con dieta, agua suficiente y laboratorios.',
+        highlights: [
+          'Tiene más sentido cuando el usuario quiere comparar fibra soluble, LDL y tolerancia digestiva.',
+          'Debe separarse de medicamentos y otros suplementos porque puede modificar absorción o tolerancia gastrointestinal.',
+          'El seguimiento debe mirar LDL, no-HDL, triglicéridos, dieta total de fibra y respuesta individual.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Suplementos para triglicéridos',
+            description:
+              'Compara psyllium con omega-3, esteroles vegetales y ajo dentro del cluster de lípidos.',
+            href: '/portal/category/cholesterol-triglycerides',
+            label: 'Ver categoría de lípidos',
+          },
+          {
+            title: 'Omega-3 para triglicéridos',
+            description:
+              'Opción complementaria cuando la intención de búsqueda se centra más en triglicéridos que en LDL.',
+            href: '/portal/supplement/omega-3?benefit=cholesterol-triglycerides',
+            label: 'Comparar con omega-3',
+          },
+          {
+            title: 'Esteroles vegetales',
+            description:
+              'Otra opción enfocada en colesterol LDL para comparar mecanismo, constancia y expectativas.',
+            href: '/portal/supplement/plant-sterols?benefit=cholesterol-triglycerides',
+            label: 'Comparar esteroles',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre psyllium y colesterol',
+        faqs: [
+          {
+            question: '¿Psyllium es más relevante para colesterol o triglicéridos?',
+            answer:
+              'La intención más clara suele ser colesterol LDL y fibra soluble. En triglicéridos puede formar parte de una estrategia dietaria, pero conviene interpretarlo junto con omega-3, carbohidratos, peso, alcohol y laboratorios.',
+          },
+          {
+            question: '¿Qué precauciones revisar con psyllium?',
+            answer:
+              'Revisa ingesta de agua, estreñimiento, dificultad para tragar, medicamentos orales y tolerancia digestiva. Puede requerir separar horarios con fármacos o suplementos.',
+          },
+          {
+            question: '¿Cómo saber si tiene sentido para mi laboratorio?',
+            answer:
+              'Compara LDL, no-HDL, triglicéridos y dieta actual. Si hay riesgo cardiovascular alto o tratamiento con estatinas, la decisión debe acompañarse de seguimiento profesional.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Psyllium is soluble fiber that maps to searches around LDL cholesterol, fiber, and triglyceride supplement comparisons. This guide helps frame psyllium alongside diet, water intake, and lab follow-up.',
+        highlights: [
+          'It is most relevant when comparing soluble fiber, LDL, and digestive tolerance.',
+          'It should be separated from some medications and supplements because absorption or tolerance can matter.',
+          'Follow-up should consider LDL, non-HDL cholesterol, triglycerides, total fiber intake, and individual response.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Triglyceride supplement options',
+            description:
+              'Compare psyllium with omega-3, plant sterols, and garlic in the lipid cluster.',
+            href: '/portal/category/cholesterol-triglycerides',
+            label: 'Open lipid category',
+          },
+          {
+            title: 'Omega-3 for triglycerides',
+            description:
+              'A complementary option when the search intent focuses more on triglycerides than LDL.',
+            href: '/portal/supplement/omega-3?benefit=cholesterol-triglycerides',
+            label: 'Compare omega-3',
+          },
+          {
+            title: 'Plant sterols',
+            description:
+              'Another LDL-focused option to compare mechanism, consistency, and expectations.',
+            href: '/portal/supplement/plant-sterols?benefit=cholesterol-triglycerides',
+            label: 'Compare sterols',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about psyllium and cholesterol',
+        faqs: [
+          {
+            question: 'Is psyllium more relevant for cholesterol or triglycerides?',
+            answer:
+              'The clearest intent is LDL cholesterol and soluble fiber. For triglycerides it may be part of a broader diet strategy, but omega-3, carbohydrate intake, weight, alcohol, and labs also matter.',
+          },
+          {
+            question: 'What precautions matter with psyllium?',
+            answer:
+              'Review water intake, constipation, swallowing difficulty, oral medications, and digestive tolerance. Timing may need to be separated from drugs or supplements.',
+          },
+          {
+            question: 'How do I know if it fits my lab results?',
+            answer:
+              'Compare LDL, non-HDL cholesterol, triglycerides, and current diet. With high cardiovascular risk or statin therapy, decisions should include professional follow-up.',
+          },
+        ],
+      },
+    },
+    'omega-3': {
+      es: {
+        intro:
+          'Omega-3 EPA/DHA conecta directamente con búsquedas sobre omega 3 triglicéridos y suplementos cardiovasculares. Esta página distingue triglicéridos, LDL, dosis clínica, pescado azul, cápsulas e interacciones.',
+        highlights: [
+          'La intención más fuerte para EPA/DHA suele ser triglicéridos, no promesas generales de salud cardiovascular.',
+          'Importan forma, dosis, pureza, tolerancia gastrointestinal y uso de anticoagulantes o cirugía programada.',
+          'Si LDL, triglicéridos y riesgo cardiovascular están alterados, conviene revisar resultados con un profesional.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Suplementos para triglicéridos',
+            description:
+              'Compara omega-3 con psyllium, esteroles vegetales y ajo según laboratorio e intención de búsqueda.',
+            href: '/portal/category/cholesterol-triglycerides',
+            label: 'Ver comparación de lípidos',
+          },
+          {
+            title: 'Psyllium para LDL',
+            description:
+              'Fibra soluble más enfocada en colesterol LDL y tolerancia digestiva.',
+            href: '/portal/supplement/fiber-psyllium?benefit=cholesterol-triglycerides',
+            label: 'Comparar psyllium',
+          },
+          {
+            title: 'Suplementos cardiovasculares',
+            description:
+              'Amplía el contexto hacia CoQ10, ajo, presión arterial y seguridad cardiovascular.',
+            href: '/portal/category/heart-health',
+            label: 'Ver cluster cardiovascular',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre omega-3 y triglicéridos',
+        faqs: [
+          {
+            question: '¿Omega-3 se revisa más por triglicéridos o por colesterol LDL?',
+            answer:
+              'La intención más clara suele ser triglicéridos. Para LDL, el contexto es distinto y puede requerir comparar dieta, estatinas, fibra soluble, esteroles vegetales y riesgo cardiovascular.',
+          },
+          {
+            question: '¿Qué datos importan antes de elegir omega-3?',
+            answer:
+              'Revisa triglicéridos, LDL, medicamentos, anticoagulantes, antecedentes de sangrado, cirugía programada, consumo de pescado y tolerancia digestiva.',
+          },
+          {
+            question: '¿Puedo combinar omega-3 con otros suplementos cardiovasculares?',
+            answer:
+              'Puede ser posible, pero conviene revisar duplicidad, dosis total, medicamentos y el marcador objetivo. No todo suplemento cardiovascular apunta al mismo resultado.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Omega-3 EPA/DHA maps directly to searches around triglycerides and heart health supplements. This page separates triglycerides, LDL, clinical dose context, fatty fish, capsules, and interactions.',
+        highlights: [
+          'The strongest intent for EPA/DHA is usually triglycerides, not broad heart-health promises.',
+          'Form, dose, purity, digestive tolerance, anticoagulants, and planned surgery matter.',
+          'When LDL, triglycerides, and cardiovascular risk are abnormal, professional lab review is important.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Triglyceride supplement options',
+            description:
+              'Compare omega-3 with psyllium, plant sterols, and garlic by lab marker and search intent.',
+            href: '/portal/category/cholesterol-triglycerides',
+            label: 'Open lipid comparison',
+          },
+          {
+            title: 'Psyllium for LDL',
+            description:
+              'Soluble fiber more focused on LDL cholesterol and digestive tolerance.',
+            href: '/portal/supplement/fiber-psyllium?benefit=cholesterol-triglycerides',
+            label: 'Compare psyllium',
+          },
+          {
+            title: 'Heart health supplements',
+            description:
+              'Expand the context to CoQ10, garlic, blood pressure, and cardiovascular safety.',
+            href: '/portal/category/heart-health',
+            label: 'Open heart cluster',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about omega-3 and triglycerides',
+        faqs: [
+          {
+            question: 'Is omega-3 more relevant for triglycerides or LDL cholesterol?',
+            answer:
+              'The clearest intent is usually triglycerides. LDL context is different and may require comparing diet, statins, soluble fiber, plant sterols, and cardiovascular risk.',
+          },
+          {
+            question: 'What data matters before choosing omega-3?',
+            answer:
+              'Review triglycerides, LDL, medications, anticoagulants, bleeding history, planned surgery, fish intake, and digestive tolerance.',
+          },
+          {
+            question: 'Can omega-3 be combined with other heart supplements?',
+            answer:
+              'It may be possible, but duplication, total dose, medications, and the target marker should be reviewed. Not every heart supplement points to the same outcome.',
+          },
+        ],
+      },
+    },
+    'coenzyme-q10': {
+      es: {
+        intro:
+          'Coenzima Q10 aparece dentro de la intención de suplemento cardiovascular, especialmente cuando el usuario compara energía celular, estatinas, presión arterial o insuficiencia cardíaca. Esta guía mantiene expectativas prudentes y separa esos contextos.',
+        highlights: [
+          'No es una respuesta general para todo riesgo cardiovascular; el contexto clínico cambia mucho la interpretación.',
+          'Usuarios con estatinas suelen buscar CoQ10 por molestias musculares o energía, pero conviene revisar evidencia y medicamentos.',
+          'Presión arterial, insuficiencia cardíaca, migraña y fatiga tienen preguntas distintas; no deben mezclarse como una sola promesa.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Suplementos cardiovasculares',
+            description:
+              'Compara CoQ10 con omega-3 y ajo según objetivo, medicamentos y laboratorios.',
+            href: '/portal/category/heart-health',
+            label: 'Ver categoría cardiovascular',
+          },
+          {
+            title: 'Omega-3 para triglicéridos',
+            description:
+              'Mejor encaje cuando el marcador principal que el usuario quiere interpretar son triglicéridos.',
+            href: '/portal/supplement/omega-3?benefit=heart-health',
+            label: 'Comparar omega-3',
+          },
+          {
+            title: 'Colesterol y triglicéridos',
+            description:
+              'Cluster específico para búsquedas de triglicéridos, LDL, psyllium y esteroles vegetales.',
+            href: '/portal/category/cholesterol-triglycerides',
+            label: 'Ver cluster de lípidos',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre coenzima Q10 cardiovascular',
+        faqs: [
+          {
+            question: '¿Coenzima Q10 es lo mismo que un suplemento para colesterol?',
+            answer:
+              'No. CoQ10 se relaciona más con energía celular y contextos cardiovasculares específicos. Para colesterol LDL o triglicéridos conviene revisar otras opciones y laboratorios.',
+          },
+          {
+            question: '¿Por qué se menciona CoQ10 junto con estatinas?',
+            answer:
+              'Algunos usuarios la revisan por molestias musculares o niveles de CoQ10 durante tratamiento con estatinas. No conviene modificar medicamentos sin seguimiento profesional.',
+          },
+          {
+            question: '¿Qué precauciones revisar antes de usar CoQ10?',
+            answer:
+              'Revisa anticoagulantes, antihipertensivos, tratamiento cardiovascular, embarazo, cirugía programada y el objetivo específico: presión, migraña, energía o contexto cardíaco.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Coenzyme Q10 sits inside heart supplement intent, especially when users compare cellular energy, statins, blood pressure, or heart failure context. This guide keeps expectations careful and separates those contexts.',
+        highlights: [
+          'It is not a general answer for every cardiovascular risk; clinical context changes interpretation.',
+          'Statin users often search CoQ10 for muscle symptoms or energy, but evidence and medications should be reviewed.',
+          'Blood pressure, heart failure, migraine, and fatigue are different questions and should not be merged into one promise.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Heart health supplements',
+            description:
+              'Compare CoQ10 with omega-3 and garlic by goal, medications, and lab context.',
+            href: '/portal/category/heart-health',
+            label: 'Open heart category',
+          },
+          {
+            title: 'Omega-3 for triglycerides',
+            description:
+              'A better fit when the main marker the user wants to interpret is triglycerides.',
+            href: '/portal/supplement/omega-3?benefit=heart-health',
+            label: 'Compare omega-3',
+          },
+          {
+            title: 'Cholesterol and triglycerides',
+            description:
+              'A specific cluster for triglycerides, LDL, psyllium, and plant sterols.',
+            href: '/portal/category/cholesterol-triglycerides',
+            label: 'Open lipid cluster',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about coenzyme Q10 and heart context',
+        faqs: [
+          {
+            question: 'Is CoQ10 the same as a cholesterol supplement?',
+            answer:
+              'No. CoQ10 is more related to cellular energy and specific cardiovascular contexts. LDL cholesterol or triglyceride questions need different comparisons and lab context.',
+          },
+          {
+            question: 'Why is CoQ10 mentioned with statins?',
+            answer:
+              'Some users review it because of muscle symptoms or CoQ10 levels during statin therapy. Medications should not be changed without professional follow-up.',
+          },
+          {
+            question: 'What precautions matter before using CoQ10?',
+            answer:
+              'Review anticoagulants, blood pressure medications, cardiovascular treatment, pregnancy, planned surgery, and the specific goal: blood pressure, migraine, energy, or heart context.',
+          },
+        ],
+      },
+    },
     'bacopa-monnieri': {
       es: {
         intro:

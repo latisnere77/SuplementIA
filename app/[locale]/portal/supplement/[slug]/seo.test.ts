@@ -47,6 +47,7 @@ describe('supplement page SEO', () => {
     const bacopa = getSupplementSeoData('bacopa-monnieri', 'es');
     const vitaminD = getSupplementSeoData('vitamin-d', 'es');
     const theanine = getSupplementSeoData('l-theanine', 'en');
+    const omega3 = getSupplementSeoData('omega-3', 'es');
 
     expect(psyllium).not.toBeNull();
     expect(coq10).not.toBeNull();
@@ -54,11 +55,12 @@ describe('supplement page SEO', () => {
     expect(bacopa).not.toBeNull();
     expect(vitaminD).not.toBeNull();
     expect(theanine).not.toBeNull();
-    expect(buildSupplementTitle(psyllium!, 'en')).toBe(
-      'Psyllium fiber: evidence for LDL cholesterol, digestion, and safety'
-    );
-    expect(buildSupplementDescription(psyllium!, 'en')).toContain('LDL cholesterol');
-    expect(buildSupplementTitle(coq10!, 'es')).toContain('Coenzima Q10');
+    expect(omega3).not.toBeNull();
+    expect(buildSupplementTitle(psyllium!, 'es')).toContain('Psyllium para colesterol LDL');
+    expect(buildSupplementDescription(psyllium!, 'es')).toContain('fibra soluble');
+    expect(buildSupplementTitle(coq10!, 'es')).toContain('Coenzima Q10 cardiovascular');
+    expect(buildSupplementDescription(coq10!, 'es')).toContain('estatinas');
+    expect(buildSupplementTitle(omega3!, 'es')).toContain('Omega-3 para triglicéridos');
     expect(buildSupplementTitle(lavender!, 'en')).toContain('Lavender');
     expect(buildSupplementTitle(bacopa!, 'es')).toContain('Bacopa monnieri');
     expect(buildSupplementDescription(vitaminD!, 'es')).toContain('deficiencia');
@@ -75,6 +77,24 @@ describe('supplement page SEO', () => {
     expect(theanine?.faqs[0].question).toContain('theanine');
     expect(bacopa?.faqs).toHaveLength(3);
     expect(JSON.stringify([bacopa, vitaminD, theanine])).not.toMatch(unsafePattern);
+  });
+
+  it('adds cardiometabolic cluster content and internal links for P2 pages', () => {
+    const psyllium = buildSupplementSeoContent('fiber-psyllium', 'es');
+    const omega3 = buildSupplementSeoContent('omega-3', 'es');
+    const coq10 = buildSupplementSeoContent('coenzyme-q10', 'es');
+
+    expect(psyllium?.intro).toContain('psyllium colesterol');
+    expect(psyllium?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/cholesterol-triglycerides',
+      '/portal/supplement/omega-3?benefit=cholesterol-triglycerides',
+      '/portal/supplement/plant-sterols?benefit=cholesterol-triglycerides',
+    ]);
+    expect(omega3?.intro).toContain('omega 3 triglicéridos');
+    expect(omega3?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/heart-health');
+    expect(coq10?.faqHeading).toContain('coenzima Q10 cardiovascular');
+    expect(coq10?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/cholesterol-triglycerides');
+    expect(JSON.stringify([psyllium, omega3, coq10])).not.toMatch(unsafePattern);
   });
 
   it('builds prudent structured data without clinical claim wording', () => {

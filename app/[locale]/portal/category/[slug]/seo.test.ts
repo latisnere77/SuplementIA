@@ -41,11 +41,21 @@ describe('category page SEO', () => {
       'omega-3',
       'plant-sterols',
     ]);
+    expect(lipidContent?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/heart-health',
+      '/portal/supplement/coenzyme-q10?benefit=heart-health',
+      '/portal/supplement/garlic?benefit=cholesterol-triglycerides',
+    ]);
     expect(heartContent?.intro).toContain('suplementos cardiovasculares');
     expect(heartContent?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
       'omega-3',
       'coenzyme-q10',
       'garlic',
+    ]);
+    expect(heartContent?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/cholesterol-triglycerides',
+      '/portal/supplement/fiber-psyllium?benefit=cholesterol-triglycerides',
+      '/portal/supplement/plant-sterols?benefit=cholesterol-triglycerides',
     ]);
     expect(heartContent?.supplementLinksHeading).toBe('Guías de suplementos cardiovasculares');
   });
