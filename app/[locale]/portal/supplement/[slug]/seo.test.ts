@@ -39,6 +39,22 @@ describe('supplement page SEO', () => {
     expect(JSON.stringify(metadata)).not.toMatch(unsafePattern);
   });
 
+  it('targets Search Console opportunity supplements with specific metadata', () => {
+    const psyllium = getSupplementSeoData('fiber-psyllium', 'en');
+    const coq10 = getSupplementSeoData('coenzyme-q10', 'es');
+    const lavender = getSupplementSeoData('lavender', 'en');
+
+    expect(psyllium).not.toBeNull();
+    expect(coq10).not.toBeNull();
+    expect(lavender).not.toBeNull();
+    expect(buildSupplementTitle(psyllium!, 'en')).toBe(
+      'Psyllium fiber: evidence for LDL cholesterol, digestion, and safety'
+    );
+    expect(buildSupplementDescription(psyllium!, 'en')).toContain('LDL cholesterol');
+    expect(buildSupplementTitle(coq10!, 'es')).toContain('Coenzima Q10');
+    expect(buildSupplementTitle(lavender!, 'en')).toContain('Lavender');
+  });
+
   it('builds prudent structured data without clinical claim wording', () => {
     const data = getSupplementSeoData('magnesium', 'en');
 

@@ -55,6 +55,7 @@ export const SUPPLEMENT_TRANSLATIONS: Record<string, { en: string; es: string }>
   'Whey Protein': { en: 'Whey Protein', es: 'Proteína de Suero' },
   'Casein': { en: 'Casein', es: 'Caseína' },
   'Collagen': { en: 'Collagen', es: 'Colágeno' },
+  'Hydrolyzed Collagen': { en: 'Hydrolyzed Collagen', es: 'Colágeno Hidrolizado' },
 
   // ========== HERBS / HIERBAS ==========
   'Ashwagandha': { en: 'Ashwagandha', es: 'Ashwagandha' },
@@ -64,6 +65,8 @@ export const SUPPLEMENT_TRANSLATIONS: Record<string, { en: string; es: string }>
   'Echinacea': { en: 'Echinacea', es: 'Equinácea' },
   'Ginkgo Biloba': { en: 'Ginkgo Biloba', es: 'Ginkgo Biloba' },
   'Rhodiola': { en: 'Rhodiola', es: 'Rhodiola' },
+  'Rhodiola Rosea': { en: 'Rhodiola Rosea', es: 'Rhodiola Rosea' },
+  'Lavender': { en: 'Lavender', es: 'Lavanda' },
   'Bacopa': { en: 'Bacopa', es: 'Bacopa' },
   'Saw Palmetto': { en: 'Saw Palmetto', es: 'Saw Palmetto' },
   'Milk Thistle': { en: 'Milk Thistle', es: 'Cardo Mariano' },
@@ -92,6 +95,8 @@ export const SUPPLEMENT_TRANSLATIONS: Record<string, { en: string; es: string }>
   'Prebiotics': { en: 'Prebiotics', es: 'Prebióticos' },
   'Melatonin': { en: 'Melatonin', es: 'Melatonina' },
   'Caffeine': { en: 'Caffeine', es: 'Cafeína' },
+  'Psyllium Fiber': { en: 'Psyllium Fiber', es: 'Fibra de Psyllium' },
+  'Plant Sterols': { en: 'Plant Sterols', es: 'Esteroles Vegetales' },
 };
 
 /**
