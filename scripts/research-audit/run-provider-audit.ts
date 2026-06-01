@@ -8,12 +8,14 @@ type CliOptions = {
   fixturePath?: string;
   outputDir: string;
   limit?: number;
+  skipPmidVerifier: boolean;
 };
 
 function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = {
     format: 'json',
     outputDir: '.research-audit-reports',
+    skipPmidVerifier: false,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -32,6 +34,8 @@ function parseArgs(argv: string[]): CliOptions {
     } else if (arg === '--limit' && next) {
       options.limit = Number.parseInt(next, 10);
       index += 1;
+    } else if (arg === '--skip-pmid-verifier') {
+      options.skipPmidVerifier = true;
     }
   }
 
@@ -45,6 +49,7 @@ async function main() {
     fixturePath: options.fixturePath,
     outputDir: options.outputDir,
     limit: options.limit,
+    pmidVerifier: options.skipPmidVerifier ? false : undefined,
   });
 
   if (options.format === 'markdown') {
@@ -58,4 +63,3 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
-
