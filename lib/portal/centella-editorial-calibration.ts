@@ -291,6 +291,8 @@ const CBD_PHARMA_NOTICE = 'Carril farmaceutico: evidencia sobre cannabidiol farm
 const CBD_OTC_NOTICE = 'Carril CBD comercial/OTC: evidencia limitada o investigacional; no equivale a recomendacion clinica ni a efecto clinico establecido de productos comerciales.';
 const CBD_SAFETY_WARNING = 'Cannabidiol farmaceutico requiere supervision medica: puede elevar transaminasas y tiene interacciones relevantes con clobazam, valproato, antiepilepticos y sedantes.';
 const CBD_LIMITED_NOTE = CBD_OTC_NOTICE;
+const CBD_THC_DISTINCTION_NOTICE = 'THC es otro cannabinoide distinto; esta informacion no aplica como evidencia de beneficio de CBD.';
+const CBD_THC_CONTAMINATION_NOTICE = 'THC es otro cannabinoide distinto; verificar certificados de analisis ayuda a descartar cannabinoides no declarados o contaminantes.';
 
 function isCbdText(...values: unknown[]): boolean {
   const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
@@ -341,6 +343,50 @@ function sanitizeCbdLaneText(value: unknown): unknown {
     .replace(/\b\d+(?:\.\d+)?\s*%/g, 'cifras reportadas en estudios especificos')
     .replace(/\s{2,}/g, ' ')
     .trim();
+}
+
+function hasThcReference(value: unknown): boolean {
+  return /\b(thc|tetrahydrocannabinol)\b/.test(normalizeClinicalText(value));
+}
+
+function hasCbdEntityMixReference(value: unknown): boolean {
+  return /\b(thc|tetrahydrocannabinol|nabiximols|sativex|dronabinol|nabilone|full[-\s]?spectrum|broad[-\s]?spectrum|espectro completo|amplio espectro|thc\+cbd|abstinencia de thc)\b/.test(
+    normalizeClinicalText(value)
+  );
+}
+
+function sanitizeCbdThcContrastText(value: unknown): unknown {
+  if (typeof value !== 'string' || !hasThcReference(value)) return value;
+
+  const normalized = normalizeClinicalText(value);
+  if (/\b(contamin|coa|certific|analisis|analysis|declarad|declared|ausencia|absence)\b/.test(normalized)) {
+    return CBD_THC_CONTAMINATION_NOTICE;
+  }
+
+  const base = String(sanitizeCbdLaneText(value) || '')
+    .replace(/\bA diferencia del THC,?\s*/gi, '')
+    .replace(/\bTHC\+CBD\b/gi, 'formulaciones cannabinoides mixtas')
+    .replace(/\bTHC\b/gi, 'otro cannabinoide')
+    .replace(/\btetrahydrocannabinol\b/gi, 'otro cannabinoide')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  return base
+    ? `${CBD_THC_DISTINCTION_NOTICE} ${base}`
+    : CBD_THC_DISTINCTION_NOTICE;
+}
+
+function sanitizeCbdThcContrastDeep<T>(value: T): T {
+  if (typeof value === 'string') return sanitizeCbdThcContrastText(value) as T;
+  if (Array.isArray(value)) return value.map((item) => sanitizeCbdThcContrastDeep(item)) as T;
+  if (!value || typeof value !== 'object') return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+      key,
+      sanitizeCbdThcContrastDeep(item),
+    ])
+  ) as T;
 }
 
 function withCbdLaneNote(value: unknown, note: string): string {
@@ -435,6 +481,27 @@ function calibrateCbdLimitedEvidenceList(items: unknown): any[] {
     .filter(Boolean);
 }
 
+function calibrateCbdDoesntWorkForList(items: unknown): any[] {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((rawItem) => sanitizeCannabisItem({ ...(rawItem as any) }) as any)
+    .filter((item) => !hasCbdEntityMixReference([
+      item?.condition,
+      item?.use,
+      item?.benefit,
+      item?.notes,
+      item?.description,
+    ].filter(Boolean).join(' ')))
+    .map((item) => ({
+      ...item,
+      condition: sanitizeCbdLaneText(item.condition),
+      use: sanitizeCbdLaneText(item.use),
+      benefit: sanitizeCbdLaneText(item.benefit),
+      notes: sanitizeCbdLaneText(item.notes),
+      description: sanitizeCbdLaneText(item.description),
+    }));
+}
+
 function addCbdSafetyCaution(safety: any = {}) {
   const calibratedSafety = sanitizeCannabisItem({ ...safety }) as any;
   const safetyText = normalizeClinicalText(JSON.stringify(calibratedSafety));
@@ -451,7 +518,7 @@ function addCbdSafetyCaution(safety: any = {}) {
     'Precaucion con clobazam, valproato, antiepilepticos y sedantes; requiere supervision profesional.',
   ];
   calibratedSafety.notes = withCbdLaneNote(calibratedSafety.notes, CBD_SAFETY_WARNING);
-  return calibratedSafety;
+  return sanitizeCbdThcContrastDeep(calibratedSafety);
 }
 
 function cbdSafePrimaryUses(): string[] {
@@ -541,6 +608,51 @@ function stripCannabisNoticeFromEvidenceSummary(calibrated: any): void {
   }));
 }
 
+function sanitizeCbdDosage(dosage: any): any {
+  if (!dosage || typeof dosage !== 'object') return dosage;
+  const calibratedDosage = sanitizeCannabisItem({ ...dosage }) as any;
+
+  if (Array.isArray(calibratedDosage.forms)) {
+    calibratedDosage.forms = calibratedDosage.forms
+      .map((form: any) => ({
+        ...form,
+        name: sanitizeCbdLaneText(form?.name),
+        description: sanitizeCbdLaneText(form?.description),
+      }))
+      .filter((form: any) => !hasCbdEntityMixReference([
+        form?.name,
+        form?.description,
+      ].filter(Boolean).join(' ')));
+  }
+
+  return sanitizeCbdThcContrastDeep(calibratedDosage);
+}
+
+function sanitizeCbdPracticalRecommendations(items: unknown): string[] {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => sanitizeCbdLaneText(stripCannabisContextNotice(sanitizeCannabisClaimText(item))))
+    .filter((item): item is string => typeof item === 'string' && item.length > 0)
+    .filter((item) => !hasCbdEntityMixReference(item));
+}
+
+function sanitizeCbdEvidenceSummary(calibrated: any): void {
+  if (!Array.isArray(calibrated?.evidence_summary?.ingredients)) return;
+  calibrated.evidence_summary.ingredients = calibrated.evidence_summary.ingredients.map((ingredient: any) => ({
+    ...ingredient,
+    description: sanitizeCbdThcContrastText(sanitizeCbdLaneText(ingredient?.description)),
+  }));
+}
+
+function sanitizeCbdSecondaryFields(calibrated: any): void {
+  calibrated.doesntWorkFor = calibrateCbdDoesntWorkForList(calibrated.doesntWorkFor);
+  calibrated.dosage = sanitizeCbdDosage(calibrated.dosage);
+  calibrated.practicalRecommendations = sanitizeCbdPracticalRecommendations(calibrated.practicalRecommendations);
+  calibrated.mechanisms = sanitizeCbdThcContrastDeep(calibrated.mechanisms);
+  calibrated.evidenceSummary = sanitizeCbdThcContrastText(calibrated.evidenceSummary);
+  sanitizeCbdEvidenceSummary(calibrated);
+}
+
 function keepSingleBroadCannabisNotice(calibrated: any, cbdScoped: boolean): any {
   const cleaned = stripCannabisContextNoticeDeep(calibrated);
   if (cbdScoped) return cleaned;
@@ -591,6 +703,7 @@ function calibrateCannabisDataShape(data: any, category?: string) {
     calibrated.whatIsItFor = CBD_RESEARCH_DESCRIPTION;
     calibrated.primaryUses = cbdSafePrimaryUses();
     calibrated.safety = addCbdSafetyCaution(calibrated.safety || {});
+    sanitizeCbdSecondaryFields(calibrated);
     hideUncontextualizedCbdStudyCount(calibrated);
   } else {
     calibrated.whatIsIt = withCannabisContextNotice(calibrated.whatIsIt || calibrated.description || calibrated.whatIsItFor);
@@ -661,6 +774,13 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
   if (!recommendation || !isCannabisRecommendation(recommendation, category)) return recommendation;
 
   const calibrated: any = sanitizeCannabisItem(recommendation);
+  const wrapperCbdScoped = isCbdIdentityText(
+    category,
+    calibrated.category,
+    calibrated.name,
+    calibrated.supplement?.name,
+    calibrated.data?.name
+  );
 
   if (!calibrated.data && !calibrated.supplement && (calibrated.name || calibrated.worksFor || calibrated.products)) {
     return calibrateCannabisDataShape(calibrated, category) as T;
@@ -710,6 +830,7 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
       calibrated.supplement.whatIsItFor = CBD_RESEARCH_DESCRIPTION;
       calibrated.supplement.primaryUses = cbdSafePrimaryUses();
       calibrated.supplement.safety = addCbdSafetyCaution(calibrated.supplement.safety || {});
+      sanitizeCbdSecondaryFields(calibrated.supplement);
       hideUncontextualizedCbdStudyCount(calibrated.supplement);
     } else {
       calibrated.supplement.whatIsIt = withCannabisContextNotice(
@@ -726,7 +847,8 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
     calibrated.evidence.summary = String(stripCannabisContextNotice(sanitizeCannabisClaimText(calibrated.evidence.summary)) || '').trim();
   }
 
-  if (isCbdIdentityText(category, calibrated.category, calibrated.name)) {
+  if (wrapperCbdScoped) {
+    sanitizeCbdEvidenceSummary(calibrated);
     hideUncontextualizedCbdStudyCount(calibrated);
   }
 
@@ -740,7 +862,7 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
 
   return keepSingleBroadCannabisNotice(
     calibrated,
-    isCbdIdentityText(category, calibrated.category, calibrated.name, calibrated.supplement?.name)
+    wrapperCbdScoped
   ) as T;
 }
 

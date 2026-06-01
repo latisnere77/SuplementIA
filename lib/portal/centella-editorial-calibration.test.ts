@@ -129,4 +129,115 @@ describe('cannabis and CBD editorial calibration', () => {
     expect(serialized).not.toMatch(/\b\d+(?:\.\d+)?\s*%|\b\d+(?:\.\d+)?\s*[-–]\s*\d+(?:\.\d+)?\s*%/);
     expect(serialized).toContain('cbd comercial/otc');
   });
+
+  it('keeps cached CBD payloads editorially separated from THC and mixed cannabinoid claims', () => {
+    const calibrated: any = calibratePortalRecommendation({
+      category: 'CBD',
+      supplement: {
+        name: 'CBD',
+        worksFor: [
+          {
+            condition: 'Epidiolex cannabidiol farmaceutico para Dravet',
+            grade: 'A',
+            notes: 'Formulacion farmaceutica especifica.',
+          },
+        ],
+        doesntWorkFor: [
+          {
+            condition: 'Adiccion a cannabis y sindrome de abstinencia de THC',
+            grade: 'C',
+            notes: 'No hay evidencia suficiente; evidencia mas fuerte para cannabis medicinal con THC+CBD.',
+          },
+          {
+            condition: 'Dolor cronico inespecifico',
+            grade: 'C',
+            notes: 'CBD comercial/OTC tiene evidencia limitada y heterogenea.',
+          },
+        ],
+        dosage: {
+          forms: [
+            {
+              name: 'Full-spectrum CBD',
+              description: 'Contiene CBD mas otros cannabinoides; verificar THC <0.3%.',
+            },
+            {
+              name: 'CBD aislado',
+              description: 'CBD puro; elimina riesgo de THC y permite dosificacion precisa.',
+            },
+            {
+              name: 'Cannabidiol farmaceutico',
+              description: 'Formulacion especifica usada bajo supervision medica.',
+            },
+          ],
+        },
+        practicalRecommendations: [
+          'Verificar contenido de CBD, ausencia de contaminantes y THC <0.3%.',
+          'Consultar a un profesional si usa antiepilepticos o sedantes.',
+        ],
+        safety: {
+          notes: 'Revisar COA por posible contaminacion con THC.',
+        },
+        mechanisms: [
+          {
+            title: 'Sistema endocannabinoide',
+            description: 'A diferencia del THC, CBD no es intoxicante y actua en multiples dianas.',
+          },
+        ],
+        products: [{ name: 'CBD oil', affiliateLink: 'https://example.com/cbd' }],
+      },
+      data: {
+        name: 'CBD',
+        worksFor: [
+          {
+            condition: 'THC para nausea por quimioterapia',
+            grade: 'B',
+            notes: 'Dronabinol/nabilone evidence.',
+          },
+        ],
+        doesntWorkFor: [
+          {
+            condition: 'Abstinencia de THC',
+            notes: 'CBD no es suficiente para abstinencia de THC.',
+          },
+        ],
+        products: [{ name: 'CBD gummy' }],
+      },
+      evidence_summary: {
+        ingredients: [
+          {
+            name: 'Cannabidiol (CBD)',
+            description: 'A diferencia del THC, CBD no produce intoxicacion pero tiene propiedades antiinflamatorias comprobadas.',
+          },
+        ],
+      },
+      products: [{ name: 'CBD storefront' }],
+    }, 'CBD');
+
+    const serialized = JSON.stringify(calibrated).toLowerCase();
+    const doesntWorkForText = JSON.stringify([
+      calibrated.supplement.doesntWorkFor,
+      calibrated.data.doesntWorkFor,
+    ]).toLowerCase();
+    const dosageText = JSON.stringify(calibrated.supplement.dosage).toLowerCase();
+    const safetyText = JSON.stringify(calibrated.supplement.safety);
+    const mechanismText = JSON.stringify(calibrated.supplement.mechanisms);
+    const evidenceSummaryText = JSON.stringify(calibrated.evidence_summary);
+
+    expect(calibrated.supplement.products).toEqual([]);
+    expect(calibrated.data.products).toEqual([]);
+    expect(calibrated.products).toEqual([]);
+    expect(JSON.stringify(calibrated.supplement.worksFor).toLowerCase()).not.toContain('thc');
+    expect(JSON.stringify(calibrated.data.worksFor).toLowerCase()).not.toContain('thc');
+    expect(doesntWorkForText).not.toContain('abstinencia de thc');
+    expect(doesntWorkForText).not.toContain('thc+');
+    expect(dosageText).not.toContain('full-spectrum');
+    expect(dosageText).not.toContain('thc');
+    expect(JSON.stringify(calibrated.supplement.practicalRecommendations).toLowerCase()).not.toContain('thc');
+    expect(safetyText).toContain('THC es otro cannabinoide distinto');
+    expect(safetyText).toContain('no declarados o contaminantes');
+    expect(mechanismText).toContain('THC es otro cannabinoide distinto');
+    expect(evidenceSummaryText).toContain('THC es otro cannabinoide distinto');
+    expect(serialized).not.toMatch(/dronabinol|nabilone|nabiximols|sativex/);
+    expect(serialized).not.toMatch(/suplemento recomendado|comprar|sirve para|treats|cures/);
+  });
 });
