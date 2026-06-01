@@ -169,6 +169,24 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
       }
 
       return this.parseProviderResponse(packet, responseBody, baseResult);
+    } catch (error) {
+      if (isAbortError(error)) {
+        return {
+          ...baseResult,
+          valid: false,
+          rejectionReasons: ['provider request timed out'],
+          rejectedFinding: { message: 'provider request timed out' },
+          externalCalls: 1,
+        };
+      }
+
+      return {
+        ...baseResult,
+        valid: false,
+        rejectionReasons: ['provider request failed'],
+        rejectedFinding: { message: 'provider request failed' },
+        externalCalls: 1,
+      };
     } finally {
       clearTimeout(timeout);
     }
@@ -218,6 +236,12 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
       };
     }
   }
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException
+    ? error.name === 'AbortError'
+    : error instanceof Error && error.name === 'AbortError';
 }
 
 function enforceReportOnlyFindingGuards(

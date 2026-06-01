@@ -126,6 +126,23 @@ describe('KimiResearchAuditProvider', () => {
     expect(fetchFn).not.toHaveBeenCalled();
   });
 
+  it('turns provider AbortError timeouts into sanitized rejected results', async () => {
+    const fetchFn = jest.fn().mockRejectedValue(new DOMException('This operation was aborted', 'AbortError'));
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    const result = await provider.evaluatePacket(packet);
+
+    expect(result.valid).toBe(false);
+    expect(result.externalCalls).toBe(1);
+    expect(result.rejectionReasons).toEqual(['provider request timed out']);
+    expect(result.rejectedFinding).toEqual({ message: 'provider request timed out' });
+    expect(JSON.stringify(result)).not.toContain('This operation was aborted');
+  });
+
   it('sanitizes provider HTTP errors before returning report data', async () => {
     const fetchFn = jest.fn().mockResolvedValue({
       ok: false,

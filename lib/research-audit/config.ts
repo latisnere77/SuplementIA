@@ -17,7 +17,7 @@ const configSchema = z
     maxInputTokensPerEvent: z.number().int().min(250).max(8000),
     maxOutputTokensPerEvent: z.number().int().min(100).max(1500),
     maxSpendUsdPerRun: z.number().min(0).max(10),
-    requestTimeoutMs: z.number().int().min(1000).max(30000),
+    requestTimeoutMs: z.number().int().min(1000).max(90000),
   })
   .strict()
   .refine((config) => config.provider !== 'kimi' || config.model.startsWith('kimi-'), {

@@ -20,4 +20,12 @@ describe('loadResearchAuditProviderConfig', () => {
       'Kimi provider requires a Kimi model'
     );
   });
+
+  it('allows a longer manual provider smoke timeout', () => {
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_REQUEST_TIMEOUT_MS: '90000',
+    });
+
+    expect(config.requestTimeoutMs).toBe(90000);
+  });
 });
