@@ -106,5 +106,89 @@ describe('KimiResearchAuditProvider', () => {
     expect(result.skippedReason).toBe('budget_skipped');
     expect(fetchFn).not.toHaveBeenCalled();
   });
-});
 
+  it('sanitizes provider HTTP errors before returning report data', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 429,
+      text: async () =>
+        JSON.stringify({
+          error: {
+            message:
+              'Your account org-15c6702e4995423188fb3ab4eca27f86 <ak-f9g643cpffni11frg8pi> is suspended due to insufficient balance',
+            type: 'exceeded_current_quota_error',
+          },
+        }),
+    });
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    const result = await provider.evaluatePacket(packet);
+
+    expect(result.valid).toBe(false);
+    expect(result.rejectionReasons).toEqual(['provider returned HTTP 429']);
+    expect(result.rejectedFinding).toEqual({
+      httpStatus: 429,
+      errorType: 'exceeded_current_quota_error',
+      message: 'provider rate limit or quota error',
+    });
+    expect(JSON.stringify(result)).not.toContain('org-15c');
+    expect(JSON.stringify(result)).not.toContain('ak-f9g');
+    expect(JSON.stringify(result)).not.toContain('balance');
+  });
+
+  it('sanitizes provider parse errors before returning report data', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => 'not json with sk-secret-token <account-id>',
+    });
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    const result = await provider.evaluatePacket(packet);
+
+    expect(result.valid).toBe(false);
+    expect(result.rejectedFinding).toEqual({
+      message: 'provider response could not be parsed',
+    });
+    expect(JSON.stringify(result)).not.toContain('sk-secret-token');
+    expect(JSON.stringify(result)).not.toContain('<account-id>');
+  });
+
+  it('sanitizes provider success bodies that are missing message content', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          error: {
+            message: 'debug account org-sensitive <ak-sensitive>',
+            type: 'provider_empty_content',
+          },
+        }),
+    });
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    const result = await provider.evaluatePacket(packet);
+
+    expect(result.valid).toBe(false);
+    expect(result.rejectionReasons).toEqual(['provider response did not include message content']);
+    expect(result.rejectedFinding).toEqual({
+      errorType: 'provider_empty_content',
+      message: 'provider response could not be parsed',
+    });
+    expect(JSON.stringify(result)).not.toContain('org-sensitive');
+    expect(JSON.stringify(result)).not.toContain('ak-sensitive');
+  });
+});

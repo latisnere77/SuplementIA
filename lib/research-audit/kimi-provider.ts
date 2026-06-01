@@ -2,6 +2,7 @@ import { estimateAuditCost, estimateAuditTokens } from './cost-estimator';
 import type { ResearchAuditProviderConfig } from './config';
 import type { ResearchAuditPacket } from './packets';
 import { buildResearchAuditSystemPrompt, buildResearchAuditUserPrompt } from './provider-prompt';
+import { sanitizeProviderError } from './provider-error-sanitizer';
 import type { ProviderAuditResult, ResearchAuditProviderAdapter } from './provider';
 import {
   validateResearchAuditFinding,
@@ -129,6 +130,7 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.config.requestTimeoutMs);
 
+    let responseBody = '';
     try {
       const response = await fetchFn(this.config.endpoint, {
         method: 'POST',
@@ -149,18 +151,19 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
         signal: controller.signal,
       });
 
-      const body = await response.text();
+      responseBody = await response.text();
       if (!response.ok) {
+        const sanitizedError = sanitizeProviderError(responseBody, response.status);
         return {
           ...baseResult,
           valid: false,
           rejectionReasons: [`provider returned HTTP ${response.status}`],
-          rejectedFinding: body.slice(0, 1000),
+          rejectedFinding: sanitizedError,
           externalCalls: 1,
         };
       }
 
-      return this.parseProviderResponse(packet, body, baseResult);
+      return this.parseProviderResponse(packet, responseBody, baseResult);
     } finally {
       clearTimeout(timeout);
     }
@@ -182,7 +185,7 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
           ...baseResult,
           valid: false,
           rejectionReasons: ['provider response did not include message content'],
-          rejectedFinding: parsed,
+          rejectedFinding: sanitizeProviderError(body),
           externalCalls: 1,
         };
       }
@@ -200,11 +203,12 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
         externalCalls: 1,
       };
     } catch (error) {
+      const sanitizedError = sanitizeProviderError(body);
       return {
         ...baseResult,
         valid: false,
         rejectionReasons: [error instanceof Error ? error.message : 'failed to parse provider response'],
-        rejectedFinding: body.slice(0, 1000),
+        rejectedFinding: sanitizedError,
         externalCalls: 1,
       };
     }
