@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
 import { loadAuditFixtures } from './fixtures';
 import { KimiResearchAuditProvider } from './kimi-provider';
-import { buildAuditPacketFromFixture } from './packets';
+import { buildAuditPacketFromFixture, type PacketBuildResult } from './packets';
 import { verifyPubMedPmids, type PmidVerifierOptions } from './pmid-verifier';
 import type { ProviderAuditResult } from './provider';
 import type { ResearchAuditProviderConfig } from './config';
@@ -28,6 +28,11 @@ export interface ProviderAuditRunnerOptions {
   pmidVerifier?: PmidVerifierOptions | false;
 }
 
+export interface ProviderPacketAuditInput {
+  id: string;
+  packetResult: PacketBuildResult;
+}
+
 export async function runProviderFixtureAudit(
   config: ResearchAuditProviderConfig,
   options: ProviderAuditRunnerOptions = {}
@@ -35,14 +40,27 @@ export async function runProviderFixtureAudit(
   const fixtures = loadAuditFixtures(options.fixturePath);
   const limit = Math.min(options.limit ?? config.maxEventsPerRun, config.maxEventsPerRun);
   const selectedFixtures = fixtures.slice(0, limit);
+  const packetInputs = selectedFixtures.map((fixture) => ({
+    id: fixture.id,
+    packetResult: buildAuditPacketFromFixture(fixture),
+  }));
+
+  return runProviderPacketAudit(config, packetInputs, options);
+}
+
+export async function runProviderPacketAudit(
+  config: ResearchAuditProviderConfig,
+  packetInputs: ProviderPacketAuditInput[],
+  options: Pick<ProviderAuditRunnerOptions, 'outputDir' | 'pmidVerifier'> = {}
+): Promise<{ report: ProviderAuditReport; reportPaths: { jsonPath: string; markdownPath: string } }> {
   const provider = new KimiResearchAuditProvider(config);
   const results: ProviderAuditResult[] = [];
 
-  for (const fixture of selectedFixtures) {
-    const packetResult = buildAuditPacketFromFixture(fixture);
+  for (const input of packetInputs) {
+    const { packetResult } = input;
     if (!packetResult.valid || !packetResult.packet) {
       results.push({
-        packetId: `rap_${fixture.id}`,
+        packetId: `rap_${input.id.replace(/[^a-z0-9_-]/gi, '').toLowerCase()}`,
         provider: 'kimi',
         model: config.model,
         valid: false,
