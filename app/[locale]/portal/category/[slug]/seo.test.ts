@@ -41,6 +41,12 @@ describe('category page SEO', () => {
       'omega-3',
       'plant-sterols',
     ]);
+    expect(heartContent?.intro).toContain('suplementos cardiovasculares');
+    expect(heartContent?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'omega-3',
+      'coenzyme-q10',
+      'garlic',
+    ]);
     expect(heartContent?.supplementLinksHeading).toBe('Guías de suplementos cardiovasculares');
   });
 

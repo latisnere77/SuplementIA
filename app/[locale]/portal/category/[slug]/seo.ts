@@ -29,9 +29,9 @@ export function buildCategorySeoCopy({
   const targetedCopy: Record<string, Record<'es' | 'en', { title: string; description: string }>> = {
     'cholesterol-triglycerides': {
       es: {
-        title: 'Suplementos para colesterol y triglicéridos: evidencia, seguridad y opciones',
+        title: 'Suplementos para triglicéridos y colesterol: evidencia y seguridad',
         description:
-          'Compara psyllium, omega-3, esteroles vegetales y ajo para colesterol y triglicéridos con evidencia, seguridad y uso responsable.',
+          'Compara suplementos para triglicéridos y colesterol como psyllium, omega-3, esteroles vegetales y ajo con evidencia y seguridad.',
       },
       en: {
         title: 'Psyllium, omega-3, and supplements for cholesterol and triglycerides',
@@ -53,9 +53,9 @@ export function buildCategorySeoCopy({
     },
     'heart-health': {
       es: {
-        title: 'Suplementos para salud cardiovascular: evidencia, seguridad y opciones',
+        title: 'Suplementos cardiovasculares: evidencia, seguridad y opciones',
         description:
-          'Revisa omega-3, coenzima Q10 y ajo para salud cardiovascular con evidencia, seguridad y contexto de uso responsable.',
+          'Revisa suplementos cardiovasculares como omega-3, coenzima Q10 y ajo con evidencia, seguridad y contexto de uso responsable.',
       },
       en: {
         title: 'Supplements for heart health: evidence, safety, and options',
@@ -145,10 +145,11 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
     'cholesterol-triglycerides': {
       es: {
         intro:
-          'Esta página compara suplementos investigados para LDL, triglicéridos y otros marcadores de lípidos. La guía prioriza fibra soluble como psyllium, omega-3 y esteroles vegetales sin prometer resultados clínicos.',
+          'Esta página responde a búsquedas emergentes sobre suplementos para triglicéridos y colesterol. Compara opciones investigadas para LDL, triglicéridos y otros marcadores de lípidos, priorizando fibra soluble como psyllium, omega-3 y esteroles vegetales sin prometer resultados clínicos.',
         highlights: [
           'Psyllium y esteroles vegetales se enfocan más en reducciones modestas de colesterol LDL.',
           'Omega-3 EPA/DHA tiene evidencia más fuerte para triglicéridos que para bajar LDL.',
+          'La decisión debe partir de laboratorios, dieta, riesgo cardiovascular y medicamentos actuales.',
           'Ajo puede tener efectos pequeños y variables; la preparación y la dosis cambian mucho el resultado.',
         ],
         priorityTopics: [
@@ -249,11 +250,34 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
     'heart-health': {
       es: {
         intro:
-          'Esta guía ordena suplementos estudiados para marcadores cardiovasculares como triglicéridos, presión arterial, inflamación y función energética celular. Debe usarse como punto de partida educativo, no como diagnóstico.',
+          'Esta guía responde a búsquedas emergentes de suplementos cardiovasculares y suplemento cardiovascular. Ordena opciones estudiadas para triglicéridos, presión arterial, inflamación y función energética celular como punto de partida educativo, no como diagnóstico.',
         highlights: [
           'Omega-3 EPA/DHA destaca por triglicéridos y salud cardiometabólica en contextos específicos.',
           'Coenzima Q10 se estudia por energía celular y contextos cardiovasculares particulares.',
           'Ajo puede apoyar modestamente presión arterial o colesterol, pero los resultados son variables.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Omega-3 para triglicéridos',
+            description:
+              'Opción con evidencia más consistente cuando el marcador principal son triglicéridos, especialmente con revisión de dosis y medicamentos.',
+            supplementSlug: 'omega-3',
+            searchLabel: 'Ver guía de omega-3',
+          },
+          {
+            title: 'Coenzima Q10 cardiovascular',
+            description:
+              'Suplemento estudiado en energía celular y escenarios cardiovasculares concretos; requiere contexto clínico y expectativas prudentes.',
+            supplementSlug: 'coenzyme-q10',
+            searchLabel: 'Ver guía de coenzima Q10',
+          },
+          {
+            title: 'Ajo y marcadores cardiovasculares',
+            description:
+              'Puede tener efectos modestos y variables en presión arterial o colesterol según preparación, dosis y tolerancia.',
+            supplementSlug: 'garlic',
+            searchLabel: 'Ver guía de ajo',
+          },
         ],
         faqHeading: 'Preguntas frecuentes sobre salud cardiovascular',
         faqs: [
@@ -282,6 +306,29 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           'Omega-3 EPA/DHA stands out for triglycerides and cardiometabolic health in specific contexts.',
           'Coenzyme Q10 is studied for cellular energy and particular cardiovascular contexts.',
           'Garlic may modestly support blood pressure or cholesterol, but results are variable.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Omega-3 for triglycerides',
+            description:
+              'A more consistently supported option when triglycerides are the main marker, especially with dose and medication review.',
+            supplementSlug: 'omega-3',
+            searchLabel: 'Open the omega-3 guide',
+          },
+          {
+            title: 'Coenzyme Q10 and heart context',
+            description:
+              'Studied for cellular energy and specific cardiovascular scenarios; clinical context and careful expectations matter.',
+            supplementSlug: 'coenzyme-q10',
+            searchLabel: 'Open the coenzyme Q10 guide',
+          },
+          {
+            title: 'Garlic and cardiovascular markers',
+            description:
+              'May have modest and variable effects on blood pressure or cholesterol depending on preparation, dose, and tolerance.',
+            supplementSlug: 'garlic',
+            searchLabel: 'Open the garlic guide',
+          },
         ],
         faqHeading: 'Frequently asked questions about heart health supplements',
         faqs: [

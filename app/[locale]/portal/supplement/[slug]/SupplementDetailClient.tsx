@@ -20,6 +20,7 @@ import { trackGAEvent } from '@/lib/analytics/ga4';
 import { getLocalizedSupplementName } from '@/lib/i18n/supplement-names';
 import { useTranslations } from 'next-intl';
 import { getCanonicalSupplementQuery } from '@/lib/knowledge-base';
+import type { SupplementSeoContent } from './seo';
 
 // Evidence summary structure from enrichment API
 interface EvidenceSummary {
@@ -65,9 +66,10 @@ interface EvidenceSummary {
 interface SupplementDetailClientProps {
   slug: string;
   locale: string;
+  seoContent?: SupplementSeoContent | null;
 }
 
-export default function SupplementDetailClient({ slug, locale }: SupplementDetailClientProps) {
+export default function SupplementDetailClient({ slug, locale, seoContent }: SupplementDetailClientProps) {
   const searchParams = useSearchParams();
   const t = useTranslations();
 
@@ -324,6 +326,31 @@ export default function SupplementDetailClient({ slug, locale }: SupplementDetai
         )}
       </div>
 
+      {seoContent && (
+        <section className="mb-8 space-y-5" aria-labelledby="supplement-guide-heading">
+          <div>
+            <h2 id="supplement-guide-heading" className="text-2xl font-semibold text-gray-900 mb-3">
+              {language === 'es' ? 'Guía rápida de evidencia' : 'Quick evidence guide'}
+            </h2>
+            <p className="text-base leading-7 text-gray-700">{seoContent.intro}</p>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              {language === 'es' ? 'Qué revisar antes de decidir' : 'What to review before deciding'}
+            </h3>
+            <ul className="space-y-2 text-sm leading-6 text-gray-700">
+              {seoContent.highlights.map((highlight) => (
+                <li key={highlight} className="flex gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-gray-500" aria-hidden="true" />
+                  <span>{highlight}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
       {isLoading && (
         <div className="flex flex-col justify-center items-center py-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
           <LoaderCircle className="w-12 h-12 text-blue-600 animate-spin mb-4" />
@@ -384,6 +411,22 @@ export default function SupplementDetailClient({ slug, locale }: SupplementDetai
             Buscar de nuevo
           </button>
         </div>
+      )}
+
+      {seoContent && (
+        <section className="mt-10" aria-labelledby="supplement-faq-heading">
+          <h2 id="supplement-faq-heading" className="text-2xl font-semibold text-gray-900 mb-4">
+            {seoContent.faqHeading}
+          </h2>
+          <div className="space-y-3">
+            {seoContent.faqs.map((faq) => (
+              <details key={faq.question} className="rounded-lg border border-gray-200 bg-white p-4">
+                <summary className="cursor-pointer text-base font-semibold text-gray-900">{faq.question}</summary>
+                <p className="mt-3 text-sm leading-6 text-gray-700">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );
