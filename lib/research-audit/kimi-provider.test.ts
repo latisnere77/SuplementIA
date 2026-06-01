@@ -91,6 +91,25 @@ describe('KimiResearchAuditProvider', () => {
     expect(result.finding?.pmidVerificationStatus).toBe('not_checked');
   });
 
+  it('uses the fixed Kimi K2.6 temperature required by Moonshot', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => validProviderBody(),
+    });
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+      AUDIT_AGENT_MODEL: 'kimi-k2.6',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    await provider.evaluatePacket(packet);
+
+    const requestBody = JSON.parse(fetchFn.mock.calls[0][1].body);
+    expect(requestBody.temperature).toBe(1);
+  });
+
   it('skips before calling the provider when budget is exceeded', async () => {
     const fetchFn = jest.fn();
     const config = loadResearchAuditProviderConfig({
