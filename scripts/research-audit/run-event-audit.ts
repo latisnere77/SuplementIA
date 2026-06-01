@@ -1,6 +1,10 @@
 #!/usr/bin/env tsx
 
 import { loadResearchAuditProviderConfig } from '../../lib/research-audit/config';
+import {
+  DEFAULT_MOONSHOT_SECRET_ID,
+  loadResearchAuditProviderApiKey,
+} from '../../lib/research-audit/aws-secret-loader';
 import { buildAuditPacketFromEvent, loadAggregatedAuditEvents } from '../../lib/research-audit/events';
 import { renderProviderAuditMarkdown, runProviderPacketAudit } from '../../lib/research-audit/provider-runner';
 
@@ -10,6 +14,9 @@ type CliOptions = {
   outputDir: string;
   limit?: number;
   skipPmidVerifier: boolean;
+  useAwsSecret: boolean;
+  awsSecretId: string;
+  awsRegion?: string;
 };
 
 function parseArgs(argv: string[]): CliOptions {
@@ -17,6 +24,8 @@ function parseArgs(argv: string[]): CliOptions {
     format: 'json',
     outputDir: '.research-audit-reports',
     skipPmidVerifier: false,
+    useAwsSecret: false,
+    awsSecretId: DEFAULT_MOONSHOT_SECRET_ID,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -37,6 +46,14 @@ function parseArgs(argv: string[]): CliOptions {
       index += 1;
     } else if (arg === '--skip-pmid-verifier') {
       options.skipPmidVerifier = true;
+    } else if (arg === '--use-aws-secret') {
+      options.useAwsSecret = true;
+    } else if (arg === '--aws-secret-id' && next) {
+      options.awsSecretId = next;
+      index += 1;
+    } else if (arg === '--aws-region' && next) {
+      options.awsRegion = next;
+      index += 1;
     }
   }
 
@@ -49,7 +66,14 @@ async function main() {
     throw new Error('Missing --input path to aggregated audit events JSON or JSONL');
   }
 
-  const config = loadResearchAuditProviderConfig();
+  const baseConfig = loadResearchAuditProviderConfig();
+  const apiKey = await loadResearchAuditProviderApiKey({
+    enabled: options.useAwsSecret && baseConfig.enabled,
+    existingApiKey: baseConfig.apiKey,
+    secretId: options.awsSecretId,
+    region: options.awsRegion,
+  });
+  const config = apiKey ? { ...baseConfig, apiKey } : baseConfig;
   const events = loadAggregatedAuditEvents(options.inputPath);
   const limit = Math.min(options.limit ?? config.maxEventsPerRun, config.maxEventsPerRun);
   const packetInputs = events.slice(0, limit).map((event, index) => ({
