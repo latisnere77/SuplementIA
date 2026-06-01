@@ -3,6 +3,7 @@
  */
 import {
   buildSupplementDescription,
+  buildSupplementSeoContent,
   buildSupplementStructuredData,
   buildSupplementTitle,
   generateSupplementMetadata,
@@ -43,16 +44,37 @@ describe('supplement page SEO', () => {
     const psyllium = getSupplementSeoData('fiber-psyllium', 'en');
     const coq10 = getSupplementSeoData('coenzyme-q10', 'es');
     const lavender = getSupplementSeoData('lavender', 'en');
+    const bacopa = getSupplementSeoData('bacopa-monnieri', 'es');
+    const vitaminD = getSupplementSeoData('vitamin-d', 'es');
+    const theanine = getSupplementSeoData('l-theanine', 'en');
 
     expect(psyllium).not.toBeNull();
     expect(coq10).not.toBeNull();
     expect(lavender).not.toBeNull();
+    expect(bacopa).not.toBeNull();
+    expect(vitaminD).not.toBeNull();
+    expect(theanine).not.toBeNull();
     expect(buildSupplementTitle(psyllium!, 'en')).toBe(
       'Psyllium fiber: evidence for LDL cholesterol, digestion, and safety'
     );
     expect(buildSupplementDescription(psyllium!, 'en')).toContain('LDL cholesterol');
     expect(buildSupplementTitle(coq10!, 'es')).toContain('Coenzima Q10');
     expect(buildSupplementTitle(lavender!, 'en')).toContain('Lavender');
+    expect(buildSupplementTitle(bacopa!, 'es')).toContain('Bacopa monnieri');
+    expect(buildSupplementDescription(vitaminD!, 'es')).toContain('deficiencia');
+    expect(buildSupplementTitle(theanine!, 'en')).toContain('L-theanine');
+  });
+
+  it('adds localized editorial content for emerging Spanish query supplements', () => {
+    const bacopa = buildSupplementSeoContent('bacopa-monnieri', 'es');
+    const vitaminD = buildSupplementSeoContent('vitamin-d', 'es');
+    const theanine = buildSupplementSeoContent('l-theanine', 'es');
+
+    expect(bacopa?.intro).toContain('Bacopa monnieri');
+    expect(vitaminD?.intro).toContain('suplemento de vitamina d');
+    expect(theanine?.faqs[0].question).toContain('theanine');
+    expect(bacopa?.faqs).toHaveLength(3);
+    expect(JSON.stringify([bacopa, vitaminD, theanine])).not.toMatch(unsafePattern);
   });
 
   it('builds prudent structured data without clinical claim wording', () => {

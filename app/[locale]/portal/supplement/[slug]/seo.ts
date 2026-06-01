@@ -11,6 +11,16 @@ export type SupplementSeoData = {
   categories: string[];
 };
 
+export type SupplementSeoContent = {
+  intro: string;
+  highlights: string[];
+  faqHeading: string;
+  faqs: Array<{
+    question: string;
+    answer: string;
+  }>;
+};
+
 const forbiddenClinicalWording = [
   'sirve para',
   'treats',
@@ -70,6 +80,18 @@ export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale)
       es: 'Lavanda: evidencia para sueño, calma y seguridad',
       en: 'Lavender: evidence for sleep, calm, and safety',
     },
+    'bacopa-monnieri': {
+      es: 'Bacopa monnieri: evidencia para memoria, enfoque y seguridad',
+      en: 'Bacopa monnieri: evidence for memory, focus, and safety',
+    },
+    'vitamin-d': {
+      es: 'Vitamina D: evidencia, deficiencia, huesos y seguridad',
+      en: 'Vitamin D: evidence, deficiency, bones, and safety',
+    },
+    'l-theanine': {
+      es: 'L-teanina: evidencia para calma, enfoque y sueño',
+      en: 'L-theanine: evidence for calm, focus, and sleep',
+    },
   };
 
   const targetedTitle = targetedTitles[data.slug]?.[locale];
@@ -105,6 +127,18 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
       es: 'Consulta evidencia de lavanda para sueño, ansiedad leve, formas de uso, seguridad y precauciones con sedantes.',
       en: 'Review lavender evidence for sleep, mild anxiety, forms of use, safety, and precautions with sedatives.',
     },
+    'bacopa-monnieri': {
+      es: 'Revisa Bacopa monnieri para memoria, atención, aprendizaje, tiempo de uso, seguridad y expectativas realistas.',
+      en: 'Review Bacopa monnieri for memory, attention, learning, duration of use, safety, and realistic expectations.',
+    },
+    'vitamin-d': {
+      es: 'Consulta vitamina D para deficiencia, salud ósea, inmunidad, análisis de laboratorio, dosis prudente y seguridad.',
+      en: 'Review vitamin D for deficiency, bone health, immunity, lab testing, careful dosing, and safety.',
+    },
+    'l-theanine': {
+      es: 'Revisa L-teanina para relajación, enfoque, sueño, uso con cafeína, seguridad y precauciones con sedantes.',
+      en: 'Review L-theanine for relaxation, focus, sleep, caffeine pairing, safety, and precautions with sedatives.',
+    },
   };
 
   const targetedDescription = targetedDescriptions[data.slug]?.[locale];
@@ -118,6 +152,181 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
     : `Review a careful summary for ${data.localizedName}, published evidence types, safety context, and responsible use. Includes dynamic literature analysis when available.`;
 
   return sanitizeSupplementSeoText(description);
+}
+
+export function buildSupplementSeoContent(slug: string, locale: SeoLocale): SupplementSeoContent | null {
+  const content: Partial<Record<string, Record<SeoLocale, SupplementSeoContent>>> = {
+    'bacopa-monnieri': {
+      es: {
+        intro:
+          'Bacopa monnieri aparece en Search Console como una señal temprana de demanda orgánica. Esta guía resume su uso estudiado en memoria, atención y aprendizaje sin tratarla como solución rápida.',
+        highlights: [
+          'La evidencia suele evaluar extractos estandarizados y uso continuo durante varias semanas, no efectos inmediatos.',
+          'El encaje más razonable es cognición, memoria o atención; no sustituye evaluación de problemas neurológicos, sueño o salud mental.',
+          'La tolerancia digestiva, sedación leve y combinaciones con otros suplementos deben revisarse antes de usarla.',
+        ],
+        faqHeading: 'Preguntas frecuentes sobre Bacopa monnieri',
+        faqs: [
+          {
+            question: '¿Bacopa monnieri funciona de inmediato?',
+            answer:
+              'No suele plantearse como suplemento de efecto inmediato. Los estudios generalmente evalúan uso constante durante semanas, por lo que conviene pensar en expectativas graduales y seguimiento de tolerancia.',
+          },
+          {
+            question: '¿Para qué tipo de objetivo tiene más sentido revisar Bacopa?',
+            answer:
+              'Tiene más sentido investigarla cuando el objetivo es memoria, aprendizaje o atención. Si hay deterioro cognitivo, ansiedad importante o síntomas nuevos, la prioridad es una evaluación profesional.',
+          },
+          {
+            question: '¿Qué precauciones importan con Bacopa monnieri?',
+            answer:
+              'Revisa molestias gastrointestinales, somnolencia, embarazo, lactancia, medicamentos sedantes y condiciones neurológicas. También importa distinguir el extracto y la dosis usados en estudios.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Bacopa monnieri is an early organic demand signal in Search Console. This guide summarizes its studied use for memory, attention, and learning without framing it as a quick fix.',
+        highlights: [
+          'Evidence often evaluates standardized extracts and repeated use over several weeks, not immediate effects.',
+          'The clearest fit is cognition, memory, or attention; it does not replace evaluation of neurologic, sleep, or mental health issues.',
+          'Digestive tolerance, mild sedation, and combinations with other supplements should be reviewed before use.',
+        ],
+        faqHeading: 'Frequently asked questions about Bacopa monnieri',
+        faqs: [
+          {
+            question: 'Does Bacopa monnieri work immediately?',
+            answer:
+              'It is not usually positioned as an immediate-effect supplement. Studies generally evaluate consistent use over weeks, so expectations should be gradual and tolerance should be monitored.',
+          },
+          {
+            question: 'Which goal is Bacopa most relevant for?',
+            answer:
+              'It is most relevant to review for memory, learning, or attention goals. Cognitive decline, significant anxiety, or new symptoms should be evaluated professionally.',
+          },
+          {
+            question: 'What precautions matter with Bacopa monnieri?',
+            answer:
+              'Review gastrointestinal effects, sleepiness, pregnancy, breastfeeding, sedative medications, and neurologic conditions. The extract and dose studied also matter.',
+          },
+        ],
+      },
+    },
+    'vitamin-d': {
+      es: {
+        intro:
+          'La búsqueda "suplemento de vitamina d" sugiere intención informativa amplia. Esta página ordena cuándo tiene sentido revisar vitamina D, qué papel tienen los análisis y por qué no conviene asumir deficiencia sin datos.',
+        highlights: [
+          'La suplementación es más clara cuando hay deficiencia, riesgo de baja exposición solar o indicación basada en laboratorio.',
+          'El contexto principal es salud ósea y metabolismo de calcio; otros usos tienen evidencia más dependiente del perfil de la persona.',
+          'Dosis altas sin seguimiento pueden elevar riesgos, por lo que los análisis y antecedentes médicos importan.',
+        ],
+        faqHeading: 'Preguntas frecuentes sobre vitamina D',
+        faqs: [
+          {
+            question: '¿Cuándo tiene más sentido tomar vitamina D?',
+            answer:
+              'Tiene más sentido cuando hay deficiencia confirmada, poca exposición solar, dieta limitada o recomendación profesional. La decisión mejora cuando se interpreta junto con análisis y factores de riesgo.',
+          },
+          {
+            question: '¿La vitamina D es sólo para huesos?',
+            answer:
+              'Su papel más establecido es en salud ósea, absorción de calcio y corrección de deficiencia. Otros objetivos se deben revisar con más cautela y contexto individual.',
+          },
+          {
+            question: '¿Qué precauciones importan antes de suplementar?',
+            answer:
+              'Importan dosis total, calcio, enfermedad renal, antecedentes de cálculos, embarazo, medicamentos y niveles en sangre. Evita megadosis sin seguimiento.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Vitamin D searches usually reflect broad informational intent. This page organizes when vitamin D is worth reviewing, why lab testing matters, and why deficiency should not be assumed without context.',
+        highlights: [
+          'Supplementation is clearest when deficiency, low sun exposure, or lab-guided need is present.',
+          'The core context is bone health and calcium metabolism; other uses depend more on the person profile.',
+          'High doses without follow-up can raise risks, so labs and medical history matter.',
+        ],
+        faqHeading: 'Frequently asked questions about vitamin D',
+        faqs: [
+          {
+            question: 'When does vitamin D supplementation make the most sense?',
+            answer:
+              'It makes the most sense with confirmed deficiency, low sun exposure, limited diet, or professional guidance. Decisions are stronger when interpreted with labs and risk factors.',
+          },
+          {
+            question: 'Is vitamin D only for bones?',
+            answer:
+              'Its most established role is bone health, calcium absorption, and correcting deficiency. Other goals should be reviewed with more caution and individual context.',
+          },
+          {
+            question: 'What precautions matter before supplementing?',
+            answer:
+              'Total dose, calcium intake, kidney disease, kidney stone history, pregnancy, medications, and blood levels matter. Avoid high-dose use without follow-up.',
+          },
+        ],
+      },
+    },
+    'l-theanine': {
+      es: {
+        intro:
+          'L-teanina aparece en el catálogo y conecta con búsquedas sobre "theanine" y relajación. Esta guía la presenta como aminoácido estudiado para calma, enfoque y sueño ligero, con expectativas prudentes.',
+        highlights: [
+          'Puede ser más relevante para calma sin somnolencia intensa que para insomnio clínico.',
+          'Con cafeína se suele revisar por enfoque calmado; para sueño conviene separar horario, dosis y sedantes.',
+          'La evidencia y tolerancia dependen del objetivo: ansiedad leve, enfoque o calidad subjetiva del descanso.',
+        ],
+        faqHeading: 'Preguntas frecuentes sobre L-teanina',
+        faqs: [
+          {
+            question: '¿L-teanina es lo mismo que theanine?',
+            answer:
+              'En búsquedas comunes suelen referirse al mismo ingrediente. L-teanina es la forma más usada para describir este aminoácido presente en el té.',
+          },
+          {
+            question: '¿L-teanina es más relevante para sueño o enfoque?',
+            answer:
+              'Depende del contexto. Algunas personas la revisan para calma y enfoque, especialmente con cafeína; otras para relajación nocturna. No sustituye evaluación de insomnio persistente o ansiedad importante.',
+          },
+          {
+            question: '¿Qué precauciones revisar?',
+            answer:
+              'Revisa sedantes, alcohol, embarazo, lactancia, presión arterial baja, somnolencia diurna y combinaciones con cafeína u otros suplementos.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'L-theanine is in the catalog and maps to searches around "theanine" and relaxation. This guide frames it as an amino acid studied for calm, focus, and light sleep support with careful expectations.',
+        highlights: [
+          'It may be more relevant for calm without heavy sleepiness than for clinical insomnia.',
+          'With caffeine, it is often reviewed for calm focus; for sleep, timing, dose, and sedatives matter.',
+          'Evidence and tolerance depend on the goal: mild anxiety, focus, or subjective sleep quality.',
+        ],
+        faqHeading: 'Frequently asked questions about L-theanine',
+        faqs: [
+          {
+            question: 'Is L-theanine the same as theanine?',
+            answer:
+              'In common searches they usually refer to the same ingredient. L-theanine is the more specific name for this amino acid found in tea.',
+          },
+          {
+            question: 'Is L-theanine more relevant for sleep or focus?',
+            answer:
+              'It depends on context. Some people review it for calm focus, especially with caffeine; others for nighttime relaxation. It does not replace evaluation of persistent insomnia or significant anxiety.',
+          },
+          {
+            question: 'What precautions should be reviewed?',
+            answer:
+              'Review sedatives, alcohol, pregnancy, breastfeeding, low blood pressure, daytime sleepiness, and combinations with caffeine or other supplements.',
+          },
+        ],
+      },
+    },
+  };
+
+  return content[slug]?.[locale] || null;
 }
 
 export function localizedSupplementAlternates(path: string) {

@@ -6,6 +6,7 @@ import {
   generateSupplementMetadata,
   generateSupplementStaticParams,
   buildSupplementStructuredData,
+  buildSupplementSeoContent,
   getSupplementSeoData,
 } from './seo';
 
@@ -35,6 +36,7 @@ export default async function SupplementPage({ params }: SupplementPageProps) {
   }
 
   const structuredData = buildSupplementStructuredData(data, seoLocale);
+  const seoContent = buildSupplementSeoContent(slug, seoLocale);
 
   return (
     <>
@@ -44,7 +46,7 @@ export default async function SupplementPage({ params }: SupplementPageProps) {
           __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
         }}
       />
-      <SupplementDetailClient slug={slug} locale={seoLocale} />
+      <SupplementDetailClient slug={slug} locale={seoLocale} seoContent={seoContent} />
     </>
   );
 }
