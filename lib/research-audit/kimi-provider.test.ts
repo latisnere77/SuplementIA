@@ -57,6 +57,34 @@ function validProviderBody() {
   });
 }
 
+function validFindingContent() {
+  return JSON.stringify({
+    findingId: 'raf_provider_test_001',
+    createdAt: '2026-05-28T00:00:00.000Z',
+    provider: 'kimi',
+    model: 'kimi-k2.6',
+    taskType: 'recall_gap',
+    severity: 'medium',
+    supplementName: 'Garcinia cambogia',
+    originalQueries: ['raw value that must be replaced'],
+    problemDetected: 'The audit packet may indicate an evidence recall gap.',
+    evidenceBoundary: 'human_clinical_required',
+    suggestedAliases: ['hydroxycitric acid'],
+    candidatePmids: ['3544968'],
+    validatedPmids: ['3544968'],
+    pmidVerificationStatus: 'all_valid',
+    proposedClassification: 'possible_recall_gap',
+    clinicalRisk: 'low',
+    recommendedAction: 'Review this recall gap candidate in the asynchronous audit queue.',
+    blockedFromProduction: true,
+    requiresHumanReview: true,
+    confidence: 0.7,
+    redactionApplied: true,
+    costEstimateUsd: 0.001,
+    tokenEstimate: { input: 2000, output: 500 },
+  });
+}
+
 describe('KimiResearchAuditProvider', () => {
   it('does not call the provider when disabled by default', async () => {
     const fetchFn = jest.fn();
@@ -87,6 +115,37 @@ describe('KimiResearchAuditProvider', () => {
     expect(result.valid).toBe(true);
     expect(result.finding?.originalQueries).toEqual(['garcinia cambogia']);
     expect(result.finding?.candidatePmids).toEqual(['3544968']);
+    expect(result.finding?.validatedPmids).toEqual([]);
+    expect(result.finding?.pmidVerificationStatus).toBe('not_checked');
+  });
+
+  it('parses Kimi K2.6 audit JSON from reasoning_content when message content is empty', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: '',
+                reasoning_content: `safe reasoning wrapper ${validFindingContent()}`,
+              },
+            },
+          ],
+        }),
+    });
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+      AUDIT_AGENT_MODEL: 'kimi-k2.6',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    const result = await provider.evaluatePacket(packet);
+
+    expect(result.valid).toBe(true);
+    expect(result.finding?.supplementName).toBe('Garcinia cambogia');
     expect(result.finding?.validatedPmids).toEqual([]);
     expect(result.finding?.pmidVerificationStatus).toBe('not_checked');
   });
@@ -198,7 +257,7 @@ describe('KimiResearchAuditProvider', () => {
     expect(JSON.stringify(result)).not.toContain('<account-id>');
   });
 
-  it('sanitizes provider success bodies that are missing message content', async () => {
+  it('sanitizes provider success bodies without parseable audit JSON', async () => {
     const fetchFn = jest.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -219,7 +278,7 @@ describe('KimiResearchAuditProvider', () => {
     const result = await provider.evaluatePacket(packet);
 
     expect(result.valid).toBe(false);
-    expect(result.rejectionReasons).toEqual(['provider response did not include message content']);
+    expect(result.rejectionReasons).toEqual(['provider response did not include parseable audit JSON']);
     expect(result.rejectedFinding).toEqual({
       errorType: 'provider_empty_content',
       message: 'provider response could not be parsed',
