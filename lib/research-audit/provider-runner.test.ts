@@ -68,4 +68,49 @@ describe('runProviderFixtureAudit', () => {
     expect(verified.finding?.pmidVerificationStatus).toBe('none_valid');
     expect(verified.externalCalls).toBe(2);
   });
+
+  it('can skip PMID verification explicitly for provider smoke tests', async () => {
+    const result: ProviderAuditResult = {
+      packetId: 'rap_test',
+      provider: 'kimi',
+      model: 'kimi-k2.6',
+      valid: true,
+      finding: {
+        findingId: 'raf_provider_test_003',
+        createdAt: '2026-05-28T00:00:00.000Z',
+        provider: 'kimi',
+        model: 'kimi-k2.6',
+        taskType: 'recall_gap',
+        severity: 'medium',
+        supplementName: 'Garcinia cambogia',
+        originalQueries: ['garcinia cambogia'],
+        problemDetected: 'The provider suggested a PMID candidate.',
+        evidenceBoundary: 'human_clinical_required',
+        suggestedAliases: ['hydroxycitric acid'],
+        candidatePmids: ['3544968'],
+        validatedPmids: [],
+        pmidVerificationStatus: 'not_checked',
+        proposedClassification: 'possible_recall_gap',
+        clinicalRisk: 'low',
+        recommendedAction: 'Review this recall gap candidate in the asynchronous audit queue.',
+        blockedFromProduction: true,
+        requiresHumanReview: true,
+        confidence: 0.7,
+        redactionApplied: true,
+        costEstimateUsd: 0.001,
+        tokenEstimate: { input: 2000, output: 500 },
+      },
+      rejectionReasons: [],
+      costEstimateUsd: 0.001,
+      tokenEstimate: { input: 2000, output: 500 },
+      externalCalls: 1,
+    };
+
+    const verified = await verifyProviderAuditResultPmids(result, false);
+
+    expect(verified).toBe(result);
+    expect(verified.externalCalls).toBe(1);
+    expect(verified.finding?.validatedPmids).toEqual([]);
+    expect(verified.finding?.pmidVerificationStatus).toBe('not_checked');
+  });
 });
