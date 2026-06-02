@@ -9,6 +9,10 @@ type CliOptions = {
   outputDir: string;
   limit?: number;
   skipPmidVerifier: boolean;
+  allowPmidVerifier: boolean;
+  pmidVerifierEndpoint?: string;
+  pmidVerifierTimeoutMs?: number;
+  pmidVerifierMaxPmids?: number;
 };
 
 function parseArgs(argv: string[]): CliOptions {
@@ -16,6 +20,7 @@ function parseArgs(argv: string[]): CliOptions {
     format: 'json',
     outputDir: '.research-audit-reports',
     skipPmidVerifier: false,
+    allowPmidVerifier: false,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -36,6 +41,17 @@ function parseArgs(argv: string[]): CliOptions {
       index += 1;
     } else if (arg === '--skip-pmid-verifier') {
       options.skipPmidVerifier = true;
+    } else if (arg === '--allow-pubmed-verifier') {
+      options.allowPmidVerifier = true;
+    } else if (arg === '--pmid-verifier-endpoint' && next) {
+      options.pmidVerifierEndpoint = next;
+      index += 1;
+    } else if (arg === '--pmid-verifier-timeout-ms' && next) {
+      options.pmidVerifierTimeoutMs = Number.parseInt(next, 10);
+      index += 1;
+    } else if (arg === '--pmid-verifier-max-pmids' && next) {
+      options.pmidVerifierMaxPmids = Number.parseInt(next, 10);
+      index += 1;
     }
   }
 
@@ -49,7 +65,7 @@ async function main() {
     fixturePath: options.fixturePath,
     outputDir: options.outputDir,
     limit: options.limit,
-    pmidVerifier: options.skipPmidVerifier ? false : undefined,
+    pmidVerifier: buildPmidVerifierOptions(options),
   });
 
   if (options.format === 'markdown') {
@@ -63,3 +79,13 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
+function buildPmidVerifierOptions(options: CliOptions) {
+  if (options.skipPmidVerifier || !options.allowPmidVerifier) return false;
+
+  return {
+    endpoint: options.pmidVerifierEndpoint,
+    timeoutMs: options.pmidVerifierTimeoutMs,
+    maxPmids: options.pmidVerifierMaxPmids,
+  };
+}
