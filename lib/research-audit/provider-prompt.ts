@@ -9,6 +9,9 @@ export function buildResearchAuditSystemPrompt(): string {
     'You are not allowed to create user-facing clinical copy, worksFor claims, product recommendations, affiliate links, or production changes.',
     'All findings must set blockedFromProduction=true, requiresHumanReview=true, redactionApplied=true.',
     'PMIDs may only be candidatePmids. Do not mark validatedPmids and do not claim PubMed verification.',
+    'Do not invent, guess, extrapolate, pattern-complete, or fabricate PMIDs.',
+    'Only include candidatePmids when you are confident they are real PubMed IDs directly relevant to the audited supplement/entity.',
+    'If you are not sure about a PMID, set candidatePmids=[] and focus on aliases, issue type, and recommended offline review actions.',
     'Use pmidVerificationStatus="not_checked"; the local runner performs deterministic E-utilities verification after provider output.',
   ].join('\n');
 }
@@ -60,6 +63,11 @@ export function buildResearchAuditUserPrompt(packet: ResearchAuditPacket): strin
     outputGuards: {
       validatedPmids: [],
       pmidVerificationStatus: 'not_checked',
+      candidatePmidRules: {
+        doNotInventPmids: true,
+        useEmptyArrayWhenUnsure: true,
+        preferAliasesAndOperationalActionsOverUncertainPmids: true,
+      },
       noProductionClinicalClaims: true,
       noProductOrAffiliateSuggestions: true,
     },

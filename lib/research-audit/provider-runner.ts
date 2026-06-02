@@ -169,6 +169,7 @@ export async function verifyProviderAuditResultPmids(
   const matchedPmids = articleSummaries
     .filter((article) => article.matchedTerms.length > 0)
     .map((article) => article.pmid);
+  const matchStatus = pmidEntityMatchStatus(articleSummaries.length, matchedPmids.length);
   const finding = {
     ...result.finding,
     validatedPmids: verification.validatedPmids,
@@ -180,7 +181,11 @@ export async function verifyProviderAuditResultPmids(
     finding,
     articleSummaries,
     matchedPmids,
-    pmidEntityMatchStatus: pmidEntityMatchStatus(articleSummaries.length, matchedPmids.length),
+    pmidEntityMatchStatus: matchStatus,
+    reviewWarnings: [
+      ...(result.reviewWarnings || []),
+      ...pmidReviewWarnings(matchStatus, verification.validatedPmids.length),
+    ],
     externalCalls: result.externalCalls + verification.externalCalls,
     rejectionReasons: verification.error
       ? [...result.rejectionReasons, `pmid verification failed: ${verification.error}`]
@@ -236,6 +241,17 @@ function pmidEntityMatchStatus(
   return 'partially_matched';
 }
 
+function pmidReviewWarnings(
+  status: NonNullable<ProviderAuditResult['pmidEntityMatchStatus']>,
+  validatedCount: number
+): string[] {
+  if (status !== 'none_matched' || validatedCount === 0) return [];
+
+  return [
+    'PubMed verified the candidate PMIDs exist, but no ESummary title matched the supplement, original query, or suggested aliases; treat these PMIDs as low-confidence reviewer context.',
+  ];
+}
+
 export function renderProviderAuditMarkdown(report: ProviderAuditReport): string {
   const lines = [
     '# Research Audit Provider Dry Run',
@@ -250,8 +266,8 @@ export function renderProviderAuditMarkdown(report: ProviderAuditReport): string
     `- Validation failures: ${report.validationFailures}`,
     `- Estimated total cost: $${report.totalCostEstimateUsd.toFixed(6)}`,
     '',
-    '| Packet | Status | PMID match | External calls | Cost | Reason |',
-    '| --- | --- | --- | ---: | ---: | --- |',
+    '| Packet | Status | PMID match | External calls | Cost | Reason | Warning |',
+    '| --- | --- | --- | ---: | ---: | --- | --- |',
   ];
 
   for (const result of report.results) {
@@ -262,6 +278,7 @@ export function renderProviderAuditMarkdown(report: ProviderAuditReport): string
       String(result.externalCalls),
       `$${result.costEstimateUsd.toFixed(6)}`,
       result.rejectionReasons.join('; ') || 'n/a',
+      result.reviewWarnings?.join('; ') || 'n/a',
     ].join(' | ').replace(/^/, '| ').replace(/$/, ' |'));
   }
 

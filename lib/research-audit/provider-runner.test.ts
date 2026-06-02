@@ -198,6 +198,43 @@ describe('runProviderFixtureAudit', () => {
     ]);
     expect(verified.matchedPmids).toEqual(['3544968']);
     expect(verified.pmidEntityMatchStatus).toBe('partially_matched');
+    expect(verified.reviewWarnings).toEqual([]);
+  });
+
+  it('adds a review warning when PubMed PMIDs exist but none match the audited entity title terms', async () => {
+    const result = validResult({
+      finding: {
+        ...validResult().finding!,
+        supplementName: 'Centella asiatica',
+        originalQueries: ['gotu kola'],
+        suggestedAliases: ['Centella asiatica'],
+        candidatePmids: ['99999999'],
+      },
+    });
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        result: {
+          uids: ['99999999'],
+          '99999999': {
+            uid: '99999999',
+            title: 'A review of unrelated botanical extraction methods.',
+            fulljournalname: 'Journal of Botany',
+            pubdate: '2021 Mar',
+          },
+        },
+      }),
+    } as Response);
+
+    const verified = await verifyProviderAuditResultPmids(result, { fetchFn });
+
+    expect(verified.finding?.validatedPmids).toEqual(['99999999']);
+    expect(verified.matchedPmids).toEqual([]);
+    expect(verified.pmidEntityMatchStatus).toBe('none_matched');
+    expect(verified.reviewWarnings).toEqual([
+      expect.stringContaining('PubMed verified the candidate PMIDs exist'),
+    ]);
   });
 
   it('can skip PMID verification explicitly for provider smoke tests', async () => {
