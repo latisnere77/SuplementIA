@@ -90,9 +90,25 @@ export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale)
       es: 'Colágeno hidrolizado: evidencia para articulaciones, piel y seguridad',
       en: 'Hydrolyzed collagen: evidence for joints, skin, and safety',
     },
+    'whey-protein': {
+      es: 'Proteína whey: evidencia para músculo, ejercicio y seguridad',
+      en: 'Whey protein: evidence for muscle, training, and safety',
+    },
+    caffeine: {
+      es: 'Cafeína: evidencia para energía, enfoque y rendimiento',
+      en: 'Caffeine: evidence for energy, focus, and performance',
+    },
+    citrulline: {
+      es: 'Citrulina: evidencia para rendimiento, óxido nítrico y seguridad',
+      en: 'Citrulline: evidence for performance, nitric oxide, and safety',
+    },
     'rhodiola-rosea': {
       es: 'Rhodiola rosea: evidencia para fatiga, estrés y seguridad',
       en: 'Rhodiola rosea: evidence for fatigue, stress, and safety',
+    },
+    'saw-palmetto': {
+      es: 'Saw palmetto: evidencia prostática, seguridad y expectativas',
+      en: 'Saw palmetto: prostate evidence, safety, and expectations',
     },
     lavender: {
       es: 'Lavanda: evidencia para sueño, calma y seguridad',
@@ -149,9 +165,25 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
       es: 'Compara evidencia de colágeno hidrolizado para articulaciones, piel, tejidos conectivos, seguridad y expectativas realistas.',
       en: 'Compare hydrolyzed collagen evidence for joints, skin, connective tissue, safety, and realistic expectations.',
     },
+    'whey-protein': {
+      es: 'Revisa proteína whey para entrenamiento, masa muscular, recuperación, proteína diaria, tolerancia y seguridad.',
+      en: 'Review whey protein for training, muscle mass, recovery, daily protein intake, tolerance, and safety.',
+    },
+    caffeine: {
+      es: 'Revisa cafeína para energía, enfoque, ejercicio, sueño, tolerancia, dosis prudente e interacciones.',
+      en: 'Review caffeine for energy, focus, exercise, sleep, tolerance, careful dosing, and interactions.',
+    },
+    citrulline: {
+      es: 'Consulta citrulina para rendimiento deportivo, flujo sanguíneo, entrenamiento, tolerancia y seguridad.',
+      en: 'Review citrulline for sports performance, blood-flow context, training, tolerance, and safety.',
+    },
     'rhodiola-rosea': {
       es: 'Revisa rhodiola rosea para fatiga, estrés, rendimiento mental, seguridad y diferencias entre extractos estudiados.',
       en: 'Review rhodiola rosea for fatigue, stress, mental performance, safety, and differences between studied extracts.',
+    },
+    'saw-palmetto': {
+      es: 'Revisa saw palmetto para salud prostática, síntomas urinarios, seguridad, medicamentos y expectativas realistas.',
+      en: 'Review saw palmetto for prostate context, urinary symptoms, safety, medications, and realistic expectations.',
     },
     lavender: {
       es: 'Consulta evidencia de lavanda para sueño, ansiedad leve, formas de uso, seguridad y precauciones con sedantes.',
@@ -600,6 +632,618 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
             question: 'What precautions matter before supplementing?',
             answer:
               'Total dose, calcium intake, kidney disease, kidney stone history, pregnancy, medications, and blood levels matter. Avoid high-dose use without follow-up.',
+          },
+        ],
+      },
+    },
+    'hydrolyzed-collagen': {
+      es: {
+        intro:
+          'Colágeno hidrolizado conecta con búsquedas recientes sobre collagen y collagenin. Esta guía ordena la evidencia para articulaciones, piel, tendones y expectativas realistas sin mezclarlo con promesas estéticas o clínicas fuertes.',
+        highlights: [
+          'La intención más clara suele ser articulaciones, piel o tejido conectivo; cada objetivo tiene evidencia y tiempos distintos.',
+          'Importa distinguir colágeno hidrolizado, péptidos de colágeno y colágeno tipo II, porque no siempre se estudian igual.',
+          'Para dolor articular persistente, lesiones o cambios de piel relevantes, la prioridad es evaluación profesional y hábitos base.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Salud articular y ósea',
+            description:
+              'Compara colágeno hidrolizado con vitamina D y glucosamina dentro del cluster articular.',
+            href: '/portal/category/joint-bone-health',
+            label: 'Ver categoría articular',
+          },
+          {
+            title: 'Proteína whey',
+            description:
+              'Útil para comparar colágeno con proteína completa cuando la intención es recuperación o masa muscular.',
+            href: '/portal/supplement/whey-protein?benefit=muscle-gain',
+            label: 'Comparar proteína whey',
+          },
+          {
+            title: 'Vitamina D',
+            description:
+              'Referencia para usuarios que mezclan salud ósea, articulaciones y análisis de laboratorio.',
+            href: '/portal/supplement/vitamin-d?benefit=joint-bone-health',
+            label: 'Revisar vitamina D',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre colágeno hidrolizado',
+        faqs: [
+          {
+            question: '¿Colágeno hidrolizado y péptidos de colágeno son lo mismo?',
+            answer:
+              'En muchas búsquedas se usan de forma parecida, pero conviene revisar la forma exacta estudiada. Colágeno tipo II, gelatina y péptidos hidrolizados pueden tener objetivos y dosis diferentes.',
+          },
+          {
+            question: '¿Colágeno es más relevante para piel o articulaciones?',
+            answer:
+              'Depende de la intención. Hay estudios en piel, dolor articular y tejido conectivo, pero los desenlaces y tiempos de seguimiento no son iguales.',
+          },
+          {
+            question: '¿Qué precauciones revisar?',
+            answer:
+              'Revisa alergias a la fuente del producto, proteína total de la dieta, enfermedad renal, embarazo, lactancia y si el objetivo real es dolor persistente o una lesión.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Hydrolyzed collagen maps to recent searches around collagen and collagenin. This guide organizes evidence for joints, skin, tendons, and realistic expectations without broad cosmetic or clinical promises.',
+        highlights: [
+          'The clearest intent is usually joints, skin, or connective tissue; each goal has different evidence and timelines.',
+          'Hydrolyzed collagen, collagen peptides, and type II collagen are not always studied the same way.',
+          'Persistent joint pain, injuries, or notable skin changes deserve professional evaluation and basic habit review.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Joint and bone health',
+            description:
+              'Compare hydrolyzed collagen with vitamin D and glucosamine in the joint cluster.',
+            href: '/portal/category/joint-bone-health',
+            label: 'Open joint category',
+          },
+          {
+            title: 'Whey protein',
+            description:
+              'Useful when comparing collagen with complete protein for recovery or muscle mass intent.',
+            href: '/portal/supplement/whey-protein?benefit=muscle-gain',
+            label: 'Compare whey',
+          },
+          {
+            title: 'Vitamin D',
+            description:
+              'Relevant when users mix bone health, joints, and lab testing questions.',
+            href: '/portal/supplement/vitamin-d?benefit=joint-bone-health',
+            label: 'Review vitamin D',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about hydrolyzed collagen',
+        faqs: [
+          {
+            question: 'Are hydrolyzed collagen and collagen peptides the same?',
+            answer:
+              'Many searches use them similarly, but the exact studied form matters. Type II collagen, gelatin, and hydrolyzed peptides can have different goals and doses.',
+          },
+          {
+            question: 'Is collagen more relevant for skin or joints?',
+            answer:
+              'It depends on intent. Studies exist in skin, joint pain, and connective tissue, but outcomes and follow-up timelines differ.',
+          },
+          {
+            question: 'What precautions should be reviewed?',
+            answer:
+              'Review product source allergies, total dietary protein, kidney disease, pregnancy, breastfeeding, and whether the real goal is persistent pain or injury.',
+          },
+        ],
+      },
+    },
+    'whey-protein': {
+      es: {
+        intro:
+          'Proteína whey aparece en búsquedas recientes como proteina whey. Esta guía separa proteína diaria, entrenamiento, recuperación, masa muscular y tolerancia digestiva para usuarios que comparan suplementos deportivos.',
+        highlights: [
+          'La pregunta principal no es sólo el suplemento, sino si la proteína total diaria ya cubre el objetivo.',
+          'Whey suele encajar mejor en entrenamiento, recuperación o conveniencia alimentaria que como solución aislada.',
+          'Tolerancia a lactosa, alergia a leche, enfermedad renal y objetivos de peso cambian la decisión.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Ganancia de músculo y ejercicio',
+            description:
+              'Compara whey con creatina y beta-alanina según objetivo de entrenamiento.',
+            href: '/portal/category/muscle-gain',
+            label: 'Ver categoría de músculo',
+          },
+          {
+            title: 'Colágeno hidrolizado',
+            description:
+              'Comparación útil cuando la intención mezcla recuperación, articulaciones y proteína.',
+            href: '/portal/supplement/hydrolyzed-collagen?benefit=joint-bone-health',
+            label: 'Comparar colágeno',
+          },
+          {
+            title: 'Cafeína para rendimiento',
+            description:
+              'Otra señal deportiva reciente, más enfocada en alerta y desempeño agudo.',
+            href: '/portal/supplement/caffeine?benefit=sports-performance',
+            label: 'Revisar cafeína',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre proteína whey',
+        faqs: [
+          {
+            question: '¿Proteína whey es necesaria para ganar músculo?',
+            answer:
+              'No siempre. Puede ser conveniente si cuesta cubrir proteína diaria con alimentos, pero entrenamiento, calorías, sueño y constancia son determinantes.',
+          },
+          {
+            question: '¿Whey es mejor que colágeno para músculo?',
+            answer:
+              'Whey es proteína completa y suele encajar mejor para masa muscular. Colágeno se revisa más por tejido conectivo, piel o articulaciones.',
+          },
+          {
+            question: '¿Qué precauciones revisar?',
+            answer:
+              'Revisa alergia a leche, intolerancia a lactosa, enfermedad renal, proteína total diaria, objetivos de peso y calidad del producto.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Whey protein maps to recent search intent around protein powder and training. This guide separates daily protein intake, recovery, muscle mass, and digestive tolerance.',
+        highlights: [
+          'The main question is whether total daily protein already fits the goal.',
+          'Whey is often most useful for training, recovery, or food convenience rather than as an isolated answer.',
+          'Lactose tolerance, milk allergy, kidney disease, and weight goals change the decision.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Muscle gain and exercise',
+            description:
+              'Compare whey with creatine and beta-alanine by training goal.',
+            href: '/portal/category/muscle-gain',
+            label: 'Open muscle category',
+          },
+          {
+            title: 'Hydrolyzed collagen',
+            description:
+              'Useful when intent mixes recovery, joints, and protein.',
+            href: '/portal/supplement/hydrolyzed-collagen?benefit=joint-bone-health',
+            label: 'Compare collagen',
+          },
+          {
+            title: 'Caffeine for performance',
+            description:
+              'Another sports signal, more focused on alertness and acute performance.',
+            href: '/portal/supplement/caffeine?benefit=sports-performance',
+            label: 'Review caffeine',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about whey protein',
+        faqs: [
+          {
+            question: 'Is whey protein required to gain muscle?',
+            answer:
+              'Not always. It can be convenient when food protein is hard to reach, but training, calories, sleep, and consistency are key.',
+          },
+          {
+            question: 'Is whey better than collagen for muscle?',
+            answer:
+              'Whey is a complete protein and usually fits muscle mass goals better. Collagen is more often reviewed for connective tissue, skin, or joints.',
+          },
+          {
+            question: 'What precautions matter?',
+            answer:
+              'Review milk allergy, lactose intolerance, kidney disease, total daily protein, weight goals, and product quality.',
+          },
+        ],
+      },
+    },
+    caffeine: {
+      es: {
+        intro:
+          'Cafeína aparece en señales recientes de rendimiento y energía. Esta guía ayuda a comparar cafeína para alerta, enfoque y ejercicio sin ignorar sueño, ansiedad, tolerancia y dosis total.',
+        highlights: [
+          'Tiene evidencia fuerte para alerta y rendimiento agudo, pero no reemplaza descanso ni corrige fatiga persistente.',
+          'El horario importa: usarla tarde puede deteriorar sueño y empeorar el problema que se intenta resolver.',
+          'Conviene sumar café, bebidas energéticas, pre-entrenos y cápsulas para entender la dosis total.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Rendimiento deportivo',
+            description:
+              'Compara cafeína con creatina, beta-alanina y citrulina dentro del cluster deportivo.',
+            href: '/portal/category/sports-performance',
+            label: 'Ver rendimiento deportivo',
+          },
+          {
+            title: 'Energía y fatiga',
+            description:
+              'Compara cafeína con rhodiola y vitamina B12 según causa probable de fatiga.',
+            href: '/portal/category/energy',
+            label: 'Ver energía y fatiga',
+          },
+          {
+            title: 'L-teanina',
+            description:
+              'Relevante para usuarios que buscan foco calmado o combinaciones con cafeína.',
+            href: '/portal/supplement/l-theanine?benefit=anxiety',
+            label: 'Comparar L-teanina',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre cafeína',
+        faqs: [
+          {
+            question: '¿Cafeína es mejor para energía o rendimiento deportivo?',
+            answer:
+              'Puede encajar en ambos contextos, pero son preguntas distintas. Para rendimiento se revisa timing y dosis; para fatiga conviene revisar sueño, estrés y causas persistentes.',
+          },
+          {
+            question: '¿Qué precauciones importan?',
+            answer:
+              'Revisa ansiedad, insomnio, presión arterial, palpitaciones, embarazo, medicamentos estimulantes y consumo total de cafeína.',
+          },
+          {
+            question: '¿Tiene sentido combinar cafeína con L-teanina?',
+            answer:
+              'Algunas personas la revisan para enfoque con menor sensación de nerviosismo, pero la tolerancia individual, sueño y dosis siguen siendo importantes.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Caffeine maps to recent performance and energy signals. This guide compares caffeine for alertness, focus, and exercise while keeping sleep, anxiety, tolerance, and total dose in view.',
+        highlights: [
+          'It has strong evidence for alertness and acute performance, but it does not replace rest or explain persistent fatigue.',
+          'Timing matters: late use can impair sleep and worsen the problem users are trying to fix.',
+          'Coffee, energy drinks, pre-workouts, and capsules should be counted together.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Sports performance',
+            description:
+              'Compare caffeine with creatine, beta-alanine, and citrulline in the sports cluster.',
+            href: '/portal/category/sports-performance',
+            label: 'Open sports performance',
+          },
+          {
+            title: 'Energy and fatigue',
+            description:
+              'Compare caffeine with rhodiola and B12 by likely fatigue context.',
+            href: '/portal/category/energy',
+            label: 'Open energy category',
+          },
+          {
+            title: 'L-theanine',
+            description:
+              'Relevant for users seeking calm focus or caffeine pairing.',
+            href: '/portal/supplement/l-theanine?benefit=anxiety',
+            label: 'Compare L-theanine',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about caffeine',
+        faqs: [
+          {
+            question: 'Is caffeine better for energy or sports performance?',
+            answer:
+              'It can fit both contexts, but they are different questions. Performance focuses on timing and dose; fatigue should also review sleep, stress, and persistent causes.',
+          },
+          {
+            question: 'What precautions matter?',
+            answer:
+              'Review anxiety, insomnia, blood pressure, palpitations, pregnancy, stimulant medications, and total caffeine intake.',
+          },
+          {
+            question: 'Does caffeine pair well with L-theanine?',
+            answer:
+              'Some people review the pair for focus with less jitteriness, but individual tolerance, sleep, and dose still matter.',
+          },
+        ],
+      },
+    },
+    'rhodiola-rosea': {
+      es: {
+        intro:
+          'Rhodiola rosea aparece como señal orgánica temprana en fatiga, estrés y rendimiento mental. Esta guía separa adaptógeno, extracto, tolerancia y expectativas de uso gradual.',
+        highlights: [
+          'La intención más clara es fatiga relacionada con estrés o carga mental, no cansancio persistente sin explicación.',
+          'Los estudios suelen depender del extracto y de la estandarización; no todos los productos son equivalentes.',
+          'Sueño, ansiedad, depresión, tiroides, anemia y medicamentos pueden cambiar completamente la lectura.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Energía y fatiga',
+            description:
+              'Compara rhodiola con cafeína, creatina y vitamina B12 según contexto de fatiga.',
+            href: '/portal/category/energy',
+            label: 'Ver energía y fatiga',
+          },
+          {
+            title: 'Cafeína',
+            description:
+              'Contraste útil cuando el usuario busca efecto agudo de alerta frente a apoyo gradual.',
+            href: '/portal/supplement/caffeine?benefit=energy',
+            label: 'Comparar cafeína',
+          },
+          {
+            title: 'L-teanina',
+            description:
+              'Opción relacionada cuando la intención mezcla estrés, enfoque y calma.',
+            href: '/portal/supplement/l-theanine?benefit=anxiety',
+            label: 'Revisar L-teanina',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre rhodiola rosea',
+        faqs: [
+          {
+            question: '¿Rhodiola rosea es para fatiga o estrés?',
+            answer:
+              'Se revisa en ambos contextos, sobre todo cuando la fatiga se relaciona con estrés o carga mental. Fatiga persistente requiere revisar causas médicas y hábitos base.',
+          },
+          {
+            question: '¿Importa el tipo de extracto?',
+            answer:
+              'Sí. La evidencia suele usar extractos estandarizados; comparar productos sin revisar extracto, concentración y dosis puede ser confuso.',
+          },
+          {
+            question: '¿Qué precauciones revisar?',
+            answer:
+              'Revisa ansiedad, insomnio, trastorno bipolar, embarazo, lactancia, estimulantes, antidepresivos y medicamentos que afecten presión o sueño.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Rhodiola rosea is an early organic signal around fatigue, stress, and mental performance. This guide separates adaptogen intent, extract type, tolerance, and gradual expectations.',
+        highlights: [
+          'The clearest intent is stress-related or mental-load fatigue, not unexplained persistent tiredness.',
+          'Studies often depend on extract and standardization; not all products are equivalent.',
+          'Sleep, anxiety, depression, thyroid status, anemia, and medications can change interpretation.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Energy and fatigue',
+            description:
+              'Compare rhodiola with caffeine, creatine, and B12 by fatigue context.',
+            href: '/portal/category/energy',
+            label: 'Open energy category',
+          },
+          {
+            title: 'Caffeine',
+            description:
+              'Useful contrast when users want acute alertness rather than gradual support.',
+            href: '/portal/supplement/caffeine?benefit=energy',
+            label: 'Compare caffeine',
+          },
+          {
+            title: 'L-theanine',
+            description:
+              'Related when intent mixes stress, focus, and calm.',
+            href: '/portal/supplement/l-theanine?benefit=anxiety',
+            label: 'Review L-theanine',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about rhodiola rosea',
+        faqs: [
+          {
+            question: 'Is rhodiola more relevant for fatigue or stress?',
+            answer:
+              'It is reviewed in both contexts, especially when fatigue is tied to stress or mental load. Persistent fatigue deserves medical and lifestyle review.',
+          },
+          {
+            question: 'Does extract type matter?',
+            answer:
+              'Yes. Evidence often uses standardized extracts; comparing products without checking extract, concentration, and dose can be misleading.',
+          },
+          {
+            question: 'What precautions matter?',
+            answer:
+              'Review anxiety, insomnia, bipolar disorder, pregnancy, breastfeeding, stimulants, antidepressants, and medications affecting blood pressure or sleep.',
+          },
+        ],
+      },
+    },
+    citrulline: {
+      es: {
+        intro:
+          'Citrulina aparece como señal reciente de intención deportiva. Esta guía explica su relación con óxido nítrico, flujo sanguíneo, entrenamiento y tolerancia sin presentarla como respuesta universal para rendimiento.',
+        highlights: [
+          'La intención principal suele ser rendimiento deportivo o sensación de bombeo durante entrenamiento.',
+          'Citrulina y citrulina malato se usan en contextos parecidos, pero dosis y formulación pueden variar.',
+          'Presión arterial, medicamentos vasodilatadores y entrenamiento real cambian la interpretación.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Rendimiento deportivo',
+            description:
+              'Compara citrulina con creatina, cafeína y beta-alanina por objetivo de entrenamiento.',
+            href: '/portal/category/sports-performance',
+            label: 'Ver rendimiento deportivo',
+          },
+          {
+            title: 'Cafeína',
+            description:
+              'Más enfocada en alerta y rendimiento agudo que en flujo sanguíneo.',
+            href: '/portal/supplement/caffeine?benefit=sports-performance',
+            label: 'Comparar cafeína',
+          },
+          {
+            title: 'Proteína whey',
+            description:
+              'Complementa la intención deportiva cuando el foco es recuperación o músculo.',
+            href: '/portal/supplement/whey-protein?benefit=muscle-gain',
+            label: 'Revisar whey',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre citrulina',
+        faqs: [
+          {
+            question: '¿Citrulina es más relevante para rendimiento o salud cardiovascular?',
+            answer:
+              'En el portal encaja principalmente con rendimiento deportivo y flujo sanguíneo durante entrenamiento. La lectura cardiovascular requiere más contexto médico.',
+          },
+          {
+            question: '¿Citrulina y citrulina malato son iguales?',
+            answer:
+              'Se relacionan, pero no son idénticas. La formulación puede cambiar dosis, tolerancia y comparación con estudios.',
+          },
+          {
+            question: '¿Qué precauciones revisar?',
+            answer:
+              'Revisa presión arterial baja, antihipertensivos, nitratos, cirugía programada, enfermedad cardiovascular y tolerancia gastrointestinal.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Citrulline maps to recent sports-intent signals. This guide explains nitric oxide, blood-flow context, training, and tolerance without framing it as a universal performance answer.',
+        highlights: [
+          'The main intent is usually sports performance or pump sensation during training.',
+          'Citrulline and citrulline malate are used in related contexts, but dose and formulation can differ.',
+          'Blood pressure, vasodilator medications, and actual training context change interpretation.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Sports performance',
+            description:
+              'Compare citrulline with creatine, caffeine, and beta-alanine by training goal.',
+            href: '/portal/category/sports-performance',
+            label: 'Open sports performance',
+          },
+          {
+            title: 'Caffeine',
+            description:
+              'More focused on alertness and acute performance than blood-flow context.',
+            href: '/portal/supplement/caffeine?benefit=sports-performance',
+            label: 'Compare caffeine',
+          },
+          {
+            title: 'Whey protein',
+            description:
+              'Complements sports intent when recovery or muscle is the focus.',
+            href: '/portal/supplement/whey-protein?benefit=muscle-gain',
+            label: 'Review whey',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about citrulline',
+        faqs: [
+          {
+            question: 'Is citrulline more relevant for performance or heart health?',
+            answer:
+              'In this portal it fits primarily with sports performance and blood-flow context during training. Cardiovascular interpretation needs more medical context.',
+          },
+          {
+            question: 'Are citrulline and citrulline malate the same?',
+            answer:
+              'They are related but not identical. Formulation can change dose, tolerance, and comparison with studies.',
+          },
+          {
+            question: 'What precautions matter?',
+            answer:
+              'Review low blood pressure, blood pressure medications, nitrates, planned surgery, cardiovascular disease, and digestive tolerance.',
+          },
+        ],
+      },
+    },
+    'saw-palmetto': {
+      es: {
+        intro:
+          'Saw palmetto apareció como señal de Search Console en las últimas 24 horas. Esta guía lo ubica en salud prostática y síntomas urinarios, con expectativas prudentes y revisión de medicamentos.',
+        highlights: [
+          'La intención suele ser próstata, síntomas urinarios o comparación con opciones para hombres.',
+          'No debe usarse para ignorar síntomas nuevos, dolor, sangre en orina o cambios importantes.',
+          'Medicamentos hormonales, anticoagulantes y cirugía programada cambian la seguridad.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Salud masculina',
+            description:
+              'Compara saw palmetto con zinc y otros temas de vitalidad masculina.',
+            href: '/portal/category/mens-health',
+            label: 'Ver salud masculina',
+          },
+          {
+            title: 'Zinc',
+            description:
+              'Opción relacionada cuando la búsqueda se mueve hacia fertilidad, testosterona o deficiencia.',
+            href: '/portal/supplement/zinc?benefit=mens-health',
+            label: 'Revisar zinc',
+          },
+          {
+            title: 'Vitamina D',
+            description:
+              'Referencia transversal si el usuario busca hormonas, huesos o deficiencia.',
+            href: '/portal/supplement/vitamin-d?benefit=hormonal-health',
+            label: 'Revisar vitamina D',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre saw palmetto',
+        faqs: [
+          {
+            question: '¿Saw palmetto se revisa por próstata?',
+            answer:
+              'Sí, la intención más común es salud prostática o síntomas urinarios. Eso no reemplaza evaluación médica si hay síntomas nuevos o relevantes.',
+          },
+          {
+            question: '¿Qué señales requieren evaluación antes de suplementar?',
+            answer:
+              'Dolor, fiebre, sangre en orina, dificultad importante para orinar o cambios rápidos deben revisarse con un profesional.',
+          },
+          {
+            question: '¿Qué precauciones importan?',
+            answer:
+              'Revisa anticoagulantes, medicamentos hormonales, cirugía programada, antecedentes prostáticos y seguimiento de laboratorio cuando aplique.',
+          },
+        ],
+      },
+      en: {
+        intro:
+          'Saw palmetto appeared as a recent Search Console signal. This guide places it in prostate and urinary-symptom context with careful expectations and medication review.',
+        highlights: [
+          'Intent is usually prostate, urinary symptoms, or men’s health comparison.',
+          'It should not be used to ignore new symptoms, pain, blood in urine, or major changes.',
+          'Hormonal medications, anticoagulants, and planned surgery change safety context.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Men’s health',
+            description:
+              'Compare saw palmetto with zinc and other men’s health topics.',
+            href: '/portal/category/mens-health',
+            label: 'Open men’s health',
+          },
+          {
+            title: 'Zinc',
+            description:
+              'Related when searches move toward fertility, testosterone, or deficiency.',
+            href: '/portal/supplement/zinc?benefit=mens-health',
+            label: 'Review zinc',
+          },
+          {
+            title: 'Vitamin D',
+            description:
+              'Cross-reference when users search hormones, bones, or deficiency.',
+            href: '/portal/supplement/vitamin-d?benefit=hormonal-health',
+            label: 'Review vitamin D',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about saw palmetto',
+        faqs: [
+          {
+            question: 'Is saw palmetto mainly reviewed for prostate context?',
+            answer:
+              'Yes, the common intent is prostate health or urinary symptoms. That does not replace medical evaluation when symptoms are new or relevant.',
+          },
+          {
+            question: 'Which signs should be evaluated before supplementing?',
+            answer:
+              'Pain, fever, blood in urine, major difficulty urinating, or rapid changes should be reviewed with a professional.',
+          },
+          {
+            question: 'What precautions matter?',
+            answer:
+              'Review anticoagulants, hormonal medications, planned surgery, prostate history, and lab follow-up when relevant.',
           },
         ],
       },
