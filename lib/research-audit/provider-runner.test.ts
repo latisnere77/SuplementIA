@@ -138,7 +138,66 @@ describe('runProviderFixtureAudit', () => {
 
     expect(verified.finding?.validatedPmids).toEqual([]);
     expect(verified.finding?.pmidVerificationStatus).toBe('none_valid');
+    expect(verified.articleSummaries).toEqual([]);
+    expect(verified.matchedPmids).toEqual([]);
+    expect(verified.pmidEntityMatchStatus).toBe('not_checked');
     expect(verified.externalCalls).toBe(2);
+  });
+
+  it('adds deterministic PubMed article summaries and separate entity match metadata', async () => {
+    const result = validResult({
+      finding: {
+        ...validResult().finding!,
+        supplementName: 'Centella asiatica',
+        originalQueries: ['gotu kola'],
+        suggestedAliases: ['Centella asiatica', 'Indian pennywort'],
+        candidatePmids: ['3544968', '99999999'],
+      },
+    });
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        result: {
+          uids: ['3544968', '99999999'],
+          '3544968': {
+            uid: '3544968',
+            title: 'Centella asiatica in venous insufficiency.',
+            fulljournalname: 'Angiology',
+            pubdate: '1987 Jan',
+          },
+          '99999999': {
+            uid: '99999999',
+            title: 'A review of unrelated botanical extraction methods.',
+            fulljournalname: 'Journal of Botany',
+            pubdate: '2021 Mar',
+          },
+        },
+      }),
+    } as Response);
+
+    const verified = await verifyProviderAuditResultPmids(result, { fetchFn });
+
+    expect(verified.finding?.validatedPmids).toEqual(['3544968', '99999999']);
+    expect(verified.finding?.pmidVerificationStatus).toBe('all_valid');
+    expect(verified.articleSummaries).toEqual([
+      {
+        pmid: '3544968',
+        title: 'Centella asiatica in venous insufficiency.',
+        journal: 'Angiology',
+        year: '1987',
+        matchedTerms: ['centella asiatica'],
+      },
+      {
+        pmid: '99999999',
+        title: 'A review of unrelated botanical extraction methods.',
+        journal: 'Journal of Botany',
+        year: '2021',
+        matchedTerms: [],
+      },
+    ]);
+    expect(verified.matchedPmids).toEqual(['3544968']);
+    expect(verified.pmidEntityMatchStatus).toBe('partially_matched');
   });
 
   it('can skip PMID verification explicitly for provider smoke tests', async () => {

@@ -54,6 +54,8 @@ Even when enabled, this remains report-only:
 - The manual runner verifies candidate PMIDs deterministically with PubMed E-utilities only when `--allow-pubmed-verifier` is explicitly passed.
 - Without that flag, `validatedPmids` remains `[]` and `pmidVerificationStatus` remains `"not_checked"`.
 - If PubMed verification fails, `validatedPmids` remains `[]` and `pmidVerificationStatus` becomes `"verification_failed"`.
+- `validatedPmids` only means the numeric PMID exists in PubMed ESummary. It does not mean the article is clinically relevant.
+- Local reports may include `articleSummaries`, `matchedPmids`, and `pmidEntityMatchStatus` as deterministic reviewer aids based on article title matches only.
 
 ## Safety Contract
 
