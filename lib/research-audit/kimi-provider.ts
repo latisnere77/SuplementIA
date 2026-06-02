@@ -40,8 +40,13 @@ interface KimiChatResponse {
 }
 
 function temperatureForModel(model: ResearchAuditFinding['model']): number {
-  if (model === 'kimi-k2.6' || model === 'kimi-k2.5') return 1;
+  if (model === 'kimi-k2.6' || model === 'kimi-k2.5') return 0.6;
   return 0;
+}
+
+function thinkingForModel(model: ResearchAuditFinding['model']): { type: 'disabled' } | undefined {
+  if (model === 'kimi-k2.6' || model === 'kimi-k2.5') return { type: 'disabled' };
+  return undefined;
 }
 
 export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
@@ -151,7 +156,8 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
             { role: 'system', content: promptPayload.system },
             { role: 'user', content: promptPayload.user },
           ],
-          response_format: { type: 'json_object' },
+          response_format: researchAuditFindingResponseFormat,
+          thinking: thinkingForModel(this.config.model),
           temperature: temperatureForModel(this.config.model),
           max_completion_tokens: this.config.maxOutputTokensPerEvent,
         }),
@@ -239,6 +245,140 @@ export class KimiResearchAuditProvider implements ResearchAuditProviderAdapter {
     }
   }
 }
+
+const researchAuditFindingResponseFormat = {
+  type: 'json_schema',
+  json_schema: {
+    name: 'ResearchAuditFinding',
+    strict: true,
+    schema: {
+      type: 'object',
+      additionalProperties: false,
+      required: [
+        'findingId',
+        'createdAt',
+        'provider',
+        'model',
+        'taskType',
+        'severity',
+        'supplementName',
+        'originalQueries',
+        'problemDetected',
+        'evidenceBoundary',
+        'suggestedAliases',
+        'candidatePmids',
+        'validatedPmids',
+        'pmidVerificationStatus',
+        'proposedClassification',
+        'clinicalRisk',
+        'recommendedAction',
+        'blockedFromProduction',
+        'requiresHumanReview',
+        'confidence',
+        'redactionApplied',
+        'costEstimateUsd',
+        'tokenEstimate',
+        'notesForReviewer',
+      ],
+      properties: {
+        findingId: { type: 'string', pattern: '^raf_[a-z0-9_-]{8,80}$' },
+        createdAt: { type: 'string' },
+        provider: { type: 'string', enum: ['kimi', 'openai', 'google', 'anthropic'] },
+        model: {
+          type: 'string',
+          enum: [
+            'kimi-k2.6',
+            'kimi-k2.5',
+            'gpt-5.4-nano',
+            'gpt-5.4-mini',
+            'gemini-flash-lite',
+            'claude-haiku-4.5',
+          ],
+        },
+        taskType: {
+          type: 'string',
+          enum: [
+            'alias_gap',
+            'recall_gap',
+            'clinical_claim_risk',
+            'pipeline_failure',
+            'seo_opportunity',
+          ],
+        },
+        severity: { type: 'string', enum: ['low', 'medium', 'high'] },
+        supplementName: { type: 'string', minLength: 1, maxLength: 120, pattern: '^[^\\n\\r<>]{1,120}$' },
+        originalQueries: {
+          type: 'array',
+          minItems: 1,
+          maxItems: 10,
+          items: { type: 'string', minLength: 1, maxLength: 120, pattern: '^[^\\n\\r<>]{1,120}$' },
+        },
+        problemDetected: { type: 'string', minLength: 1, maxLength: 1000 },
+        evidenceBoundary: {
+          type: 'string',
+          enum: [
+            'human_clinical_required',
+            'preclinical_only',
+            'editorial_only',
+            'operational_only',
+          ],
+        },
+        suggestedAliases: {
+          type: 'array',
+          maxItems: 12,
+          items: { type: 'string', minLength: 1, maxLength: 120, pattern: '^[^\\n\\r<>]{1,120}$' },
+        },
+        candidatePmids: {
+          type: 'array',
+          maxItems: 20,
+          items: { type: 'string', pattern: '^[1-9][0-9]{0,9}$' },
+        },
+        validatedPmids: {
+          type: 'array',
+          maxItems: 20,
+          items: { type: 'string', pattern: '^[1-9][0-9]{0,9}$' },
+        },
+        pmidVerificationStatus: {
+          type: 'string',
+          enum: [
+            'not_checked',
+            'all_valid',
+            'partially_valid',
+            'none_valid',
+            'entity_mismatch',
+            'verification_failed',
+          ],
+        },
+        proposedClassification: {
+          type: 'string',
+          enum: [
+            'needs_human_review',
+            'likely_insufficient_data',
+            'possible_recall_gap',
+            'operational_bug',
+          ],
+        },
+        clinicalRisk: { type: 'string', enum: ['none', 'low', 'medium', 'high'] },
+        recommendedAction: { type: 'string', minLength: 1, maxLength: 1200 },
+        blockedFromProduction: { type: 'boolean', enum: [true] },
+        requiresHumanReview: { type: 'boolean', enum: [true] },
+        confidence: { type: 'number', minimum: 0, maximum: 1 },
+        redactionApplied: { type: 'boolean', enum: [true] },
+        costEstimateUsd: { type: 'number', minimum: 0, maximum: 1 },
+        tokenEstimate: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['input', 'output'],
+          properties: {
+            input: { type: 'integer', minimum: 0, maximum: 8000 },
+            output: { type: 'integer', minimum: 0, maximum: 1500 },
+          },
+        },
+        notesForReviewer: { type: 'string', maxLength: 1200 },
+      },
+    },
+  },
+} as const;
 
 function isAbortError(error: unknown): boolean {
   return error instanceof DOMException
