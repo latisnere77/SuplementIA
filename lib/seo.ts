@@ -43,14 +43,14 @@ export const mexicanSeoKeywords = [
 
 export const globalSeo = {
   es: {
-    title: 'SuplementAI | Suplementos con evidencia científica en México',
+    title: 'SuplementAI | Buscador de suplementos con evidencia',
     description:
-      'Encuentra suplementos con respaldo científico para dormir mejor, energía, ansiedad, digestión, memoria y salud general. Información clara para México en español.',
+      'Compara suplementos por evidencia, seguridad y objetivo de salud. Guías claras en español para México, sin claims médicos exagerados.',
   },
   en: {
-    title: 'SuplementAI | Evidence-Based Supplement Guidance',
+    title: 'SuplementAI | Evidence-Based Supplement Search',
     description:
-      'Find evidence-based supplement guidance for sleep, energy, anxiety, digestion, memory, performance, and overall health.',
+      'Compare supplements by evidence, safety, and health goal across sleep, energy, anxiety, digestion, memory, and performance.',
   },
 } satisfies Record<SeoLocale, { title: string; description: string }>;
 

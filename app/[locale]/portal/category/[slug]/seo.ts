@@ -40,9 +40,9 @@ export function buildCategorySeoCopy({
           'Compara suplementos para triglicéridos y colesterol: psyllium, omega-3, esteroles vegetales y ajo con evidencia, seguridad y laboratorios.',
       },
       en: {
-        title: 'Psyllium, omega-3, and supplements for cholesterol and triglycerides',
+        title: 'Cholesterol and triglyceride supplements: psyllium and omega-3',
         description:
-          'Compare psyllium fiber, omega-3, plant sterols, and garlic for cholesterol and triglycerides with evidence level and safety context.',
+          'Compare psyllium fiber, omega-3, plant sterols, and garlic by evidence, safety, and fit for LDL or triglyceride goals.',
       },
     },
     sleep: {
@@ -52,9 +52,9 @@ export function buildCategorySeoCopy({
           'Compara melatonina, magnesio, lavanda y valeriana para dormir mejor con evidencia, seguridad y uso responsable.',
       },
       en: {
-        title: 'Supplements for sleep: evidence, safety, and options',
+        title: 'Sleep supplements compared: melatonin, magnesium, lavender',
         description:
-          'Compare melatonin, magnesium, lavender, and valerian for sleep quality with evidence level, safety context, and responsible use.',
+          'Compare melatonin, magnesium, lavender, and valerian by evidence, safety, and fit for sleep quality or timing issues.',
       },
     },
     'heart-health': {
