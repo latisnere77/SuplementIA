@@ -150,7 +150,7 @@ describe('KimiResearchAuditProvider', () => {
     expect(result.finding?.pmidVerificationStatus).toBe('not_checked');
   });
 
-  it('uses the fixed Kimi K2.6 temperature required by Moonshot', async () => {
+  it('uses Kimi K2.6 structured output with non-thinking mode', async () => {
     const fetchFn = jest.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -166,7 +166,22 @@ describe('KimiResearchAuditProvider', () => {
     await provider.evaluatePacket(packet);
 
     const requestBody = JSON.parse(fetchFn.mock.calls[0][1].body);
-    expect(requestBody.temperature).toBe(1);
+    expect(requestBody.response_format).toEqual(
+      expect.objectContaining({
+        type: 'json_schema',
+        json_schema: expect.objectContaining({
+          name: 'ResearchAuditFinding',
+          strict: true,
+        }),
+      })
+    );
+    expect(requestBody.response_format.json_schema.schema.required).toContain('findingId');
+    expect(requestBody.response_format.json_schema.schema.required).toContain('notesForReviewer');
+    expect(requestBody.response_format.json_schema.schema.properties.validatedPmids.items.pattern).toBe(
+      '^[1-9][0-9]{0,9}$'
+    );
+    expect(requestBody.thinking).toEqual({ type: 'disabled' });
+    expect(requestBody.temperature).toBe(0.6);
   });
 
   it('skips before calling the provider when budget is exceeded', async () => {
