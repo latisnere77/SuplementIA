@@ -91,6 +91,14 @@ npx tsx scripts/research-audit/run-event-audit.ts \
 
 Use `--pmid-verifier-endpoint` only for local mock servers or controlled E-utilities smoke testing. The verifier is deterministic: it only copies PMIDs into `validatedPmids` when PubMed ESummary returns an article summary for the numeric candidate PMID.
 
+The local JSON report also includes reviewer-only PMID context when verification runs:
+
+- `articleSummaries`: PMID, title, journal, year, and title terms that matched the audited entity.
+- `matchedPmids`: PMIDs whose ESummary title contains the supplement name, original query, or suggested alias.
+- `pmidEntityMatchStatus`: a deterministic title-match summary for reviewer triage.
+
+These fields do not change production behavior and do not prove clinical relevance. They are only a local review aid before human review.
+
 ## Defaults
 
 ```sh

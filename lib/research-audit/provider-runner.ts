@@ -5,7 +5,7 @@ import { KimiResearchAuditProvider } from './kimi-provider';
 import { buildAuditPacketFromFixture, type PacketBuildResult } from './packets';
 import type { ResearchAuditPacket } from './packets';
 import { verifyPubMedPmids, type PmidVerifierOptions } from './pmid-verifier';
-import type { ProviderAuditResult, ResearchAuditProviderAdapter } from './provider';
+import type { PmidArticleSummary, ProviderAuditResult, ResearchAuditProviderAdapter } from './provider';
 import type { ResearchAuditProviderConfig } from './config';
 
 export interface ProviderAuditReport {
@@ -165,6 +165,10 @@ export async function verifyProviderAuditResultPmids(
   if (result.finding.candidatePmids.length === 0) return result;
 
   const verification = await verifyPubMedPmids(result.finding.candidatePmids, verifierOptions);
+  const articleSummaries = buildPmidArticleSummaries(result.finding, verification.articles);
+  const matchedPmids = articleSummaries
+    .filter((article) => article.matchedTerms.length > 0)
+    .map((article) => article.pmid);
   const finding = {
     ...result.finding,
     validatedPmids: verification.validatedPmids,
@@ -174,11 +178,62 @@ export async function verifyProviderAuditResultPmids(
   return {
     ...result,
     finding,
+    articleSummaries,
+    matchedPmids,
+    pmidEntityMatchStatus: pmidEntityMatchStatus(articleSummaries.length, matchedPmids.length),
     externalCalls: result.externalCalls + verification.externalCalls,
     rejectionReasons: verification.error
       ? [...result.rejectionReasons, `pmid verification failed: ${verification.error}`]
       : result.rejectionReasons,
   };
+}
+
+function buildPmidArticleSummaries(
+  finding: NonNullable<ProviderAuditResult['finding']>,
+  articles: Array<{ pmid: string; title?: string; journal?: string; year?: string }>
+): PmidArticleSummary[] {
+  const terms = entityMatchTerms(finding);
+
+  return articles.map((article) => {
+    const normalizedTitle = normalizeEntityText(article.title || '');
+    const matchedTerms = terms.filter((term) => normalizedTitle.includes(term));
+
+    return {
+      pmid: article.pmid,
+      title: article.title,
+      journal: article.journal,
+      year: article.year,
+      matchedTerms,
+    };
+  });
+}
+
+function entityMatchTerms(finding: NonNullable<ProviderAuditResult['finding']>): string[] {
+  const rawTerms = [
+    finding.supplementName,
+    ...finding.originalQueries,
+    ...finding.suggestedAliases,
+  ];
+
+  return [...new Set(rawTerms.map(normalizeEntityText).filter((term) => term.length >= 5))];
+}
+
+function normalizeEntityText(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function pmidEntityMatchStatus(
+  articleCount: number,
+  matchedCount: number
+): NonNullable<ProviderAuditResult['pmidEntityMatchStatus']> {
+  if (articleCount === 0) return 'not_checked';
+  if (matchedCount === 0) return 'none_matched';
+  if (matchedCount === articleCount) return 'all_matched';
+  return 'partially_matched';
 }
 
 export function renderProviderAuditMarkdown(report: ProviderAuditReport): string {
@@ -195,14 +250,15 @@ export function renderProviderAuditMarkdown(report: ProviderAuditReport): string
     `- Validation failures: ${report.validationFailures}`,
     `- Estimated total cost: $${report.totalCostEstimateUsd.toFixed(6)}`,
     '',
-    '| Packet | Status | External calls | Cost | Reason |',
-    '| --- | --- | ---: | ---: | --- |',
+    '| Packet | Status | PMID match | External calls | Cost | Reason |',
+    '| --- | --- | --- | ---: | ---: | --- |',
   ];
 
   for (const result of report.results) {
     lines.push([
       result.packetId,
       result.valid ? 'valid' : result.skippedReason || 'rejected',
+      result.pmidEntityMatchStatus || 'n/a',
       String(result.externalCalls),
       `$${result.costEstimateUsd.toFixed(6)}`,
       result.rejectionReasons.join('; ') || 'n/a',
