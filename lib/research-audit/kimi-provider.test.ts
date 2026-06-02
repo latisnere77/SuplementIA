@@ -21,6 +21,35 @@ const packet: ResearchAuditPacket = {
   },
 };
 
+const seoPacket: ResearchAuditPacket = {
+  packetId: 'rap_event_bacopa_gsc',
+  auditKind: 'seo_aggregate',
+  queryFingerprint: 'seo123',
+  redactedQuery: 'bacopa monnieri',
+  normalizedQuery: 'Bacopa monnieri',
+  statusCounts: { impressions: 42, clicks: 0 },
+  fallbackCounts: {},
+  deterministicPubMedProfile: {
+    totalCount: 0,
+    categories: {
+      human_clinical: 0,
+      review: 0,
+      preclinical: 0,
+      phytochemical: 0,
+      other: 0,
+    },
+  },
+  seoAggregate: {
+    source: 'search_console',
+    pagePath: '/es/portal/supplement/bacopa-monnieri',
+    country: 'MX',
+    impressions: 42,
+    clicks: 0,
+    ctr: 0,
+    averagePosition: 58.3,
+  },
+};
+
 function validProviderBody() {
   return JSON.stringify({
     choices: [
@@ -209,6 +238,49 @@ describe('KimiResearchAuditProvider', () => {
     expect(result.finding?.candidatePmids).toEqual(['3544968']);
     expect(result.finding?.validatedPmids).toEqual([]);
     expect(result.finding?.pmidVerificationStatus).toBe('not_checked');
+  });
+
+  it('forces SEO aggregate findings to remain report-only SEO opportunities', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: validFindingContent({
+                  taskType: 'recall_gap',
+                  evidenceBoundary: 'human_clinical_required',
+                  candidatePmids: ['3544968'],
+                  clinicalRisk: 'high',
+                  proposedClassification: 'possible_recall_gap',
+                  recommendedAction: 'Review this SEO aggregate in the asynchronous audit queue.',
+                }),
+              },
+            },
+          ],
+        }),
+    });
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    const result = await provider.evaluatePacket(seoPacket);
+
+    expect(result.valid).toBe(true);
+    expect(result.finding).toMatchObject({
+      taskType: 'seo_opportunity',
+      evidenceBoundary: 'editorial_only',
+      clinicalRisk: 'none',
+      originalQueries: ['bacopa monnieri'],
+      candidatePmids: [],
+      validatedPmids: [],
+      blockedFromProduction: true,
+      requiresHumanReview: true,
+    });
   });
 
   it('uses Kimi K2.6 structured output with non-thinking mode', async () => {

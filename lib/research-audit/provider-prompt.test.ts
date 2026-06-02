@@ -8,6 +8,16 @@ const packet: ResearchAuditPacket = {
   normalizedQuery: 'Centella asiatica',
   statusCounts: { insufficient_data: 2 },
   fallbackCounts: {},
+  deterministicPubMedProfile: {
+    totalCount: 0,
+    categories: {
+      human_clinical: 0,
+      review: 0,
+      preclinical: 0,
+      phytochemical: 0,
+      other: 0,
+    },
+  },
 };
 
 describe('research audit provider prompt contract', () => {
@@ -20,6 +30,7 @@ describe('research audit provider prompt contract', () => {
     expect(systemPrompt).toContain('directly parseable with JSON.parse');
     expect(systemPrompt).toContain('Do not invent, guess, extrapolate, pattern-complete, or fabricate PMIDs');
     expect(systemPrompt).toContain('If you are not sure about a PMID, set candidatePmids=[]');
+    expect(systemPrompt).toContain('packet.auditKind is "seo_aggregate"');
     expect(userPrompt.outputContract).toEqual(
       expect.objectContaining({
         format: 'single_json_object_only',
@@ -36,5 +47,24 @@ describe('research audit provider prompt contract', () => {
         preferAliasesAndOperationalActionsOverUncertainPmids: true,
       })
     );
+    expect(userPrompt.outputGuards.seoAggregatesOnlyProduceSeoOpportunity).toBe(true);
+  });
+
+  it('limits SEO aggregate packets to SEO opportunity findings', () => {
+    const userPrompt = JSON.parse(buildResearchAuditUserPrompt({
+      ...packet,
+      auditKind: 'seo_aggregate',
+      seoAggregate: {
+        source: 'search_console',
+        pagePath: '/es/portal/supplement/fiber-psyllium',
+        country: 'Mexico',
+        clicks: 0,
+        impressions: 42,
+        ctr: 0,
+        averagePosition: 38.5,
+      },
+    }));
+
+    expect(userPrompt.allowedUses).toEqual(['seo_opportunity']);
   });
 });

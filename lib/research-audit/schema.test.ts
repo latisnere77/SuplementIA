@@ -64,6 +64,35 @@ describe('researchAuditFindingSchema', () => {
     expect(result.rejectionReasons.join(' ')).toContain('recommendedAction');
   });
 
+  it('requires SEO opportunity findings to stay editorial or operational with no clinical risk', () => {
+    const result = validateResearchAuditFinding(
+      validFinding({
+        taskType: 'seo_opportunity',
+        evidenceBoundary: 'human_clinical_required',
+        clinicalRisk: 'low',
+      })
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.rejectionReasons.join(' ')).toContain('clinicalRisk=none');
+    expect(result.rejectionReasons.join(' ')).toContain('editorial_only or operational_only');
+  });
+
+  it('rejects SEO opportunity findings that carry PMIDs', () => {
+    const result = validateResearchAuditFinding(
+      validFinding({
+        taskType: 'seo_opportunity',
+        evidenceBoundary: 'editorial_only',
+        clinicalRisk: 'none',
+        candidatePmids: ['3544968'],
+        validatedPmids: [],
+      })
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.rejectionReasons.join(' ')).toContain('must not carry PMIDs');
+  });
+
   it('requires validated PMIDs to be a subset of candidates', () => {
     const result = validateResearchAuditFinding(
       validFinding({
@@ -76,4 +105,3 @@ describe('researchAuditFindingSchema', () => {
     expect(result.rejectionReasons.join(' ')).toContain('subset');
   });
 });
-

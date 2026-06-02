@@ -3,12 +3,27 @@ import { redactAuditQuery } from './redaction';
 
 export interface ResearchAuditPacket {
   packetId: string;
+  auditKind?: 'portal_event' | 'seo_aggregate';
   queryFingerprint: string;
   redactedQuery: string;
   normalizedQuery?: string;
   statusCounts: Record<string, number>;
   fallbackCounts: Record<string, number>;
   deterministicPubMedProfile: AuditFixture['deterministicPubMedProfile'];
+  seoAggregate?: {
+    source: 'search_console' | 'ga4';
+    pagePath: string;
+    country?: string;
+    clicks?: number;
+    impressions?: number;
+    ctr?: number;
+    averagePosition?: number;
+    channel?: string;
+    eventName?: string;
+    eventCount?: number;
+    firstSeen?: string;
+    lastSeen?: string;
+  };
   fixtureContext?: {
     id: string;
     allowedTaskTypes: string[];
@@ -37,6 +52,7 @@ export function buildAuditPacketFromFixture(fixture: AuditFixture): PacketBuildR
     valid: true,
     packet: {
       packetId: `rap_${fixture.id.replace(/[^a-z0-9_-]/gi, '').toLowerCase()}`,
+      auditKind: 'portal_event',
       queryFingerprint: redaction.queryFingerprint,
       redactedQuery: redaction.redactedQuery,
       normalizedQuery: fixture.normalizedQuery,
@@ -53,4 +69,3 @@ export function buildAuditPacketFromFixture(fixture: AuditFixture): PacketBuildR
     rejectionReasons: [],
   };
 }
-

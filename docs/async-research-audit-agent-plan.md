@@ -108,6 +108,28 @@ export interface AuditInputEvent {
 }
 ```
 
+SEO aggregate rows can be fed manually from Search Console or GA4 exports through the local event runner. These rows must stay aggregate-only:
+
+```ts
+export interface SeoAggregateAuditEvent {
+  source: 'search_console' | 'ga4';
+  query: string;
+  pagePath: string; // path only, no query params or full URLs
+  country?: string; // aggregate country label or ISO-3166 alpha-2
+  clicks?: number;
+  impressions?: number;
+  ctr?: number;
+  averagePosition?: number;
+  channel?: string;
+  eventName?: string;
+  eventCount?: number;
+  firstSeen?: string;
+  lastSeen?: string;
+}
+```
+
+SEO packets are advisory only. They may produce `seo_opportunity` findings for human review, but they must not write to production, alter SEO copy automatically, change clinical runtime, or open PRs automatically.
+
 ## Privacy And Redaction
 
 The audit pipeline must transform raw events before any external model call. The LLM input should be an `AuditLLMPacket`, not the original event.
@@ -116,6 +138,7 @@ Redaction rules:
 
 - Keep only supplement-like query text after normalization and validation.
 - Drop IP address, user agent, referer, email, auth/session identifiers, free-text notes, full request bodies, and URLs.
+- For Search Console/GA4 exports, keep page paths only. Drop full URLs, query params, session IDs, user IDs, raw payloads, and any user-level analytics fields.
 - Replace request IDs with irreversible hashes or omit them from LLM input.
 - Aggregate repeated queries before LLM calls; send counts and status distribution instead of individual user events.
 - Truncate query fields to 120 characters and reject multiline text.

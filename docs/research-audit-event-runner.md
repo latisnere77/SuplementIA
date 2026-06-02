@@ -4,6 +4,8 @@ This runner lets the Frontier Agent audit aggregated search/event summaries from
 
 It is dry-run/report-only and disabled by default. It does not connect to AWS, write a database, or feed `/quiz`, `/recommend`, `enrich-v2`, UI, affiliate, PubMed production recall, smoke, product, or core runtime paths.
 
+It can also audit aggregated SEO signals exported manually from Search Console or GA4. These inputs must be aggregate rows only; do not include IP addresses, user agents, emails, session IDs, full URLs with query params, or raw Analytics payloads.
+
 ## Input
 
 Use either a JSON array:
@@ -33,6 +35,40 @@ Use either a JSON array:
 Or JSONL with one event object per line.
 
 The runner redacts every `query` before packet creation. Events containing emails, URLs, phone-like values, address-like text, or long personal medical narratives are rejected before any provider call.
+
+SEO aggregate events use the same file shape with `source: "search_console"` or `source: "ga4"`:
+
+```json
+[
+  {
+    "source": "search_console",
+    "id": "bacopa-gsc-es",
+    "query": "bacopa monnieri",
+    "pagePath": "/es/portal/supplement/bacopa-monnieri",
+    "country": "Mexico",
+    "clicks": 0,
+    "impressions": 42,
+    "ctr": 0,
+    "averagePosition": 58.3,
+    "firstSeen": "2026-05-01T00:00:00.000Z",
+    "lastSeen": "2026-05-31T00:00:00.000Z"
+  },
+  {
+    "source": "ga4",
+    "id": "magnesium-outbound-clicks",
+    "query": "magnesium",
+    "pagePath": "/es/portal/results",
+    "country": "Colombia",
+    "channel": "organic",
+    "eventName": "outbound_click",
+    "eventCount": 3,
+    "firstSeen": "2026-05-01T00:00:00.000Z",
+    "lastSeen": "2026-05-31T00:00:00.000Z"
+  }
+]
+```
+
+For SEO aggregate events, `pagePath` must be a path without query params or fragments, such as `/es/portal/supplement/bacopa-monnieri`. Full URLs and paths like `/es/portal/results?q=magnesium` are rejected. Provider findings for these packets are forced to `taskType: "seo_opportunity"`, `clinicalRisk: "none"`, and `blockedFromProduction: true`.
 
 ## Local Run
 
