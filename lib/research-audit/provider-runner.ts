@@ -55,6 +55,19 @@ export async function runProviderPacketAudit(
   packetInputs: ProviderPacketAuditInput[],
   options: Pick<ProviderAuditRunnerOptions, 'outputDir' | 'pmidVerifier' | 'provider'> = {}
 ): Promise<{ report: ProviderAuditReport; reportPaths: { jsonPath: string; markdownPath: string } }> {
+  const report = await buildProviderPacketAuditReport(config, packetInputs, options);
+
+  return {
+    report,
+    reportPaths: writeProviderReport(report, options.outputDir || '.research-audit-reports'),
+  };
+}
+
+export async function buildProviderPacketAuditReport(
+  config: ResearchAuditProviderConfig,
+  packetInputs: ProviderPacketAuditInput[],
+  options: Pick<ProviderAuditRunnerOptions, 'pmidVerifier' | 'provider'> = {}
+): Promise<ProviderAuditReport> {
   const provider = options.provider ?? new KimiResearchAuditProvider(config);
   const results: ProviderAuditResult[] = [];
 
@@ -84,7 +97,7 @@ export async function runProviderPacketAudit(
     results.push(await verifyProviderAuditResultPmids(result, options.pmidVerifier));
   }
 
-  const report: ProviderAuditReport = {
+  return {
     dryRun: true,
     reportOnly: true,
     externalCalls: results.reduce((sum, result) => sum + result.externalCalls, 0),
@@ -98,11 +111,6 @@ export async function runProviderPacketAudit(
       results.reduce((sum, result) => sum + result.costEstimateUsd, 0).toFixed(6)
     ),
     results,
-  };
-
-  return {
-    report,
-    reportPaths: writeProviderReport(report, options.outputDir || '.research-audit-reports'),
   };
 }
 
