@@ -128,6 +128,8 @@ export interface SeoAggregateAuditEvent {
 }
 ```
 
+Manual CSV exports should be converted with `scripts/research-audit/import-seo-export.ts` before they are passed to `scripts/research-audit/run-event-audit.ts`. This keeps Google API access outside the Frontier Agent runtime and gives reviewers an inspectable JSON/JSONL handoff.
+
 SEO packets are advisory only. They may produce `seo_opportunity` findings for human review, but they must not write to production, alter SEO copy automatically, change clinical runtime, or open PRs automatically.
 
 ## Privacy And Redaction

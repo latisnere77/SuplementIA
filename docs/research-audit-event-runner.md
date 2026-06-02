@@ -70,6 +70,53 @@ SEO aggregate events use the same file shape with `source: "search_console"` or 
 
 For SEO aggregate events, `pagePath` must be a path without query params or fragments, such as `/es/portal/supplement/bacopa-monnieri`. Full URLs and paths like `/es/portal/results?q=magnesium` are rejected. Provider findings for these packets are forced to `taskType: "seo_opportunity"`, `clinicalRisk: "none"`, and `blockedFromProduction: true`.
 
+## Convert Search Console or GA4 CSV Exports
+
+Use the local importer to convert manually downloaded Google CSV exports into the JSON or JSONL shape accepted by the event runner. This is still offline/report-only: it does not connect to Google APIs, does not store credentials, and does not write production data.
+
+Search Console exports can include columns such as:
+
+- `Query`, `Page`, `Country`
+- `Clicks`, `Impressions`, `CTR`, `Position`
+
+GA4 exports can include columns such as:
+
+- `Event name`, `Event count`
+- `Session default channel group`
+- `Page path`
+- `Query`, `Country`
+
+The importer accepts full URLs only when they have no query params or fragments, and converts them to paths. URLs or paths containing `?` or `#` are rejected. Exports must not include IP addresses, user agents, emails, session IDs, or raw Analytics payloads.
+
+```sh
+npx tsx scripts/research-audit/import-seo-export.ts \
+  --input ./gsc-queries.csv \
+  --source search_console \
+  --format jsonl \
+  --output ./seo-events.jsonl \
+  --id-prefix gsc-7d \
+  --first-seen 2026-05-26 \
+  --last-seen 2026-06-02
+```
+
+```sh
+npx tsx scripts/research-audit/import-seo-export.ts \
+  --input ./ga4-events.csv \
+  --source ga4 \
+  --format jsonl \
+  --output ./seo-events.jsonl \
+  --id-prefix ga4-events-7d
+```
+
+Then run the existing Frontier Agent event runner:
+
+```sh
+npx tsx scripts/research-audit/run-event-audit.ts \
+  --input ./seo-events.jsonl \
+  --format markdown \
+  --limit 10
+```
+
 ## Local Run
 
 ```sh
