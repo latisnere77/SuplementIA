@@ -121,10 +121,15 @@ const emptyPubMedProfile: ResearchAuditPacket['deterministicPubMedProfile'] = {
 
 export function loadAggregatedAuditEvents(filePath: string): AggregatedAuditEvent[] {
   const raw = readFileSync(filePath, 'utf8');
+
+  return parseAggregatedAuditEvents(raw, filePath.endsWith('.jsonl') ? 'jsonl' : 'json');
+}
+
+export function parseAggregatedAuditEvents(raw: string, format: 'json' | 'jsonl'): AggregatedAuditEvent[] {
   const trimmed = raw.trim();
   if (!trimmed) return [];
 
-  const parsed = filePath.endsWith('.jsonl')
+  const parsed = format === 'jsonl'
     ? trimmed.split(/\n+/).map((line) => aggregatedAuditEventSchema.parse(JSON.parse(line)))
     : eventsFromJson(JSON.parse(trimmed));
 
