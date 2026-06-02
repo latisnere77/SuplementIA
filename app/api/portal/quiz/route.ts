@@ -886,17 +886,130 @@ function detectClimate(location: string): string {
 /**
  * Helper: Transform Weaviate hits to structured Recommendation object
  */
+function normalizeEntityForMatch(value: unknown): string {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9+]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function compactEntityForMatch(value: string): string {
+  return value.replace(/[^a-z0-9+]/g, '');
+}
+
+function entityCandidatesForQuery(query: string, parsedQuery?: ParsedQuery): string[] {
+  const rawCandidates = [
+    query,
+    parsedQuery?.fullQuery,
+    parsedQuery?.baseSupplement,
+  ].filter(Boolean) as string[];
+
+  const normalizedCandidates = new Set<string>();
+  for (const candidate of rawCandidates) {
+    const normalized = normalizeEntityForMatch(candidate);
+    if (normalized) {
+      normalizedCandidates.add(normalized);
+    }
+  }
+
+  const compactCandidates = Array.from(normalizedCandidates).map(compactEntityForMatch);
+  if (compactCandidates.includes('nac')) {
+    [
+      'n acetyl cysteine',
+      'n acetylcysteine',
+      'n-acetyl cysteine',
+      'n-acetylcysteine',
+      'acetylcysteine',
+    ].forEach(alias => normalizedCandidates.add(normalizeEntityForMatch(alias)));
+  }
+  if (compactCandidates.includes('nad') || compactCandidates.includes('nad+')) {
+    ['nad+', 'nicotinamide adenine dinucleotide'].forEach(alias => normalizedCandidates.add(normalizeEntityForMatch(alias)));
+  }
+  if (compactCandidates.includes('cbd')) {
+    ['cbd', 'cannabidiol'].forEach(alias => normalizedCandidates.add(normalizeEntityForMatch(alias)));
+  }
+
+  return Array.from(normalizedCandidates);
+}
+
+function hitEntityFields(hit: any): string[] {
+  const ingredients = Array.isArray(hit?.ingredients)
+    ? hit.ingredients
+    : typeof hit?.ingredients === 'string'
+      ? hit.ingredients.split(',').map((item: string) => item.trim())
+      : [];
+
+  return [
+    hit?.name,
+    hit?.supplementName,
+    hit?.ingredient,
+    hit?.title,
+    ...ingredients,
+  ]
+    .filter(Boolean)
+    .map(normalizeEntityForMatch)
+    .filter(Boolean);
+}
+
+function isSafeEntityHit(hit: any, query: string, parsedQuery?: ParsedQuery): boolean {
+  const candidates = entityCandidatesForQuery(query, parsedQuery);
+  if (candidates.length === 0) {
+    return false;
+  }
+
+  const fields = hitEntityFields(hit);
+  const compactCandidates = candidates.map(compactEntityForMatch);
+
+  return fields.some(field => {
+    const compactField = compactEntityForMatch(field);
+
+    return candidates.some((candidate, index) => {
+      const compactCandidate = compactCandidates[index];
+
+      if (field === candidate || compactField === compactCandidate) {
+        return true;
+      }
+
+      // Allow safe variant/base matches such as "Magnesium Glycinate" -> "Magnesium",
+      // but do not let vector score alone copy another entity's text.
+      if (candidate.length >= 5 && field.includes(candidate)) {
+        return true;
+      }
+
+      if (compactCandidate.length >= 5 && compactField.includes(compactCandidate)) {
+        return true;
+      }
+
+      return false;
+    });
+  });
+}
+
+function neutralInterimDescription(query: string): string {
+  return `Estamos investigando "${query}" y preparando una ficha basada en evidencia. Aún no se debe interpretar como recomendación clínica ni como beneficio confirmado.`;
+}
+
 function transformHitsToRecommendation(
   hits: any[],
   query: string,
   quizId: string,
   parsedQuery?: ParsedQuery
 ): any {
+  const safeEntityHits = hits.filter(hit => isSafeEntityHit(hit, query, parsedQuery));
+  const hasSafeEntityMatch = safeEntityHits.length > 0;
+  const hitsForEntityContent = hasSafeEntityMatch ? safeEntityHits : [];
+
   // Use reported total if available (from LanceDB metadata)
-  const totalStudies = hits.length === 1 ? (hits[0].study_count || hits.length) : hits.length;
+  const totalStudies = hitsForEntityContent.length === 1
+    ? (hitsForEntityContent[0].study_count || hitsForEntityContent.length)
+    : hitsForEntityContent.length;
   const ingredientsMap = new Map<string, number>();
 
-  hits.forEach(hit => {
+  hitsForEntityContent.forEach(hit => {
     // Ingredientes
     const rawIng = hit.ingredients;
     const ingArray = Array.isArray(rawIng) ? rawIng : (typeof rawIng === 'string' ? rawIng.split(',').map((s: string) => s.trim()) : []);
@@ -929,9 +1042,11 @@ function transformHitsToRecommendation(
     // ESTRUCTURA PRINCIPAL QUE BUSCA EL FRONTEND
     supplement: {
       name: parsedQuery?.isVariantSpecific ? parsedQuery.fullQuery : query,
-      description: parsedQuery?.isVariantSpecific
-        ? generateVariantDescription(parsedQuery, hits[0])
-        : (hits[0]?.abstract || `Suplemento analizado basado en ${totalStudies} estudios científicos recuperados.`),
+      description: hasSafeEntityMatch
+        ? (parsedQuery?.isVariantSpecific
+          ? generateVariantDescription(parsedQuery, hitsForEntityContent[0])
+          : (hitsForEntityContent[0]?.abstract || `Suplemento analizado basado en ${totalStudies} estudios científicos recuperados.`))
+        : neutralInterimDescription(query),
       worksFor: worksFor,
       doesntWorkFor: doesntWorkFor,
       limitedEvidence: limitedEvidence,
