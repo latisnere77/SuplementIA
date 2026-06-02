@@ -597,6 +597,112 @@ describe('/api/portal/quiz POST', () => {
       }
     );
 
+    it.each([
+      {
+        query: 'cuachalalate',
+        wrongHit: lancedbHit(
+          'Alpha Lipoic Acid',
+          'Ácido Alfa Lipoico is a dietary supplement ingredient indexed in local search.'
+        ),
+        forbidden: [/alpha lipoic acid/i, /ácido alfa lipoico/i, /\bALA\b/i],
+      },
+      {
+        query: 'epazote',
+        wrongHit: lancedbHit(
+          'Omega-3',
+          'Omega-3 supplements provide long-chain fatty acids from fish oil, EPA, and DHA.'
+        ),
+        forbidden: [/omega-3/i, /\bEPA\b/i, /\bDHA\b/i, /fish oil/i],
+      },
+      {
+        query: 'NAC',
+        wrongHit: lancedbHit(
+          'Astragalus',
+          'Astragalus is a dietary supplement ingredient indexed in local search.'
+        ),
+        forbidden: [/astragalus/i],
+      },
+    ])(
+      'does not copy a mismatched interim entity for $query',
+      async ({ query, wrongHit, forbidden }) => {
+        mockedSearchSupplements
+          .mockResolvedValueOnce([wrongHit])
+          .mockResolvedValueOnce([wrongHit]);
+
+        mockLambdaSend
+          .mockResolvedValueOnce(studiesFetcherPayload([
+            {
+              pmid: '123456',
+              title: `${query} randomized controlled trial in adults`,
+              abstract: 'A double-blind placebo-controlled clinical trial randomized adults and measured symptom endpoints.',
+              publicationTypes: ['Randomized Controlled Trial'],
+              meshHeadings: ['Humans'],
+            },
+          ]))
+          .mockResolvedValueOnce({});
+
+        const request = new NextRequest('http://localhost/api/portal/quiz', {
+          method: 'POST',
+          body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        const response = await POST(request);
+        const body = await response.json();
+        const serialized = JSON.stringify(body);
+
+        expect(response.status).toBe(200);
+        expect(body.status).toBe('processing');
+        expect(body.recommendation.supplement.name).toBe(query);
+        expect(body.recommendation.supplement.description).toContain(query);
+        expect(body.recommendation.supplement.description).toContain('preparando una ficha basada en evidencia');
+        expect(body.recommendation.supplement.worksFor).toEqual([]);
+        expect(body.recommendation.products).toEqual([]);
+        expect(body.recommendation.evidence_summary.ingredients).toEqual([]);
+        forbidden.forEach(pattern => expect(serialized).not.toMatch(pattern));
+      }
+    );
+
+    it('keeps NAC as a safe exact acronym when the hit is N-Acetyl Cysteine', async () => {
+      const safeHit = lancedbHit(
+        'N-Acetyl Cysteine',
+        'N-Acetyl Cysteine is studied in human supplement literature.'
+      );
+      mockedSearchSupplements
+        .mockResolvedValueOnce([safeHit])
+        .mockResolvedValueOnce([safeHit]);
+
+      mockLambdaSend
+        .mockResolvedValueOnce(studiesFetcherPayload([
+          {
+            pmid: '234567',
+            title: 'N-Acetyl Cysteine randomized controlled trial in adults',
+            abstract: 'A randomized controlled clinical trial in adult humans evaluated supplement endpoints.',
+            publicationTypes: ['Randomized Controlled Trial'],
+            meshHeadings: ['Humans'],
+          },
+        ]))
+        .mockResolvedValueOnce({});
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: 'NAC', searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(body.status).toBe('processing');
+      expect(body.recommendation.supplement.name).toBe('NAC');
+      expect(body.recommendation.supplement.description).toContain('N-Acetyl Cysteine');
+      expect(body.recommendation.evidence_summary.ingredients).toEqual([
+        expect.objectContaining({ name: 'N-Acetyl Cysteine' }),
+      ]);
+      expect(body.recommendation.products).toEqual([]);
+    });
+
     it('returns insufficient_data for Garcinia instead of processing when clinical preflight finds no sufficient human evidence', async () => {
       const query = 'Garcinia Cambogia';
       mockedSearchSupplements
