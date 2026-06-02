@@ -87,6 +87,38 @@ describe('aggregated audit events', () => {
     });
   });
 
+  it('accepts safe aggregate country labels or ISO country codes', () => {
+    for (const country of ['MX', 'Mexico', 'Colombia', 'United States']) {
+      const packet = buildAuditPacketFromEvent({
+        source: 'search_console',
+        id: `country-${country.toLowerCase().replace(/[^a-z]+/g, '-')}`,
+        query: 'bacopa monnieri',
+        pagePath: '/es/portal/supplement/bacopa-monnieri',
+        country,
+        impressions: 1,
+      });
+
+      expect(packet.valid).toBe(true);
+      expect(packet.packet?.seoAggregate?.country).toBe(country);
+    }
+  });
+
+  it('loads SEO events with country labels from manual exports', () => {
+    const filePath = writeTempFile('events.json', JSON.stringify([
+      {
+        source: 'search_console',
+        query: 'bacopa monnieri',
+        pagePath: '/es/portal/supplement/bacopa-monnieri',
+        country: 'Mexico',
+        impressions: 4,
+      },
+    ]));
+
+    const [loaded] = loadAggregatedAuditEvents(filePath);
+
+    expect(loaded.country).toBe('Mexico');
+  });
+
   it('accepts aggregated GA4 SEO events without raw analytics payloads', () => {
     const packet = buildAuditPacketFromEvent({
       source: 'ga4',
@@ -162,6 +194,18 @@ describe('aggregated audit events', () => {
         },
       ])))
     ).toThrow(/unsafe or personal data/);
+
+    expect(() =>
+      loadAggregatedAuditEvents(writeTempFile('events.json', JSON.stringify([
+        {
+          source: 'search_console',
+          query: 'bacopa monnieri',
+          pagePath: '/es/portal/supplement/bacopa-monnieri',
+          country: 'Mexico?email=test@example.com',
+          impressions: 1,
+        },
+      ])))
+    ).toThrow(/country/);
   });
 });
 

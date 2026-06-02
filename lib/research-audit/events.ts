@@ -28,6 +28,12 @@ const safeSeoTextSchema = z
   .max(120)
   .regex(/^[^\n\r<>?]{1,120}$/);
 
+const safeCountrySchema = z
+  .string()
+  .min(2)
+  .max(80)
+  .regex(/^[A-Za-zÀ-ÿ ._-]+$/);
+
 const piiLikePattern =
   /([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}|https?:\/\/|www\.|[?&][a-z0-9_-]+=|\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b)/i;
 
@@ -52,7 +58,7 @@ export const aggregatedAuditEventSchema = z
     query: z.string().min(1).max(240),
     normalizedQuery: z.string().min(1).max(120).optional(),
     pagePath: pagePathSchema.optional(),
-    country: z.string().regex(/^[A-Z]{2}$/).optional(),
+    country: safeCountrySchema.optional(),
     clicks: z.number().int().min(0).optional(),
     impressions: z.number().int().min(0).optional(),
     ctr: z.number().min(0).max(100).optional(),
@@ -79,7 +85,7 @@ export const aggregatedAuditEventSchema = z
       });
     }
 
-    for (const key of ['query', 'normalizedQuery', 'channel', 'eventName'] as const) {
+    for (const key of ['query', 'normalizedQuery', 'country', 'channel', 'eventName'] as const) {
       const value = event[key];
       if (typeof value === 'string' && piiLikePattern.test(value)) {
         ctx.addIssue({
