@@ -12,11 +12,11 @@ export async function generateMetadata({ params }: PortalPageProps): Promise<Met
   const { locale } = await params;
   const seoLocale: SeoLocale = locale === 'en' ? 'en' : 'es';
   const title = seoLocale === 'es'
-    ? 'Buscador de suplementos con evidencia científica'
-    : 'Evidence-Based Supplement Search';
+    ? 'Buscador de suplementos por evidencia y seguridad'
+    : 'Evidence-Based Supplement Search by Goal and Safety';
   const description = seoLocale === 'es'
-    ? 'Busca suplementos por objetivo de salud y compara evidencia, seguridad y contexto de uso responsable para México.'
-    : 'Search supplements by health goal and compare evidence, safety context, and responsible-use guidance.';
+    ? 'Busca suplementos por objetivo de salud y compara evidencia, seguridad, interacciones y uso responsable en español.'
+    : 'Search supplements by health goal and compare evidence, safety, interactions, and responsible-use guidance.';
 
   return {
     metadataBase: new URL(siteUrl),

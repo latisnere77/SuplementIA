@@ -15,7 +15,27 @@ describe('category page SEO', () => {
         locale: 'en',
       })
     ).toMatchObject({
-      title: 'Supplements for sleep: evidence, safety, and options',
+      title: 'Sleep supplements compared: melatonin, magnesium, lavender',
+    });
+
+    expect(
+      buildCategorySeoCopy({
+        slug: 'sleep',
+        categoryName: 'Sleep',
+        categoryDescription: 'Supplements studied for sleep quality and duration.',
+        locale: 'en',
+      }).description
+    ).toContain('sleep quality or timing issues');
+
+    expect(
+      buildCategorySeoCopy({
+        slug: 'cholesterol-triglycerides',
+        categoryName: 'Cholesterol and Triglycerides',
+        categoryDescription: 'Options studied for lipid markers.',
+        locale: 'en',
+      })
+    ).toMatchObject({
+      title: 'Cholesterol and triglyceride supplements: psyllium and omega-3',
     });
 
     expect(
