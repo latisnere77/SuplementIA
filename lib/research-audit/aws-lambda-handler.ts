@@ -1,5 +1,3 @@
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import {
   DEFAULT_MOONSHOT_SECRET_ID,
 } from './aws-secret-loader';
@@ -11,6 +9,11 @@ import {
 } from './aws-report-runner';
 import type { PmidVerifierOptions } from './pmid-verifier';
 import type { ResearchAuditProviderAdapter } from './provider';
+
+type AwsCommandConstructor<TInput extends object> = new (input: TInput) => unknown;
+type AwsClient = {
+  send: (command: any) => Promise<any>;
+};
 
 export interface ResearchAuditLambdaEvent {
   input: ResearchAuditS3Location;
@@ -133,10 +136,20 @@ function jsonResponse(statusCode: ResearchAuditLambdaResponse['statusCode'], bod
 }
 
 function createS3ObjectStore(region: string): ResearchAuditObjectStore {
-  const client = new S3Client({ region });
+  let clientPromise: Promise<{
+    client: AwsClient;
+    GetObjectCommand: AwsCommandConstructor<{ Bucket: string; Key: string }>;
+    PutObjectCommand: AwsCommandConstructor<{
+      Bucket: string;
+      Key: string;
+      Body: string;
+      ContentType?: string;
+    }>;
+  }> | undefined;
 
   return {
     async getText(location) {
+      const { client, GetObjectCommand } = await (clientPromise ??= createS3Client(region));
       const response = await client.send(new GetObjectCommand({
         Bucket: location.bucket,
         Key: location.key,
@@ -145,6 +158,7 @@ function createS3ObjectStore(region: string): ResearchAuditObjectStore {
       return bodyToString(response.Body);
     },
     async putText(location, body, contentType) {
+      const { client, PutObjectCommand } = await (clientPromise ??= createS3Client(region));
       await client.send(new PutObjectCommand({
         Bucket: location.bucket,
         Key: location.key,
@@ -156,14 +170,37 @@ function createS3ObjectStore(region: string): ResearchAuditObjectStore {
 }
 
 function createSecretsGetter(region: string) {
-  const client = new SecretsManagerClient({ region });
+  let clientPromise: Promise<{
+    client: AwsClient;
+    GetSecretValueCommand: AwsCommandConstructor<{ SecretId: string }>;
+  }> | undefined;
 
   return async (input: { secretId: string; region: string }) => {
+    const { client, GetSecretValueCommand } = await (clientPromise ??= createSecretsClient(region));
     const response = await client.send(new GetSecretValueCommand({
       SecretId: input.secretId,
     }));
 
     return response.SecretString;
+  };
+}
+
+async function createS3Client(region: string) {
+  const { GetObjectCommand, PutObjectCommand, S3Client } = await import('@aws-sdk/client-s3');
+
+  return {
+    client: new S3Client({ region }),
+    GetObjectCommand,
+    PutObjectCommand,
+  };
+}
+
+async function createSecretsClient(region: string) {
+  const { GetSecretValueCommand, SecretsManagerClient } = await import('@aws-sdk/client-secrets-manager');
+
+  return {
+    client: new SecretsManagerClient({ region }),
+    GetSecretValueCommand,
   };
 }
 
