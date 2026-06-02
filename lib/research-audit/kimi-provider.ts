@@ -440,9 +440,11 @@ function enforceReportOnlyFindingGuards(
 ): Partial<ResearchAuditFinding> {
   return {
     ...rawFinding,
+    findingId: buildFindingId(packet),
     provider: baseResult.provider,
     model: baseResult.model,
     originalQueries: [packet.redactedQuery],
+    candidatePmids: normalizeCandidatePmids(rawFinding.candidatePmids),
     validatedPmids: [],
     pmidVerificationStatus: 'not_checked',
     blockedFromProduction: true,
@@ -451,4 +453,30 @@ function enforceReportOnlyFindingGuards(
     costEstimateUsd: baseResult.costEstimateUsd,
     tokenEstimate: baseResult.tokenEstimate,
   };
+}
+
+function buildFindingId(packet: ResearchAuditPacket): ResearchAuditFinding['findingId'] {
+  const rawSeed = `${packet.packetId}_${packet.queryFingerprint}`;
+  const normalizedSeed = rawSeed
+    .toLowerCase()
+    .replace(/^rap_/, '')
+    .replace(/[^a-z0-9_-]+/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  const paddedSeed = `${normalizedSeed}_finding`.replace(/^_+/, '') || 'finding1';
+  const safeSeed = normalizedSeed.length >= 8 ? normalizedSeed : paddedSeed.padEnd(8, '0');
+
+  return `raf_${safeSeed.slice(0, 80)}`;
+}
+
+function normalizeCandidatePmids(candidatePmids: unknown): string[] {
+  if (!Array.isArray(candidatePmids)) return [];
+  const normalized = new Set<string>();
+  for (const candidate of candidatePmids) {
+    if (typeof candidate !== 'string') continue;
+    const trimmed = candidate.trim();
+    if (/^[1-9][0-9]{0,9}$/.test(trimmed)) normalized.add(trimmed);
+  }
+
+  return [...normalized].slice(0, 20);
 }
