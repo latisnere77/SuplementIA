@@ -130,7 +130,9 @@ export async function verifyPubMedPmids(
       validatedPmids: [],
       articles: [],
       rejectedPmids,
-      error: error instanceof Error ? error.message : 'PubMed verification failed',
+      error: isAbortError(error)
+        ? 'PubMed verification timed out'
+        : 'PubMed verification request failed',
       externalCalls: 1,
     };
   } finally {
@@ -150,4 +152,8 @@ function extractYear(value: string | undefined): string | undefined {
 
 function unique(values: string[]): string[] {
   return [...new Set(values)];
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError';
 }

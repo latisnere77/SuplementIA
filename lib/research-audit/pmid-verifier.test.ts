@@ -72,13 +72,28 @@ describe('verifyPubMedPmids', () => {
   });
 
   it('keeps the runner stable when PubMed verification fails', async () => {
-    const fetchFn = jest.fn().mockRejectedValue(new Error('network timeout'));
+    const fetchFn = jest.fn().mockRejectedValue(new Error('network timeout with token-like metadata'));
 
     const result = await verifyPubMedPmids(['3544968'], { fetchFn });
 
     expect(result.status).toBe('verification_failed');
     expect(result.validatedPmids).toEqual([]);
-    expect(result.error).toBe('network timeout');
+    expect(result.error).toBe('PubMed verification request failed');
+    expect(result.error).not.toContain('token-like');
+    expect(result.externalCalls).toBe(1);
+  });
+
+  it('stores a generic timeout error when PubMed verification aborts', async () => {
+    const abortError = new Error('AbortError with sensitive request metadata');
+    abortError.name = 'AbortError';
+    const fetchFn = jest.fn().mockRejectedValue(abortError);
+
+    const result = await verifyPubMedPmids(['3544968'], { fetchFn });
+
+    expect(result.status).toBe('verification_failed');
+    expect(result.validatedPmids).toEqual([]);
+    expect(result.error).toBe('PubMed verification timed out');
+    expect(result.error).not.toContain('sensitive');
     expect(result.externalCalls).toBe(1);
   });
 });

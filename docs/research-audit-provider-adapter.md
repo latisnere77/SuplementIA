@@ -51,7 +51,8 @@ Even when enabled, this remains report-only:
 - It never writes findings to DB.
 - It never changes clinical runtime data.
 - Providers may only propose `candidatePmids`.
-- The runner verifies candidate PMIDs deterministically with PubMed E-utilities before copying any PMID into `validatedPmids`.
+- The manual runner verifies candidate PMIDs deterministically with PubMed E-utilities only when `--allow-pubmed-verifier` is explicitly passed.
+- Without that flag, `validatedPmids` remains `[]` and `pmidVerificationStatus` remains `"not_checked"`.
 - If PubMed verification fails, `validatedPmids` remains `[]` and `pmidVerificationStatus` becomes `"verification_failed"`.
 
 ## Safety Contract

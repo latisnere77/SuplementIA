@@ -67,6 +67,30 @@ npx tsx scripts/research-audit/run-event-audit.ts \
 
 Use `--aws-secret-id` or `--aws-region` only when testing a non-default secret location. The runner never prints the secret value.
 
+## Optional PubMed Verification Smoke
+
+The event runner does not call PubMed/E-utilities by default. Provider-only smokes should keep using:
+
+```sh
+--skip-pmid-verifier
+```
+
+To run a separate manual PMID verification smoke, explicitly opt in:
+
+```sh
+AUDIT_AGENT_ENABLED=true \
+AUDIT_AGENT_DRY_RUN=true \
+npx tsx scripts/research-audit/run-event-audit.ts \
+  --input ./events.json \
+  --format json \
+  --use-aws-secret \
+  --allow-pubmed-verifier \
+  --pmid-verifier-max-pmids 20 \
+  --pmid-verifier-timeout-ms 5000
+```
+
+Use `--pmid-verifier-endpoint` only for local mock servers or controlled E-utilities smoke testing. The verifier is deterministic: it only copies PMIDs into `validatedPmids` when PubMed ESummary returns an article summary for the numeric candidate PMID.
+
 ## Defaults
 
 ```sh
