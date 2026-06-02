@@ -438,13 +438,25 @@ function enforceReportOnlyFindingGuards(
     'provider' | 'model' | 'costEstimateUsd' | 'tokenEstimate'
   >
 ): Partial<ResearchAuditFinding> {
+  const seoGuards = packet.auditKind === 'seo_aggregate'
+    ? {
+        taskType: 'seo_opportunity' as const,
+        clinicalRisk: 'none' as const,
+        evidenceBoundary: (rawFinding.evidenceBoundary === 'operational_only'
+          ? 'operational_only'
+          : 'editorial_only') as ResearchAuditFinding['evidenceBoundary'],
+        candidatePmids: [],
+      }
+    : {};
+
   return {
     ...rawFinding,
+    ...seoGuards,
     findingId: buildFindingId(packet),
     provider: baseResult.provider,
     model: baseResult.model,
     originalQueries: [packet.redactedQuery],
-    candidatePmids: normalizeCandidatePmids(rawFinding.candidatePmids),
+    candidatePmids: packet.auditKind === 'seo_aggregate' ? [] : normalizeCandidatePmids(rawFinding.candidatePmids),
     validatedPmids: [],
     pmidVerificationStatus: 'not_checked',
     blockedFromProduction: true,

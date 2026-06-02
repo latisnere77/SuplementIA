@@ -120,6 +120,35 @@ export const researchAuditFindingSchema = z
         message: 'clinical risk findings require human review',
       });
     }
+
+    if (finding.taskType === 'seo_opportunity') {
+      if (finding.clinicalRisk !== 'none') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['clinicalRisk'],
+          message: 'seo_opportunity findings must use clinicalRisk=none',
+        });
+      }
+
+      if (
+        finding.evidenceBoundary !== 'editorial_only' &&
+        finding.evidenceBoundary !== 'operational_only'
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['evidenceBoundary'],
+          message: 'seo_opportunity findings must stay editorial_only or operational_only',
+        });
+      }
+
+      if (finding.candidatePmids.length > 0 || finding.validatedPmids.length > 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['candidatePmids'],
+          message: 'seo_opportunity findings must not carry PMIDs',
+        });
+      }
+    }
   });
 
 export type ResearchAuditFinding = z.infer<typeof researchAuditFindingSchema>;
