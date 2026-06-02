@@ -31,6 +31,9 @@ describe('research audit provider prompt contract', () => {
     expect(systemPrompt).toContain('Do not invent, guess, extrapolate, pattern-complete, or fabricate PMIDs');
     expect(systemPrompt).toContain('If you are not sure about a PMID, set candidatePmids=[]');
     expect(systemPrompt).toContain('packet.auditKind is "seo_aggregate"');
+    expect(systemPrompt).toContain('prioritize SEO/product analytics signals');
+    expect(systemPrompt).toContain('ignore default or empty deterministicPubMedProfile values');
+    expect(systemPrompt).toContain('recommendedAction must be an internal SEO/editorial action');
     expect(userPrompt.outputContract).toEqual(
       expect.objectContaining({
         format: 'single_json_object_only',
@@ -66,5 +69,29 @@ describe('research audit provider prompt contract', () => {
     }));
 
     expect(userPrompt.allowedUses).toEqual(['seo_opportunity']);
+    expect(userPrompt.outputGuards.seoAggregateRules).toEqual(
+      expect.objectContaining({
+        primarySignals: expect.arrayContaining([
+          'seoAggregate.ctr',
+          'seoAggregate.impressions',
+          'seoAggregate.averagePosition',
+          'seoAggregate.pagePath',
+          'seoAggregate.country',
+          'seoAggregate.source',
+        ]),
+        ignoreDefaultEmptyPubMedProfile: true,
+        doNotUsePubMedAbsenceAsPrimarySeoProblem: true,
+        clinicalRiskMustBeNone: true,
+        noPmidsForSeoOpportunity: true,
+        recommendedActionMustBeInternalSeoOrEditorial: true,
+        forbiddenRecommendedActions: expect.arrayContaining([
+          'clinical guidance',
+          'supplement classification',
+          'product recommendation',
+          'affiliate action',
+          'runtime behavior',
+        ]),
+      })
+    );
   });
 });
