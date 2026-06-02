@@ -57,7 +57,7 @@ function validProviderBody() {
   });
 }
 
-function validFindingContent() {
+function validFindingContent(overrides: Record<string, unknown> = {}) {
   return JSON.stringify({
     findingId: 'raf_provider_test_001',
     createdAt: '2026-05-28T00:00:00.000Z',
@@ -82,6 +82,7 @@ function validFindingContent() {
     redactionApplied: true,
     costEstimateUsd: 0.001,
     tokenEstimate: { input: 2000, output: 500 },
+    ...overrides,
   });
 }
 
@@ -146,6 +147,66 @@ describe('KimiResearchAuditProvider', () => {
 
     expect(result.valid).toBe(true);
     expect(result.finding?.supplementName).toBe('Garcinia cambogia');
+    expect(result.finding?.validatedPmids).toEqual([]);
+    expect(result.finding?.pmidVerificationStatus).toBe('not_checked');
+  });
+
+  it('normalizes invalid provider finding IDs before validation', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: validFindingContent({
+                  findingId: 'rap_event_garcinia-insufficient-data-recall-gap',
+                }),
+              },
+            },
+          ],
+        }),
+    });
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    const result = await provider.evaluatePacket(packet);
+
+    expect(result.valid).toBe(true);
+    expect(result.finding?.findingId).toBe('raf_test_packet_abc123');
+  });
+
+  it('filters invalid provider candidate PMIDs before validation', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: validFindingContent({
+                  candidatePmids: ['3544968', '', ',', '0', 'abc123', '3544968', '12345678901'],
+                }),
+              },
+            },
+          ],
+        }),
+    });
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+    });
+    const provider = new KimiResearchAuditProvider(config, fetchFn);
+
+    const result = await provider.evaluatePacket(packet);
+
+    expect(result.valid).toBe(true);
+    expect(result.finding?.candidatePmids).toEqual(['3544968']);
     expect(result.finding?.validatedPmids).toEqual([]);
     expect(result.finding?.pmidVerificationStatus).toBe('not_checked');
   });
