@@ -527,7 +527,7 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'bacopa-monnieri': {
       es: {
         intro:
-          'Bacopa monnieri aparece en Search Console como una señal temprana de demanda orgánica. Esta guía resume su uso estudiado en memoria, atención y aprendizaje sin tratarla como solución rápida.',
+          'Bacopa monnieri aparece como una señal temprana de demanda orgánica. Esta guía resume su uso estudiado en memoria, atención y aprendizaje sin tratarla como solución rápida.',
         highlights: [
           'La evidencia suele evaluar extractos estandarizados y uso continuo durante varias semanas, no efectos inmediatos.',
           'El encaje más razonable es cognición, memoria o atención; no sustituye evaluación de problemas neurológicos, sueño o salud mental.',
@@ -554,7 +554,7 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
       },
       en: {
         intro:
-          'Bacopa monnieri is an early organic demand signal in Search Console. This guide summarizes its studied use for memory, attention, and learning without framing it as a quick fix.',
+          'Bacopa monnieri is an early organic demand signal. This guide summarizes its studied use for memory, attention, and learning without framing it as a quick fix.',
         highlights: [
           'Evidence often evaluates standardized extracts and repeated use over several weeks, not immediate effects.',
           'The clearest fit is cognition, memory, or attention; it does not replace evaluation of neurologic, sleep, or mental health issues.',
@@ -1149,7 +1149,7 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'saw-palmetto': {
       es: {
         intro:
-          'Saw palmetto apareció como señal de Search Console en las últimas 24 horas. Esta guía lo ubica en salud prostática y síntomas urinarios, con expectativas prudentes y revisión de medicamentos.',
+          'Saw palmetto apareció como señal reciente de interés de búsqueda en español. Esta guía lo ubica en salud prostática y síntomas urinarios, con expectativas prudentes y revisión de medicamentos.',
         highlights: [
           'La intención suele ser próstata, síntomas urinarios o comparación con opciones para hombres.',
           'No debe usarse para ignorar síntomas nuevos, dolor, sangre en orina o cambios importantes.',
@@ -1199,7 +1199,7 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
       },
       en: {
         intro:
-          'Saw palmetto appeared as a recent Search Console signal. This guide places it in prostate and urinary-symptom context with careful expectations and medication review.',
+          'Saw palmetto appeared as a recent search-interest signal. This guide places it in prostate and urinary-symptom context with careful expectations and medication review.',
         highlights: [
           'Intent is usually prostate, urinary symptoms, or men’s health comparison.',
           'It should not be used to ignore new symptoms, pain, blood in urine, or major changes.',
