@@ -48,6 +48,10 @@ describe('supplement page SEO', () => {
     const vitaminD = getSupplementSeoData('vitamin-d', 'es');
     const theanine = getSupplementSeoData('l-theanine', 'en');
     const omega3 = getSupplementSeoData('omega-3', 'es');
+    const sawPalmetto = getSupplementSeoData('saw-palmetto', 'es');
+    const whey = getSupplementSeoData('whey-protein', 'es');
+    const caffeine = getSupplementSeoData('caffeine', 'es');
+    const citrulline = getSupplementSeoData('citrulline', 'es');
 
     expect(psyllium).not.toBeNull();
     expect(coq10).not.toBeNull();
@@ -56,6 +60,10 @@ describe('supplement page SEO', () => {
     expect(vitaminD).not.toBeNull();
     expect(theanine).not.toBeNull();
     expect(omega3).not.toBeNull();
+    expect(sawPalmetto).not.toBeNull();
+    expect(whey).not.toBeNull();
+    expect(caffeine).not.toBeNull();
+    expect(citrulline).not.toBeNull();
     expect(buildSupplementTitle(psyllium!, 'es')).toContain('Psyllium para colesterol LDL');
     expect(buildSupplementDescription(psyllium!, 'es')).toContain('fibra soluble');
     expect(buildSupplementTitle(coq10!, 'es')).toContain('Coenzima Q10 cardiovascular');
@@ -65,6 +73,10 @@ describe('supplement page SEO', () => {
     expect(buildSupplementTitle(bacopa!, 'es')).toContain('Bacopa monnieri');
     expect(buildSupplementDescription(vitaminD!, 'es')).toContain('deficiencia');
     expect(buildSupplementTitle(theanine!, 'en')).toContain('L-theanine');
+    expect(buildSupplementTitle(sawPalmetto!, 'es')).toContain('Saw palmetto');
+    expect(buildSupplementDescription(whey!, 'es')).toContain('entrenamiento');
+    expect(buildSupplementTitle(caffeine!, 'es')).toContain('Cafeína');
+    expect(buildSupplementDescription(citrulline!, 'es')).toContain('rendimiento deportivo');
   });
 
   it('adds localized editorial content for emerging Spanish query supplements', () => {
@@ -95,6 +107,30 @@ describe('supplement page SEO', () => {
     expect(coq10?.faqHeading).toContain('coenzima Q10 cardiovascular');
     expect(coq10?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/cholesterol-triglycerides');
     expect(JSON.stringify([psyllium, omega3, coq10])).not.toMatch(unsafePattern);
+  });
+
+  it('adds P3 expansion content for low-volume emerging queries', () => {
+    const sawPalmetto = buildSupplementSeoContent('saw-palmetto', 'es');
+    const collagen = buildSupplementSeoContent('hydrolyzed-collagen', 'es');
+    const whey = buildSupplementSeoContent('whey-protein', 'es');
+    const caffeine = buildSupplementSeoContent('caffeine', 'es');
+    const rhodiola = buildSupplementSeoContent('rhodiola-rosea', 'es');
+    const citrulline = buildSupplementSeoContent('citrulline', 'es');
+
+    expect(sawPalmetto?.intro).toContain('Search Console');
+    expect(sawPalmetto?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/mens-health');
+    expect(collagen?.intro).toContain('collagenin');
+    expect(collagen?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/joint-bone-health');
+    expect(whey?.intro).toContain('proteina whey');
+    expect(whey?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/muscle-gain');
+    expect(caffeine?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/sports-performance',
+      '/portal/category/energy',
+      '/portal/supplement/l-theanine?benefit=anxiety',
+    ]);
+    expect(rhodiola?.intro).toContain('fatiga');
+    expect(citrulline?.faqHeading).toContain('citrulina');
+    expect(JSON.stringify([sawPalmetto, collagen, whey, caffeine, rhodiola, citrulline])).not.toMatch(unsafePattern);
   });
 
   it('builds prudent structured data without clinical claim wording', () => {
