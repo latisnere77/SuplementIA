@@ -117,7 +117,7 @@ describe('supplement page SEO', () => {
     const rhodiola = buildSupplementSeoContent('rhodiola-rosea', 'es');
     const citrulline = buildSupplementSeoContent('citrulline', 'es');
 
-    expect(sawPalmetto?.intro).toContain('Search Console');
+    expect(sawPalmetto?.intro).toContain('interés de búsqueda');
     expect(sawPalmetto?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/mens-health');
     expect(collagen?.intro).toContain('collagenin');
     expect(collagen?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/joint-bone-health');
