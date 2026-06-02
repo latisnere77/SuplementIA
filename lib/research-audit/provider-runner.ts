@@ -3,8 +3,9 @@ import path from 'path';
 import { loadAuditFixtures } from './fixtures';
 import { KimiResearchAuditProvider } from './kimi-provider';
 import { buildAuditPacketFromFixture, type PacketBuildResult } from './packets';
+import type { ResearchAuditPacket } from './packets';
 import { verifyPubMedPmids, type PmidVerifierOptions } from './pmid-verifier';
-import type { ProviderAuditResult } from './provider';
+import type { ProviderAuditResult, ResearchAuditProviderAdapter } from './provider';
 import type { ResearchAuditProviderConfig } from './config';
 
 export interface ProviderAuditReport {
@@ -26,6 +27,7 @@ export interface ProviderAuditRunnerOptions {
   outputDir?: string;
   limit?: number;
   pmidVerifier?: PmidVerifierOptions | false;
+  provider?: ResearchAuditProviderAdapter;
 }
 
 export interface ProviderPacketAuditInput {
@@ -51,9 +53,9 @@ export async function runProviderFixtureAudit(
 export async function runProviderPacketAudit(
   config: ResearchAuditProviderConfig,
   packetInputs: ProviderPacketAuditInput[],
-  options: Pick<ProviderAuditRunnerOptions, 'outputDir' | 'pmidVerifier'> = {}
+  options: Pick<ProviderAuditRunnerOptions, 'outputDir' | 'pmidVerifier' | 'provider'> = {}
 ): Promise<{ report: ProviderAuditReport; reportPaths: { jsonPath: string; markdownPath: string } }> {
-  const provider = new KimiResearchAuditProvider(config);
+  const provider = options.provider ?? new KimiResearchAuditProvider(config);
   const results: ProviderAuditResult[] = [];
 
   for (const input of packetInputs) {
@@ -73,7 +75,12 @@ export async function runProviderPacketAudit(
       continue;
     }
 
-    const result = await provider.evaluatePacket(packetResult.packet);
+    const result = await evaluatePacketWithJsonRetry(
+      provider,
+      packetResult.packet,
+      config,
+      results.reduce((sum, existingResult) => sum + existingResult.costEstimateUsd, 0)
+    );
     results.push(await verifyProviderAuditResultPmids(result, options.pmidVerifier));
   }
 
@@ -96,6 +103,57 @@ export async function runProviderPacketAudit(
   return {
     report,
     reportPaths: writeProviderReport(report, options.outputDir || '.research-audit-reports'),
+  };
+}
+
+async function evaluatePacketWithJsonRetry(
+  provider: ResearchAuditProviderAdapter,
+  packet: ResearchAuditPacket,
+  config: ResearchAuditProviderConfig,
+  currentCostEstimateUsd: number
+): Promise<ProviderAuditResult> {
+  const firstResult = await provider.evaluatePacket(packet);
+  if (!shouldRetryForParseableJson(firstResult)) return firstResult;
+
+  const retryCostEstimateUsd = firstResult.costEstimateUsd;
+  if (currentCostEstimateUsd + firstResult.costEstimateUsd + retryCostEstimateUsd > config.maxSpendUsdPerRun) {
+    return firstResult;
+  }
+
+  const retryResult = await provider.evaluatePacket(packet);
+
+  return combineRetryResults(firstResult, retryResult);
+}
+
+function shouldRetryForParseableJson(result: ProviderAuditResult): boolean {
+  return (
+    !result.valid &&
+    !result.skippedReason &&
+    result.externalCalls > 0 &&
+    result.rejectionReasons.includes('provider response did not include parseable audit JSON')
+  );
+}
+
+function combineRetryResults(
+  firstResult: ProviderAuditResult,
+  retryResult: ProviderAuditResult
+): ProviderAuditResult {
+  const costEstimateUsd = Number(
+    (firstResult.costEstimateUsd + retryResult.costEstimateUsd).toFixed(6)
+  );
+  const externalCalls = firstResult.externalCalls + retryResult.externalCalls;
+  const finding = retryResult.finding
+    ? {
+        ...retryResult.finding,
+        costEstimateUsd,
+      }
+    : undefined;
+
+  return {
+    ...retryResult,
+    costEstimateUsd,
+    externalCalls,
+    finding,
   };
 }
 

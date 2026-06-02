@@ -1,6 +1,78 @@
 import { loadResearchAuditProviderConfig } from './config';
-import { runProviderFixtureAudit, verifyProviderAuditResultPmids } from './provider-runner';
-import type { ProviderAuditResult } from './provider';
+import { runProviderFixtureAudit, runProviderPacketAudit, verifyProviderAuditResultPmids } from './provider-runner';
+import type { ProviderAuditResult, ResearchAuditProviderAdapter } from './provider';
+
+const packetInput = {
+  id: 'retry-event',
+  packetResult: {
+    valid: true,
+    packet: {
+      packetId: 'rap_retry_event',
+      queryFingerprint: 'abc123',
+      redactedQuery: 'centella asiatica',
+      normalizedQuery: 'Centella asiatica',
+      statusCounts: { insufficient_data: 2 },
+      fallbackCounts: {},
+      deterministicPubMedProfile: undefined,
+    },
+    rejectionReasons: [],
+  },
+};
+
+function validResult(overrides: Partial<ProviderAuditResult> = {}): ProviderAuditResult {
+  const costEstimateUsd = overrides.costEstimateUsd ?? 0.001;
+  return {
+    packetId: 'rap_retry_event',
+    provider: 'kimi',
+    model: 'kimi-k2.6',
+    valid: true,
+    finding: {
+      findingId: 'raf_retry_event_abc123',
+      createdAt: '2026-05-28T00:00:00.000Z',
+      provider: 'kimi',
+      model: 'kimi-k2.6',
+      taskType: 'alias_gap',
+      severity: 'medium',
+      supplementName: 'Centella asiatica',
+      originalQueries: ['centella asiatica'],
+      problemDetected: 'The provider found an alias gap.',
+      evidenceBoundary: 'human_clinical_required',
+      suggestedAliases: ['gotu kola'],
+      candidatePmids: [],
+      validatedPmids: [],
+      pmidVerificationStatus: 'not_checked',
+      proposedClassification: 'needs_human_review',
+      clinicalRisk: 'low',
+      recommendedAction: 'Review this offline audit finding in the asynchronous audit queue.',
+      blockedFromProduction: true,
+      requiresHumanReview: true,
+      confidence: 0.7,
+      redactionApplied: true,
+      costEstimateUsd,
+      tokenEstimate: { input: 500, output: 250 },
+    },
+    rejectedFinding: undefined,
+    rejectionReasons: [],
+    costEstimateUsd,
+    tokenEstimate: { input: 500, output: 250 },
+    externalCalls: 1,
+    ...overrides,
+  };
+}
+
+function parseFailureResult(costEstimateUsd = 0.001): ProviderAuditResult {
+  return {
+    packetId: 'rap_retry_event',
+    provider: 'kimi',
+    model: 'kimi-k2.6',
+    valid: false,
+    rejectionReasons: ['provider response did not include parseable audit JSON'],
+    rejectedFinding: { message: 'provider response could not be parsed' },
+    costEstimateUsd,
+    tokenEstimate: { input: 500, output: 250 },
+    externalCalls: 1,
+  };
+}
 
 describe('runProviderFixtureAudit', () => {
   it('produces report-only skipped results while the provider is disabled', async () => {
@@ -112,5 +184,58 @@ describe('runProviderFixtureAudit', () => {
     expect(verified.externalCalls).toBe(1);
     expect(verified.finding?.validatedPmids).toEqual([]);
     expect(verified.finding?.pmidVerificationStatus).toBe('not_checked');
+  });
+
+  it('retries once when the provider does not return parseable audit JSON', async () => {
+    const provider: ResearchAuditProviderAdapter = {
+      provider: 'kimi',
+      model: 'kimi-k2.6',
+      evaluatePacket: jest
+        .fn()
+        .mockResolvedValueOnce(parseFailureResult())
+        .mockResolvedValueOnce(validResult()),
+    };
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+      AUDIT_AGENT_MAX_SPEND_USD_PER_RUN: '1',
+    });
+
+    const { report } = await runProviderPacketAudit(config, [packetInput], {
+      outputDir: '.research-audit-reports/test-provider-runner',
+      pmidVerifier: false,
+      provider,
+    });
+
+    expect(provider.evaluatePacket).toHaveBeenCalledTimes(2);
+    expect(report.externalCalls).toBe(2);
+    expect(report.totalCostEstimateUsd).toBe(0.002);
+    expect(report.validationFailures).toBe(0);
+    expect(report.results[0].valid).toBe(true);
+    expect(report.results[0].finding?.costEstimateUsd).toBe(0.002);
+  });
+
+  it('does not retry when the retry would exceed the run spend cap', async () => {
+    const provider: ResearchAuditProviderAdapter = {
+      provider: 'kimi',
+      model: 'kimi-k2.6',
+      evaluatePacket: jest.fn().mockResolvedValue(parseFailureResult(0.006)),
+    };
+    const config = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_ENABLED: 'true',
+      MOONSHOT_API_KEY: 'test-key',
+      AUDIT_AGENT_MAX_SPEND_USD_PER_RUN: '0.01',
+    });
+
+    const { report } = await runProviderPacketAudit(config, [packetInput], {
+      outputDir: '.research-audit-reports/test-provider-runner',
+      pmidVerifier: false,
+      provider,
+    });
+
+    expect(provider.evaluatePacket).toHaveBeenCalledTimes(1);
+    expect(report.externalCalls).toBe(1);
+    expect(report.totalCostEstimateUsd).toBe(0.006);
+    expect(report.validationFailures).toBe(1);
   });
 });

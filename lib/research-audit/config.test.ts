@@ -28,4 +28,14 @@ describe('loadResearchAuditProviderConfig', () => {
 
     expect(config.requestTimeoutMs).toBe(90000);
   });
+
+  it('allows higher manual provider smoke output tokens without changing defaults', () => {
+    const defaultConfig = loadResearchAuditProviderConfig({});
+    const manualConfig = loadResearchAuditProviderConfig({
+      AUDIT_AGENT_MAX_OUTPUT_TOKENS_PER_EVENT: '1000',
+    });
+
+    expect(defaultConfig.maxOutputTokensPerEvent).toBe(1500);
+    expect(manualConfig.maxOutputTokensPerEvent).toBe(1000);
+  });
 });
