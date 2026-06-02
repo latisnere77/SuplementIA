@@ -27,6 +27,7 @@ export interface ProviderAuditResult {
   articleSummaries?: PmidArticleSummary[];
   matchedPmids?: string[];
   pmidEntityMatchStatus?: 'not_checked' | 'all_matched' | 'partially_matched' | 'none_matched';
+  reviewWarnings?: string[];
   rejectionReasons: string[];
   costEstimateUsd: number;
   tokenEstimate: TokenEstimate;

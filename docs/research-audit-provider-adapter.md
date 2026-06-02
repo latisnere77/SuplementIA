@@ -56,6 +56,7 @@ Even when enabled, this remains report-only:
 - If PubMed verification fails, `validatedPmids` remains `[]` and `pmidVerificationStatus` becomes `"verification_failed"`.
 - `validatedPmids` only means the numeric PMID exists in PubMed ESummary. It does not mean the article is clinically relevant.
 - Local reports may include `articleSummaries`, `matchedPmids`, and `pmidEntityMatchStatus` as deterministic reviewer aids based on article title matches only.
+- Local reports may add `reviewWarnings` when PMIDs exist in PubMed but none of their titles match the audited entity. This does not reject the finding.
 
 ## Safety Contract
 
