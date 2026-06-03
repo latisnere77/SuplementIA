@@ -6,6 +6,8 @@ Wire the Frontier Agent Lambda handler for manual report-only AWS runs without e
 
 This runbook is intentionally manual. The repository has CloudFormation and deployment scripts for other AWS components, but there is not yet a clear isolated IaC pattern for this research-audit Lambda package. The next implementation PR should add IaC only after this manual wiring is reviewed and exercised.
 
+For the separate weekly GitHub Issue communication layer, see `docs/research-audit-github-issue-publisher.md`. That publisher should read completed S3 reports and must not rerun the auditor.
+
 ## Scope
 
 Allowed:
