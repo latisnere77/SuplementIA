@@ -20,4 +20,27 @@ describe('expandAbbreviation controlled aliases', () => {
       });
     }
   });
+
+  it.each([
+    ['magnesio', 'Magnesium'],
+    ['vitamina d', 'Vitamin D'],
+    ['berberina', 'Berberine'],
+    ['melena de león', "Lion's Mane"],
+    ['melena de leon', "Lion's Mane"],
+    ['cardo mariano', 'Milk thistle'],
+    ['cúrcuma', 'Turmeric'],
+    ['curcuma', 'Turmeric'],
+    ['coenzima q10', 'Coenzyme Q10'],
+    ['sábila', 'Aloe Vera'],
+    ['sabila', 'Aloe Vera'],
+    ['té verde', 'Green tea extract'],
+    ['te verde', 'Green tea extract'],
+  ])('canonicalizes Spanish alias %s to %s without LLM expansion', async (term, canonical) => {
+    await expect(expandAbbreviation(term)).resolves.toMatchObject({
+      original: term,
+      alternatives: [canonical],
+      confidence: 0.95,
+      source: 'heuristic',
+    });
+  });
 });

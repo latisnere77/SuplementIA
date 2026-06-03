@@ -134,6 +134,8 @@ describe('Query Normalizer', () => {
       expect(normalizeQuery('NAD').normalized).toBe('NAD+');
       expect(normalizeQuery('nad').normalized).toBe('NAD+');
       expect(normalizeQuery('NAD+').normalized).toBe('NAD+');
+      expect(normalizeQuery('NAC').normalized).toBe('N-Acetyl Cysteine');
+      expect(normalizeQuery('nac').normalized).toBe('N-Acetyl Cysteine');
     });
 
     it('does not fuzzy-match unknown short acronyms into unrelated entities', () => {
@@ -169,7 +171,16 @@ describe('Query Normalizer', () => {
       expect(normalizeQuery('tepescohuite').normalized).toBe('Mimosa tenuiflora');
       expect(normalizeQuery('Mimosa hostilis').normalized).toBe('Mimosa tenuiflora');
       expect(normalizeQuery('curcuma').normalized).toBe('Turmeric');
+      expect(normalizeQuery('cúrcuma').normalized).toBe('Turmeric');
       expect(normalizeQuery('turmeric').normalized).toBe('Turmeric');
+      expect(normalizeQuery('melena de león').normalized).toBe("Lion's Mane");
+      expect(normalizeQuery('melena de leon').normalized).toBe("Lion's Mane");
+      expect(normalizeQuery('cardo mariano').normalized).toBe('Milk thistle');
+      expect(normalizeQuery('sábila').normalized).toBe('Aloe Vera');
+      expect(normalizeQuery('sabila').normalized).toBe('Aloe Vera');
+      expect(normalizeQuery('coenzima q10').normalized).toBe('Coenzyme Q10');
+      expect(normalizeQuery('té verde').normalized).toBe('Green tea extract');
+      expect(normalizeQuery('te verde').normalized).toBe('Green tea extract');
       expect(normalizeQuery('equinacea').normalized).toBe('Echinacea');
       expect(normalizeQuery('equinácea').normalized).toBe('Echinacea');
       expect(normalizeQuery('echinacea').normalized).toBe('Echinacea');

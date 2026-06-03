@@ -22,13 +22,16 @@ const searchCases: SearchCase[] = [
   { query: 'Collagen' },
 
   // Spanish common names, accented names, and aliases.
+  { query: 'magnesio', expectedSearchTerm: 'Magnesium' },
+  { query: 'vitamina d', expectedSearchTerm: 'Vitamin D' },
+  { query: 'berberina', expectedSearchTerm: 'Berberine' },
   { query: 'sabila', expectedSearchTerm: 'Aloe Vera' },
   { query: 'sábila', expectedSearchTerm: 'Aloe Vera' },
   { query: 'curcuma', expectedSearchTerm: 'Turmeric' },
   { query: 'cúrcuma', expectedSearchTerm: 'Turmeric' },
   { query: 'coenzima q10', expectedSearchTerm: 'Coenzyme Q10' },
-  { query: 'melena de león' },
-  { query: 'cardo mariano' },
+  { query: 'melena de león', expectedSearchTerm: "Lion's Mane" },
+  { query: 'cardo mariano', expectedSearchTerm: 'Milk thistle' },
   { query: 'valeriana' },
 
   // Scientific names and English common aliases.
@@ -38,14 +41,13 @@ const searchCases: SearchCase[] = [
   { query: 'panax ginseng', expectedSearchTerm: 'Ginseng' },
   { query: 'korean ginseng', expectedSearchTerm: 'Ginseng' },
   { query: 'valeriana officinalis' },
-  { query: 'hericium erinaceus' },
+  { query: 'hericium erinaceus', expectedSearchTerm: "Lion's Mane" },
   { query: 'ginkgo biloba' },
-  { query: 'silybum marianum' },
+  { query: 'silybum marianum', expectedSearchTerm: 'Milk thistle' },
   { query: 'resveratrol', expectedSearchTerm: 'Resveratrol' },
 
   // Less common/trendy supplement names that should not fall through to unrelated catalog entries.
   { query: 'berberine', expectedSearchTerm: 'Berberine' },
-  { query: 'berberina', expectedSearchTerm: 'Berberine' },
   { query: 'tongkat ali' },
   { query: 'fadogia agrestis', expectedOutcome: 'insufficient_data' },
   { query: 'sea moss' },
