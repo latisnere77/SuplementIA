@@ -358,6 +358,50 @@ describe('/api/portal/quiz POST', () => {
     expect(serialized).toMatch(/lesion hepatica|hepatotoxicidad/);
   });
 
+  it.each([
+    ['magnesio', 'Magnesium'],
+    ['vitamina d', 'Vitamin D'],
+    ['berberina', 'Berberine'],
+    ['melena de león', "Lion's Mane"],
+    ['cardo mariano', 'Milk thistle'],
+  ])('uses the controlled Spanish canonical name for %s', async (query, canonical) => {
+    mockedExpandAbbreviation.mockResolvedValueOnce({
+      original: query,
+      expanded: canonical,
+      alternatives: [canonical],
+      confidence: 0.95,
+    });
+    mockedSearchSupplements.mockResolvedValueOnce([]);
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: 'insufficient_data',
+          message: `No encontramos evidencia clínica humana suficiente para confirmar beneficios de "${canonical}".`,
+        }),
+        {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/quiz', {
+      method: 'POST',
+      body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+    const recommendBody = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
+
+    expect(response.status).toBe(404);
+    expect(body.category).toBe(canonical);
+    expect(mockedSearchSupplements).toHaveBeenCalledWith(canonical);
+    expect(recommendBody.category).toBe(canonical);
+  });
+
   it('uses the incoming request origin for internal recommendation fallback in local smoke runs', async () => {
     const originalVercelUrl = process.env.VERCEL_URL;
     const originalAppUrl = process.env.NEXT_PUBLIC_APP_URL;

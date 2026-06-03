@@ -22,13 +22,17 @@ const searchCases: SearchCase[] = [
   { query: 'Collagen' },
 
   // Spanish common names, accented names, and aliases.
+  { query: 'magnesio', expectedSearchTerm: 'Magnesium' },
+  { query: 'vitamina d', expectedSearchTerm: 'Vitamin D' },
+  { query: 'berberina', expectedSearchTerm: 'Berberine' },
   { query: 'sabila', expectedSearchTerm: 'Aloe Vera' },
   { query: 'sábila', expectedSearchTerm: 'Aloe Vera' },
   { query: 'curcuma', expectedSearchTerm: 'Turmeric' },
   { query: 'cúrcuma', expectedSearchTerm: 'Turmeric' },
   { query: 'coenzima q10', expectedSearchTerm: 'Coenzyme Q10' },
-  { query: 'melena de león' },
-  { query: 'cardo mariano' },
+  { query: 'melena de león', expectedSearchTerm: "Lion's Mane" },
+  { query: 'cardo mariano', expectedSearchTerm: 'Milk thistle' },
+  { query: 'té verde', expectedSearchTerm: 'Green tea extract' },
   { query: 'valeriana' },
 
   // Scientific names and English common aliases.

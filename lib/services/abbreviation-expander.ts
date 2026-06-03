@@ -41,6 +41,21 @@ const DEBUG_ABBREVIATION = process.env.DEBUG_ABBREVIATION === 'true' || process.
 
 const CONTROLLED_CANONICAL_ALIASES: Record<string, string> = {
   'gotu kola': 'Centella asiatica',
+  'magnesio': 'Magnesium',
+  'vitamina d': 'Vitamin D',
+  'berberina': 'Berberine',
+  'melena de león': "Lion's Mane",
+  'melena de leon': "Lion's Mane",
+  'cardo mariano': 'Milk thistle',
+  'cúrcuma': 'Turmeric',
+  'curcuma': 'Turmeric',
+  'coenzima q10': 'Coenzyme Q10',
+  'sábila': 'Aloe Vera',
+  'sabila': 'Aloe Vera',
+  'té verde': 'Green tea extract',
+  'te verde': 'Green tea extract',
+  'extracto de té verde': 'Green tea extract',
+  'extracto de te verde': 'Green tea extract',
 };
 
 function debugAbbreviation(message: string, details?: unknown): void {

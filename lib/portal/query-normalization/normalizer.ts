@@ -288,6 +288,16 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'curcumin': { canonical: 'Turmeric', category: 'herb' },
   'turmeric': { canonical: 'Turmeric', category: 'herb' },
 
+  'melena de leon': { canonical: "Lion's Mane", category: 'herb' },
+  'melena de león': { canonical: "Lion's Mane", category: 'herb' },
+  'lions mane': { canonical: "Lion's Mane", category: 'herb' },
+  "lion's mane": { canonical: "Lion's Mane", category: 'herb' },
+  'hericium erinaceus': { canonical: "Lion's Mane", category: 'herb' },
+
+  'cardo mariano': { canonical: 'Milk thistle', category: 'herb' },
+  'milk thistle': { canonical: 'Milk thistle', category: 'herb' },
+  'silybum marianum': { canonical: 'Milk thistle', category: 'herb' },
+
   'equinacea': { canonical: 'Echinacea', category: 'herb' },
   'equinácea': { canonical: 'Echinacea', category: 'herb' },
   'echinacea': { canonical: 'Echinacea', category: 'herb' },
@@ -314,6 +324,14 @@ const NORMALIZATION_MAP: Record<string, { canonical: string; category: Supplemen
   'sábila': { canonical: 'Aloe Vera', category: 'herb' },
   'aloe': { canonical: 'Aloe Vera', category: 'herb' },
   'aloe vera': { canonical: 'Aloe Vera', category: 'herb' },
+
+  // ========== GREEN TEA ==========
+  'té verde': { canonical: 'Green tea extract', category: 'herb' },
+  'te verde': { canonical: 'Green tea extract', category: 'herb' },
+  'green tea': { canonical: 'Green tea extract', category: 'herb' },
+  'green tea extract': { canonical: 'Green tea extract', category: 'herb' },
+  'extracto de té verde': { canonical: 'Green tea extract', category: 'herb' },
+  'extracto de te verde': { canonical: 'Green tea extract', category: 'herb' },
 
   // ========== COENZYME Q10 ==========
   'q10': { canonical: 'Coenzyme Q10', category: 'other' },
