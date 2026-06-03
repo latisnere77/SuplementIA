@@ -160,6 +160,8 @@ describe('clinical recall identity', () => {
     expect(text).toContain('burnout');
     expect(text).toContain('mental performance');
     expect(text).toContain('vitano');
+    expect(text).not.toContain('depression');
+    expect(text).not.toContain('anxiety');
   });
 
   it('does not collapse hemp seed or nutritional hemp into cannabinoid clinical recall', () => {

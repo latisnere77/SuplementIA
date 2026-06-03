@@ -193,7 +193,7 @@ export const CLINICAL_RECALL_IDENTITIES: ClinicalRecallIdentity[] = [
       },
       {
         supplementName: 'Vitano Rhodiola rosea',
-        benefitQuery: 'randomized controlled trial humans stress anxiety cognition mood',
+        benefitQuery: 'randomized controlled trial humans stress-related fatigue mental performance',
       },
     ],
     controlledHumanPmids: ['22643043', '19016404', '11081987', '26502953'],
