@@ -8,6 +8,8 @@ This phase must not change clinical runtime behavior, write findings to a databa
 
 The only output is a human-reviewable JSON/Markdown report.
 
+For the first manual Lambda/S3/IAM wiring checklist, use `docs/research-audit-manual-infra-runbook.md`. That runbook intentionally avoids EventBridge and IaC until manual report-only wiring has been exercised.
+
 ## Recommended Minimal Architecture
 
 Use EventBridge, Lambda, Secrets Manager, and S3.
@@ -307,4 +309,3 @@ The next PR may implement an AWS report-only runner only if these are accepted:
 - It enforces max events, token, timeout, retry, and spend limits.
 - It has tests with mocked S3, Secrets Manager, provider, and PubMed verifier clients.
 - It includes a manual runbook for one report-only smoke before enabling any schedule.
-
