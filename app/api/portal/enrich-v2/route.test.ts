@@ -883,6 +883,283 @@ describe('/api/portal/enrich-v2 POST', () => {
     expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('9003');
   });
 
+  it.each([
+    {
+      supplementName: 'Bacopa monnieri',
+      expectedRecallName: 'Bacopa monnieri',
+      expectedTerms: ['memory', 'attention', 'cognitive performance'],
+      humanStudies: [
+        {
+          pmid: '24252493',
+          title: 'Meta-analysis of randomized controlled trials on cognitive effects of Bacopa monnieri extract.',
+          abstract: 'Randomized placebo controlled human intervention trials on chronic dosing of standardized Bacopa monnieri extracts were included.',
+          publicationTypes: ['Meta-Analysis', 'Systematic Review'],
+          meshHeadings: ['Humans'],
+        },
+        {
+          pmid: '18611150',
+          title: 'Effects of a standardized Bacopa monnieri extract on cognitive performance, anxiety, and depression in the elderly.',
+          abstract: 'Healthy elderly participants were randomized to standardized Bacopa monnieri extract or placebo for 12 weeks.',
+          publicationTypes: ['Randomized Controlled Trial'],
+          meshHeadings: ['Humans'],
+        },
+      ],
+      enrichedData: {
+        name: 'Bacopa monnieri',
+        worksFor: [],
+        limitedEvidence: [
+          {
+            condition: 'Memory and attention',
+            evidenceGrade: 'B',
+            summary: 'Human trials and reviews exist, but claims should stay scoped to studied standardized extracts.',
+          },
+        ],
+        totalStudies: 2,
+      },
+    },
+    {
+      supplementName: 'Saw palmetto',
+      expectedRecallName: 'Saw palmetto',
+      expectedTerms: ['benign prostatic hyperplasia', 'lower urinary tract symptoms', 'LUTS'],
+      humanStudies: [
+        {
+          pmid: '23235581',
+          title: 'Serenoa repens for benign prostatic hyperplasia.',
+          abstract: 'Systematic review of randomized trials in men with lower urinary tract symptoms consistent with BPH.',
+          publicationTypes: ['Systematic Review', 'Meta-Analysis'],
+          meshHeadings: ['Humans'],
+        },
+        {
+          pmid: '29694707',
+          title: 'Efficacy and safety of a hexanic extract of Serenoa repens for LUTS/BPH.',
+          abstract: 'Systematic review and meta-analysis of randomized controlled trials and observational studies in patients with LUTS/BPH.',
+          publicationTypes: ['Systematic Review', 'Meta-Analysis'],
+          meshHeadings: ['Humans'],
+        },
+      ],
+      enrichedData: {
+        name: 'Saw palmetto',
+        worksFor: [],
+        doesntWorkFor: [
+          {
+            condition: 'Generic LUTS/BPH symptom relief',
+            evidenceGrade: 'B',
+            summary: 'Evidence is negative or not clinically meaningful for generic saw palmetto preparations.',
+          },
+        ],
+        limitedEvidence: [
+          {
+            condition: 'Specific hexanic Serenoa repens extracts',
+            evidenceGrade: 'C',
+            summary: 'Some formulation-specific reviews exist; do not generalize to all saw palmetto products.',
+          },
+        ],
+        totalStudies: 2,
+      },
+    },
+    {
+      supplementName: 'Ginkgo biloba',
+      expectedRecallName: 'Ginkgo biloba',
+      expectedTerms: ['dementia', 'tinnitus', 'prevention'],
+      humanStudies: [
+        {
+          pmid: '19017911',
+          title: 'Ginkgo biloba for prevention of dementia: a randomized controlled trial.',
+          abstract: 'Older adult participants were randomized to Ginkgo biloba extract or placebo and assessed for incident dementia.',
+          publicationTypes: ['Randomized Controlled Trial'],
+          meshHeadings: ['Humans'],
+        },
+        {
+          pmid: '25114079',
+          title: 'Efficacy and adverse effects of ginkgo biloba for cognitive impairment and dementia.',
+          abstract: 'Systematic review and meta-analysis of randomized controlled trials of standardized EGb761 in patients with cognitive impairment and dementia.',
+          publicationTypes: ['Systematic Review', 'Meta-Analysis'],
+          meshHeadings: ['Humans'],
+        },
+      ],
+      enrichedData: {
+        name: 'Ginkgo biloba',
+        worksFor: [],
+        limitedEvidence: [
+          {
+            condition: 'EGb 761 in cognitive impairment or dementia',
+            evidenceGrade: 'B',
+            summary: 'Evidence is formulation-specific and should not be generalized to all ginkgo products.',
+          },
+        ],
+        doesntWorkFor: [
+          {
+            condition: 'Dementia prevention or tinnitus',
+            evidenceGrade: 'B',
+            summary: 'Evidence is negative or not conclusive for these popular uses.',
+          },
+        ],
+        totalStudies: 2,
+      },
+    },
+    {
+      supplementName: 'Milk thistle',
+      expectedRecallName: 'Milk thistle',
+      expectedTerms: ['NAFLD', 'NASH', 'liver enzymes'],
+      humanStudies: [
+        {
+          pmid: '38579127',
+          title: 'Administration of silymarin in NAFLD/NASH: A systematic review and meta-analysis.',
+          abstract: 'Randomized controlled trials involving patients with NAFLD or NASH evaluated silymarin supplementation.',
+          publicationTypes: ['Systematic Review', 'Meta-Analysis'],
+          meshHeadings: ['Humans'],
+        },
+        {
+          pmid: '28419855',
+          title: 'A Randomized Trial of Silymarin for the Treatment of Nonalcoholic Steatohepatitis.',
+          abstract: 'Adults with biopsy-proven NASH were randomly assigned to silymarin or placebo.',
+          publicationTypes: ['Randomized Controlled Trial'],
+          meshHeadings: ['Humans'],
+        },
+      ],
+      enrichedData: {
+        name: 'Milk thistle',
+        worksFor: [],
+        limitedEvidence: [
+          {
+            condition: 'NAFLD/NASH liver markers',
+            evidenceGrade: 'C',
+            summary: 'Human studies are mixed and formulation-specific; this is not a detox claim.',
+          },
+        ],
+        totalStudies: 2,
+      },
+    },
+    {
+      supplementName: 'Rhodiola rosea',
+      expectedRecallName: 'Rhodiola rosea',
+      expectedTerms: ['fatigue', 'stress', 'mental performance'],
+      humanStudies: [
+        {
+          pmid: '22643043',
+          title: 'Rhodiola rosea for physical and mental fatigue: a systematic review.',
+          abstract: 'Randomized controlled trials and controlled clinical trials evaluating Rhodiola rosea for physical and mental fatigue were reviewed.',
+          publicationTypes: ['Systematic Review'],
+          meshHeadings: ['Humans'],
+        },
+        {
+          pmid: '19016404',
+          title: 'Rhodiola rosea extract SHR-5 in stress-related fatigue.',
+          abstract: 'Participants with stress-related fatigue were randomized to standardized Rhodiola rosea extract SHR-5 or placebo.',
+          publicationTypes: ['Randomized Controlled Trial'],
+          meshHeadings: ['Humans'],
+        },
+      ],
+      enrichedData: {
+        name: 'Rhodiola rosea',
+        worksFor: [],
+        limitedEvidence: [
+          {
+            condition: 'Fatigue and stress',
+            evidenceGrade: 'C',
+            summary: 'Small and mixed human trials exist; do not frame as treatment for anxiety or depression.',
+          },
+        ],
+        totalStudies: 2,
+      },
+    },
+  ])('recovers controlled botanical human clinical evidence for $supplementName', async ({
+    supplementName,
+    expectedRecallName,
+    expectedTerms,
+    humanStudies,
+    enrichedData,
+  }) => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const requestBody = typeof init?.body === 'string' ? JSON.parse(init.body) : {};
+
+      if (Array.isArray(requestBody.studies)) {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: enrichedData,
+            metadata: {
+              hasRealData: true,
+              studiesUsed: humanStudies.length,
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      if (requestBody.benefitQuery) {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              studies: humanStudies,
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            studies: [
+              {
+                pmid: 'botanical-animal-1',
+                title: `${supplementName} extract in animal models`,
+                abstract: 'Animal model evidence only.',
+                publicationTypes: ['Journal Article'],
+                meshHeadings: ['Animals', 'Rats'],
+              },
+            ],
+          },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    });
+
+    const request = new NextRequest('http://localhost/api/portal/enrich-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supplementName,
+        category: supplementName,
+        maxStudies: 10,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.metadata.humanClinicalStudiesCount).toBe(humanStudies.length);
+
+    const recallStudiesCall = fetchMock.mock.calls.find((call) => {
+      const requestBody = JSON.parse(call[1]?.body as string);
+      return requestBody.supplementName === expectedRecallName && typeof requestBody.benefitQuery === 'string';
+    });
+    expect(recallStudiesCall).toBeDefined();
+    const recallStudiesBody = JSON.parse(recallStudiesCall?.[1]?.body as string);
+    expect(recallStudiesBody.supplementName).toBe(expectedRecallName);
+    expect(recallStudiesBody.humanStudiesOnly).toBe(true);
+    for (const term of expectedTerms) {
+      expect(recallStudiesBody.benefitQuery).toContain(term);
+    }
+
+    const enricherCall = fetchMock.mock.calls.find((call) => {
+      const requestBody = JSON.parse(call[1]?.body as string);
+      return Array.isArray(requestBody.studies);
+    });
+    expect(enricherCall).toBeDefined();
+    const enricherBody = JSON.parse(enricherCall?.[1]?.body as string);
+    expect(enricherBody.studies.map((study: any) => study.pmid)).toEqual(
+      humanStudies.map((study) => study.pmid)
+    );
+    expect(enricherBody.studies.map((study: any) => study.pmid)).not.toContain('botanical-animal-1');
+    expect(enricherBody.studies).toHaveLength(humanStudies.length);
+  });
+
   it('recovers Cannabis sativa human clinical evidence with the generic controlled recall search', async () => {
     const fetchMock = jest
       .spyOn(global, 'fetch')

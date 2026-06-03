@@ -96,6 +96,74 @@ describe('clinical recall identity', () => {
     expect(getClinicalRecallRequests('hoja de aguacate')).toEqual([]);
   });
 
+  it('adds controlled Bacopa cognition and memory recall lanes', () => {
+    expect(canonicalizeClinicalRecallTerm('Bacopa monnieri')).toBe('Bacopa monnieri');
+    expect(getClinicalRecallAliases('bacopa')).toEqual(expect.arrayContaining([
+      'Bacopa monnieri',
+      'bacopa',
+      'brahmi',
+      'bacosides',
+    ]));
+
+    const text = requestText('Bacopa monnieri');
+    expect(text).toContain('memory');
+    expect(text).toContain('attention');
+    expect(text).toContain('cognitive performance');
+    expect(text).toContain('healthy adults');
+  });
+
+  it('adds controlled Saw palmetto BPH/LUTS recall lanes without generic prostate claims', () => {
+    expect(canonicalizeClinicalRecallTerm('Serenoa repens')).toBe('Saw palmetto');
+    expect(getClinicalRecallAliases('Saw palmetto')).toEqual(expect.arrayContaining([
+      'Saw palmetto',
+      'Serenoa repens',
+      'Permixon',
+      'hexanic extract',
+    ]));
+
+    const text = requestText('Saw palmetto');
+    expect(text).toContain('benign prostatic hyperplasia');
+    expect(text).toContain('bph');
+    expect(text).toContain('lower urinary tract symptoms');
+    expect(text).toContain('luts');
+    expect(text).toContain('hexanic extract');
+  });
+
+  it('adds controlled Ginkgo EGb 761 cognitive and tinnitus/prevention lanes', () => {
+    expect(canonicalizeClinicalRecallTerm('EGb 761')).toBe('Ginkgo biloba');
+
+    const text = requestText('Ginkgo biloba');
+    expect(text).toContain('egb 761');
+    expect(text).toContain('cognitive impairment');
+    expect(text).toContain('dementia');
+    expect(text).toContain('tinnitus');
+    expect(text).toContain('prevention');
+  });
+
+  it('adds controlled Milk thistle silymarin liver marker lanes', () => {
+    expect(canonicalizeClinicalRecallTerm('Silybum marianum')).toBe('Milk thistle');
+
+    const text = requestText('Milk thistle');
+    expect(text).toContain('silymarin');
+    expect(text).toContain('silibinin');
+    expect(text).toContain('nafld');
+    expect(text).toContain('nash');
+    expect(text).toContain('liver enzymes');
+  });
+
+  it('adds controlled Rhodiola fatigue and stress recall lanes', () => {
+    expect(canonicalizeClinicalRecallTerm('SHR-5')).toBe('Rhodiola rosea');
+
+    const text = requestText('Rhodiola rosea');
+    expect(text).toContain('fatigue');
+    expect(text).toContain('stress');
+    expect(text).toContain('burnout');
+    expect(text).toContain('mental performance');
+    expect(text).toContain('vitano');
+    expect(text).not.toContain('depression');
+    expect(text).not.toContain('anxiety');
+  });
+
   it('does not collapse hemp seed or nutritional hemp into cannabinoid clinical recall', () => {
     expect(canonicalizeClinicalRecallTerm('hemp seed')).toBeNull();
     expect(canonicalizeClinicalRecallTerm('hemp protein')).toBeNull();
