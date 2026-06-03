@@ -6,6 +6,45 @@ function countCannabisNotices(value: unknown): number {
   return (JSON.stringify(value).match(new RegExp(CANNABIS_NOTICE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
 }
 
+describe('Rhodiola editorial calibration', () => {
+  it('moves anxiety and depression claims out of worksFor', () => {
+    const calibrated: any = calibratePortalRecommendation({
+      category: 'Rhodiola rosea',
+      supplement: {
+        name: 'Rhodiola rosea',
+        worksFor: [
+          {
+            condition: 'Reducción de fatiga física y mental en condiciones de estrés crónico y burnout',
+            evidenceGrade: 'A',
+          },
+          {
+            condition: 'Síntomas depresivos leves a moderados',
+            evidenceGrade: 'B',
+            notes: 'Estudios pequeños en depresión leve.',
+          },
+          {
+            condition: 'Reducción de ansiedad generalizada y síntomas de estrés',
+            evidenceGrade: 'B',
+            notes: 'No debe tratarse como tratamiento de ansiedad clínica.',
+          },
+        ],
+        limitedEvidence: [],
+      },
+    }, 'Rhodiola rosea');
+
+    const worksForText = JSON.stringify(calibrated.supplement.worksFor).toLowerCase();
+    const limitedText = JSON.stringify(calibrated.supplement.limitedEvidence).toLowerCase();
+
+    expect(calibrated.supplement.worksFor).toHaveLength(1);
+    expect(calibrated.supplement.worksFor[0].evidenceGrade).toBe('B');
+    expect(worksForText).not.toMatch(/ansiedad|anxiety|depresi|depression/);
+    expect(calibrated.supplement.limitedEvidence).toHaveLength(2);
+    expect(limitedText).toMatch(/ansiedad|depresivos/);
+    expect(calibrated.supplement.limitedEvidence.every((item: any) => item.grade === 'C' || item.evidenceGrade === 'C')).toBe(true);
+    expect(limitedText).toContain('no debe presentarse como beneficio clinico establecido');
+  });
+});
+
 describe('cannabis and CBD editorial calibration', () => {
   it('keeps the cannabis regulatory notice out of every individual worksFor item', () => {
     const calibrated: any = calibratePortalRecommendation({
