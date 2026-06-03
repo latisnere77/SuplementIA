@@ -19,6 +19,11 @@ function isLionsManeText(...values: unknown[]): boolean {
   return /\b(lion'?s mane|lions mane|hericium erinaceus|melena de leon)\b/.test(haystack);
 }
 
+function isRhodiolaText(...values: unknown[]): boolean {
+  const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
+  return /\b(rhodiola rosea|rhodiola|shr-5|vitano|rosavins|salidroside)\b/.test(haystack);
+}
+
 function isCannabisText(...values: unknown[]): boolean {
   const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
   return /\b(cannabis sativa|medical cannabis|medical marijuana|marijuana|marihuana|cannabinoids?|cannabidiol|cbd|tetrahydrocannabinol|thc|nabiximols|sativex|dronabinol|nabilone)\b/.test(haystack);
@@ -39,6 +44,19 @@ export function isCentellaRecommendation(value: any, category?: string): boolean
 
 function isLionsManeRecommendation(value: any, category?: string): boolean {
   return isLionsManeText(
+    category,
+    value?.category,
+    value?.supplement?.name,
+    value?.supplement?.description,
+    value?.data?.name,
+    value?.data?.whatIsIt,
+    value?.data?.description,
+    value?.metadata?.supplementId
+  );
+}
+
+function isRhodiolaRecommendation(value: any, category?: string): boolean {
+  return isRhodiolaText(
     category,
     value?.category,
     value?.supplement?.name,
@@ -770,6 +788,79 @@ export function calibrateLionsManeRecommendation<T>(recommendation: T, category?
   return sanitizeLionsManeItem(recommendation);
 }
 
+function isRhodiolaMoodOrAnxietyItem(item: any): boolean {
+  const text = normalizeClinicalText([
+    item?.condition,
+    item?.use,
+    item?.benefit,
+    item?.description,
+    item?.summary,
+    item?.notes,
+  ].filter(Boolean).join(' '));
+  return /\b(anxiety|ansiedad|depression|depresion|depresivos?|mood|estado de animo)\b/.test(text);
+}
+
+function calibrateRhodiolaWorksFor(
+  worksFor: unknown,
+  limitedEvidence: unknown
+): { worksFor: any[]; limitedEvidence: any[] } {
+  const calibratedWorksFor: any[] = [];
+  const calibratedLimitedEvidence = Array.isArray(limitedEvidence) ? [...limitedEvidence] : [];
+
+  for (const rawItem of Array.isArray(worksFor) ? worksFor : []) {
+    const item = sanitizeCentellaItem({ ...rawItem }) as any;
+
+    if (isRhodiolaMoodOrAnxietyItem(item)) {
+      calibratedLimitedEvidence.push({
+        ...item,
+        evidenceGrade: 'C',
+        grade: 'C',
+        notes: `${sanitizeCentellaClaimText(item.notes) || ''} Evidencia humana limitada: no debe presentarse como beneficio clinico establecido de Rhodiola rosea.`.trim(),
+        magnitude: 'Evidencia limitada; magnitud clinica no establecida.',
+      });
+      continue;
+    }
+
+    item.evidenceGrade = capEvidenceGrade(item.evidenceGrade || item.grade, 'B');
+    item.grade = item.evidenceGrade;
+    calibratedWorksFor.push(item);
+  }
+
+  return {
+    worksFor: calibratedWorksFor,
+    limitedEvidence: sanitizeCentellaItem(calibratedLimitedEvidence),
+  };
+}
+
+export function calibrateRhodiolaRecommendation<T>(recommendation: T, category?: string): T {
+  if (!recommendation || !isRhodiolaRecommendation(recommendation, category)) return recommendation;
+
+  const calibrated: any = sanitizeCentellaItem(recommendation);
+
+  if (calibrated.data) {
+    const { worksFor, limitedEvidence } = calibrateRhodiolaWorksFor(
+      calibrated.data.worksFor,
+      calibrated.data.limitedEvidence
+    );
+    calibrated.data.worksFor = worksFor;
+    calibrated.data.limitedEvidence = limitedEvidence;
+  }
+
+  if (calibrated.supplement) {
+    const { worksFor, limitedEvidence } = calibrateRhodiolaWorksFor(
+      calibrated.supplement.worksFor,
+      calibrated.supplement.limitedEvidence
+    );
+    calibrated.supplement.worksFor = worksFor;
+    calibrated.supplement.limitedEvidence = limitedEvidence;
+    calibrated.supplement.benefits = worksFor.map((item: any) =>
+      `${item.condition || item.use || item.benefit} (Evidencia: ${item.evidenceGrade || item.grade || 'B'})`
+    );
+  }
+
+  return calibrated as T;
+}
+
 export function calibrateCannabisRecommendation<T>(recommendation: T, category?: string): T {
   if (!recommendation || !isCannabisRecommendation(recommendation, category)) return recommendation;
 
@@ -868,8 +959,11 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
 
 export function calibratePortalRecommendation<T>(recommendation: T, category?: string): T {
   return calibrateCannabisRecommendation(
-    calibrateLionsManeRecommendation(
-      calibrateCentellaRecommendation(recommendation, category),
+    calibrateRhodiolaRecommendation(
+      calibrateLionsManeRecommendation(
+        calibrateCentellaRecommendation(recommendation, category),
+        category
+      ),
       category
     ),
     category
