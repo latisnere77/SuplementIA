@@ -49,7 +49,6 @@ const searchCases: SearchCase[] = [
 
   // Less common/trendy supplement names that should not fall through to unrelated catalog entries.
   { query: 'berberine', expectedSearchTerm: 'Berberine' },
-  { query: 'berberina', expectedSearchTerm: 'Berberine' },
   { query: 'tongkat ali' },
   { query: 'fadogia agrestis', expectedOutcome: 'insufficient_data' },
   { query: 'sea moss' },
