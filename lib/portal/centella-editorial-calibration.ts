@@ -837,6 +837,19 @@ export function calibrateRhodiolaRecommendation<T>(recommendation: T, category?:
 
   const calibrated: any = sanitizeCentellaItem(recommendation);
 
+  if (!calibrated.data && !calibrated.supplement && (calibrated.name || calibrated.worksFor || calibrated.limitedEvidence)) {
+    const { worksFor, limitedEvidence } = calibrateRhodiolaWorksFor(
+      calibrated.worksFor,
+      calibrated.limitedEvidence
+    );
+    calibrated.worksFor = worksFor;
+    calibrated.limitedEvidence = limitedEvidence;
+    calibrated.benefits = worksFor.map((item: any) =>
+      `${item.condition || item.use || item.benefit} (Evidencia: ${item.evidenceGrade || item.grade || 'B'})`
+    );
+    return calibrated as T;
+  }
+
   if (calibrated.data) {
     const { worksFor, limitedEvidence } = calibrateRhodiolaWorksFor(
       calibrated.data.worksFor,
