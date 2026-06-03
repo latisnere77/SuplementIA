@@ -56,6 +56,149 @@ export const CLINICAL_RECALL_IDENTITIES: ClinicalRecallIdentity[] = [
     controlledHumanPmids: ['11106141', '35328954', '23533507', '35204098', '3544968', '7936334'],
   },
   {
+    canonicalName: 'Bacopa monnieri',
+    aliases: [
+      'Bacopa monnieri',
+      'bacopa',
+      'brahmi',
+      'bacosides',
+    ],
+    clinicalTerms: [
+      ...DEFAULT_CLINICAL_TERMS,
+      'memory',
+      'attention',
+      'cognitive performance',
+      'cognition',
+      'healthy adults',
+    ],
+    focusedRequests: [
+      {
+        supplementName: 'Bacopa monnieri',
+        benefitQuery: 'randomized controlled trial systematic review humans memory attention cognitive performance cognition healthy adults',
+      },
+      {
+        supplementName: 'bacopa',
+        benefitQuery: 'meta-analysis randomized controlled trial humans memory attention cognition',
+      },
+    ],
+    controlledHumanPmids: ['24252493', '18611150', '22747190', '38538390'],
+  },
+  {
+    canonicalName: 'Saw palmetto',
+    aliases: [
+      'Saw palmetto',
+      'Serenoa repens',
+      'Permixon',
+      'hexanic extract',
+    ],
+    clinicalTerms: [
+      ...DEFAULT_CLINICAL_TERMS,
+      'benign prostatic hyperplasia',
+      'BPH',
+      'lower urinary tract symptoms',
+      'LUTS',
+    ],
+    focusedRequests: [
+      {
+        supplementName: 'Serenoa repens',
+        benefitQuery: 'systematic review randomized controlled trial humans benign prostatic hyperplasia BPH lower urinary tract symptoms LUTS',
+      },
+      {
+        supplementName: 'Permixon hexanic extract Serenoa repens',
+        benefitQuery: 'systematic review randomized controlled trial humans BPH LUTS hexanic extract',
+      },
+    ],
+    controlledHumanPmids: ['23235581', '22551330', '37345871', '29694707'],
+  },
+  {
+    canonicalName: 'Ginkgo biloba',
+    aliases: [
+      'Ginkgo biloba',
+      'EGb 761',
+      'ginkgo extract',
+    ],
+    clinicalTerms: [
+      ...DEFAULT_CLINICAL_TERMS,
+      'cognitive impairment',
+      'dementia',
+      'Alzheimer',
+      'tinnitus',
+      'prevention',
+    ],
+    focusedRequests: [
+      {
+        supplementName: 'EGb 761',
+        benefitQuery: 'systematic review meta-analysis randomized controlled trial humans cognitive impairment dementia Alzheimer',
+      },
+      {
+        supplementName: 'Ginkgo biloba',
+        benefitQuery: 'systematic review randomized controlled trial humans dementia prevention tinnitus',
+      },
+    ],
+    controlledHumanPmids: ['19017911', '25114079', '39895346', '23543524'],
+  },
+  {
+    canonicalName: 'Milk thistle',
+    aliases: [
+      'Milk thistle',
+      'Silybum marianum',
+      'silymarin',
+      'silibinin',
+    ],
+    clinicalTerms: [
+      ...DEFAULT_CLINICAL_TERMS,
+      'NAFLD',
+      'NASH',
+      'liver enzymes',
+      'liver disease',
+      'metabolic-associated steatotic liver disease',
+    ],
+    focusedRequests: [
+      {
+        supplementName: 'silymarin',
+        benefitQuery: 'systematic review meta-analysis randomized controlled trial humans NAFLD NASH liver enzymes liver disease',
+      },
+      {
+        supplementName: 'Silybum marianum',
+        benefitQuery: 'randomized controlled trial humans metabolic-associated steatotic liver disease liver stiffness liver enzymes',
+      },
+    ],
+    controlledHumanPmids: ['38579127', '28419855', '39097726', '31069872'],
+  },
+  {
+    canonicalName: 'Rhodiola rosea',
+    aliases: [
+      'Rhodiola rosea',
+      'rhodiola',
+      'SHR-5',
+      'Vitano',
+      'rosavins',
+      'salidroside',
+    ],
+    clinicalTerms: [
+      ...DEFAULT_CLINICAL_TERMS,
+      'fatigue',
+      'stress',
+      'burnout',
+      'mental performance',
+    ],
+    focusedRequests: [
+      {
+        supplementName: 'Rhodiola rosea',
+        benefitQuery: 'systematic review randomized controlled trial humans fatigue stress burnout mental performance',
+      },
+      {
+        supplementName: 'SHR-5 Rhodiola rosea',
+        benefitQuery: 'randomized controlled trial humans stress-related fatigue mental performance',
+      },
+      {
+        supplementName: 'Vitano Rhodiola rosea',
+        benefitQuery: 'randomized controlled trial humans stress anxiety cognition mood',
+      },
+    ],
+    controlledHumanPmids: ['22643043', '19016404', '11081987', '26502953'],
+  },
+  {
     canonicalName: 'Cannabis sativa',
     aliases: [
       'Cannabis sativa',

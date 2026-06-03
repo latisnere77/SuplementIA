@@ -296,6 +296,61 @@ describe('pubmed literature profile', () => {
     expect(phrases).not.toEqual(expect.arrayContaining(['CBD', 'cannabidiol']));
   });
 
+  it('expands popular botanicals to controlled clinical recall aliases', () => {
+    expect(getPubMedQueryPhrases('Bacopa monnieri')).toEqual(expect.arrayContaining([
+      'Bacopa monnieri',
+      'bacopa',
+      'brahmi',
+      'bacosides',
+    ]));
+    expect(getPubMedQueryPhrases('Saw palmetto')).toEqual(expect.arrayContaining([
+      'Saw palmetto',
+      'Serenoa repens',
+      'Permixon',
+      'hexanic extract',
+    ]));
+    expect(getPubMedQueryPhrases('Ginkgo biloba')).toEqual(expect.arrayContaining([
+      'Ginkgo biloba',
+      'EGb 761',
+      'ginkgo extract',
+    ]));
+    expect(getPubMedQueryPhrases('Milk thistle')).toEqual(expect.arrayContaining([
+      'Milk thistle',
+      'Silybum marianum',
+      'silymarin',
+      'silibinin',
+    ]));
+    expect(getPubMedQueryPhrases('Rhodiola rosea')).toEqual(expect.arrayContaining([
+      'Rhodiola rosea',
+      'rhodiola',
+      'SHR-5',
+      'Vitano',
+      'rosavins',
+      'salidroside',
+    ]));
+  });
+
+  it('keeps botanical PubMed recall aliases scoped to the requested botanical', () => {
+    expect(getPubMedQueryPhrases('Bacopa monnieri')).not.toEqual(expect.arrayContaining([
+      'Serenoa repens',
+      'EGb 761',
+      'silymarin',
+      'Rhodiola rosea',
+    ]));
+    expect(getPubMedQueryPhrases('Saw palmetto')).not.toEqual(expect.arrayContaining([
+      'bacopa',
+      'EGb 761',
+      'silymarin',
+      'SHR-5',
+    ]));
+    expect(getPubMedQueryPhrases('Ginkgo biloba')).not.toEqual(expect.arrayContaining([
+      'bacopa',
+      'Serenoa repens',
+      'silymarin',
+      'Vitano',
+    ]));
+  });
+
   it('uses Mimosa botanical aliases in PubMed literature profile search without changing clinical classification', async () => {
     const fetchMock = jest
       .fn()
