@@ -7,6 +7,34 @@ function countCannabisNotices(value: unknown): number {
 }
 
 describe('Rhodiola editorial calibration', () => {
+  it('calibrates direct recommendation payloads from quiz responses', () => {
+    const calibrated: any = calibratePortalRecommendation({
+      category: 'Rhodiola rosea',
+      name: 'Rhodiola rosea',
+      worksFor: [
+        {
+          condition: 'Reducción de fatiga física y mental en condiciones de estrés crónico y burnout',
+          evidenceGrade: 'A',
+        },
+        {
+          condition: 'Reducción de ansiedad generalizada y síntomas de estrés',
+          evidenceGrade: 'B',
+        },
+        {
+          condition: 'Síntomas depresivos leves a moderados',
+          evidenceGrade: 'B',
+        },
+      ],
+      limitedEvidence: [],
+    }, 'Rhodiola rosea');
+
+    expect(calibrated.worksFor).toHaveLength(1);
+    expect(calibrated.worksFor[0].evidenceGrade).toBe('B');
+    expect(JSON.stringify(calibrated.worksFor).toLowerCase()).not.toMatch(/ansiedad|anxiety|depresi|depression/);
+    expect(calibrated.limitedEvidence).toHaveLength(2);
+    expect(JSON.stringify(calibrated.limitedEvidence).toLowerCase()).toMatch(/ansiedad|depresivos/);
+  });
+
   it('moves anxiety and depression claims out of worksFor', () => {
     const calibrated: any = calibratePortalRecommendation({
       category: 'Rhodiola rosea',
