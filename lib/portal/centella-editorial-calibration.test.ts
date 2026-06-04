@@ -185,7 +185,7 @@ describe('Botanical P2 editorial calibration', () => {
     expect(calibrated.data.worksFor[0].evidenceGrade).toBe('B');
     expect(calibrated.data.worksFor[0].notes).toContain('EGb 761');
     expect(worksForText).toContain('egb 761');
-    expect(worksForText).not.toMatch(/plaquetaria|cirugia|tinnitus|prevencion/);
+    expect(worksForText).not.toMatch(/plaquetaria|cirugia|tinnitus|prevencion|mecanismos?|seguridad/);
     expect(calibrated.data.limitedEvidence).toHaveLength(3);
     expect(limitedText).toMatch(/plaquetaria|cirugia cardiovascular|tinnitus/);
   });

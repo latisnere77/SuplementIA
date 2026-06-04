@@ -880,7 +880,7 @@ const BOTANICAL_P2_PROFILES: BotanicalP2Profile[] = [
     matches: isGinkgoText,
     keepWorksFor: isGinkgoScopedWorksForItem,
     limitedNote: 'Evidencia limitada, mecanistica o formulacion-especifica: no debe presentarse como beneficio clinico establecido de Ginkgo biloba generico.',
-    scopeNote: 'Scope formulacion-especifico: EGb 761 en deterioro cognitivo/demencia; no extrapolar a ginkgo generico ni a mecanismos o seguridad.',
+    scopeNote: 'Scope formulacion-especifico: EGb 761 en deterioro cognitivo/demencia; no extrapolar a ginkgo generico ni a otros usos clinicos.',
   },
   {
     label: 'Milk thistle',
