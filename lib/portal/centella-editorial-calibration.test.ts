@@ -73,6 +73,150 @@ describe('Rhodiola editorial calibration', () => {
   });
 });
 
+describe('Botanical P2 editorial calibration', () => {
+  it('keeps Bacopa cognition scoped and moves anxiety, depression, and neuroprotection out of worksFor', () => {
+    const products = [{ name: 'Bacopa product', affiliateLink: 'https://example.com/bacopa' }];
+    const calibrated: any = calibratePortalRecommendation({
+      category: 'Bacopa monnieri',
+      name: 'Bacopa monnieri',
+      worksFor: [
+        {
+          condition: 'Memoria y atencion en adultos sanos con extracto estandarizado',
+          evidenceGrade: 'A',
+        },
+        {
+          condition: 'Reduccion de ansiedad y sintomas depresivos',
+          evidenceGrade: 'B',
+        },
+        {
+          condition: 'Neuroproteccion y reduccion de dano oxidativo 30-40% en modelos preclinicos',
+          evidenceGrade: 'A',
+        },
+      ],
+      limitedEvidence: [],
+      products,
+    }, 'Bacopa monnieri');
+
+    const worksForText = JSON.stringify(calibrated.worksFor).toLowerCase();
+    const limitedText = JSON.stringify(calibrated.limitedEvidence).toLowerCase();
+
+    expect(calibrated.products).toEqual(products);
+    expect(calibrated.worksFor).toHaveLength(1);
+    expect(calibrated.worksFor[0].evidenceGrade).toBe('B');
+    expect(calibrated.worksFor[0].notes).toContain('extractos estandarizados');
+    expect(worksForText).not.toMatch(/ansiedad|depresi|neuroproteccion|oxidativo/);
+    expect(calibrated.limitedEvidence).toHaveLength(2);
+    expect(limitedText).toMatch(/ansiedad|depresivos|neuroproteccion/);
+    expect(calibrated.limitedEvidence.every((item: any) => item.grade === 'C' || item.evidenceGrade === 'C')).toBe(true);
+  });
+
+  it('keeps only formulation-scoped Saw palmetto worksFor claims', () => {
+    const products = [{ name: 'Saw palmetto product' }];
+    const calibrated: any = calibratePortalRecommendation({
+      category: 'Saw palmetto',
+      supplement: {
+        name: 'Saw palmetto',
+        worksFor: [
+          {
+            condition: 'Permixon extracto hexanico de Serenoa repens para LUTS/BPH',
+            evidenceGrade: 'A',
+          },
+          {
+            condition: 'Mejora de nicturia, flujo urinario y volumen residual con saw palmetto generico',
+            evidenceGrade: 'B',
+          },
+          {
+            condition: 'Alopecia androgenetica',
+            evidenceGrade: 'B',
+          },
+        ],
+        limitedEvidence: [],
+        products,
+      },
+    }, 'Saw palmetto');
+
+    const worksForText = JSON.stringify(calibrated.supplement.worksFor).toLowerCase();
+    const limitedText = JSON.stringify(calibrated.supplement.limitedEvidence).toLowerCase();
+
+    expect(calibrated.supplement.products).toEqual(products);
+    expect(calibrated.supplement.worksFor).toHaveLength(1);
+    expect(calibrated.supplement.worksFor[0].evidenceGrade).toBe('B');
+    expect(calibrated.supplement.worksFor[0].notes).toContain('formulacion-especifico');
+    expect(worksForText).toContain('permixon');
+    expect(worksForText).not.toMatch(/nicturia|alopecia|volumen residual/);
+    expect(calibrated.supplement.limitedEvidence).toHaveLength(2);
+    expect(limitedText).toMatch(/nicturia|alopecia/);
+  });
+
+  it('keeps Ginkgo worksFor scoped to EGb 761 and moves mechanisms or popular uses out', () => {
+    const products = [{ name: 'Ginkgo product' }];
+    const calibrated: any = calibratePortalRecommendation({
+      category: 'Ginkgo biloba',
+      data: {
+        name: 'Ginkgo biloba',
+        worksFor: [
+          {
+            condition: 'EGb 761 en deterioro cognitivo y demencia',
+            evidenceGrade: 'A',
+          },
+          {
+            condition: 'Modulacion de actividad plaquetaria',
+            evidenceGrade: 'B',
+          },
+          {
+            condition: 'Reduccion de dano oxidativo en cirugia cardiovascular',
+            evidenceGrade: 'B',
+          },
+          {
+            condition: 'Prevencion de demencia y tinnitus con ginkgo generico',
+            evidenceGrade: 'B',
+          },
+        ],
+        limitedEvidence: [],
+        products,
+      },
+    }, 'Ginkgo biloba');
+
+    const worksForText = JSON.stringify(calibrated.data.worksFor).toLowerCase();
+    const limitedText = JSON.stringify(calibrated.data.limitedEvidence).toLowerCase();
+
+    expect(calibrated.data.products).toEqual(products);
+    expect(calibrated.data.worksFor).toHaveLength(1);
+    expect(calibrated.data.worksFor[0].evidenceGrade).toBe('B');
+    expect(calibrated.data.worksFor[0].notes).toContain('EGb 761');
+    expect(worksForText).toContain('egb 761');
+    expect(worksForText).not.toMatch(/plaquetaria|cirugia|tinnitus|prevencion/);
+    expect(calibrated.data.limitedEvidence).toHaveLength(3);
+    expect(limitedText).toMatch(/plaquetaria|cirugia cardiovascular|tinnitus/);
+  });
+
+  it('moves Milk thistle liver and metabolic claims out of worksFor', () => {
+    const products = [{ name: 'Milk thistle product' }];
+    const calibrated: any = calibratePortalRecommendation({
+      category: 'Milk thistle',
+      name: 'Milk thistle',
+      worksFor: [
+        { condition: 'Reduccion de mortalidad por enfermedad hepatica', evidenceGrade: 'A' },
+        { condition: 'NASH y NAFLD con mejora de enzimas hepaticas', evidenceGrade: 'B' },
+        { condition: 'Control glucemico en diabetes tipo 2', evidenceGrade: 'B' },
+        { condition: 'Hepatotoxicidad por quimioterapia', evidenceGrade: 'B' },
+        { condition: 'Reduccion de lipidos y colesterol', evidenceGrade: 'B' },
+      ],
+      limitedEvidence: [],
+      products,
+    }, 'Milk thistle');
+
+    const limitedText = JSON.stringify(calibrated.limitedEvidence).toLowerCase();
+
+    expect(calibrated.products).toEqual(products);
+    expect(calibrated.worksFor).toHaveLength(0);
+    expect(calibrated.limitedEvidence).toHaveLength(5);
+    expect(calibrated.limitedEvidence.every((item: any) => item.grade === 'C' || item.evidenceGrade === 'C')).toBe(true);
+    expect(limitedText).toMatch(/mortalidad|nash|glucemico|quimioterapia|lipidos/);
+    expect(limitedText).toContain('no debe presentarse como hepatoproteccion');
+  });
+});
+
 describe('cannabis and CBD editorial calibration', () => {
   it('keeps the cannabis regulatory notice out of every individual worksFor item', () => {
     const calibrated: any = calibratePortalRecommendation({

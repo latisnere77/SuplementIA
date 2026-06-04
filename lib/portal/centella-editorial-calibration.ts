@@ -24,6 +24,26 @@ function isRhodiolaText(...values: unknown[]): boolean {
   return /\b(rhodiola rosea|rhodiola|shr-5|vitano|rosavins|salidroside)\b/.test(haystack);
 }
 
+function isBacopaText(...values: unknown[]): boolean {
+  const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
+  return /\b(bacopa monnieri|bacopa|brahmi|bacosides?)\b/.test(haystack);
+}
+
+function isSawPalmettoText(...values: unknown[]): boolean {
+  const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
+  return /\b(saw palmetto|serenoa repens|permixon|hexanic extract|extracto hexanico)\b/.test(haystack);
+}
+
+function isGinkgoText(...values: unknown[]): boolean {
+  const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
+  return /\b(ginkgo biloba|egb\s*761|ginkgo extract|extracto de ginkgo)\b/.test(haystack);
+}
+
+function isMilkThistleText(...values: unknown[]): boolean {
+  const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
+  return /\b(milk thistle|silybum marianum|silymarin|silibinin|cardo mariano)\b/.test(haystack);
+}
+
 function isCannabisText(...values: unknown[]): boolean {
   const haystack = normalizeClinicalText(values.filter(Boolean).join(' '));
   return /\b(cannabis sativa|medical cannabis|medical marijuana|marijuana|marihuana|cannabinoids?|cannabidiol|cbd|tetrahydrocannabinol|thc|nabiximols|sativex|dronabinol|nabilone)\b/.test(haystack);
@@ -66,6 +86,10 @@ function isRhodiolaRecommendation(value: any, category?: string): boolean {
     value?.data?.description,
     value?.metadata?.supplementId
   );
+}
+
+function isBotanicalP2Recommendation(value: any, category?: string): boolean {
+  return Boolean(getBotanicalP2Profile(value, category));
 }
 
 function isCannabisRecommendation(value: any, category?: string): boolean {
@@ -788,6 +812,179 @@ export function calibrateLionsManeRecommendation<T>(recommendation: T, category?
   return sanitizeLionsManeItem(recommendation);
 }
 
+type BotanicalP2Profile = {
+  label: string;
+  matches: (...values: unknown[]) => boolean;
+  keepWorksFor: (item: any) => boolean;
+  limitedNote: string;
+  scopeNote?: string;
+};
+
+function botanicalItemText(item: any): string {
+  return normalizeClinicalText([
+    item?.condition,
+    item?.use,
+    item?.benefit,
+    item?.description,
+    item?.summary,
+    item?.notes,
+    item?.magnitude,
+  ].filter(Boolean).join(' '));
+}
+
+function appendClinicalNote(value: unknown, note: string): string {
+  const base = String(sanitizeCentellaClaimText(value) || '').trim();
+  return normalizeClinicalText(base).includes(normalizeClinicalText(note))
+    ? base
+    : `${base} ${note}`.trim();
+}
+
+function isBacopaStrongWorksForItem(item: any): boolean {
+  const text = botanicalItemText(item);
+  const cognitive = /\b(memory|memoria|attention|atencion|cognitive|cognitivo|cognitiva|cognition|aprendizaje|learning)\b/.test(text);
+  const inflated = /\b(anxiety|ansiedad|depression|depresion|depresivos?|mood|estado de animo|neuroprotect|neuroproteccion|neurodegener|alzheimer|dementia|demencia|preclinical|preclinico|in vitro|animal|animals|ratas?|rats?|cell|celulas?|oxidative|oxidativo|antioxidant|antioxidante)\b/.test(text);
+  return cognitive && !inflated;
+}
+
+function isSawPalmettoScopedWorksForItem(item: any): boolean {
+  const text = botanicalItemText(item);
+  return /\b(permixon|hexanic|extracto hexanico)\b/.test(text) &&
+    /\b(bph|luts|benign prostatic hyperplasia|hiperplasia prostatica|lower urinary tract|tracto urinario inferior|prostat)\b/.test(text);
+}
+
+function isGinkgoScopedWorksForItem(item: any): boolean {
+  const text = botanicalItemText(item);
+  const scoped = /\b(egb\s*761)\b/.test(text);
+  const clinical = /\b(cognitive impairment|deterioro cognitivo|dementia|demencia|alzheimer)\b/.test(text);
+  const inflated = /\b(prevention|prevencion|prevent|tinnitus|acufeno|platelet|plaquetaria|coagul|bleeding|sangrado|oxidative|oxidativo|surgery|cirugia|cardiovascular|endothelial|endotelial|mechanism|mecanismo)\b/.test(text);
+  return scoped && clinical && !inflated;
+}
+
+const BOTANICAL_P2_PROFILES: BotanicalP2Profile[] = [
+  {
+    label: 'Bacopa monnieri',
+    matches: isBacopaText,
+    keepWorksFor: isBacopaStrongWorksForItem,
+    limitedNote: 'Evidencia limitada o no suficientemente especifica: no debe presentarse como beneficio clinico establecido de Bacopa monnieri.',
+    scopeNote: 'Mantener scope a memoria/atencion en humanos y extractos estandarizados; no extrapolar a otros usos clinicos.',
+  },
+  {
+    label: 'Saw palmetto',
+    matches: isSawPalmettoText,
+    keepWorksFor: isSawPalmettoScopedWorksForItem,
+    limitedNote: 'Evidencia dependiente de formulacion: no generalizar a saw palmetto generico ni presentarlo como beneficio clinico establecido.',
+    scopeNote: 'Scope formulacion-especifico: extracto hexanico de Serenoa repens/Permixon; no extrapolar a todos los productos de saw palmetto.',
+  },
+  {
+    label: 'Ginkgo biloba',
+    matches: isGinkgoText,
+    keepWorksFor: isGinkgoScopedWorksForItem,
+    limitedNote: 'Evidencia limitada, mecanistica o formulacion-especifica: no debe presentarse como beneficio clinico establecido de Ginkgo biloba generico.',
+    scopeNote: 'Scope formulacion-especifico: EGb 761 en deterioro cognitivo/demencia; no extrapolar a ginkgo generico ni a mecanismos o seguridad.',
+  },
+  {
+    label: 'Milk thistle',
+    matches: isMilkThistleText,
+    keepWorksFor: () => false,
+    limitedNote: 'Evidencia humana mixta o limitada: no debe presentarse como hepatoproteccion, detox ni beneficio clinico establecido de Milk thistle.',
+  },
+];
+
+function getBotanicalP2Profile(value: any, category?: string): BotanicalP2Profile | undefined {
+  return BOTANICAL_P2_PROFILES.find((profile) => profile.matches(
+    category,
+    value?.category,
+    value?.name,
+    value?.supplement?.name,
+    value?.supplement?.description,
+    value?.data?.name,
+    value?.data?.whatIsIt,
+    value?.data?.description,
+    value?.metadata?.supplementId
+  ));
+}
+
+function demoteBotanicalP2Item(rawItem: any, profile: BotanicalP2Profile): any {
+  const item = sanitizeCentellaItem({ ...rawItem }) as any;
+  return {
+    ...item,
+    evidenceGrade: 'C',
+    grade: 'C',
+    notes: appendClinicalNote(item.notes || item.summary || item.description, profile.limitedNote),
+    magnitude: 'Evidencia limitada; magnitud clinica no establecida.',
+  };
+}
+
+function calibrateBotanicalP2WorksFor(
+  worksFor: unknown,
+  limitedEvidence: unknown,
+  profile: BotanicalP2Profile
+): { worksFor: any[]; limitedEvidence: any[] } {
+  const calibratedWorksFor: any[] = [];
+  const calibratedLimitedEvidence = Array.isArray(limitedEvidence) ? [...limitedEvidence] : [];
+
+  for (const rawItem of Array.isArray(worksFor) ? worksFor : []) {
+    const item = sanitizeCentellaItem({ ...rawItem }) as any;
+
+    if (!profile.keepWorksFor(item)) {
+      calibratedLimitedEvidence.push(demoteBotanicalP2Item(item, profile));
+      continue;
+    }
+
+    item.evidenceGrade = capEvidenceGrade(item.evidenceGrade || item.grade, 'B');
+    item.grade = item.evidenceGrade;
+    if (profile.scopeNote) {
+      item.notes = appendClinicalNote(item.notes, profile.scopeNote);
+    }
+    calibratedWorksFor.push(item);
+  }
+
+  return {
+    worksFor: calibratedWorksFor,
+    limitedEvidence: calibratedLimitedEvidence,
+  };
+}
+
+function calibrateBotanicalP2DataShape(data: any, profile: BotanicalP2Profile): any {
+  if (!data || typeof data !== 'object') return data;
+
+  const calibrated: any = { ...data };
+  const { worksFor, limitedEvidence } = calibrateBotanicalP2WorksFor(
+    calibrated.worksFor,
+    calibrated.limitedEvidence,
+    profile
+  );
+  calibrated.worksFor = worksFor;
+  calibrated.limitedEvidence = limitedEvidence;
+  calibrated.benefits = worksFor.map((item: any) =>
+    `${item.condition || item.use || item.benefit} (Evidencia: ${item.evidenceGrade || item.grade || 'B'})`
+  );
+  return calibrated;
+}
+
+export function calibrateBotanicalP2Recommendation<T>(recommendation: T, category?: string): T {
+  if (!recommendation || !isBotanicalP2Recommendation(recommendation, category)) return recommendation;
+
+  const profile = getBotanicalP2Profile(recommendation, category);
+  if (!profile) return recommendation;
+
+  const calibrated: any = { ...(recommendation as any) };
+
+  if (!calibrated.data && !calibrated.supplement && (calibrated.name || calibrated.worksFor || calibrated.limitedEvidence)) {
+    return calibrateBotanicalP2DataShape(calibrated, profile) as T;
+  }
+
+  if (calibrated.data) {
+    calibrated.data = calibrateBotanicalP2DataShape(calibrated.data, profile);
+  }
+
+  if (calibrated.supplement) {
+    calibrated.supplement = calibrateBotanicalP2DataShape(calibrated.supplement, profile);
+  }
+
+  return calibrated as T;
+}
+
 function isRhodiolaMoodOrAnxietyItem(item: any): boolean {
   const text = normalizeClinicalText([
     item?.condition,
@@ -972,9 +1169,12 @@ export function calibrateCannabisRecommendation<T>(recommendation: T, category?:
 
 export function calibratePortalRecommendation<T>(recommendation: T, category?: string): T {
   return calibrateCannabisRecommendation(
-    calibrateRhodiolaRecommendation(
-      calibrateLionsManeRecommendation(
-        calibrateCentellaRecommendation(recommendation, category),
+    calibrateBotanicalP2Recommendation(
+      calibrateRhodiolaRecommendation(
+        calibrateLionsManeRecommendation(
+          calibrateCentellaRecommendation(recommendation, category),
+          category
+        ),
         category
       ),
       category
