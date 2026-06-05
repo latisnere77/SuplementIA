@@ -105,15 +105,32 @@ function isCannabisRecommendation(value: any, category?: string): boolean {
   );
 }
 
+function cleanCentellaSafetyCopy(value: string): string {
+  const warningPattern = new RegExp(CENTELLA_LIVER_WARNING.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+  let seenWarning = false;
+
+  return value
+    .replace(warningPattern, (match) => {
+      if (seenWarning) return '';
+      seenWarning = true;
+      return match;
+    })
+    .replace(/([.;:])\1+/g, '$1')
+    .replace(/\s+([,.;:])/g, '$1')
+    .replace(/([-–,;:])\s+y\s+(?=Generalmente bien tolerada)/gi, '$1 ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 export function sanitizeCentellaClaimText(value: unknown): unknown {
   if (typeof value !== 'string') return value;
 
-  return value
-    .replace(/\busar con precauci[oó]n\s+aunque\s+(?:no hay|no existen)\s+reportes de hepatotoxicidad\b[^.;]*/gi, CENTELLA_LIVER_WARNING)
-    .replace(/\baunque\s+(?:no hay|no existen)\s+reportes de hepatotoxicidad\b[^.;]*/gi, `y ${CENTELLA_LIVER_WARNING}`)
-    .replace(/\b(?:no hay|no existen|no)\s+reportes de hepatotoxicidad\b[^.;]*/gi, CENTELLA_LIVER_WARNING)
-    .replace(/\bNo reportes de hepatotoxicidad\b[^.;]*/gi, CENTELLA_LIVER_WARNING)
-    .replace(/\bsin reportes de toxicidad hep[aá]tica\b[^.;]*/gi, CENTELLA_LIVER_WARNING)
+  return cleanCentellaSafetyCopy(value
+    .replace(/\busar con precauci[oó]n\s+aunque\s+(?:no hay|no existen)\s+reportes de hepatotoxicidad\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
+    .replace(/\baunque\s+(?:no hay|no existen)\s+reportes de hepatotoxicidad\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
+    .replace(/\b(?:no hay|no existen|no)\s+reportes de hepatotoxicidad\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
+    .replace(/\bNo reportes de hepatotoxicidad\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
+    .replace(/\bsin reportes de toxicidad hep[aá]tica\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
     .replace(/\beficacia demostrada\b/gi, 'evidencia humana disponible')
     .replace(/\btratamiento m[eé]dico\b/gi, 'atencion medica')
     .replace(/\btratamiento cl[ií]nico\b/gi, 'uso clinico estudiado')
@@ -122,7 +139,7 @@ export function sanitizeCentellaClaimText(value: unknown): unknown {
     .replace(/\buso estudiado m[eé]dico\b/gi, 'atencion medica')
     .replace(/\btreat(?:s|ment)?\b/gi, 'studied support')
     .replace(/\bcures?\b/gi, 'is studied for')
-    .replace(/\b(?:60|25|30|10|5)\s*[-–]\s*(?:70|35|40|20|15)\s*%/gi, 'mejoras reportadas');
+    .replace(/\b(?:60|25|30|10|5)\s*[-–]\s*(?:70|35|40|20|15)\s*%/gi, 'mejoras reportadas'));
 }
 
 function sanitizeCannabisClaimText(value: unknown): unknown {

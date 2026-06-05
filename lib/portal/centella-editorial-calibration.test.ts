@@ -73,6 +73,46 @@ describe('Rhodiola editorial calibration', () => {
   });
 });
 
+describe('Centella safety copy calibration', () => {
+  it('inserts the liver warning without stray conjunctions, duplicate warnings, or double periods', () => {
+    const calibrated: any = calibratePortalRecommendation({
+      category: 'Centella asiatica',
+      supplement: {
+        name: 'Centella asiatica',
+        safety: {
+          contraindications: [
+            'Enfermedad hepatica severa - aunque no hay reportes de hepatotoxicidad en ensayos.',
+          ],
+          interactions: [
+            'Farmacos hepatotoxicos, aunque no hay reportes de hepatotoxicidad.',
+          ],
+          longTermSafety: 'Sin reportes de toxicidad hepatica..',
+          notes: 'Usar con precaucion aunque no hay reportes de hepatotoxicidad.. Generalmente bien tolerada, pero existen reportes raros de lesion hepatica/hepatotoxicidad; precaucion en enfermedad hepatica o con farmacos hepatotoxicos.',
+        },
+      },
+    }, 'Centella asiatica');
+
+    const safety = calibrated.supplement.safety;
+    const safetyText = JSON.stringify(safety);
+    const safetyFields = [
+      ...(safety.contraindications || []),
+      ...(safety.interactions || []),
+      safety.longTermSafety,
+      safety.notes,
+    ].filter(Boolean);
+
+    expect(safetyText).toContain('Generalmente bien tolerada, pero existen reportes raros de lesion hepatica/hepatotoxicidad');
+    expect(safetyText).not.toContain('- y Generalmente');
+    expect(safetyText).not.toContain(', y Generalmente');
+    expect(safetyText).not.toContain('..');
+    expect(
+      safetyFields.every((field: string) =>
+        (String(field).match(/Generalmente bien tolerada/g) || []).length <= 1
+      )
+    ).toBe(true);
+  });
+});
+
 describe('Botanical P2 editorial calibration', () => {
   it('keeps Bacopa cognition scoped and moves anxiety, depression, and neuroprotection out of worksFor', () => {
     const products = [{ name: 'Bacopa product', affiliateLink: 'https://example.com/bacopa' }];
