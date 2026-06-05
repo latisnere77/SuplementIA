@@ -29,6 +29,7 @@ import {
   sanitizeCentellaItem,
 } from '@/lib/portal/centella-editorial-calibration';
 import { isStrongEvidenceGrade, normalizeEvidenceGrade } from '@/lib/portal/evidence-grades';
+import { getSupplementEvidenceFromCache } from '@/lib/portal/supplements-evidence-data';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -38,6 +39,65 @@ function hasSupportedWorksForItems(worksFor: any): boolean {
   return Array.isArray(worksFor) && worksFor.some((item: any) =>
     isStrongEvidenceGrade(normalizeEvidenceGrade(item?.evidenceGrade || item?.grade))
   );
+}
+
+function mapCachedEvidenceItem(item: any, fallbackGrade: 'B' | 'C' | 'D' = 'C') {
+  const grade = normalizeEvidenceGrade(item?.grade, fallbackGrade);
+  return {
+    condition: item?.condition,
+    grade,
+    evidenceGrade: grade,
+    notes: item?.description || '',
+    studyCount: item?.studyCount || 0,
+  };
+}
+
+function buildCachedEvidenceEnrichData(supplementName: string) {
+  const cachedEvidence = getSupplementEvidenceFromCache(supplementName);
+  if (!cachedEvidence) return null;
+
+  const worksFor = (cachedEvidence.worksFor || [])
+    .map((item: any) => mapCachedEvidenceItem(item, 'B'))
+    .filter((item: any) => isStrongEvidenceGrade(item.evidenceGrade));
+
+  if (!hasSupportedWorksForItems(worksFor)) {
+    return null;
+  }
+
+  const totalStudies = (cachedEvidence.ingredients || [])
+    .reduce((sum: number, ingredient: any) => sum + (ingredient.studyCount || 0), 0);
+
+  return {
+    success: true,
+    data: {
+      name: supplementName,
+      whatIsIt: cachedEvidence.whatIsItFor,
+      description: cachedEvidence.whatIsItFor,
+      worksFor,
+      doesntWorkFor: (cachedEvidence.doesntWorkFor || [])
+        .map((item: any) => mapCachedEvidenceItem(item, 'D')),
+      limitedEvidence: (cachedEvidence.limitedEvidence || [])
+        .map((item: any) => mapCachedEvidenceItem(item, 'C')),
+      dosage: cachedEvidence.dosage,
+      safety: {
+        sideEffects: cachedEvidence.sideEffects || [],
+        interactions: cachedEvidence.interactions || [],
+        contraindications: [],
+      },
+      ingredients: cachedEvidence.ingredients || [],
+      totalStudies,
+      evidenceQuality: cachedEvidence.overallGrade,
+      evidenceSummary: cachedEvidence.whatIsItFor,
+      products: [],
+    },
+    metadata: {
+      hasRealData: true,
+      studiesUsed: totalStudies,
+      fallback: 'local_catalog_fallback',
+      source: 'local_catalog_fallback',
+      cached: true,
+    },
+  };
 }
 
 function logRecommendOutcome(data: {
@@ -344,6 +404,51 @@ export async function POST(request: NextRequest) {
           { status: 404 }
         );
       } else if (enrichResponse.status === 503 && errorData.error === 'upstream_unavailable') {
+        const cachedEnrichData = buildCachedEvidenceEnrichData(searchTerm);
+        if (cachedEnrichData) {
+          const recommendation = calibratePortalRecommendation(
+            transformToRecommendation(
+              cachedEnrichData,
+              sanitizedCategory,
+              age || 35,
+              gender || 'male',
+              location || 'CDMX',
+              quiz_id
+            ),
+            searchTerm
+          );
+
+          logRecommendOutcome({
+            requestId,
+            jobId,
+            supplementName: searchTerm,
+            originalQuery: category,
+            normalizedQuery: searchTerm,
+            status: 'completed',
+            finalStatusCode: 200,
+            fallback: 'local_catalog_fallback',
+            source: 'local_catalog_fallback_after_upstream_unavailable',
+            upstreamStatus: errorData.statusCode || enrichResponse.status,
+            startTime,
+          });
+
+          return NextResponse.json(
+            {
+              success: true,
+              requestId,
+              recommendation,
+            },
+            {
+              status: 200,
+              headers: {
+                'Cache-Control': 'no-store, must-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+              },
+            }
+          );
+        }
+
         logRecommendOutcome({
           requestId,
           jobId,

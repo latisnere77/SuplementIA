@@ -66,6 +66,95 @@ describe('/api/portal/recommend POST', () => {
     }
   });
 
+  it('falls back to cached evidence for known supplements when enrich-v2 is temporarily unavailable', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: 'upstream_unavailable',
+          message: 'No pudimos consultar temporalmente la base de estudios para "Magnesium".',
+          details: '{"Message":"Forbidden"}',
+          statusCode: 403,
+        }),
+        {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/recommend', {
+      method: 'POST',
+      body: JSON.stringify({
+        category: 'Magnesium',
+        age: 35,
+        gender: 'male',
+        location: 'CDMX',
+        quiz_id: 'quiz_magnesium_cache_fallback_test',
+        jobId: 'job_magnesium_cache_fallback_test',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+    const supplement = body.recommendation.supplement;
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(supplement.name).toBe('Magnesium');
+    expect(supplement.worksFor).toHaveLength(4);
+    expect(supplement.worksFor.every((item: any) => item.evidenceGrade === 'B')).toBe(true);
+    expect(body.recommendation.products).toEqual([]);
+    expect(supplement.worksFor.map((item: any) => item.condition)).toEqual(
+      expect.arrayContaining([
+        'Corregir ingesta baja o deficiencia de magnesio',
+        'Prevenir migraña en algunas personas',
+      ])
+    );
+  });
+
+  it('keeps upstream_unavailable when cached evidence has no supported A/B worksFor fallback', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: false,
+          error: 'upstream_unavailable',
+          message: 'No pudimos consultar temporalmente la base de estudios para "Piper auritum".',
+          details: '{"Message":"Forbidden"}',
+          statusCode: 403,
+        }),
+        {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    );
+
+    const request = new NextRequest('http://localhost/api/portal/recommend', {
+      method: 'POST',
+      body: JSON.stringify({
+        category: 'Piper auritum',
+        age: 35,
+        gender: 'male',
+        location: 'CDMX',
+        quiz_id: 'quiz_no_cache_fallback_test',
+        jobId: 'job_no_cache_fallback_test',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body.success).toBe(false);
+    expect(body.error).toBe('upstream_unavailable');
+    expect(body.statusCode).toBe(403);
+    expect(body.recommendation).toBeUndefined();
+    expect(JSON.stringify(body)).not.toContain('products');
+  });
+
   it('calibrates Centella claims from the content enricher to avoid overclaiming', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValueOnce(
       new Response(
