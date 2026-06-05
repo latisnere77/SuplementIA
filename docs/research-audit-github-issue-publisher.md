@@ -416,3 +416,17 @@ The next PR may implement a local/manual Issue Publisher only if it:
 - Does not write DB.
 - Does not touch runtime clinical/product/core code.
 - Includes tests for no-actionable findings, idempotency, missing reports, missing token, and sanitized GitHub failures.
+
+## Local Dry-Run Renderer
+
+The local/manual renderer takes an existing provider audit JSON report and writes the proposed weekly GitHub Issue Markdown locally. It does not call GitHub and cannot create real issues.
+
+```sh
+npx tsx scripts/research-audit/render-weekly-issue.ts \
+  --json-report .research-audit-reports/provider-audit-2026-06-05T13-40-17-546Z.json \
+  --markdown-report s3://suplementai-research-audit-reports/report-only/provider-audit.md \
+  --summary-report s3://suplementai-research-audit-reports/report-only/summary.json \
+  --week-id 2026-W23
+```
+
+Output Markdown is written to `.research-audit-reports/` by default and remains report-only/dry-run.
