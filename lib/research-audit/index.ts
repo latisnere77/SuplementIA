@@ -5,6 +5,7 @@ export * from './aws-report-runner';
 export * from './aws-lambda-handler';
 export * from './events';
 export * from './fixtures';
+export * from './github-issue-publisher';
 export * from './kimi-provider';
 export * from './packets';
 export * from './pmid';
