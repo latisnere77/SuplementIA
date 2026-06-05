@@ -20,6 +20,11 @@ const cases = [
 ];
 
 const unsafeClaimPattern = /sirve para|treats|cures|beneficio comprobado|clinical benefit/i;
+const centellaQueries = new Set(['centella asiatica', 'gotu kola']);
+const unsafeCentellaHepatotoxicityReassurancePattern =
+  /\b(?:no reportes|no hay reportes|no existen reportes|sin reportes)\s+de\s+hepatotoxicidad\b/i;
+const prudentCentellaLiverWarningPattern =
+  /reportes raros de (?:lesi[oó]n hep[aá]tica|lesion hepatica)|hepatotoxicidad/i;
 
 let failures = 0;
 
@@ -60,12 +65,19 @@ for (const c of cases) {
     [];
   const hasOldHybridSearchError =
     text.includes('Hybrid Search Failed') || text.includes('hybrid_search_debug_fail');
+  const isCentellaCanary = centellaQueries.has(c.query.toLowerCase());
+  const hasUnsafeCentellaHepatotoxicityReassurance =
+    isCentellaCanary && unsafeCentellaHepatotoxicityReassurancePattern.test(text);
+  const hasPrudentCentellaLiverWarning =
+    isCentellaCanary && prudentCentellaLiverWarningPattern.test(text);
   const expectsInsufficientData = c.expected.includes('insufficient_data');
   const ok =
     c.expected.includes(state) &&
     res.status < 500 &&
     !unsafeClaimPattern.test(text) &&
     !hasOldHybridSearchError &&
+    !hasUnsafeCentellaHepatotoxicityReassurance &&
+    (!isCentellaCanary || hasPrudentCentellaLiverWarning) &&
     (!expectsInsufficientData || !Array.isArray(products) || products.length === 0);
 
   if (!ok) failures += 1;
@@ -80,6 +92,8 @@ for (const c of cases) {
     productsCount: Array.isArray(products) ? products.length : 0,
     error: body.error,
     oldHybridSearchError: hasOldHybridSearchError,
+    unsafeCentellaHepatotoxicityReassurance: hasUnsafeCentellaHepatotoxicityReassurance,
+    prudentCentellaLiverWarning: isCentellaCanary ? hasPrudentCentellaLiverWarning : undefined,
     durationMs: Date.now() - started,
     ok,
   }));
