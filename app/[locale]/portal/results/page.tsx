@@ -478,7 +478,13 @@ interface Recommendation {
       rctCount: number;
     }>;
     studies?: {
-      ranked?: any;
+      all?: any[];
+      ranked?: {
+        positive?: any[];
+        negative?: any[];
+        mixed?: any[];
+        [key: string]: unknown;
+      };
       [key: string]: unknown;
     };
   };
@@ -490,6 +496,7 @@ interface Recommendation {
   }>;
   supplement?: {
     name?: string;
+    keyStudies?: any[];
   };
   products: Array<{
     tier: 'budget' | 'value' | 'premium';
@@ -1845,6 +1852,13 @@ function ResultsPageContent() {
               <ScientificStudiesPanel
                 supplementName={researchSupplementName}
                 displaySupplementName={localizedSupplementName}
+                localStudies={[
+                  ...(recommendation?.supplement?.keyStudies || []),
+                  ...(recommendation?.evidence_summary?.studies?.all || []),
+                  ...(recommendation?.evidence_summary?.studies?.ranked?.positive || []),
+                  ...(recommendation?.evidence_summary?.studies?.ranked?.negative || []),
+                  ...(recommendation?.evidence_summary?.studies?.ranked?.mixed || []),
+                ]}
                 maxStudies={5}
                 filters={{ rctOnly: false, yearFrom: 2010 }}
                 autoLoad={false}

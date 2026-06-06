@@ -30,6 +30,7 @@ interface StudiesData {
 interface ScientificStudiesPanelProps {
   supplementName: string;
   displaySupplementName?: string;
+  localStudies?: any[];
   maxStudies?: number;
   filters?: {
     rctOnly?: boolean;
@@ -71,6 +72,43 @@ function normalizeStudiesResponse(data: any, supplementName: string): StudiesDat
   };
 }
 
+function normalizeLocalStudy(rawStudy: any): Study | null {
+  if (!rawStudy || typeof rawStudy !== 'object') return null;
+  const pmid = String(rawStudy.pmid || rawStudy.PMID || '').trim();
+  const title = String(rawStudy.title || rawStudy.articleTitle || '').trim();
+
+  if (!pmid || !/^[1-9][0-9]{0,9}$/.test(pmid) || !title) {
+    return null;
+  }
+
+  return {
+    pmid,
+    title,
+    abstract: String(rawStudy.abstract || rawStudy.summary || rawStudy.findings?.join?.(' ') || ''),
+    authors: Array.isArray(rawStudy.authors) ? rawStudy.authors : [],
+    year: Number(rawStudy.year || 0),
+    journal: rawStudy.journal ? String(rawStudy.journal) : undefined,
+    studyType: rawStudy.studyType ? String(rawStudy.studyType).toLowerCase() : undefined,
+    participants: Number(rawStudy.participants || 0) || undefined,
+    doi: rawStudy.doi ? String(rawStudy.doi) : undefined,
+    pubmedUrl: rawStudy.pubmedUrl || `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+  };
+}
+
+function normalizeLocalStudies(localStudies: any[] | undefined, supplementName: string): StudiesData | null {
+  const studies = (localStudies || [])
+    .map(normalizeLocalStudy)
+    .filter((study): study is Study => Boolean(study));
+
+  if (studies.length === 0) return null;
+
+  return {
+    studies,
+    totalFound: studies.length,
+    searchQuery: supplementName,
+  };
+}
+
 function getControlledStudiesError(_status?: number): string {
   return 'No pudimos cargar estudios verificables en este momento. Puedes revisar la ficha principal o abrir PubMed.';
 }
@@ -78,6 +116,7 @@ function getControlledStudiesError(_status?: number): string {
 export default function ScientificStudiesPanel({
   supplementName,
   displaySupplementName,
+  localStudies,
   maxStudies = 5,
   filters = DEFAULT_FILTERS,
   autoLoad = false,
@@ -122,11 +161,16 @@ export default function ScientificStudiesPanel({
       }
     } catch (err: any) {
       console.error('Error loading studies:', err);
-      setError(err.message || getControlledStudiesError());
+      const localFallback = normalizeLocalStudies(localStudies, supplementName);
+      if (localFallback) {
+        setStudies(localFallback);
+      } else {
+        setError(getControlledStudiesError());
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [filters, maxStudies, supplementName]);
+  }, [filters, localStudies, maxStudies, supplementName]);
 
   useEffect(() => {
     if (autoLoad) {
