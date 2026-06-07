@@ -55,4 +55,42 @@ describe('ScientificStudiesPanel', () => {
       expect.stringContaining('Magnesium')
     );
   });
+
+  it('falls back to local key studies when the studies API is unavailable', async () => {
+    (global as any).fetch = jest.fn().mockResolvedValueOnce({
+      ok: false,
+      status: 403,
+      json: async () => ({ success: false, error: 'Failed to fetch studies from vector search' }),
+    } as Response);
+
+    render(
+      <ScientificStudiesPanel
+        supplementName="Ashwagandha"
+        localStudies={[
+          {
+            pmid: '12345678',
+            title: 'Ashwagandha randomized clinical trial',
+            findings: [
+              'Participants reported improved sleep quality compared with placebo.',
+              'No severe adverse events were reported.',
+            ],
+            year: 2024,
+            studyType: 'RCT',
+            participants: 120,
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /ver estudios/i }));
+
+    expect(await screen.findByText('Ashwagandha randomized clinical trial')).toBeInTheDocument();
+    expect(screen.getByText(/1 estudios encontrados/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Estudios no disponibles temporalmente/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/403/)).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /ver fuente original/i })).toHaveAttribute(
+      'href',
+      'https://pubmed.ncbi.nlm.nih.gov/12345678/'
+    );
+  });
 });
