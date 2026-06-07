@@ -91,7 +91,7 @@ export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale)
       en: 'Hydrolyzed collagen: evidence for joints, skin, and safety',
     },
     'whey-protein': {
-      es: 'Proteína whey: evidencia para músculo, ejercicio y seguridad',
+      es: 'Proteína whey: qué es, músculo, recuperación y seguridad',
       en: 'Whey protein: evidence for muscle, training, and safety',
     },
     caffeine: {
@@ -99,7 +99,7 @@ export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale)
       en: 'Caffeine: evidence for energy, focus, and performance',
     },
     citrulline: {
-      es: 'Citrulina: evidencia para rendimiento, óxido nítrico y seguridad',
+      es: 'Citrulina: qué es, rendimiento, óxido nítrico y seguridad',
       en: 'Citrulline: evidence for performance, nitric oxide, and safety',
     },
     'rhodiola-rosea': {
@@ -107,7 +107,7 @@ export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale)
       en: 'Rhodiola rosea: evidence for fatigue, stress, and safety',
     },
     'saw-palmetto': {
-      es: 'Saw palmetto: evidencia prostática, seguridad y expectativas',
+      es: 'Saw palmetto: efectos secundarios, próstata y seguridad',
       en: 'Saw palmetto: prostate evidence, safety, and expectations',
     },
     lavender: {
@@ -115,7 +115,7 @@ export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale)
       en: 'Lavender: evidence for sleep, calm, and safety',
     },
     'bacopa-monnieri': {
-      es: 'Bacopa monnieri: evidencia para memoria, enfoque y seguridad',
+      es: 'Bacopa monnieri: memoria, enfoque, tiempo y seguridad',
       en: 'Bacopa monnieri: evidence for memory, focus, and safety',
     },
     'vitamin-d': {
@@ -123,7 +123,7 @@ export function buildSupplementTitle(data: SupplementSeoData, locale: SeoLocale)
       en: 'Vitamin D: evidence, deficiency, bones, and safety',
     },
     'l-theanine': {
-      es: 'L-teanina: evidencia para calma, enfoque y sueño',
+      es: 'L-teanina: qué es, calma, enfoque, sueño y seguridad',
       en: 'L-theanine: evidence for calm, focus, and sleep',
     },
   };
@@ -166,7 +166,7 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
       en: 'Compare hydrolyzed collagen evidence for joints, skin, connective tissue, safety, and realistic expectations.',
     },
     'whey-protein': {
-      es: 'Revisa proteína whey para entrenamiento, masa muscular, recuperación, proteína diaria, tolerancia y seguridad.',
+      es: 'Consulta qué es proteína whey y cómo se revisa para músculo, recuperación, proteína diaria, tolerancia digestiva y seguridad.',
       en: 'Review whey protein for training, muscle mass, recovery, daily protein intake, tolerance, and safety.',
     },
     caffeine: {
@@ -174,7 +174,7 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
       en: 'Review caffeine for energy, focus, exercise, sleep, tolerance, careful dosing, and interactions.',
     },
     citrulline: {
-      es: 'Consulta citrulina para rendimiento deportivo, flujo sanguíneo, entrenamiento, tolerancia y seguridad.',
+      es: 'Consulta qué es citrulina, su relación con óxido nítrico, rendimiento, flujo sanguíneo, tolerancia y seguridad.',
       en: 'Review citrulline for sports performance, blood-flow context, training, tolerance, and safety.',
     },
     'rhodiola-rosea': {
@@ -182,7 +182,7 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
       en: 'Review rhodiola rosea for fatigue, stress, mental performance, safety, and differences between studied extracts.',
     },
     'saw-palmetto': {
-      es: 'Revisa saw palmetto para salud prostática, síntomas urinarios, seguridad, medicamentos y expectativas realistas.',
+      es: 'Revisa saw palmetto para próstata, síntomas urinarios, efectos secundarios, medicamentos y expectativas realistas.',
       en: 'Review saw palmetto for prostate context, urinary symptoms, safety, medications, and realistic expectations.',
     },
     lavender: {
@@ -190,7 +190,7 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
       en: 'Review lavender evidence for sleep, mild anxiety, forms of use, safety, and precautions with sedatives.',
     },
     'bacopa-monnieri': {
-      es: 'Revisa Bacopa monnieri para memoria, atención, aprendizaje, tiempo de uso, seguridad y expectativas realistas.',
+      es: 'Revisa Bacopa monnieri para memoria, atención, aprendizaje, tiempo de uso, tolerancia y expectativas realistas.',
       en: 'Review Bacopa monnieri for memory, attention, learning, duration of use, safety, and realistic expectations.',
     },
     'vitamin-d': {
@@ -198,7 +198,7 @@ export function buildSupplementDescription(data: SupplementSeoData, locale: SeoL
       en: 'Review vitamin D for deficiency, bone health, immunity, lab testing, careful dosing, and safety.',
     },
     'l-theanine': {
-      es: 'Revisa L-teanina para relajación, enfoque, sueño, uso con cafeína, seguridad y precauciones con sedantes.',
+      es: 'Consulta qué es L-teanina, relación con theanine, calma, enfoque, sueño, cafeína y precauciones con sedantes.',
       en: 'Review L-theanine for relaxation, focus, sleep, caffeine pairing, safety, and precautions with sedatives.',
     },
   };
@@ -527,7 +527,7 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'bacopa-monnieri': {
       es: {
         intro:
-          'Bacopa monnieri aparece como una señal temprana de demanda orgánica. Esta guía resume su uso estudiado en memoria, atención y aprendizaje sin tratarla como solución rápida.',
+          'Bacopa monnieri ya aparece como señal real en Search Console. Esta guía resume su uso estudiado en memoria, atención y aprendizaje, aclarando tiempos de uso y precauciones sin tratarla como solución rápida.',
         highlights: [
           'La evidencia suele evaluar extractos estandarizados y uso continuo durante varias semanas, no efectos inmediatos.',
           'El encaje más razonable es cognición, memoria o atención; no sustituye evaluación de problemas neurológicos, sueño o salud mental.',
@@ -536,7 +536,7 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
         faqHeading: 'Preguntas frecuentes sobre Bacopa monnieri',
         faqs: [
           {
-            question: '¿Bacopa monnieri funciona de inmediato?',
+            question: '¿Bacopa monnieri funciona de inmediato para memoria?',
             answer:
               'No suele plantearse como suplemento de efecto inmediato. Los estudios generalmente evalúan uso constante durante semanas, por lo que conviene pensar en expectativas graduales y seguimiento de tolerancia.',
           },
@@ -741,7 +741,7 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'whey-protein': {
       es: {
         intro:
-          'Proteína whey aparece en búsquedas recientes como proteina whey. Esta guía separa proteína diaria, entrenamiento, recuperación, masa muscular y tolerancia digestiva para usuarios que comparan suplementos deportivos.',
+          'Proteína whey aparece en búsquedas recientes como proteina whey. Esta guía explica qué es, cuándo puede encajar en entrenamiento, recuperación o proteína diaria, y qué revisar si hay molestias digestivas.',
         highlights: [
           'La pregunta principal no es sólo el suplemento, sino si la proteína total diaria ya cubre el objetivo.',
           'Whey suele encajar mejor en entrenamiento, recuperación o conveniencia alimentaria que como solución aislada.',
@@ -772,6 +772,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
         ],
         faqHeading: 'Preguntas frecuentes sobre proteína whey',
         faqs: [
+          {
+            question: '¿Qué es proteína whey?',
+            answer:
+              'Es proteína derivada del suero de leche. Suele usarse por conveniencia para cubrir proteína diaria, especialmente en entrenamiento, pero no reemplaza una dieta suficiente ni un plan de ejercicio.',
+          },
           {
             question: '¿Proteína whey es necesaria para ganar músculo?',
             answer:
@@ -1047,9 +1052,9 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     citrulline: {
       es: {
         intro:
-          'Citrulina aparece como señal reciente de intención deportiva. Esta guía explica su relación con óxido nítrico, flujo sanguíneo, entrenamiento y tolerancia sin presentarla como respuesta universal para rendimiento.',
+          'Citrulina aparece como señal reciente de intención deportiva y búsquedas tipo "qué es citrulina". Esta guía explica su relación con óxido nítrico, flujo sanguíneo, entrenamiento y tolerancia sin presentarla como respuesta universal para rendimiento.',
         highlights: [
-          'La intención principal suele ser rendimiento deportivo o sensación de bombeo durante entrenamiento.',
+          'La intención principal suele ser entender qué es citrulina y si encaja en rendimiento deportivo o sensación de bombeo durante entrenamiento.',
           'Citrulina y citrulina malato se usan en contextos parecidos, pero dosis y formulación pueden variar.',
           'Presión arterial, medicamentos vasodilatadores y entrenamiento real cambian la interpretación.',
         ],
@@ -1078,6 +1083,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
         ],
         faqHeading: 'Preguntas frecuentes sobre citrulina',
         faqs: [
+          {
+            question: '¿Qué es citrulina?',
+            answer:
+              'La citrulina es un aminoácido relacionado con la producción de arginina y óxido nítrico. En suplementos se revisa sobre todo por contexto de flujo sanguíneo y entrenamiento, no como sustituto de tratamiento cardiovascular.',
+          },
           {
             question: '¿Citrulina es más relevante para rendimiento o salud cardiovascular?',
             answer:
@@ -1149,11 +1159,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'saw-palmetto': {
       es: {
         intro:
-          'Saw palmetto apareció como señal reciente de interés de búsqueda en español. Esta guía lo ubica en salud prostática y síntomas urinarios, con expectativas prudentes y revisión de medicamentos.',
+          'Saw palmetto apareció como señal reciente de interés de búsqueda en español, incluyendo dudas de efectos secundarios. Esta guía lo ubica en salud prostática y síntomas urinarios con expectativas prudentes y revisión de medicamentos.',
         highlights: [
           'La intención suele ser próstata, síntomas urinarios o comparación con opciones para hombres.',
           'No debe usarse para ignorar síntomas nuevos, dolor, sangre en orina o cambios importantes.',
-          'Medicamentos hormonales, anticoagulantes y cirugía programada cambian la seguridad.',
+          'Efectos digestivos, dolor de cabeza, medicamentos hormonales, anticoagulantes y cirugía programada cambian la seguridad.',
         ],
         relatedLinks: [
           {
@@ -1184,6 +1194,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
             question: '¿Saw palmetto se revisa por próstata?',
             answer:
               'Sí, la intención más común es salud prostática o síntomas urinarios. Eso no reemplaza evaluación médica si hay síntomas nuevos o relevantes.',
+          },
+          {
+            question: '¿Cuáles son efectos secundarios de saw palmetto?',
+            answer:
+              'Pueden incluir molestias digestivas, dolor de cabeza o cambios de tolerancia individual. También importan anticoagulantes, medicamentos hormonales y cirugía programada.',
           },
           {
             question: '¿Qué señales requieren evaluación antes de suplementar?',
@@ -1251,7 +1266,7 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'l-theanine': {
       es: {
         intro:
-          'L-teanina aparece en el catálogo y conecta con búsquedas sobre "theanine" y relajación. Esta guía la presenta como aminoácido estudiado para calma, enfoque y sueño ligero, con expectativas prudentes.',
+          'L-teanina conecta con búsquedas sobre "theanine", "l teanina", relajación y enfoque. Esta guía explica qué es y cómo se revisa para calma, enfoque y sueño ligero, con expectativas prudentes.',
         highlights: [
           'Puede ser más relevante para calma sin somnolencia intensa que para insomnio clínico.',
           'Con cafeína se suele revisar por enfoque calmado; para sueño conviene separar horario, dosis y sedantes.',
