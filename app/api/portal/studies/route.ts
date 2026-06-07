@@ -13,6 +13,18 @@ const lambdaClient = new LambdaClient({
   region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1',
 });
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 60;
+
+type StudiesFallbackFailureKind =
+  | 'access_denied'
+  | 'credentials_unavailable'
+  | 'function_not_found'
+  | 'timeout'
+  | 'lambda_response_error'
+  | 'unknown';
+
 // Prefer the studies service config used by enrichment. SEARCH_API_URL is retained
 // only as a legacy fallback for older environments.
 function getStudiesApiUrl(): string {
@@ -24,6 +36,56 @@ function getStudiesApiUrl(): string {
 
 function getStudiesFetcherFunctionName(): string {
   return process.env.STUDIES_FETCHER_LAMBDA || 'suplementia-studies-fetcher-prod';
+}
+
+function classifyStudiesFallbackError(error: any): StudiesFallbackFailureKind {
+  const name = String(error?.name || '');
+  const code = String(error?.code || '');
+  const message = String(error?.message || '');
+  const combined = `${name} ${code} ${message}`.toLowerCase();
+
+  if (combined.includes('accessdenied') || combined.includes('not authorized') || combined.includes('is not authorized')) {
+    return 'access_denied';
+  }
+
+  if (
+    combined.includes('credential') ||
+    combined.includes('could not load') ||
+    combined.includes('missing credentials') ||
+    combined.includes('security token')
+  ) {
+    return 'credentials_unavailable';
+  }
+
+  if (combined.includes('resource not found') || combined.includes('function not found') || combined.includes('resourcenotfound')) {
+    return 'function_not_found';
+  }
+
+  if (combined.includes('abort') || combined.includes('timeout') || combined.includes('timed out')) {
+    return 'timeout';
+  }
+
+  if (combined.includes('lambda response')) {
+    return 'lambda_response_error';
+  }
+
+  return 'unknown';
+}
+
+function logStudiesFallbackFailure(params: {
+  requestId: string;
+  supplementName: string;
+  functionName: string;
+  error: any;
+}) {
+  const kind = classifyStudiesFallbackError(params.error);
+  console.error('[Studies API] IAM fallback failed', {
+    requestId: params.requestId,
+    supplementName: params.supplementName,
+    functionName: params.functionName,
+    failureKind: kind,
+    errorName: params.error?.name || 'unknown',
+  });
 }
 
 export interface StudySearchRequest {
@@ -69,9 +131,10 @@ async function fetchStudiesFromConfiguredService(body: StudySearchRequest, reque
 }
 
 async function invokeStudiesFetcherLambda(body: StudySearchRequest, requestId: string): Promise<any> {
+  const functionName = getStudiesFetcherFunctionName();
   const lambdaResponse = await lambdaClient.send(
     new InvokeCommand({
-      FunctionName: getStudiesFetcherFunctionName(),
+      FunctionName: functionName,
       InvocationType: 'RequestResponse',
       Payload: Buffer.from(JSON.stringify({
         httpMethod: 'POST',
@@ -92,7 +155,7 @@ async function invokeStudiesFetcherLambda(body: StudySearchRequest, requestId: s
 
   const statusCode = Number(lambdaEnvelope.statusCode || lambdaResponse.StatusCode || 500);
   if (statusCode < 200 || statusCode >= 300 || responseBody?.success === false) {
-    throw new Error(`Studies fetcher Lambda failed with status ${statusCode}`);
+    throw new Error(`Studies Lambda response error: status ${statusCode}`);
   }
 
   return responseBody;
@@ -176,14 +239,34 @@ export async function POST(request: NextRequest) {
       console.warn('[Studies API] Configured studies endpoint unavailable; retrying via IAM Lambda invoke', {
         reason: error?.message || 'unknown',
       });
-      data = await invokeStudiesFetcherLambda(body, requestId);
+      try {
+        data = await invokeStudiesFetcherLambda(body, requestId);
+      } catch (lambdaError: any) {
+        logStudiesFallbackFailure({
+          requestId,
+          supplementName: body.supplementName,
+          functionName: getStudiesFetcherFunctionName(),
+          error: lambdaError,
+        });
+        throw lambdaError;
+      }
     }
 
     if (response?.ok) {
       data = await response.json();
     } else if (response && [401, 403].includes(response.status)) {
       console.warn(`[Studies API] Configured studies endpoint returned ${response.status}; retrying via IAM Lambda invoke`);
-      data = await invokeStudiesFetcherLambda(body, requestId);
+      try {
+        data = await invokeStudiesFetcherLambda(body, requestId);
+      } catch (lambdaError: any) {
+        logStudiesFallbackFailure({
+          requestId,
+          supplementName: body.supplementName,
+          functionName: getStudiesFetcherFunctionName(),
+          error: lambdaError,
+        });
+        throw lambdaError;
+      }
     } else if (response) {
       const error = await response.text();
       console.error('Studies service unavailable:', {

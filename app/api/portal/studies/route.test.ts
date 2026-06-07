@@ -167,4 +167,57 @@ describe('/api/portal/studies POST', () => {
       })
     );
   });
+
+  it('keeps IAM fallback failures sanitized when Lambda invoke is not authorized', async () => {
+    process.env.STUDIES_API_URL = 'https://studies.example.test/search';
+    process.env.STUDIES_FETCHER_LAMBDA = 'suplementia-studies-fetcher-prod';
+    delete process.env.NEXT_PUBLIC_STUDIES_API_URL;
+    delete process.env.SEARCH_API_URL;
+
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ Message: 'Forbidden' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const accessDenied = new Error(
+      'User arn:aws:sts::123456789012:assumed-role/private-runtime-role/session is not authorized to perform lambda:InvokeFunction on arn:aws:lambda:us-east-1:123456789012:function:suplementia-studies-fetcher-prod'
+    );
+    accessDenied.name = 'AccessDeniedException';
+    (globalThis as any).__mockStudiesLambdaSend.mockRejectedValueOnce(accessDenied);
+
+    const request = new NextRequest('http://localhost/api/portal/studies', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Request-ID': 'studies-route-access-denied-test',
+      },
+      body: JSON.stringify({
+        supplementName: 'Magnesium',
+        maxResults: 5,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body).toEqual({
+      success: false,
+      error: 'Studies service temporarily unavailable',
+    });
+    expect(JSON.stringify(body)).not.toContain('arn:aws');
+    expect(JSON.stringify(body)).not.toContain('AccessDeniedException');
+    expect(consoleError).toHaveBeenCalledWith(
+      '[Studies API] IAM fallback failed',
+      expect.objectContaining({
+        requestId: 'studies-route-access-denied-test',
+        supplementName: 'Magnesium',
+        functionName: 'suplementia-studies-fetcher-prod',
+        failureKind: 'access_denied',
+        errorName: 'AccessDeniedException',
+      })
+    );
+  });
 });
