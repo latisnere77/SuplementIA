@@ -74,9 +74,9 @@ describe('supplement page SEO', () => {
     expect(buildSupplementDescription(vitaminD!, 'es')).toContain('deficiencia');
     expect(buildSupplementTitle(theanine!, 'en')).toContain('L-theanine');
     expect(buildSupplementTitle(sawPalmetto!, 'es')).toContain('Saw palmetto');
-    expect(buildSupplementDescription(whey!, 'es')).toContain('entrenamiento');
+    expect(buildSupplementDescription(whey!, 'es')).toContain('qué es proteína whey');
     expect(buildSupplementTitle(caffeine!, 'es')).toContain('Cafeína');
-    expect(buildSupplementDescription(citrulline!, 'es')).toContain('rendimiento deportivo');
+    expect(buildSupplementDescription(citrulline!, 'es')).toContain('qué es citrulina');
   });
 
   it('adds localized editorial content for emerging Spanish query supplements', () => {
@@ -131,6 +131,34 @@ describe('supplement page SEO', () => {
     expect(rhodiola?.intro).toContain('fatiga');
     expect(citrulline?.faqHeading).toContain('citrulina');
     expect(JSON.stringify([sawPalmetto, collagen, whey, caffeine, rhodiola, citrulline])).not.toMatch(unsafePattern);
+  });
+
+  it('adds Spanish CTR snippet intent for Search Console supplement queries', () => {
+    const bacopa = getSupplementSeoData('bacopa-monnieri', 'es');
+    const citrulline = getSupplementSeoData('citrulline', 'es');
+    const sawPalmetto = getSupplementSeoData('saw-palmetto', 'es');
+    const whey = getSupplementSeoData('whey-protein', 'es');
+    const theanine = getSupplementSeoData('l-theanine', 'es');
+    const citrullineContent = buildSupplementSeoContent('citrulline', 'es');
+    const sawPalmettoContent = buildSupplementSeoContent('saw-palmetto', 'es');
+    const wheyContent = buildSupplementSeoContent('whey-protein', 'es');
+    const theanineContent = buildSupplementSeoContent('l-theanine', 'es');
+
+    expect(buildSupplementTitle(bacopa!, 'es')).toContain('tiempo');
+    expect(buildSupplementDescription(bacopa!, 'es')).toContain('tolerancia');
+    expect(buildSupplementTitle(citrulline!, 'es')).toContain('qué es');
+    expect(citrullineContent?.faqs.map((faq) => faq.question)).toContain('¿Qué es citrulina?');
+    expect(buildSupplementTitle(sawPalmetto!, 'es')).toContain('efectos secundarios');
+    expect(sawPalmettoContent?.faqs.map((faq) => faq.question)).toContain(
+      '¿Cuáles son efectos secundarios de saw palmetto?'
+    );
+    expect(buildSupplementTitle(whey!, 'es')).toContain('qué es');
+    expect(wheyContent?.faqs.map((faq) => faq.question)).toContain('¿Qué es proteína whey?');
+    expect(buildSupplementTitle(theanine!, 'es')).toContain('qué es');
+    expect(theanineContent?.intro).toContain('l teanina');
+    expect(JSON.stringify([citrullineContent, sawPalmettoContent, wheyContent, theanineContent])).not.toMatch(
+      unsafePattern
+    );
   });
 
   it('builds prudent structured data without clinical claim wording', () => {

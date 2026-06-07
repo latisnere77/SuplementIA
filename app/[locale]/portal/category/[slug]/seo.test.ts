@@ -46,6 +46,17 @@ describe('category page SEO', () => {
         locale: 'es',
       }).description
     ).toContain('omega-3');
+
+    expect(
+      buildCategorySeoCopy({
+        slug: 'heart-health',
+        categoryName: 'Salud cardiovascular',
+        categoryDescription: 'Opciones estudiadas para corazón.',
+        locale: 'es',
+      })
+    ).toMatchObject({
+      title: 'Suplementos cardiovasculares: omega-3, CoQ10 y seguridad',
+    });
   });
 
   it('adds localized editorial content for priority category pages', () => {
@@ -78,6 +89,32 @@ describe('category page SEO', () => {
       '/portal/supplement/plant-sterols?benefit=cholesterol-triglycerides',
     ]);
     expect(heartContent?.supplementLinksHeading).toBe('Guías de suplementos cardiovasculares');
+  });
+
+  it('adds Spanish CTR intent for real Search Console category queries', () => {
+    const lipidCopy = buildCategorySeoCopy({
+      slug: 'cholesterol-triglycerides',
+      categoryName: 'Colesterol y Trigliceridos',
+      categoryDescription: 'Opciones estudiadas para lípidos.',
+      locale: 'es',
+    });
+    const heartCopy = buildCategorySeoCopy({
+      slug: 'heart-health',
+      categoryName: 'Salud cardiovascular',
+      categoryDescription: 'Opciones estudiadas para corazón.',
+      locale: 'es',
+    });
+    const lipidContent = buildCategorySeoContent('cholesterol-triglycerides', 'es');
+    const heartContent = buildCategorySeoContent('heart-health', 'es');
+
+    expect(lipidCopy.title).toContain('triglicéridos');
+    expect(lipidCopy.description).toContain('colesterol LDL');
+    expect(lipidContent?.highlights[0]).toContain('suplementos triglicéridos');
+    expect(lipidContent?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué significa buscar suplementos para triglicéridos?'
+    );
+    expect(heartCopy.title).toContain('Suplementos cardiovasculares');
+    expect(heartContent?.intro).toContain('suplemento cardiovascular');
   });
 
   it('does not add generic SEO content for non-priority categories', () => {

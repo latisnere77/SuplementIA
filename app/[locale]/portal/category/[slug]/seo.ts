@@ -35,9 +35,9 @@ export function buildCategorySeoCopy({
   const targetedCopy: Record<string, Record<'es' | 'en', { title: string; description: string }>> = {
     'cholesterol-triglycerides': {
       es: {
-        title: 'Suplementos para triglicéridos: psyllium, omega-3 y evidencia',
+        title: 'Suplementos para triglicéridos: omega-3, psyllium y LDL',
         description:
-          'Compara suplementos para triglicéridos y colesterol: psyllium, omega-3, esteroles vegetales y ajo con evidencia, seguridad y laboratorios.',
+          'Compara omega-3, psyllium y esteroles para triglicéridos y colesterol LDL con evidencia, seguridad y qué revisar en laboratorios.',
       },
       en: {
         title: 'Cholesterol and triglyceride supplements: psyllium and omega-3',
@@ -59,9 +59,9 @@ export function buildCategorySeoCopy({
     },
     'heart-health': {
       es: {
-        title: 'Suplementos cardiovasculares: omega-3, CoQ10 y evidencia',
+        title: 'Suplementos cardiovasculares: omega-3, CoQ10 y seguridad',
         description:
-          'Revisa suplementos cardiovasculares como omega-3, coenzima Q10 y ajo con evidencia, seguridad, interacciones y contexto médico.',
+          'Compara omega-3, coenzima Q10 y ajo para salud cardiovascular con evidencia, interacciones, laboratorios y uso responsable.',
       },
       en: {
         title: 'Supplements for heart health: evidence, safety, and options',
@@ -151,11 +151,11 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
     'cholesterol-triglycerides': {
       es: {
         intro:
-          'Esta página responde a búsquedas emergentes sobre suplementos para triglicéridos y colesterol. Compara opciones investigadas para LDL, triglicéridos y otros marcadores de lípidos, priorizando fibra soluble como psyllium, omega-3 y esteroles vegetales sin prometer resultados clínicos.',
+          'Esta página responde a búsquedas reales sobre suplementos para triglicéridos y colesterol. Compara omega-3, psyllium, esteroles vegetales y ajo por intención de búsqueda, laboratorio objetivo y seguridad, sin prometer resultados clínicos.',
         highlights: [
-          'Psyllium y esteroles vegetales se revisan sobre todo por su relación con colesterol LDL.',
-          'Omega-3 EPA/DHA suele encajar mejor cuando la búsqueda se centra en triglicéridos.',
-          'La decisión debe partir de laboratorios, dieta, riesgo cardiovascular y medicamentos actuales.',
+          'Si buscas "suplementos triglicéridos", omega-3 EPA/DHA suele ser la opción con intención más directa.',
+          'Psyllium y esteroles vegetales se revisan sobre todo cuando el foco es colesterol LDL.',
+          'La decisión debe partir de LDL, triglicéridos, no-HDL, dieta, riesgo cardiovascular y medicamentos actuales.',
           'Ajo puede tener efectos pequeños y variables; la preparación y la dosis cambian mucho el resultado.',
         ],
         priorityTopics: [
@@ -207,7 +207,7 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
         faqHeading: 'Preguntas frecuentes sobre colesterol y triglicéridos',
         faqs: [
           {
-            question: '¿Qué suplemento tiene más evidencia para triglicéridos?',
+            question: '¿Qué suplemento revisar primero para triglicéridos altos?',
             answer:
               'Omega-3 EPA/DHA tiene soporte consistente en estudios de triglicéridos, especialmente en dosis clínicas. Debe revisarse con un profesional si ya se usan anticoagulantes, estatinas u otros medicamentos.',
           },
@@ -220,6 +220,11 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
             question: '¿Cómo elegir entre psyllium, omega-3 y esteroles vegetales?',
             answer:
               'Empieza por el laboratorio que quieres interpretar: LDL, triglicéridos, HDL y no-HDL. Psyllium y esteroles se revisan más por LDL; omega-3 por triglicéridos. Medicamentos, dieta y riesgo cardiovascular cambian la decisión.',
+          },
+          {
+            question: '¿Qué significa buscar suplementos para triglicéridos?',
+            answer:
+              'Normalmente significa que hay un resultado de laboratorio o una preocupación cardiometabólica. Antes de elegir un suplemento conviene revisar alcohol, azúcares, peso, dieta, medicamentos y si el valor requiere manejo médico.',
           },
           {
             question: '¿Puedo usar suplementos en lugar de medicamento para colesterol?',
@@ -307,9 +312,9 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
     'heart-health': {
       es: {
         intro:
-          'Esta guía responde a búsquedas emergentes de suplementos cardiovasculares y suplemento cardiovascular. Ordena opciones estudiadas para triglicéridos, presión arterial, inflamación y función energética celular como punto de partida educativo, no como diagnóstico.',
+          'Esta guía responde a búsquedas reales de suplementos cardiovasculares y suplemento cardiovascular. Ordena omega-3, coenzima Q10 y ajo por intención, evidencia, seguridad e interacciones como punto de partida educativo, no como diagnóstico.',
         highlights: [
-          'Omega-3 EPA/DHA destaca por triglicéridos y salud cardiometabólica en contextos específicos.',
+          'Omega-3 EPA/DHA destaca cuando la intención cardiovascular viene de triglicéridos o lípidos alterados.',
           'Coenzima Q10 se estudia por energía celular y contextos cardiovasculares particulares.',
           'Ajo puede apoyar modestamente presión arterial o colesterol, pero los resultados son variables.',
           'Si la búsqueda viene de un resultado de laboratorio, conviene distinguir LDL, triglicéridos, presión arterial y medicamentos actuales.',
@@ -363,7 +368,7 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
         faqHeading: 'Preguntas frecuentes sobre salud cardiovascular',
         faqs: [
           {
-            question: '¿Qué suplemento cardiovascular tiene mejor evidencia general?',
+            question: '¿Qué suplemento cardiovascular revisar primero?',
             answer:
               'Omega-3 EPA/DHA suele tener la evidencia más consistente para triglicéridos. La mejor opción depende de los laboratorios, riesgo cardiovascular, dieta y medicamentos actuales.',
           },
