@@ -22,7 +22,7 @@ const cases = [
 const unsafeClaimPattern = /sirve para|treats|cures|beneficio comprobado|clinical benefit/i;
 const centellaQueries = new Set(['centella asiatica', 'gotu kola']);
 const unsafeCentellaHepatotoxicityReassurancePattern =
-  /\b(?:no reportes|no hay reportes|no existen reportes|sin reportes)\s+de\s+hepatotoxicidad\b/i;
+  /\b(?:(?:no reportes|no hay reportes|no existen reportes|sin reportes)\s+de\s+hepatotoxicidad|(?:centella asiatica\s+)?no\s+mostr[oó]\s+hepatotoxicidad)\b/i;
 const prudentCentellaLiverWarningPattern =
   /reportes raros de (?:lesi[oó]n hep[aá]tica|lesion hepatica)|hepatotoxicidad/i;
 

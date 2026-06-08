@@ -84,10 +84,10 @@ describe('Centella safety copy calibration', () => {
             'Enfermedad hepatica severa - aunque no hay reportes de hepatotoxicidad en ensayos.',
           ],
           interactions: [
-            'Farmacos hepatotoxicos, aunque no hay reportes de hepatotoxicidad.',
+            'Farmacos hepatotoxicos, Centella asiatica no mostró hepatotoxicidad en estudios clínicos.',
           ],
           longTermSafety: 'Sin reportes de toxicidad hepatica..',
-          notes: 'Usar con precaucion aunque no hay reportes de hepatotoxicidad.. Generalmente bien tolerada, pero existen reportes raros de lesion hepatica/hepatotoxicidad; precaucion en enfermedad hepatica o con farmacos hepatotoxicos.',
+          notes: 'Usar con precaucion aunque no hay reportes de hepatotoxicidad.. Aunque los estudios clínicos suelen reportar buena tolerancia, existen reportes raros de lesión hepática/hepatotoxicidad; usar con precaución junto con fármacos hepatotóxicos y considerar monitoreo clínico.',
         },
       },
     }, 'Centella asiatica');
@@ -101,13 +101,14 @@ describe('Centella safety copy calibration', () => {
       safety.notes,
     ].filter(Boolean);
 
-    expect(safetyText).toContain('Generalmente bien tolerada, pero existen reportes raros de lesion hepatica/hepatotoxicidad');
-    expect(safetyText).not.toContain('- y Generalmente');
-    expect(safetyText).not.toContain(', y Generalmente');
+    expect(safetyText).toContain('existen reportes raros de lesión hepática/hepatotoxicidad');
+    expect(safetyText).not.toMatch(/no mostr[oó] hepatotoxicidad/i);
+    expect(safetyText).not.toContain('- y Aunque');
+    expect(safetyText).not.toContain(', y Aunque');
     expect(safetyText).not.toContain('..');
     expect(
       safetyFields.every((field: string) =>
-        (String(field).match(/Generalmente bien tolerada/g) || []).length <= 1
+        (String(field).match(/existen reportes raros de lesión hepática\/hepatotoxicidad/g) || []).length <= 1
       )
     ).toBe(true);
   });
