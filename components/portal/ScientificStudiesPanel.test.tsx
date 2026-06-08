@@ -35,6 +35,53 @@ describe('ScientificStudiesPanel', () => {
     expect(screen.getByText(/1 estudios encontrados/i)).toBeInTheDocument();
   });
 
+  it('normalizes malformed remote studies before rendering', async () => {
+    (global as any).fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        studies: [
+          {
+            pmid: '23456789',
+            title: { _: 'Centella usable remote title', i: 'italic marker' },
+            abstract: { _: 'Remote abstract text' },
+            authors: [{ name: 'A Author' }, 'B Author'],
+            year: 2024,
+            journal: { _: 'Remote journal' },
+            studyType: { _: 'review' },
+            pubmedUrl: 'https://pubmed.ncbi.nlm.nih.gov/23456789/',
+          },
+          {
+            pmid: '34567890',
+            title: { i: 'object without usable text' },
+            abstract: 'This study should be filtered out.',
+          },
+          {
+            pmid: 'not-a-pmid',
+            title: 'Invalid PMID study',
+            abstract: 'This study should also be filtered out.',
+          },
+        ],
+        totalFound: 3,
+        searchQuery: 'Centella asiatica',
+      }),
+    } as Response);
+
+    render(<ScientificStudiesPanel supplementName="Centella asiatica" />);
+
+    fireEvent.click(screen.getByRole('button', { name: /ver estudios/i }));
+
+    expect(await screen.findByText('Centella usable remote title')).toBeInTheDocument();
+    expect(screen.getByText('A Author, B Author')).toBeInTheDocument();
+    expect(screen.getByText('Remote journal')).toBeInTheDocument();
+    expect(screen.getByText(/1 estudios encontrados/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /ver resumen/i }));
+    expect(screen.getByText('Remote abstract text')).toBeInTheDocument();
+    expect(screen.queryByText('[object Object]')).not.toBeInTheDocument();
+    expect(screen.queryByText('Invalid PMID study')).not.toBeInTheDocument();
+    expect(screen.queryByText('This study should be filtered out.')).not.toBeInTheDocument();
+  });
+
   it('shows controlled copy instead of raw 503 errors', async () => {
     (global as any).fetch = jest.fn().mockResolvedValueOnce({
       ok: false,

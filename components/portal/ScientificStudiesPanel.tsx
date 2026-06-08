@@ -57,25 +57,39 @@ const STUDY_TYPE_LABELS: Record<string, string> = {
   'review': 'Revisión',
 };
 
-function normalizeStudiesResponse(data: any, supplementName: string): StudiesData | null {
-  const payload = data?.data || data;
-  const studies = Array.isArray(payload?.studies) ? payload.studies : [];
-
-  if (!data?.success || !Array.isArray(studies)) {
-    return null;
+function normalizeRenderableText(value: unknown): string {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value).trim();
   }
 
-  return {
-    studies,
-    totalFound: Number(payload.totalFound || payload.count || studies.length || 0),
-    searchQuery: String(payload.searchQuery || payload.query || supplementName),
-  };
+  if (Array.isArray(value)) {
+    return value
+      .map(normalizeRenderableText)
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+  }
+
+  if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    return normalizeRenderableText(record._ || record.text || record.value || record.name);
+  }
+
+  return '';
 }
 
-function normalizeLocalStudy(rawStudy: any): Study | null {
+function normalizeAuthors(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map(author => normalizeRenderableText(author))
+    .filter(Boolean);
+}
+
+function normalizeStudy(rawStudy: any): Study | null {
   if (!rawStudy || typeof rawStudy !== 'object') return null;
-  const pmid = String(rawStudy.pmid || rawStudy.PMID || '').trim();
-  const title = String(rawStudy.title || rawStudy.articleTitle || '').trim();
+  const pmid = normalizeRenderableText(rawStudy.pmid || rawStudy.PMID);
+  const title = normalizeRenderableText(rawStudy.title || rawStudy.articleTitle);
 
   if (!pmid || !/^[1-9][0-9]{0,9}$/.test(pmid) || !title) {
     return null;
@@ -84,20 +98,41 @@ function normalizeLocalStudy(rawStudy: any): Study | null {
   return {
     pmid,
     title,
-    abstract: String(rawStudy.abstract || rawStudy.summary || rawStudy.findings?.join?.(' ') || ''),
-    authors: Array.isArray(rawStudy.authors) ? rawStudy.authors : [],
+    abstract: normalizeRenderableText(rawStudy.abstract || rawStudy.summary || rawStudy.findings),
+    authors: normalizeAuthors(rawStudy.authors),
     year: Number(rawStudy.year || 0),
-    journal: rawStudy.journal ? String(rawStudy.journal) : undefined,
-    studyType: rawStudy.studyType ? String(rawStudy.studyType).toLowerCase() : undefined,
+    journal: normalizeRenderableText(rawStudy.journal) || undefined,
+    studyType: normalizeRenderableText(rawStudy.studyType).toLowerCase() || undefined,
     participants: Number(rawStudy.participants || 0) || undefined,
-    doi: rawStudy.doi ? String(rawStudy.doi) : undefined,
-    pubmedUrl: rawStudy.pubmedUrl || `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+    doi: normalizeRenderableText(rawStudy.doi) || undefined,
+    pubmedUrl: normalizeRenderableText(rawStudy.pubmedUrl) || `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+  };
+}
+
+function normalizeStudiesResponse(data: any, supplementName: string): StudiesData | null {
+  const payload = data?.data || data;
+  const rawStudies = Array.isArray(payload?.studies) ? payload.studies : [];
+
+  if (!data?.success || !Array.isArray(rawStudies)) {
+    return null;
+  }
+
+  const studies = rawStudies
+    .map(normalizeStudy)
+    .filter((study): study is Study => Boolean(study));
+
+  if (studies.length === 0) return null;
+
+  return {
+    studies,
+    totalFound: studies.length,
+    searchQuery: normalizeRenderableText(payload.searchQuery || payload.query || supplementName) || supplementName,
   };
 }
 
 function normalizeLocalStudies(localStudies: any[] | undefined, supplementName: string): StudiesData | null {
   const studies = (localStudies || [])
-    .map(normalizeLocalStudy)
+    .map(normalizeStudy)
     .filter((study): study is Study => Boolean(study));
 
   if (studies.length === 0) return null;
