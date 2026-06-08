@@ -35,7 +35,15 @@ function getStudiesApiUrl(): string {
 }
 
 function getStudiesFetcherFunctionName(): string {
-  return process.env.STUDIES_FETCHER_LAMBDA || 'suplementia-studies-fetcher-prod';
+  return process.env.STUDIES_FETCHER_LAMBDA ||
+    process.env.NEXT_PUBLIC_STUDIES_FETCHER_LAMBDA ||
+    'suplementia-studies-fetcher-prod';
+}
+
+function sanitizeOperationalLogValue(value: unknown): string {
+  return String(value || 'unknown')
+    .replace(/arn:aws:[^\s'"}]+/g, 'arn:aws:***:REDACTED')
+    .replace(/\b\d{12}\b/g, '[account-redacted]');
 }
 
 function classifyStudiesFallbackError(error: any): StudiesFallbackFailureKind {
@@ -82,9 +90,9 @@ function logStudiesFallbackFailure(params: {
   console.error('[Studies API] IAM fallback failed', {
     requestId: params.requestId,
     supplementName: params.supplementName,
-    functionName: params.functionName,
+    functionName: sanitizeOperationalLogValue(params.functionName),
     failureKind: kind,
-    errorName: params.error?.name || 'unknown',
+    errorName: sanitizeOperationalLogValue(params.error?.name || 'unknown'),
   });
 }
 
@@ -285,7 +293,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, studies: studiesList });
 
   } catch (error: any) {
-    console.error('Studies route error:', error?.message || error);
+    console.error('Studies route error:', sanitizeOperationalLogValue(error?.message || error));
     return NextResponse.json(
       { success: false, error: 'Studies service temporarily unavailable' },
       { status: 503 }

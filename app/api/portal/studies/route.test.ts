@@ -18,6 +18,7 @@ describe('/api/portal/studies POST', () => {
   const originalNextPublicStudiesApiUrl = process.env.NEXT_PUBLIC_STUDIES_API_URL;
   const originalSearchApiUrl = process.env.SEARCH_API_URL;
   const originalStudiesFetcherLambda = process.env.STUDIES_FETCHER_LAMBDA;
+  const originalNextPublicStudiesFetcherLambda = process.env.NEXT_PUBLIC_STUDIES_FETCHER_LAMBDA;
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -31,6 +32,8 @@ describe('/api/portal/studies POST', () => {
     else process.env.SEARCH_API_URL = originalSearchApiUrl;
     if (originalStudiesFetcherLambda === undefined) delete process.env.STUDIES_FETCHER_LAMBDA;
     else process.env.STUDIES_FETCHER_LAMBDA = originalStudiesFetcherLambda;
+    if (originalNextPublicStudiesFetcherLambda === undefined) delete process.env.NEXT_PUBLIC_STUDIES_FETCHER_LAMBDA;
+    else process.env.NEXT_PUBLIC_STUDIES_FETCHER_LAMBDA = originalNextPublicStudiesFetcherLambda;
   });
 
   it('uses the configured studies API URL with the expected request body and safe headers', async () => {
@@ -106,6 +109,7 @@ describe('/api/portal/studies POST', () => {
   it('falls back to IAM Lambda invoke when the configured studies endpoint returns 403', async () => {
     process.env.STUDIES_API_URL = 'https://studies.example.test/search';
     process.env.STUDIES_FETCHER_LAMBDA = 'suplementia-studies-fetcher-prod';
+    delete process.env.NEXT_PUBLIC_STUDIES_FETCHER_LAMBDA;
     delete process.env.NEXT_PUBLIC_STUDIES_API_URL;
     delete process.env.SEARCH_API_URL;
 
@@ -168,9 +172,69 @@ describe('/api/portal/studies POST', () => {
     );
   });
 
+  it('uses the Amplify WEB_COMPUTE compatible public fetcher env when private runtime env is unavailable', async () => {
+    process.env.STUDIES_API_URL = 'https://studies.example.test/search';
+    delete process.env.STUDIES_FETCHER_LAMBDA;
+    process.env.NEXT_PUBLIC_STUDIES_FETCHER_LAMBDA = 'arn:aws:lambda:us-east-1:123456789012:function:suplementia-studies-fetcher-prod';
+    delete process.env.NEXT_PUBLIC_STUDIES_API_URL;
+    delete process.env.SEARCH_API_URL;
+
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ Message: 'Forbidden' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+    (globalThis as any).__mockStudiesLambdaSend.mockResolvedValueOnce({
+      StatusCode: 200,
+      Payload: Buffer.from(JSON.stringify({
+        statusCode: 200,
+        body: JSON.stringify({
+          success: true,
+          studies: [
+            {
+              pmid: '12345678',
+              title: 'Amplify fetcher env study',
+            },
+          ],
+        }),
+      })),
+    });
+
+    const request = new NextRequest('http://localhost/api/portal/studies', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Request-ID': 'studies-route-public-fetcher-env-test',
+      },
+      body: JSON.stringify({
+        supplementName: 'Magnesium',
+        maxResults: 5,
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.studies).toEqual([
+      expect.objectContaining({
+        pmid: '12345678',
+        title: 'Amplify fetcher env study',
+      }),
+    ]);
+    expect((globalThis as any).__mockStudiesLambdaSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        FunctionName: 'arn:aws:lambda:us-east-1:123456789012:function:suplementia-studies-fetcher-prod',
+        InvocationType: 'RequestResponse',
+      })
+    );
+  });
+
   it('keeps IAM fallback failures sanitized when Lambda invoke is not authorized', async () => {
     process.env.STUDIES_API_URL = 'https://studies.example.test/search';
-    process.env.STUDIES_FETCHER_LAMBDA = 'suplementia-studies-fetcher-prod';
+    process.env.STUDIES_FETCHER_LAMBDA = 'arn:aws:lambda:us-east-1:123456789012:function:suplementia-studies-fetcher-prod';
+    delete process.env.NEXT_PUBLIC_STUDIES_FETCHER_LAMBDA;
     delete process.env.NEXT_PUBLIC_STUDIES_API_URL;
     delete process.env.SEARCH_API_URL;
 
@@ -214,10 +278,12 @@ describe('/api/portal/studies POST', () => {
       expect.objectContaining({
         requestId: 'studies-route-access-denied-test',
         supplementName: 'Magnesium',
-        functionName: 'suplementia-studies-fetcher-prod',
+        functionName: 'arn:aws:***:REDACTED',
         failureKind: 'access_denied',
         errorName: 'AccessDeniedException',
       })
     );
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain('123456789012');
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain('arn:aws:lambda:us-east-1:123456789012');
   });
 });
