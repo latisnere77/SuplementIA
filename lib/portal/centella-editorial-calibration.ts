@@ -1,6 +1,6 @@
 type EvidenceItem = Record<string, any>;
 
-const CENTELLA_LIVER_WARNING = 'Generalmente bien tolerada, pero existen reportes raros de lesion hepatica/hepatotoxicidad; precaucion en enfermedad hepatica o con farmacos hepatotoxicos.';
+const CENTELLA_LIVER_WARNING = 'Aunque los estudios clínicos suelen reportar buena tolerancia, existen reportes raros de lesión hepática/hepatotoxicidad; usar con precaución junto con fármacos hepatotóxicos y considerar monitoreo clínico.';
 
 function normalizeClinicalText(value: unknown): string {
   return String(value || '')
@@ -130,6 +130,7 @@ export function sanitizeCentellaClaimText(value: unknown): unknown {
     .replace(/\baunque\s+(?:no hay|no existen)\s+reportes de hepatotoxicidad\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
     .replace(/\b(?:no hay|no existen|no)\s+reportes de hepatotoxicidad\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
     .replace(/\bNo reportes de hepatotoxicidad\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
+    .replace(/\b(?:centella asiatica\s+)?no\s+mostr[oó]\s+hepatotoxicidad\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
     .replace(/\bsin reportes de toxicidad hep[aá]tica\b[^.;]*(?:[.;])?/gi, CENTELLA_LIVER_WARNING)
     .replace(/\beficacia demostrada\b/gi, 'evidencia humana disponible')
     .replace(/\btratamiento m[eé]dico\b/gi, 'atencion medica')
@@ -270,6 +271,7 @@ function addCentellaSafetyCaution(safety: any = {}) {
   if (typeof calibratedSafety.longTermSafety === 'string') {
     calibratedSafety.longTermSafety = calibratedSafety.longTermSafety
       .replace(/No reportes de hepatotoxicidad[^.]*\./gi, liverWarning)
+      .replace(/(?:Centella asiatica\s+)?no mostr[oó] hepatotoxicidad[^.]*\./gi, liverWarning)
       .replace(/sin reportes de toxicidad hep[aá]tica[^.]*\./gi, liverWarning);
   } else {
     calibratedSafety.longTermSafety = liverWarning;
