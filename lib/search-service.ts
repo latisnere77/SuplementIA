@@ -228,7 +228,7 @@ function scoreLocalEntry(query: string, entry: SupplementEntry): number {
 }
 
 const LOCAL_SUPPLEMENT_DESCRIPTIONS: Record<string, string> = {
-  ashwagandha: 'Ashwagandha (Withania somnifera) is an adaptogenic botanical used in supplements standardized for withanolides and evaluated mainly for stress, sleep quality, and perceived well-being.',
+  ashwagandha: 'Ashwagandha (Withania somnifera) es una planta adaptógena usada en suplementos, a menudo estandarizada por withanólidos, y estudiada principalmente para estrés, calidad del sueño y bienestar percibido.',
   'vitamin b complex': 'Vitamin B Complex combines several B vitamins that act as cofactors in energy metabolism, nervous system function, red blood cell formation, and methylation pathways.',
   'vitamina b complex': 'Vitamin B Complex combines several B vitamins that act as cofactors in energy metabolism, nervous system function, red blood cell formation, and methylation pathways.',
   'vitamina d': 'Vitamin D is a fat-soluble vitamin and prohormone involved in calcium balance, bone mineralization, immune signaling, and muscle function.',
