@@ -63,6 +63,20 @@ describe('search service fallback chain', () => {
     expect(result.abstract).not.toContain('sleep, muscles, cramps');
   });
 
+  it('uses Spanish Ashwagandha copy in the local catalog fallback', async () => {
+    const { searchLocalCatalog } = await import('./search-service');
+
+    const [result] = searchLocalCatalog('Ashwagandha', 3);
+
+    expect(result).toMatchObject({
+      name: 'Ashwagandha',
+      source: 'local_catalog',
+    });
+    expect(result.abstract).toContain('planta adaptógena');
+    expect(result.abstract).toContain('withanólidos');
+    expect(result.abstract).not.toContain('is an adaptogenic botanical');
+  });
+
   it.each([
     ['sabila', 'Aloe Vera', 'Aloe barbadensis'],
     ['withania somnifera', 'Ashwagandha', 'Withania somnifera'],
