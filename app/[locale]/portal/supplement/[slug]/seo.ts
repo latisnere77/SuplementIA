@@ -323,10 +323,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'omega-3': {
       es: {
         intro:
-          'Omega-3 EPA/DHA conecta directamente con búsquedas sobre omega 3 triglicéridos y suplementos cardiovasculares. Esta página distingue triglicéridos, LDL, dosis clínica, pescado azul, cápsulas e interacciones.',
+          'Omega-3 EPA/DHA conecta directamente con búsquedas sobre omega 3 triglicéridos, omega 3 triglycerides y suplementos cardiovasculares. Esta página distingue triglicéridos, LDL, dosis clínica, pescado azul, cápsulas, pureza e interacciones.',
         highlights: [
           'La intención más fuerte para EPA/DHA suele ser triglicéridos, no promesas generales de salud cardiovascular.',
           'Importan forma, dosis, pureza, tolerancia gastrointestinal y uso de anticoagulantes o cirugía programada.',
+          'Para salud cardiovascular amplia, omega-3 debe compararse con CoQ10, ajo, psyllium y esteroles según el marcador que preocupa.',
           'Si LDL, triglicéridos y riesgo cardiovascular están alterados, conviene revisar resultados con un profesional.',
         ],
         relatedLinks: [
@@ -351,6 +352,13 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
             href: '/portal/category/heart-health',
             label: 'Ver cluster cardiovascular',
           },
+          {
+            title: 'Coenzima Q10 cardiovascular',
+            description:
+              'Comparación útil cuando la intención deja de ser triglicéridos y pasa a energía celular, estatinas o apoyo cardiovascular general.',
+            href: '/portal/supplement/coenzyme-q10?benefit=heart-health',
+            label: 'Comparar CoQ10',
+          },
         ],
         faqHeading: 'Preguntas frecuentes sobre omega-3 y triglicéridos',
         faqs: [
@@ -368,6 +376,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
             question: '¿Puedo combinar omega-3 con otros suplementos cardiovasculares?',
             answer:
               'Puede ser posible, pero conviene revisar duplicidad, dosis total, medicamentos y el marcador objetivo. No todo suplemento cardiovascular apunta al mismo resultado.',
+          },
+          {
+            question: '¿Omega-3 es relevante si busco suplementos cardiovasculares?',
+            answer:
+              'Puede ser relevante cuando la búsqueda viene de triglicéridos o consumo bajo de pescado, pero para presión arterial, LDL o estatinas conviene comparar con otras guías y revisar antecedentes con un profesional.',
           },
         ],
       },
@@ -741,10 +754,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'whey-protein': {
       es: {
         intro:
-          'Proteína whey aparece en búsquedas recientes como proteina whey. Esta guía explica qué es, cuándo puede encajar en entrenamiento, recuperación o proteína diaria, y qué revisar si hay molestias digestivas.',
+          'Proteína whey aparece en búsquedas recientes como proteina whey y "que es la proteina whey". Esta guía explica qué es, cuándo puede encajar en entrenamiento, recuperación o proteína diaria, y qué revisar si hay molestias digestivas.',
         highlights: [
           'La pregunta principal no es sólo el suplemento, sino si la proteína total diaria ya cubre el objetivo.',
           'Whey suele encajar mejor en entrenamiento, recuperación o conveniencia alimentaria que como solución aislada.',
+          'Si la búsqueda viene de rendimiento deportivo, conviene separar proteína diaria, fuerza, recuperación y timing alrededor del entrenamiento.',
           'Tolerancia a lactosa, alergia a leche, enfermedad renal y objetivos de peso cambian la decisión.',
         ],
         relatedLinks: [
@@ -769,6 +783,13 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
             href: '/portal/supplement/caffeine?benefit=sports-performance',
             label: 'Revisar cafeína',
           },
+          {
+            title: 'Citrulina para entrenamiento',
+            description:
+              'Complementa la intención deportiva cuando el usuario compara fuerza, bombeo, flujo sanguíneo y rendimiento.',
+            href: '/portal/supplement/citrulline?benefit=sports-performance',
+            label: 'Comparar citrulina',
+          },
         ],
         faqHeading: 'Preguntas frecuentes sobre proteína whey',
         faqs: [
@@ -776,6 +797,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
             question: '¿Qué es proteína whey?',
             answer:
               'Es proteína derivada del suero de leche. Suele usarse por conveniencia para cubrir proteína diaria, especialmente en entrenamiento, pero no reemplaza una dieta suficiente ni un plan de ejercicio.',
+          },
+          {
+            question: '¿Qué revisar si busco que es la proteina whey?',
+            answer:
+              'Empieza por el objetivo: cubrir proteína diaria, apoyar recuperación o facilitar una comida. Después revisa tolerancia a lactosa, alergia a leche, calidad del producto y si ya cubres proteína con alimentos.',
           },
           {
             question: '¿Proteína whey es necesaria para ganar músculo?',
@@ -1052,10 +1078,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     citrulline: {
       es: {
         intro:
-          'Citrulina aparece como señal reciente de intención deportiva y búsquedas tipo "qué es citrulina". Esta guía explica su relación con óxido nítrico, flujo sanguíneo, entrenamiento y tolerancia sin presentarla como respuesta universal para rendimiento.',
+          'Citrulina aparece como señal reciente de intención deportiva y búsquedas tipo "qué es citrulina" y "citrulina que es". Esta guía explica su relación con óxido nítrico, flujo sanguíneo, entrenamiento y tolerancia sin presentarla como respuesta universal para rendimiento.',
         highlights: [
           'La intención principal suele ser entender qué es citrulina y si encaja en rendimiento deportivo o sensación de bombeo durante entrenamiento.',
           'Citrulina y citrulina malato se usan en contextos parecidos, pero dosis y formulación pueden variar.',
+          'Si el objetivo es músculo o recuperación, conviene compararla con proteína whey, creatina y cafeína en vez de evaluarla sola.',
           'Presión arterial, medicamentos vasodilatadores y entrenamiento real cambian la interpretación.',
         ],
         relatedLinks: [
@@ -1080,6 +1107,13 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
             href: '/portal/supplement/whey-protein?benefit=muscle-gain',
             label: 'Revisar whey',
           },
+          {
+            title: 'L-teanina y enfoque',
+            description:
+              'Opción relacionada si la búsqueda deportiva también incluye enfoque calmado, cafeína o tolerancia a estimulantes.',
+            href: '/portal/supplement/l-theanine?benefit=anxiety',
+            label: 'Comparar L-teanina',
+          },
         ],
         faqHeading: 'Preguntas frecuentes sobre citrulina',
         faqs: [
@@ -1087,6 +1121,11 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
             question: '¿Qué es citrulina?',
             answer:
               'La citrulina es un aminoácido relacionado con la producción de arginina y óxido nítrico. En suplementos se revisa sobre todo por contexto de flujo sanguíneo y entrenamiento, no como sustituto de tratamiento cardiovascular.',
+          },
+          {
+            question: '¿Citrulina que es y por qué aparece en suplementos deportivos?',
+            answer:
+              'Es un aminoácido que el cuerpo puede convertir en arginina, relacionada con óxido nítrico. Por eso aparece en fórmulas de rendimiento, aunque la utilidad depende de entrenamiento, dosis, formulación y tolerancia.',
           },
           {
             question: '¿Citrulina es más relevante para rendimiento o salud cardiovascular?',
@@ -1266,18 +1305,52 @@ export function buildSupplementSeoContent(slug: string, locale: SeoLocale): Supp
     'l-theanine': {
       es: {
         intro:
-          'L-teanina conecta con búsquedas sobre "theanine", "l teanina", relajación y enfoque. Esta guía explica qué es y cómo se revisa para calma, enfoque y sueño ligero, con expectativas prudentes.',
+          'L-teanina conecta con búsquedas sobre "theanine", "l teanina", "l teanina para que sirve" y "l-teanina para dormir". Esta guía explica qué es y cómo se revisa para calma, enfoque y sueño ligero, con expectativas prudentes.',
         highlights: [
           'Puede ser más relevante para calma sin somnolencia intensa que para insomnio clínico.',
           'Con cafeína se suele revisar por enfoque calmado; para sueño conviene separar horario, dosis y sedantes.',
+          'Si la intención es dormir, primero conviene revisar higiene de sueño, horarios, cafeína tarde y señales de apnea o insomnio persistente.',
           'La evidencia y tolerancia dependen del objetivo: ansiedad leve, enfoque o calidad subjetiva del descanso.',
+        ],
+        relatedLinks: [
+          {
+            title: 'Suplementos para dormir',
+            description:
+              'Compara L-teanina con melatonina, magnesio, lavanda y valeriana según latencia, descanso y seguridad.',
+            href: '/portal/category/sleep',
+            label: 'Ver sueño',
+          },
+          {
+            title: 'Ansiedad y estrés',
+            description:
+              'Contexto útil si la búsqueda de L-teanina viene de calma, enfoque o tensión cotidiana.',
+            href: '/portal/category/anxiety',
+            label: 'Ver ansiedad y estrés',
+          },
+          {
+            title: 'Cafeína',
+            description:
+              'Comparación frecuente cuando el objetivo es enfoque con menos nerviosismo.',
+            href: '/portal/supplement/caffeine?benefit=energy',
+            label: 'Comparar cafeína',
+          },
         ],
         faqHeading: 'Preguntas frecuentes sobre L-teanina',
         faqs: [
           {
+            question: '¿L teanina para que sirve?',
+            answer:
+              'La búsqueda suele referirse a calma, enfoque o relajación ligera. La evidencia no significa que funcione igual para todos ni que sustituya atención médica si hay ansiedad o insomnio persistente.',
+          },
+          {
             question: '¿L-teanina es lo mismo que theanine?',
             answer:
               'En búsquedas comunes suelen referirse al mismo ingrediente. L-teanina es la forma más usada para describir este aminoácido presente en el té.',
+          },
+          {
+            question: '¿L-teanina para dormir tiene sentido?',
+            answer:
+              'Puede revisarse cuando el objetivo es relajación nocturna ligera, pero si hay insomnio persistente conviene revisar hábitos, cafeína, alcohol, sedantes, estrés y evaluación clínica.',
           },
           {
             question: '¿L-teanina es más relevante para sueño o enfoque?',

@@ -37,7 +37,7 @@ export function buildCategorySeoCopy({
       es: {
         title: 'Suplementos para triglicéridos: omega-3, psyllium y LDL',
         description:
-          'Compara omega-3, psyllium y esteroles para triglicéridos y colesterol LDL con evidencia, seguridad y qué revisar en laboratorios.',
+          'Compara omega-3, psyllium, esteroles y CoQ10 para triglicéridos, colesterol LDL y salud cardiovascular con evidencia prudente.',
       },
       en: {
         title: 'Cholesterol and triglyceride supplements: psyllium and omega-3',
@@ -61,7 +61,7 @@ export function buildCategorySeoCopy({
       es: {
         title: 'Suplementos cardiovasculares: omega-3, CoQ10 y seguridad',
         description:
-          'Compara omega-3, coenzima Q10 y ajo para salud cardiovascular con evidencia, interacciones, laboratorios y uso responsable.',
+          'Compara omega-3, coenzima Q10, ajo y fibra para salud cardiovascular, triglicéridos, interacciones y uso responsable.',
       },
       en: {
         title: 'Supplements for heart health: evidence, safety, and options',
@@ -151,10 +151,11 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
     'cholesterol-triglycerides': {
       es: {
         intro:
-          'Esta página responde a búsquedas reales sobre suplementos para triglicéridos y colesterol. Compara omega-3, psyllium, esteroles vegetales y ajo por intención de búsqueda, laboratorio objetivo y seguridad, sin prometer resultados clínicos.',
+          'Esta página responde a búsquedas reales sobre suplementos para triglicéridos, omega 3 triglycerides y colesterol. Compara omega-3, psyllium, esteroles vegetales, ajo y CoQ10 por intención de búsqueda, laboratorio objetivo y seguridad, sin prometer resultados clínicos.',
         highlights: [
           'Si buscas "suplementos triglicéridos", omega-3 EPA/DHA suele ser la opción con intención más directa.',
           'Psyllium y esteroles vegetales se revisan sobre todo cuando el foco es colesterol LDL.',
+          'CoQ10 pertenece más al cluster cardiovascular general; no reemplaza la comparación específica de LDL o triglicéridos.',
           'La decisión debe partir de LDL, triglicéridos, no-HDL, dieta, riesgo cardiovascular y medicamentos actuales.',
           'Ajo puede tener efectos pequeños y variables; la preparación y la dosis cambian mucho el resultado.',
         ],
@@ -197,6 +198,13 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
             label: 'Revisar CoQ10',
           },
           {
+            title: 'Omega-3 EPA/DHA',
+            description:
+              'Guía específica para usuarios que llegan por omega 3 triglycerides y quieren separar EPA/DHA, dosis y seguridad.',
+            href: '/portal/supplement/omega-3?benefit=cholesterol-triglycerides',
+            label: 'Revisar omega-3',
+          },
+          {
             title: 'Ajo y lípidos',
             description:
               'Opción de evidencia variable que conviene comparar con psyllium, omega-3 y esteroles vegetales.',
@@ -220,6 +228,11 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
             question: '¿Cómo elegir entre psyllium, omega-3 y esteroles vegetales?',
             answer:
               'Empieza por el laboratorio que quieres interpretar: LDL, triglicéridos, HDL y no-HDL. Psyllium y esteroles se revisan más por LDL; omega-3 por triglicéridos. Medicamentos, dieta y riesgo cardiovascular cambian la decisión.',
+          },
+          {
+            question: '¿Omega-3 es la primera opción cuando busco omega 3 triglycerides?',
+            answer:
+              'Es la guía más directa para esa intención de búsqueda, pero conviene revisar EPA/DHA, dosis, anticoagulantes, LDL, consumo de pescado y seguimiento médico si los triglicéridos están muy elevados.',
           },
           {
             question: '¿Qué significa buscar suplementos para triglicéridos?',
@@ -281,6 +294,13 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
             label: 'Review CoQ10',
           },
           {
+            title: 'Omega-3 EPA/DHA',
+            description:
+              'A focused guide for omega-3 triglycerides intent, separating EPA/DHA, dose context, and safety.',
+            href: '/portal/supplement/omega-3?benefit=cholesterol-triglycerides',
+            label: 'Review omega-3',
+          },
+          {
             title: 'Garlic and lipid markers',
             description:
               'A variable-evidence option to compare with psyllium, omega-3, and plant sterols.',
@@ -312,11 +332,12 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
     'heart-health': {
       es: {
         intro:
-          'Esta guía responde a búsquedas reales de suplementos cardiovasculares y suplemento cardiovascular. Ordena omega-3, coenzima Q10 y ajo por intención, evidencia, seguridad e interacciones como punto de partida educativo, no como diagnóstico.',
+          'Esta guía responde a búsquedas reales de suplementos cardiovasculares y suplemento cardiovascular. Ordena omega-3, coenzima Q10, ajo, psyllium y esteroles por intención, evidencia, seguridad e interacciones como punto de partida educativo, no como diagnóstico.',
         highlights: [
           'Omega-3 EPA/DHA destaca cuando la intención cardiovascular viene de triglicéridos o lípidos alterados.',
           'Coenzima Q10 se estudia por energía celular y contextos cardiovasculares particulares.',
           'Ajo puede apoyar modestamente presión arterial o colesterol, pero los resultados son variables.',
+          'Psyllium y esteroles vegetales ayudan a conectar salud cardiovascular con preguntas más específicas de colesterol LDL.',
           'Si la búsqueda viene de un resultado de laboratorio, conviene distinguir LDL, triglicéridos, presión arterial y medicamentos actuales.',
         ],
         priorityTopics: [
@@ -358,6 +379,13 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
             label: 'Revisar psyllium',
           },
           {
+            title: 'Omega-3 para triglicéridos',
+            description:
+              'Página específica para usuarios que buscan omega-3, EPA/DHA y triglicéridos dentro del cluster cardiovascular.',
+            href: '/portal/supplement/omega-3?benefit=heart-health',
+            label: 'Revisar omega-3',
+          },
+          {
             title: 'Esteroles vegetales',
             description:
               'Opción enfocada en absorción intestinal de colesterol para comparar con fibra soluble y omega-3.',
@@ -381,6 +409,11 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
             question: '¿Qué significa buscar un suplemento cardiovascular?',
             answer:
               'Puede significar varias cosas: triglicéridos, presión arterial, colesterol, energía celular, inflamación o uso junto con estatinas. Por eso conviene partir de laboratorios y antecedentes, no de una etiqueta general.',
+          },
+          {
+            question: '¿Qué diferencia hay entre suplementos cardiovasculares y suplementos para triglicéridos?',
+            answer:
+              'La búsqueda cardiovascular es amplia; puede incluir presión, lípidos, energía celular o uso con medicamentos. La búsqueda de triglicéridos es más específica y suele llevar primero a omega-3 EPA/DHA y revisión de laboratorios.',
           },
           {
             question: '¿Qué precauciones importan antes de usar suplementos cardiovasculares?',
@@ -435,6 +468,13 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
               'Soluble fiber studied for lipid profiles and digestive tolerance with lab follow-up.',
             href: '/portal/supplement/fiber-psyllium?benefit=cholesterol-triglycerides',
             label: 'Review psyllium',
+          },
+          {
+            title: 'Omega-3 for triglycerides',
+            description:
+              'A focused page for users comparing omega-3, EPA/DHA, and triglycerides inside the heart-health cluster.',
+            href: '/portal/supplement/omega-3?benefit=heart-health',
+            label: 'Review omega-3',
           },
           {
             title: 'Plant sterols',
