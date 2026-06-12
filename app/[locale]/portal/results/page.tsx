@@ -1171,7 +1171,34 @@ function ResultsPageContent() {
               try {
                 console.log('[Async Polling] Fetching status:', statusUrl);
                 const statusResponse = await fetch(statusUrl);
-                const statusData = await statusResponse.json();
+
+                // Terminal HTTP failures (job expired / not found / gone / bad
+                // request): stop polling immediately instead of retrying until the
+                // 180s timeout, which leaves the user staring at a blank spinner.
+                if (
+                  statusResponse.status === 404 ||
+                  statusResponse.status === 410 ||
+                  statusResponse.status === 408 ||
+                  statusResponse.status === 400
+                ) {
+                  console.warn('[Async Polling] Terminal status HTTP code:', statusResponse.status);
+                  setRecommendation(null);
+                  setError('El proceso de búsqueda expiró. Por favor, intenta buscar de nuevo.');
+                  setIsLoading(false);
+                  return;
+                }
+
+                // A non-JSON body must not fall through into the retry loop either.
+                let statusData: any;
+                try {
+                  statusData = await statusResponse.json();
+                } catch (parseError) {
+                  console.error('[Async Polling] ❌ Non-JSON status body:', parseError);
+                  setRecommendation(null);
+                  setError('Error al verificar el estado de la recomendación. Por favor, intenta de nuevo.');
+                  setIsLoading(false);
+                  return;
+                }
 
                 console.log('[Async Polling] Status update:', {
                   status: statusData.status,
@@ -1195,6 +1222,20 @@ function ResultsPageContent() {
                 if (statusData.status === 'failed') {
                   setRecommendation(null);
                   setError(statusData.error || 'Failed to generate recommendation');
+                  setIsLoading(false);
+                  return;
+                }
+
+                // Body-level terminal markers (expired / not found / timeout) are
+                // not recoverable by polling, so stop and explain immediately.
+                if (
+                  statusData.status === 'job_expired' ||
+                  statusData.status === 'job_not_found' ||
+                  statusData.status === 'expired' ||
+                  statusData.status === 'timeout'
+                ) {
+                  setRecommendation(null);
+                  setError('El proceso de búsqueda expiró. Por favor, intenta buscar de nuevo.');
                   setIsLoading(false);
                   return;
                 }
@@ -1298,7 +1339,34 @@ function ResultsPageContent() {
               try {
                 console.log('[Async Polling] Fetching status:', statusUrl);
                 const statusResponse = await fetch(statusUrl);
-                const statusData = await statusResponse.json();
+
+                // Terminal HTTP failures (job expired / not found / gone / bad
+                // request): stop polling immediately instead of retrying until the
+                // 180s timeout, which leaves the user staring at a blank spinner.
+                if (
+                  statusResponse.status === 404 ||
+                  statusResponse.status === 410 ||
+                  statusResponse.status === 408 ||
+                  statusResponse.status === 400
+                ) {
+                  console.warn('[Async Polling] Terminal status HTTP code:', statusResponse.status);
+                  setRecommendation(null);
+                  setError('El proceso de búsqueda expiró. Por favor, intenta buscar de nuevo.');
+                  setIsLoading(false);
+                  return;
+                }
+
+                // A non-JSON body must not fall through into the retry loop either.
+                let statusData: any;
+                try {
+                  statusData = await statusResponse.json();
+                } catch (parseError) {
+                  console.error('[Async Polling] ❌ Non-JSON status body:', parseError);
+                  setRecommendation(null);
+                  setError('Error al verificar el estado de la recomendación. Por favor, intenta de nuevo.');
+                  setIsLoading(false);
+                  return;
+                }
 
                 console.log('[Async Polling] Status update:', {
                   status: statusData.status,
@@ -1333,6 +1401,18 @@ function ResultsPageContent() {
                   console.log('[State Update] Setting isLoading to false');
                   setIsLoading(false);
                   return; // Stop polling
+                } else if (
+                  statusData.status === 'job_expired' ||
+                  statusData.status === 'job_not_found' ||
+                  statusData.status === 'expired' ||
+                  statusData.status === 'timeout'
+                ) {
+                  // Terminal: not recoverable by polling, stop and explain.
+                  console.warn('[Async Polling] Terminal status:', statusData.status);
+                  setRecommendation(null);
+                  setError('El proceso de búsqueda expiró. Por favor, intenta buscar de nuevo.');
+                  setIsLoading(false);
+                  return;
                 } else if (statusData.status === 'processing') {
                   // Continue polling if we haven't exceeded max time
                   if (Date.now() - startTime < maxPollTime) {
@@ -1345,6 +1425,13 @@ function ResultsPageContent() {
                     setError('La recomendación está tardando más de lo esperado. Por favor, intenta de nuevo.');
                     setIsLoading(false);
                   }
+                } else {
+                  // Unknown / unexpected status must not hang the spinner forever.
+                  console.warn('[Async Polling] Unexpected status, stopping:', statusData.status);
+                  setRecommendation(null);
+                  setError('Error al verificar el estado de la recomendación. Por favor, intenta de nuevo.');
+                  setIsLoading(false);
+                  return;
                 }
               } catch (pollError: any) {
                 console.error('[Async Polling] ❌ Polling error:', pollError);
