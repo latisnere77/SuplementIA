@@ -75,6 +75,7 @@ describe('category page SEO', () => {
     expect(lipidContent?.relatedLinks?.map((link) => link.href)).toEqual([
       '/portal/category/heart-health',
       '/portal/supplement/coenzyme-q10?benefit=heart-health',
+      '/portal/supplement/omega-3?benefit=cholesterol-triglycerides',
       '/portal/supplement/garlic?benefit=cholesterol-triglycerides',
     ]);
     expect(heartContent?.intro).toContain('suplementos cardiovasculares');
@@ -86,6 +87,7 @@ describe('category page SEO', () => {
     expect(heartContent?.relatedLinks?.map((link) => link.href)).toEqual([
       '/portal/category/cholesterol-triglycerides',
       '/portal/supplement/fiber-psyllium?benefit=cholesterol-triglycerides',
+      '/portal/supplement/omega-3?benefit=heart-health',
       '/portal/supplement/plant-sterols?benefit=cholesterol-triglycerides',
     ]);
     expect(heartContent?.supplementLinksHeading).toBe('Guías de suplementos cardiovasculares');
@@ -110,11 +112,22 @@ describe('category page SEO', () => {
     expect(lipidCopy.title).toContain('triglicéridos');
     expect(lipidCopy.description).toContain('colesterol LDL');
     expect(lipidContent?.highlights[0]).toContain('suplementos triglicéridos');
+    expect(lipidContent?.intro).toContain('omega 3 triglycerides');
+    expect(lipidContent?.relatedLinks?.map((link) => link.href)).toContain(
+      '/portal/supplement/omega-3?benefit=cholesterol-triglycerides'
+    );
     expect(lipidContent?.faqs.map((faq) => faq.question)).toContain(
       '¿Qué significa buscar suplementos para triglicéridos?'
     );
+    expect(lipidContent?.faqs.map((faq) => faq.question)).toContain(
+      '¿Omega-3 es la primera opción cuando busco omega 3 triglycerides?'
+    );
     expect(heartCopy.title).toContain('Suplementos cardiovasculares');
     expect(heartContent?.intro).toContain('suplemento cardiovascular');
+    expect(heartContent?.relatedLinks?.map((link) => link.href)).toContain('/portal/supplement/omega-3?benefit=heart-health');
+    expect(heartContent?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué diferencia hay entre suplementos cardiovasculares y suplementos para triglicéridos?'
+    );
   });
 
   it('does not add generic SEO content for non-priority categories', () => {

@@ -86,7 +86,8 @@ describe('supplement page SEO', () => {
 
     expect(bacopa?.intro).toContain('Bacopa monnieri');
     expect(vitaminD?.intro).toContain('suplemento de vitamina d');
-    expect(theanine?.faqs[0].question).toContain('theanine');
+    expect(theanine?.intro).toContain('l teanina para que sirve');
+    expect(theanine?.faqs.map((faq) => faq.question)).toContain('¿L-teanina es lo mismo que theanine?');
     expect(bacopa?.faqs).toHaveLength(3);
     expect(JSON.stringify([bacopa, vitaminD, theanine])).not.toMatch(unsafePattern);
   });
@@ -104,6 +105,10 @@ describe('supplement page SEO', () => {
     ]);
     expect(omega3?.intro).toContain('omega 3 triglicéridos');
     expect(omega3?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/heart-health');
+    expect(omega3?.relatedLinks?.map((link) => link.href)).toContain('/portal/supplement/coenzyme-q10?benefit=heart-health');
+    expect(omega3?.faqs.map((faq) => faq.question)).toContain(
+      '¿Omega-3 es relevante si busco suplementos cardiovasculares?'
+    );
     expect(coq10?.faqHeading).toContain('coenzima Q10 cardiovascular');
     expect(coq10?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/cholesterol-triglycerides');
     expect(JSON.stringify([psyllium, omega3, coq10])).not.toMatch(unsafePattern);
@@ -123,6 +128,7 @@ describe('supplement page SEO', () => {
     expect(collagen?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/joint-bone-health');
     expect(whey?.intro).toContain('proteina whey');
     expect(whey?.relatedLinks?.map((link) => link.href)).toContain('/portal/category/muscle-gain');
+    expect(whey?.relatedLinks?.map((link) => link.href)).toContain('/portal/supplement/citrulline?benefit=sports-performance');
     expect(caffeine?.relatedLinks?.map((link) => link.href)).toEqual([
       '/portal/category/sports-performance',
       '/portal/category/energy',
@@ -148,14 +154,25 @@ describe('supplement page SEO', () => {
     expect(buildSupplementDescription(bacopa!, 'es')).toContain('tolerancia');
     expect(buildSupplementTitle(citrulline!, 'es')).toContain('qué es');
     expect(citrullineContent?.faqs.map((faq) => faq.question)).toContain('¿Qué es citrulina?');
+    expect(citrullineContent?.faqs.map((faq) => faq.question)).toContain(
+      '¿Citrulina que es y por qué aparece en suplementos deportivos?'
+    );
     expect(buildSupplementTitle(sawPalmetto!, 'es')).toContain('efectos secundarios');
     expect(sawPalmettoContent?.faqs.map((faq) => faq.question)).toContain(
       '¿Cuáles son efectos secundarios de saw palmetto?'
     );
     expect(buildSupplementTitle(whey!, 'es')).toContain('qué es');
     expect(wheyContent?.faqs.map((faq) => faq.question)).toContain('¿Qué es proteína whey?');
+    expect(wheyContent?.faqs.map((faq) => faq.question)).toContain('¿Qué revisar si busco que es la proteina whey?');
     expect(buildSupplementTitle(theanine!, 'es')).toContain('qué es');
     expect(theanineContent?.intro).toContain('l teanina');
+    expect(theanineContent?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/sleep',
+      '/portal/category/anxiety',
+      '/portal/supplement/caffeine?benefit=energy',
+    ]);
+    expect(theanineContent?.faqs.map((faq) => faq.question)).toContain('¿L teanina para que sirve?');
+    expect(theanineContent?.faqs.map((faq) => faq.question)).toContain('¿L-teanina para dormir tiene sentido?');
     expect(JSON.stringify([citrullineContent, sawPalmettoContent, wheyContent, theanineContent])).not.toMatch(
       unsafePattern
     );
