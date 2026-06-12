@@ -361,6 +361,113 @@ Treat these as separate gates after the first safe PR:
   - validate main enrichment and `studySummarizer`;
   - measure tokens and cost with invocation logging enabled.
 
+## Source recovery gate result
+
+Gate run: 2026-06-11 (read-only Source Recovery Gate).
+
+Verdict: `blocked`. The live binary artifact was recovered and verified, but the
+TypeScript source tree, build inputs, and packaging/deploy path were not found
+in any machine-readable location. No code/model/cache/validator change is safe
+until the source is reconciled.
+
+Live binary artifact recovered and verified (read-only):
+
+- Recovered to: `/tmp/production-content-enricher-live.zip` (via the presigned
+  `Code.Location` from `aws lambda get-function`).
+- Size: `20412225` bytes (matches live `CodeSize`).
+- Checksum: `HQnp3PT5...JKA=` (matches live `CodeSha256`).
+- Note: `/tmp` is ephemeral. This is NOT durable preservation; re-pull from
+  `Code.Location` when needed and preserve durably as a separate approved action.
+
+Sources searched and result:
+
+- Local checkouts (active + siblings): not found. All checkouts resolve to the
+  single repo `SuplementIA`; only callers/orchestrators exist, never the Lambda
+  handler source.
+- Git history (all branches): not found. No enricher handler source was ever
+  committed.
+- GitHub (current identity): not found. Owner-scoped and global code search for
+  the distinctive markers returned zero hits; no `*enricher*` repo exists.
+- CodeCommit: not found. Zero repositories in the account/region.
+- CodeBuild: not found. Zero build projects (no pipeline that could produce it).
+- S3: not found. Only migration/app-data/cloudtrail-logs buckets; no
+  build/source/artifact bucket. The migration bucket is empty.
+- Artifact zip: recovered (build output only, see above), but it does not
+  contain the TypeScript source.
+
+Conclusion: machine-readable recovery is exhausted. The source now depends on a
+human handoff to the deploy operator.
+
+### Original TypeScript filenames observed in sourcemaps
+
+A nested older build `index.zip` inside the artifact carries `dist/*.js.map`
+sourcemaps that reference `../src/<name>.ts`, naming the 13 original source
+files:
+
+- `index.ts`
+- `bedrock.ts`
+- `bedrockConverse.ts`
+- `cache.ts`
+- `config.ts`
+- `prompts.ts`
+- `prompts-examine-style.ts`
+- `retry.ts`
+- `studySummarizer.ts`
+- `toolSchema.ts`
+- `types.ts`
+- `synergies.ts`
+- `job-store.ts`
+
+Important:
+
+- These filenames prove a `src/` TypeScript tree existed.
+- The sourcemaps do NOT contain `sourcesContent` (it is empty on all maps).
+- Therefore the TypeScript cannot be reconstructed from the artifact; only the
+  filenames and line/column mappings survive. Recovery must come from outside
+  the artifact (the operator's workstation, editor history, or backups).
+
+The operator can locate the tree quickly by searching their disk for these
+distinctive filenames (for example `bedrockConverse.ts`, `toolSchema.ts`,
+`studySummarizer.ts`).
+
+### Human handoff questions
+
+For the operator behind workstation IP `189.139.24.13` and the sessions
+`codex-lambda-update-*` / `lambda-cache-fix`:
+
+1. What machine (hostname) and absolute directory holds the TypeScript project
+   that produced `production-content-enricher`?
+2. What was the exact build/compile command (tsc/esbuild/webpack and flags)?
+3. What was the exact packaging/zip command (flags, file ordering, bundled
+   node_modules)?
+4. What was the exact deploy command on 2026-05-04 18:26Z (full
+   `update-function-code` line: `--zip-file fileb://...` or `--s3-*`)?
+5. What repo/branch/commit did that deploy originate from (or was it built from
+   an uncommitted working tree)?
+6. Where do `package.json`, the lockfile, `tsconfig.json`, and the build/deploy
+   scripts live?
+7. Does the exact zip with checksum `HQnp3PT5...JKA=` (`20412225` bytes) exist
+   anywhere outside the Lambda-internal snapshot (workstation, backup, bucket)?
+8. Why does the local Dec-18 zip NOT reproduce the live checksum (older source,
+   different deps/lockfile, different build tool, or different packaging)?
+9. Who approved Sonnet 4.5 with `MAX_TOKENS=16000`, and where is it recorded?
+10. Should this Lambda move to IaC with version/alias BEFORE any new deploy, and
+    who approves that migration?
+
+### Unblock criteria
+
+The gate stays `blocked` until ALL of the following are true:
+
+1. TypeScript source recovered and versioned in a known repo.
+2. Build inputs present: `package.json`, lockfile, `tsconfig`, build/packaging
+   scripts.
+3. Build reproduces `HQnp3PT5...JKA=` or produces a validated successor
+   artifact.
+4. Deploy path declared in repo-backed IaC or a reviewed release script.
+5. The five load-bearing environment variables declared outside manual console
+   state.
+6. Rollback / version / alias strategy defined.
+
 ## Related production docs
 
 - [AWS production alignment runbook](./aws-production-alignment-runbook.md)
