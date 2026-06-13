@@ -4,6 +4,8 @@
 import { buildCategorySeoContent, buildCategorySeoCopy } from './seo';
 
 const unsafePattern = /sirve para|treats|cures|beneficio comprobado|clinical benefit/i;
+const commonDeficienciesUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -128,6 +130,58 @@ describe('category page SEO', () => {
     expect(heartContent?.faqs.map((faq) => faq.question)).toContain(
       '¿Qué diferencia hay entre suplementos cardiovasculares y suplementos para triglicéridos?'
     );
+  });
+
+  it('adds curated SEO content for common deficiencies', () => {
+    const commonCopyEs = buildCategorySeoCopy({
+      slug: 'common-deficiencies',
+      categoryName: 'Deficiencias Comunes',
+      categoryDescription: 'Vitaminas y minerales con deficiencias frecuentes.',
+      locale: 'es',
+    });
+    const commonCopyEn = buildCategorySeoCopy({
+      slug: 'common-deficiencies',
+      categoryName: 'Common Deficiencies',
+      categoryDescription: 'Vitamins and minerals with common deficiencies.',
+      locale: 'en',
+    });
+    const commonContentEs = buildCategorySeoContent('common-deficiencies', 'es');
+    const commonContentEn = buildCategorySeoContent('common-deficiencies', 'en');
+
+    expect(commonCopyEs.title).toBe('Deficiencias comunes: vitamina D, hierro, B12, folato y zinc');
+    expect(commonCopyEs.description).toContain('qué se evalúa con análisis');
+    expect(commonCopyEs.title).not.toContain('evidencia científica');
+    expect(commonCopyEn.title).toBe('Common deficiencies: vitamin D, iron, B12, folate, and zinc');
+    expect(commonCopyEn.description).toContain('what labs assess');
+    expect(commonCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(commonContentEs).not.toBeNull();
+    expect(commonContentEn).not.toBeNull();
+    expect(commonContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'vitamin-d',
+      'iron',
+      'vitamin-b12',
+    ]);
+    expect(commonContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'vitamin-d',
+      'iron',
+      'vitamin-b12',
+    ]);
+    expect(commonContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/supplement/folic-acid?benefit=common-deficiencies',
+      '/portal/supplement/zinc?benefit=common-deficiencies',
+      '/portal/category/energy',
+    ]);
+    expect(commonContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/supplement/folic-acid?benefit=common-deficiencies',
+      '/portal/supplement/zinc?benefit=common-deficiencies',
+      '/portal/category/energy',
+    ]);
+    expect(commonContentEs?.faqs).toHaveLength(4);
+    expect(commonContentEn?.faqs).toHaveLength(4);
+
+    const serialized = JSON.stringify([commonCopyEs, commonCopyEn, commonContentEs, commonContentEn]);
+    expect(serialized).not.toMatch(commonDeficienciesUnsafePattern);
   });
 
   it('does not add generic SEO content for non-priority categories', () => {
