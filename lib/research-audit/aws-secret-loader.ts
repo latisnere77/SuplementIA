@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
 export const DEFAULT_MOONSHOT_SECRET_ID = 'suplementia/research-audit/moonshot-api-key';
+export const DEFAULT_GITHUB_ISSUE_TOKEN_SECRET_ID = 'suplementia/research-audit/github-issue-token';
 
 const execFileAsync = promisify(execFile);
 
@@ -16,11 +17,18 @@ export type ResearchAuditSecretLoaderOptions = {
   env?: NodeJS.ProcessEnv;
 };
 
+export type ResearchAuditGitHubTokenLoaderOptions = Omit<
+  ResearchAuditSecretLoaderOptions,
+  'existingApiKey'
+> & {
+  existingToken?: string;
+};
+
 function defaultAwsRegion(env: NodeJS.ProcessEnv): string {
   return env.AWS_REGION || env.AWS_DEFAULT_REGION || 'us-east-1';
 }
 
-function parseApiKey(secretText: string): string | undefined {
+function parseSecretValue(secretText: string, fieldNames: string[]): string | undefined {
   const trimmed = secretText.trim();
   if (!trimmed) return undefined;
 
@@ -29,7 +37,7 @@ function parseApiKey(secretText: string): string | undefined {
     if (!parsed || typeof parsed !== 'object') return trimmed;
 
     const fields = parsed as Record<string, unknown>;
-    for (const key of ['MOONSHOT_API_KEY', 'KIMI_API_KEY', 'apiKey', 'moonshotApiKey']) {
+    for (const key of fieldNames) {
       const value = fields[key];
       if (typeof value === 'string' && value.trim()) return value.trim();
     }
@@ -70,5 +78,24 @@ export async function loadResearchAuditProviderApiKey(
   const getSecretValue = options.getSecretValue ?? getSecretValueWithAwsCli;
   const secretText = await getSecretValue({ secretId, region });
 
-  return secretText ? parseApiKey(secretText) : undefined;
+  return secretText
+    ? parseSecretValue(secretText, ['MOONSHOT_API_KEY', 'KIMI_API_KEY', 'apiKey', 'moonshotApiKey'])
+    : undefined;
+}
+
+export async function loadResearchAuditGitHubIssueToken(
+  options: ResearchAuditGitHubTokenLoaderOptions
+): Promise<string | undefined> {
+  if (options.existingToken) return options.existingToken;
+  if (!options.enabled) return undefined;
+
+  const env = options.env ?? process.env;
+  const secretId = options.secretId || DEFAULT_GITHUB_ISSUE_TOKEN_SECRET_ID;
+  const region = options.region || defaultAwsRegion(env);
+  const getSecretValue = options.getSecretValue ?? getSecretValueWithAwsCli;
+  const secretText = await getSecretValue({ secretId, region });
+
+  return secretText
+    ? parseSecretValue(secretText, ['GITHUB_ISSUE_TOKEN', 'GITHUB_TOKEN', 'token', 'githubToken'])
+    : undefined;
 }

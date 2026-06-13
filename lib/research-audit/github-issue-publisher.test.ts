@@ -3,9 +3,11 @@ import path from 'path';
 import { tmpdir } from 'os';
 import {
   buildResearchAuditIssuePlan,
+  createResearchAuditGitHubClient,
   loadProviderAuditReportFromObjectStore,
   publishResearchAuditWeeklyIssue,
   renderLocalResearchAuditWeeklyIssue,
+  type ResearchAuditGitHubFetch,
   type ResearchAuditGitHubClient,
 } from './github-issue-publisher';
 import type { ProviderAuditReport } from './provider-runner';
@@ -293,5 +295,111 @@ describe('github issue publisher', () => {
     }));
 
     expect(plan.labels).toEqual(expect.arrayContaining(['seo', 'provider-error']));
+  });
+
+  it('creates a real GitHub issue through a mocked REST client without exposing the token', async () => {
+    const fetchImpl: ResearchAuditGitHubFetch = jest.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue([]),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: jest.fn().mockResolvedValue({
+          number: 88,
+          title: '[Frontier Audit] Weekly findings - 2026-W23',
+        }),
+      });
+    const github = createResearchAuditGitHubClient({
+      token: 'ghp_sensitive_token',
+      apiBaseUrl: 'https://api.github.test',
+      fetchImpl,
+    });
+
+    const result = await publishResearchAuditWeeklyIssue({
+      input: input({ dryRun: false, createIssue: true }),
+      report: report(),
+      github,
+    });
+
+    expect(result.action).toBe('created');
+    expect(result.issue?.number).toBe(88);
+    expect(fetchImpl).toHaveBeenCalledWith(
+      'https://api.github.test/repos/latisnere77/SuplementIA/issues?state=open&labels=frontier-agent%2Cresearch-audit%2Cweekly-review&per_page=100',
+      expect.objectContaining({ method: 'GET' })
+    );
+    expect(fetchImpl).toHaveBeenCalledWith(
+      'https://api.github.test/repos/latisnere77/SuplementIA/issues',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('"labels"'),
+      })
+    );
+    expect(JSON.stringify(result)).not.toContain('ghp_sensitive_token');
+  });
+
+  it('uses the mocked REST client to update an existing weekly GitHub issue', async () => {
+    const fetchImpl: ResearchAuditGitHubFetch = jest.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue([{
+          number: 99,
+          title: '[Frontier Audit] Weekly findings - 2026-W23',
+        }]),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          number: 99,
+          title: '[Frontier Audit] Weekly findings - 2026-W23',
+        }),
+      });
+    const github = createResearchAuditGitHubClient({
+      token: 'github-token',
+      apiBaseUrl: 'https://api.github.test',
+      fetchImpl,
+    });
+
+    const result = await publishResearchAuditWeeklyIssue({
+      input: input({ dryRun: false, createIssue: true }),
+      report: report(),
+      github,
+    });
+
+    expect(result.action).toBe('updated');
+    expect(fetchImpl).toHaveBeenLastCalledWith(
+      'https://api.github.test/repos/latisnere77/SuplementIA/issues/99',
+      expect.objectContaining({ method: 'PATCH' })
+    );
+  });
+
+  it('sanitizes mocked REST failures without saving raw response bodies', async () => {
+    const fetchImpl: ResearchAuditGitHubFetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      json: jest.fn().mockResolvedValue({
+        message: 'Bad credentials ghp_sensitive_token <account_metadata>',
+      }),
+    });
+    const github = createResearchAuditGitHubClient({
+      token: 'ghp_sensitive_token',
+      apiBaseUrl: 'https://api.github.test',
+      fetchImpl,
+    });
+
+    const result = await publishResearchAuditWeeklyIssue({
+      input: input({ dryRun: false, createIssue: true }),
+      report: report(),
+      github,
+    });
+
+    expect(result.action).toBe('failed');
+    expect(result.error?.httpStatus).toBe(401);
+    expect(JSON.stringify(result.error)).not.toContain('ghp_sensitive_token');
+    expect(JSON.stringify(result.error)).not.toContain('account_metadata');
   });
 });

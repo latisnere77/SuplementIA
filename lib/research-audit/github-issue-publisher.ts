@@ -64,6 +64,27 @@ export interface ResearchAuditGitHubClient {
   }): Promise<ResearchAuditGitHubIssue>;
 }
 
+export interface ResearchAuditGitHubFetchResponse {
+  ok: boolean;
+  status: number;
+  json(): Promise<unknown>;
+}
+
+export type ResearchAuditGitHubFetch = (
+  url: string,
+  init?: {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: string;
+  }
+) => Promise<ResearchAuditGitHubFetchResponse>;
+
+export interface CreateResearchAuditGitHubClientOptions {
+  token: string;
+  apiBaseUrl?: string;
+  fetchImpl?: ResearchAuditGitHubFetch;
+}
+
 export interface ResearchAuditIssuePlan {
   weekId: string;
   repository: string;
@@ -105,6 +126,89 @@ export interface LocalResearchAuditIssuePublisherOptions {
   input: ResearchAuditIssuePublisherInput;
   outputDir?: string;
   now?: () => Date;
+}
+
+export function createResearchAuditGitHubClient(
+  options: CreateResearchAuditGitHubClientOptions
+): ResearchAuditGitHubClient {
+  const token = options.token.trim();
+  if (!token) throw new Error('github token is required');
+
+  const fetchImpl = options.fetchImpl ?? defaultGitHubFetch;
+  const apiBaseUrl = (options.apiBaseUrl || 'https://api.github.com').replace(/\/$/, '');
+
+  return {
+    async findIssueByTitle(repository, title) {
+      const { owner, repo } = parseGitHubRepository(repository);
+      const url = [
+        `${apiBaseUrl}/repos/${owner}/${repo}/issues`,
+        '?state=open',
+        `&labels=${encodeURIComponent(DEFAULT_RESEARCH_AUDIT_ISSUE_LABELS.slice(0, 3).join(','))}`,
+        '&per_page=100',
+      ].join('');
+      const payload = await readGitHubJsonResponse(
+        await fetchImpl(url, {
+          method: 'GET',
+          headers: githubHeaders(token),
+        }),
+        'find weekly issue'
+      );
+
+      if (!Array.isArray(payload)) return undefined;
+      const issue = payload.find((candidate) => {
+        if (!candidate || typeof candidate !== 'object') return false;
+        const fields = candidate as Record<string, unknown>;
+        return (
+          typeof fields.number === 'number' &&
+          fields.title === title &&
+          !fields.pull_request
+        );
+      }) as Record<string, unknown> | undefined;
+
+      return issue
+        ? {
+            number: issue.number as number,
+            title: typeof issue.title === 'string' ? issue.title : title,
+            body: typeof issue.body === 'string' ? issue.body : undefined,
+          }
+        : undefined;
+    },
+
+    async createIssue(input) {
+      const { owner, repo } = parseGitHubRepository(input.repository);
+      const payload = await readGitHubJsonResponse(
+        await fetchImpl(`${apiBaseUrl}/repos/${owner}/${repo}/issues`, {
+          method: 'POST',
+          headers: githubHeaders(token),
+          body: JSON.stringify({
+            title: input.title,
+            body: input.body,
+            labels: input.labels,
+          }),
+        }),
+        'create weekly issue'
+      );
+
+      return parseGitHubIssuePayload(payload, input.title);
+    },
+
+    async updateIssue(input) {
+      const { owner, repo } = parseGitHubRepository(input.repository);
+      const payload = await readGitHubJsonResponse(
+        await fetchImpl(`${apiBaseUrl}/repos/${owner}/${repo}/issues/${input.issueNumber}`, {
+          method: 'PATCH',
+          headers: githubHeaders(token),
+          body: JSON.stringify({
+            body: input.body,
+            labels: input.labels,
+          }),
+        }),
+        'update weekly issue'
+      );
+
+      return parseGitHubIssuePayload(payload, `#${input.issueNumber}`);
+    },
+  };
 }
 
 export function loadProviderAuditReportFromFile(filePath: string): ProviderAuditReport {
@@ -428,6 +532,68 @@ function countReasons(reasons: string[]): Record<string, number> {
     counts[reason] = (counts[reason] || 0) + 1;
     return counts;
   }, {});
+}
+
+async function defaultGitHubFetch(
+  url: string,
+  init?: Parameters<ResearchAuditGitHubFetch>[1]
+): Promise<ResearchAuditGitHubFetchResponse> {
+  return fetch(url, init);
+}
+
+function parseGitHubRepository(repository: string): { owner: string; repo: string } {
+  const match = /^([^/\s]+)\/([^/\s]+)$/.exec(repository.trim());
+  if (!match) throw new Error('github repository must use owner/repo format');
+
+  return {
+    owner: encodeURIComponent(match[1]),
+    repo: encodeURIComponent(match[2]),
+  };
+}
+
+function githubHeaders(token: string): Record<string, string> {
+  return {
+    accept: 'application/vnd.github+json',
+    authorization: `Bearer ${token}`,
+    'content-type': 'application/json',
+    'x-github-api-version': '2022-11-28',
+  };
+}
+
+async function readGitHubJsonResponse(
+  response: ResearchAuditGitHubFetchResponse,
+  action: string
+): Promise<unknown> {
+  if (!response.ok) {
+    const error = new Error(`github ${action} failed with HTTP ${response.status}`) as Error & {
+      status?: number;
+    };
+    error.status = response.status;
+    throw error;
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    return undefined;
+  }
+}
+
+function parseGitHubIssuePayload(payload: unknown, fallbackTitle: string): ResearchAuditGitHubIssue {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('github issue response could not be parsed');
+  }
+
+  const fields = payload as Record<string, unknown>;
+  if (typeof fields.number !== 'number') {
+    throw new Error('github issue response could not be parsed');
+  }
+
+  return {
+    number: fields.number,
+    title: typeof fields.title === 'string' ? fields.title : fallbackTitle,
+    body: typeof fields.body === 'string' ? fields.body : undefined,
+  };
 }
 
 function sanitizeIssuePublisherError(error: unknown): ResearchAuditIssuePublisherResult['error'] {
