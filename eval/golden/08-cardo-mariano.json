@@ -1,0 +1,440 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.391Z",
+    "jobId": "job_prod_matrix_1777855543366_ajfcqfjiwd8",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "cardo mariano",
+  "metadata": {
+    "supplementId": "cardo mariano",
+    "generatedAt": "2026-05-04T00:48:22.902Z",
+    "tokensUsed": 20520,
+    "bedrockDuration": 157999,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "140-210mg de silimarina 2-3 veces al día (280-630mg/día total). Extractos estandarizados típicamente contienen 70-80% de silimarina",
+      "duration": "Efectos en enzimas hepáticas (ALT/AST): 4-8 semanas. Efectos metabólicos (glucosa, lípidos): 8-12 semanas. Mejoras en esteatosis hepática por imagen: 6 meses mínimo. Uso continuo documentado como seguro hasta 41 meses en estudios de cirrosis",
+      "notes": "Dividir dosis diaria en 2-3 tomas mejora tolerancia gastrointestinal según reportes clínicos, aunque no hay estudios farmacocinéticos formales. La silimarina tiene baja biodisponibilidad oral (20-50% según estudios farmacocinéticos), pero las dosis en estudios clínicos ya compensan esto. No hay evidencia de necesidad de ciclar o tomar descansos. Seguir indicaciones del fabricante respecto a forma específica del producto.",
+      "timing": "Sin preferencia de horario según estudios clínicos. Puede tomarse con o sin alimentos. Algunos estudios sugieren tomar con comidas para reducir molestias gastrointestinales leves, pero no hay datos farmacocinéticos que demuestren mejor absorción",
+      "optimalDose": "420mg/día de silimarina (140mg 3 veces al día) mostró mejores resultados en meta-análisis para NAFLD y diabetes tipo 2",
+      "maxSafeDose": "Hasta 700mg/día de silimarina documentado como seguro en estudios clínicos. Algunos estudios usaron hasta 1400mg/día sin efectos adversos graves",
+      "forms": [
+        {
+          "description": "Forma más común en estudios clínicos. Estandarización garantiza contenido consistente de principios activos. Aproximadamente 75-80% de estudios clínicos usan esta forma. Buscar certificación de contenido por laboratorio independiente.",
+          "studyCount": 280,
+          "form": "Extracto estandarizado 70-80% silimarina",
+          "recommended": true
+        },
+        {
+          "description": "Forma con fosfatidilcolina diseñada para mejorar biodisponibilidad. Algunos estudios sugieren mejor absorción, pero evidencia clínica de superioridad en eficacia es limitada. Usado en aproximadamente 15% de estudios clínicos.",
+          "studyCount": 45,
+          "form": "Silipide (complejo silimarina-fosfatidilcolina)",
+          "recommended": true
+        },
+        {
+          "description": "Componente más activo de la silimarina, representa 50-70% del complejo. Algunos estudios usan silibinina purificada, especialmente en investigación de hepatitis C. Menos común comercialmente que extracto completo de silimarina.",
+          "studyCount": 35,
+          "form": "Silibinina pura (principal componente activo)",
+          "recommended": true
+        },
+        {
+          "description": "Contiene solo 1.5-3% de silimarina, requiriendo dosis muy altas (10-20g) para alcanzar dosis efectivas. NO usado en estudios clínicos. NO recomendado por contenido impredecible de principios activos.",
+          "studyCount": 2,
+          "form": "Polvo de semilla de cardo mariano sin estandarizar",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Berberina - sinergia documentada en diabetes tipo 2 y NAFLD, mejora adicional de 10-15% en glucosa y lípidos",
+        "N-acetilcisteína (NAC) - sinergia antioxidante para hepatoprotección, usado en combinación en algunos protocolos clínicos",
+        "Vitamina E - combinación estudiada en NASH, mejora adicional en esteatosis y inflamación hepática"
+      ],
+      "effectiveDose": "280mg/día de silimarina (140mg 2 veces al día) para efectos hepatoprotectores básicos"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 4,
+        "condition": "Síndrome de ovario poliquístico (SOP) - mejora de parámetros metabólicos y hormonales",
+        "evidenceGrade": "C",
+        "notes": "Solo 4 RCTs pequeños (n=280 total) evaluaron silimarina en SOP, mostrando mejoras prometedoras en resistencia a insulina (HOMA-IR reducido 15-25%), perfil lipídico, y algunos marcadores hormonales (reducción de testosterona libre 10-15%). Estudio de 2020 (n=80, 12 semanas, 140mg 3x/día) mostró mejoras significativas vs placebo. Sin embargo, estudios son pequeños (n=40-80), de corta duración (8-12 semanas), y se necesitan RCTs grandes con desenlaces clínicos (regularidad menstrual, ovulación, fertilidad) para confirmar beneficios."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Acné vulgar - efectos antiinflamatorios y antioxidantes",
+        "evidenceGrade": "C",
+        "notes": "Solo 2 estudios clínicos (n=110 total) evaluaron silimarina oral en acné. Estudio de 2012 (n=56, 8 semanas, 210mg/día) mostró reducción de 53% en lesiones inflamatorias vs 36% en placebo (p<0.05). Mecanismo propuesto: efectos antiinflamatorios y antioxidantes sistémicos. Sin embargo, evidencia muy limitada, estudios pequeños, falta comparación con tratamientos estándar (retinoides, antibióticos), y se necesitan RCTs grandes para establecer eficacia real."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Neuropatía diabética - reducción de síntomas neuropáticos",
+        "evidenceGrade": "C",
+        "notes": "3 RCTs pequeños (n=210 total) evaluaron silimarina en neuropatía diabética, mostrando reducciones modestas en dolor neuropático (escala VAS reducida 15-25%) y mejoras en conducción nerviosa. Estudio de 2014 (n=60, 4 meses, 600mg/día) mostró mejoras significativas en síntomas vs placebo. Mecanismo: efectos antioxidantes y antiinflamatorios en nervios periféricos. Limitaciones: estudios pequeños (n=40-80), heterogeneidad en mediciones de desenlace, falta de estudios de seguimiento largo plazo. Se necesitan RCTs grandes con mediciones estandarizadas de neuropatía."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Dermatitis atópica y condiciones inflamatorias de piel",
+        "evidenceGrade": "C",
+        "notes": "Solo 2 estudios pequeños (n=95 total) evaluaron silimarina oral en dermatitis atópica, mostrando reducciones en severidad (SCORAD reducido 20-30%) y prurito. Estudio piloto de 2018 (n=50, 8 semanas) mostró mejoras prometedoras. Mecanismo: efectos antiinflamatorios y antioxidantes sistémicos, posible modulación de respuesta inmune. Limitaciones críticas: estudios muy pequeños, falta de replicación, ausencia de comparación con tratamientos estándar (corticoides tópicos), necesidad de RCTs multicéntricos grandes para validar eficacia."
+      }
+    ],
+    "primaryUses": [
+      "Hepatoprotección en enfermedad hepática alcohólica y no alcohólica - reduce transaminasas (ALT/AST) 15-30% en promedio según múltiples RCTs",
+      "Mejora de marcadores metabólicos en diabetes tipo 2 - reduce glucosa en ayunas 15-25 mg/dL y HbA1c 0.5-1.2% en estudios controlados",
+      "Protección hepática durante tratamientos hepatotóxicos - reduce elevación de enzimas hepáticas 20-40% en pacientes con quimioterapia o medicamentos hepatotóxicos",
+      "Soporte en cirrosis hepática - mejora función hepática y puede reducir mortalidad según meta-análisis (aunque evidencia mixta)",
+      "Efectos antioxidantes sistémicos - reduce marcadores de estrés oxidativo (MDA, 8-isoprostanos) 20-35% en diversos estudios"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 4,
+        "condition": "Hepatitis viral aguda - sin beneficio en resolución o duración",
+        "evidenceGrade": "D",
+        "notes": "4 RCTs (n=312 total) en hepatitis aguda (A, B) no mostraron diferencias significativas en tiempo de resolución, normalización de transaminasas, o síntomas clínicos comparado con placebo o tratamiento estándar. Estudio de 2003 (n=151, hepatitis B aguda) mostró resolución similar en ambos grupos (p=0.67). No hay evidencia que respalde su uso en hepatitis aguda."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Prevención o tratamiento de cáncer - sin evidencia clínica en humanos",
+        "evidenceGrade": "D",
+        "notes": "A pesar de efectos antiproliferativos prometedores in vitro en líneas celulares de cáncer (hepático, próstata, mama), solo 3 estudios clínicos pequeños en humanos (n<100 total) sin resultados significativos. No hay RCTs que demuestren beneficio en prevención, progresión o supervivencia en cáncer. Estudio en cáncer de próstata (n=13) no mostró cambios en PSA. Evidencia insuficiente para cualquier claim anticancerígeno en humanos."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Mejora cognitiva o función cerebral - sin estudios clínicos",
+        "evidenceGrade": "D",
+        "notes": "No existen RCTs evaluando efectos del cardo mariano en función cognitiva, memoria, atención o prevención de deterioro cognitivo en humanos. A pesar de propiedades antioxidantes teóricas, no hay evidencia clínica que respalde su uso para salud cerebral o neuroprotección. Claims de mejora cognitiva carecen completamente de respaldo científico."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Pérdida de peso o reducción de grasa corporal directa",
+        "evidenceGrade": "F",
+        "notes": "5 RCTs que midieron peso corporal como desenlace secundario (n=420 total) no mostraron reducción significativa de peso o IMC comparado con placebo. Estudio de 2016 en síndrome metabólico (n=179, 12 semanas) mostró cambio no significativo en peso (-0.8 kg vs -0.5 kg placebo, p=0.54). Aunque puede mejorar parámetros metabólicos, NO es efectivo para pérdida de peso directa. Claims de suplementos para adelgazar carecen de evidencia."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Desintoxicación hepática o limpieza de toxinas - concepto sin validación científica",
+        "evidenceGrade": "F",
+        "notes": "El concepto de desintoxicación hepática mediante suplementos carece de definición científica clara y validación clínica. 2 estudios que evaluaron eliminación de toxinas específicas (alcohol, acetaminofén) no mostraron aceleración en su metabolismo o eliminación. El hígado sano se desintoxica naturalmente sin necesidad de suplementos. El cardo mariano puede proteger hepatocitos del daño, pero NO acelera eliminación de toxinas ni limpia el hígado de sustancias acumuladas."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Enfermedad renal crónica - sin evidencia de beneficio",
+        "evidenceGrade": "D",
+        "notes": "Solo 2 estudios pequeños (n=85 total) evaluaron silimarina en pacientes con enfermedad renal crónica, sin mostrar mejoras significativas en función renal (creatinina, TFG), proteinuria o progresión de enfermedad. Estudio de 2013 (n=60, 3 meses) no mostró cambios en marcadores renales vs placebo (p>0.05). No hay evidencia que respalde su uso para salud renal."
+      }
+    ],
+    "whatIsIt": "El cardo mariano (Silybum marianum) es una planta medicinal de la familia Asteraceae, nativa de la región mediterránea, cuyo extracto estandarizado contiene un complejo de flavonolignanos llamado silimarina (compuesta principalmente por silibinina, silicristina y silidianina). La silimarina actúa principalmente como antioxidante hepatoprotector mediante la estabilización de membranas celulares hepáticas, inhibición de la peroxidación lipídica, y estimulación de la síntesis proteica en hepatocitos. Es notable por su uso histórico de más de 2000 años en medicina tradicional europea y por ser uno de los suplementos hepatoprotectores más estudiados científicamente, con más de 400 publicaciones en PubMed evaluando sus efectos en diversas condiciones hepáticas y metabólicas.",
+    "worksFor": [
+      {
+        "studyCount": 18,
+        "condition": "Enfermedad hepática grasa no alcohólica (NAFLD/NASH) - reducción de enzimas hepáticas y esteatosis",
+        "evidenceGrade": "B",
+        "notes": "Dosis típica: 140-210mg de silimarina 3 veces al día (420-630mg/día total). Duración mínima: 8-12 semanas para ver reducción significativa en transaminasas, 6 meses para mejoras en esteatosis por imagen. Meta-análisis de 2017 (9 RCTs, n=587) mostró reducción significativa de ALT (diferencia media: -23.5 U/L, p<0.001) y AST. Efectos más pronunciados en pacientes con elevaciones basales >80 U/L. Población: adultos con NAFLD diagnosticada por ultrasonido o biopsia, IMC 25-35 kg/m².",
+        "effectSize": "Moderate",
+        "rctCount": 15,
+        "magnitude": "Reduce ALT en 15-30 U/L (15-25% de reducción), AST en 12-25 U/L, y mejora grado de esteatosis en ultrasonido en 20-35% de pacientes",
+        "totalParticipants": 1200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 12,
+        "condition": "Diabetes tipo 2 - mejora del control glucémico y perfil lipídico",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 200-600mg/día de silimarina, generalmente 200mg 3 veces al día. Duración: 8-16 semanas mínimo para efectos glucémicos, 12 semanas para efectos lipídicos. Meta-análisis de 2019 (8 RCTs) mostró reducción significativa en glucosa en ayunas (diferencia media: -20.4 mg/dL, IC 95%: -28.3 a -12.5) y HbA1c (-0.82%, IC 95%: -1.16 a -0.48). Efectos más marcados cuando se combina con metformina. Población: adultos 35-65 años con diabetes tipo 2, HbA1c basal 7-10%. Mecanismo propuesto: mejora de sensibilidad a insulina y reducción de gluconeogénesis hepática.",
+        "effectSize": "Moderate",
+        "rctCount": 10,
+        "magnitude": "Reduce glucosa en ayunas 15-25 mg/dL (8-15% de reducción), HbA1c 0.5-1.2%, colesterol total 20-30 mg/dL, y triglicéridos 25-40 mg/dL",
+        "totalParticipants": 850,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 14,
+        "condition": "Hepatoprotección durante quimioterapia - prevención de hepatotoxicidad inducida por fármacos",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 420-560mg/día de silimarina, iniciando 1 semana antes de quimioterapia y continuando durante todo el tratamiento. Estudios en pacientes con leucemia linfoblástica aguda (LLA) tratados con quimioterapia mostraron reducción significativa en hepatotoxicidad. RCT de 2015 (n=50) mostró que solo 12% del grupo con silimarina desarrolló hepatotoxicidad grado 3-4 vs 44% en placebo (p<0.01). Efectos documentados con diversos agentes: metotrexato, ciclofosfamida, vincristina, doxorrubicina. Población: pacientes oncológicos recibiendo quimioterapia hepatotóxica. Seguridad: sin interacciones significativas reportadas con agentes quimioterapéuticos.",
+        "effectSize": "Moderate",
+        "rctCount": 11,
+        "magnitude": "Reduce elevación de ALT/AST en 20-40% comparado con placebo, disminuye incidencia de hepatotoxicidad grado 3-4 en 30-50%",
+        "totalParticipants": 780,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 9,
+        "condition": "Cirrosis hepática - mejora de función hepática y posible reducción de mortalidad",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 420-600mg/día de silimarina. Duración: mínimo 6-12 meses. Evidencia mixta: meta-análisis Cochrane de 2007 (13 estudios, n=915) no encontró beneficio significativo en mortalidad (RR 0.86, IC 95%: 0.70-1.05, p=0.14), pero análisis de subgrupos sugirió beneficio en cirrosis alcohólica. Estudios más recientes muestran mejoras en marcadores bioquímicos (albúmina, bilirrubina) pero sin impacto consistente en desenlaces clínicos duros. Población: pacientes con cirrosis Child-Pugh A-B, principalmente etiología alcohólica. Limitaciones: heterogeneidad en estudios, calidad metodológica variable, necesidad de RCTs grandes y bien diseñados.",
+        "effectSize": "Small",
+        "rctCount": 6,
+        "magnitude": "Mejora en Child-Pugh score 0.5-1.5 puntos, reducción de mortalidad 20-30% en algunos estudios (evidencia inconsistente)",
+        "totalParticipants": 650,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 16,
+        "condition": "Hepatitis C crónica - mejora de enzimas hepáticas como terapia complementaria",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 420-700mg/día de silimarina, algunos estudios usaron hasta 1400mg/día. Duración: 6-12 meses. Como monoterapia: reduce transaminasas pero NO reduce carga viral de VHC significativamente. Meta-análisis de 2012 (9 RCTs) mostró reducción modesta de ALT pero sin efecto en RNA viral. Como adyuvante a interferón/ribavirina: algunos estudios muestran mejora en respuesta virológica sostenida (RVS) de 10-15%, pero evidencia inconsistente. Población: pacientes con hepatitis C crónica, genotipo 1 principalmente, sin tratamiento previo o no respondedores. Nota: con nuevos antivirales de acción directa (DAAs), el rol del cardo mariano es principalmente como hepatoprotector complementario, no como antiviral.",
+        "effectSize": "Small",
+        "rctCount": 12,
+        "magnitude": "Reduce ALT/AST en 10-20% como monoterapia, sin efecto significativo en carga viral. Como adyuvante mejora respuesta virológica sostenida 10-15%",
+        "totalParticipants": 920,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 8,
+        "condition": "Síndrome metabólico - mejora de múltiples parámetros metabólicos",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 210-600mg/día de silimarina. Duración: 12-24 semanas. RCT de 2016 (n=179, 12 semanas, 210mg 3x/día) mostró mejoras significativas en circunferencia de cintura (-3.5 cm vs -0.8 cm placebo, p<0.01), triglicéridos (-28 mg/dL, p<0.05), y glucosa en ayunas (-12 mg/dL, p<0.05). Efectos modestos pero consistentes en múltiples componentes del síndrome metabólico. Población: adultos 30-60 años con síndrome metabólico según criterios ATP III (≥3 de 5 criterios). Mecanismo: combinación de efectos antioxidantes, antiinflamatorios y mejora de sensibilidad a insulina. Mejor efecto cuando se combina con modificaciones de estilo de vida.",
+        "effectSize": "Small",
+        "rctCount": 6,
+        "magnitude": "Reduce circunferencia de cintura 2-4 cm, presión arterial sistólica 3-8 mmHg, triglicéridos 20-35 mg/dL, mejora HDL 2-5 mg/dL",
+        "totalParticipants": 520,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Berberina - sinergia documentada en diabetes tipo 2 y NAFLD, mejora adicional de 10-15% en glucosa y lípidos",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "N-acetilcisteína (NAC) - sinergia antioxidante para hepatoprotección, usado en combinación en algunos protocolos clínicos",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamina E - combinación estudiada en NASH, mejora adicional en esteatosis y inflamación hepática",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis moderada (280-420mg/día de silimarina) y evaluar tolerancia antes de aumentar a dosis más altas",
+      "Tomar consistentemente 2-3 veces al día con comidas para minimizar molestias gastrointestinales y mantener niveles estables",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia en condiciones hepáticas o metabólicas - los efectos son graduales",
+      "Si se usa para diabetes o con medicamentos antidiabéticos, monitorear glucosa más frecuentemente al iniciar y ajustar medicación según necesario con supervisión médica",
+      "Verificar certificaciones de terceros (USP, NSF, ConsumerLab) para asegurar calidad y contenido de silimarina declarado",
+      "Combinar con modificaciones de estilo de vida (dieta, ejercicio) para maximizar beneficios metabólicos y hepáticos - el cardo mariano es complementario, no sustituto",
+      "Consultar médico antes de usar si se toman múltiples medicamentos, especialmente anticoagulantes, antidiabéticos o medicamentos metabolizados por CYP450"
+    ],
+    "totalStudies": 380,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo y lactancia - evidencia insuficiente de seguridad, evitar por precaución",
+        "Alergia conocida a plantas de familia Asteraceae (margaritas, ambrosía, crisantemos, caléndula)",
+        "Condiciones hormonales sensibles a estrógenos (cáncer de mama, útero, ovario) - silimarina tiene actividad estrogénica débil in vitro, usar con precaución",
+        "Obstrucción de vías biliares - efecto colerético podría exacerbar síntomas"
+      ],
+      "longTermSafety": "Uso continuo documentado como seguro hasta 41 meses en estudio de cirrosis hepática (n=170). Estudios de 6-12 meses son comunes sin eventos adversos significativos. No se han reportado casos de hepatotoxicidad atribuibles a silimarina en estudios clínicos, a pesar de uso en poblaciones con enfermedad hepática. Perfil de seguridad superior a muchos medicamentos hepatoprotectores.",
+      "notes": "Perfil de seguridad excelente en población general. Tasa de discontinuación por efectos adversos <3% en la mayoría de estudios clínicos, similar a placebo. No se han reportado casos de toxicidad hepática, renal o hematológica atribuibles a silimarina en estudios clínicos. Seguridad superior a medicamentos hepatoprotectores convencionales. Sin embargo, evitar en embarazo y lactancia por falta de datos de seguridad. Consultar médico si se toman múltiples medicamentos o existe enfermedad hepática avanzada.",
+      "safetyScore": 9,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Efecto adverso más común. Generalmente transitorio, desaparece después de 1-2 semanas de uso continuo. Más frecuente en dosis >600mg/día. Tomar con alimentos puede reducir incidencia.",
+          "effect": "Molestias gastrointestinales leves (náusea, distensión, diarrea leve)",
+          "frequency": "5-10% de usuarios en estudios clínicos"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Reportada ocasionalmente en estudios clínicos. Generalmente leve y transitoria. No requiere discontinuación del tratamiento.",
+          "effect": "Cefalea leve",
+          "frequency": "2-5% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Muy infrecuente. Más común en personas con alergia conocida a plantas de la familia Asteraceae (margaritas, ambrosía, crisantemos). Discontinuar si aparecen síntomas alérgicos.",
+          "effect": "Reacciones alérgicas (prurito, rash cutáneo)",
+          "frequency": "Raro, <1% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Más común en dosis >600mg/día. Relacionado con ligero efecto colerético (aumento de secreción biliar). Generalmente no requiere discontinuación.",
+          "effect": "Efecto laxante leve",
+          "frequency": "3-5% de usuarios, principalmente en dosis altas"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Estudios farmacocinéticos en humanos (dosis 140-420mg/día) no mostraron interacciones significativas con metronidazol, indinavir o losartán. Sin embargo, por precaución, monitorear si se usan medicamentos de estrecho margen terapéutico (warfarina, fenitoína, ciclosporina). Consultar médico si toma múltiples medicamentos.",
+          "medication": "Sustratos de CYP3A4, CYP2C9, CYP2D6 (muchos medicamentos comunes)",
+          "mechanism": "Silimarina inhibe enzimas CYP450 in vitro, pero estudios en humanos muestran efectos clínicamente insignificantes en dosis estándar"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Puede potenciar efectos hipoglucemiantes. Monitorear glucosa más frecuentemente al iniciar silimarina. Puede requerir ajuste de dosis de medicamento antidiabético. Beneficio potencial en diabetes tipo 2, pero requiere supervisión médica.",
+          "medication": "Medicamentos antidiabéticos (metformina, sulfonilureas, insulina)",
+          "mechanism": "Silimarina reduce glucosa sanguínea, efecto aditivo con antidiabéticos"
+        },
+        {
+          "severity": "Mild",
+          "description": "Estudios farmacocinéticos mostraron aumento leve (15-20%) en niveles de simvastatina, pero sin significancia clínica en dosis estándar de silimarina. Monitoreo de rutina de enzimas hepáticas y síntomas musculares es suficiente.",
+          "medication": "Estatinas (simvastatina, atorvastatina)",
+          "mechanism": "Posible inhibición de CYP3A4 y OATP1B1, aunque estudios muestran efectos mínimos"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Interacción teórica basada en estudios in vitro. Estudios clínicos limitados. Por precaución, monitorear INR más frecuentemente si se combina. Reportar cualquier cambio al médico.",
+          "medication": "Anticoagulantes (warfarina)",
+          "mechanism": "Posible inhibición de CYP2C9, metabolismo de warfarina"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Extracto estandarizado de semilla de cardo mariano conteniendo 70-80% de silimarina, forma usada en la mayoría de estudios clínicos",
+      "avoidFlags": [
+        "Productos sin estandarización de silimarina - contenido de principios activos impredecible",
+        "Polvo de semilla sin procesar - contiene solo 1.5-3% silimarina, dosis insuficiente",
+        "Claims exagerados de desintoxicación o limpieza hepática - no respaldados por evidencia",
+        "Ausencia de pruebas de terceros para contaminantes (metales pesados, pesticidas)",
+        "Mezclas propietarias sin especificar cantidad exacta de silimarina"
+      ],
+      "qualityIndicators": [
+        "Certificación de contenido por laboratorio independiente (USP, NSF, ConsumerLab)",
+        "Estandarización clara a 70-80% silimarina en etiqueta",
+        "Certificación orgánica (USDA Organic, EU Organic) - reduce riesgo de pesticidas",
+        "Pruebas de terceros para metales pesados y contaminantes disponibles",
+        "Fabricante con buenas prácticas de manufactura (GMP certificado)",
+        "Especificación de origen de semillas (europeo preferido, región mediterránea)"
+      ],
+      "notes": "ConsumerLab evaluó productos de cardo mariano en 2017 y encontró que la mayoría cumplían con contenido declarado de silimarina, pero algunos contenían menos del 70% declarado. Buscar marcas con certificación independiente. La forma silipide (silimarina-fosfatidilcolina) puede tener mejor biodisponibilidad teórica, pero la evidencia clínica de superioridad en eficacia es limitada y es más costosa. Extractos estandarizados regulares son suficientes según estudios clínicos. Evitar productos que combinan cardo mariano con múltiples hierbas sin especificar dosis exactas de cada componente.",
+      "keyCompounds": [
+        {
+          "name": "Silimarina (complejo de flavonolignanos)",
+          "lookFor": "Estandarizado a 70-80% silimarina, equivalente a 140-210mg de silimarina por cápsula",
+          "source": "Semillas de Silybum marianum (cardo mariano)"
+        },
+        {
+          "name": "Silibinina (componente principal de silimarina)",
+          "lookFor": "Representa 50-70% de la silimarina total. Algunos productos especifican contenido de silibinina",
+          "source": "Componente mayoritario del complejo silimarina"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Estabilización de membranas hepatocelulares y antioxidación",
+        "description": "La silibinina se incorpora a las membranas de los hepatocitos, estabilizándolas y previniendo la entrada de toxinas. Actúa como potente antioxidante mediante la captación directa de radicales libres (ROS) y la inhibición de la peroxidación lipídica. Además, aumenta los niveles intracelulares de glutatión (GSH) hasta 35% al estimular la glutatión peroxidasa y la superóxido dismutasa (SOD), protegiendo así a las células hepáticas del daño oxidativo. Este mecanismo está bien documentado en estudios in vitro, animales y humanos.",
+        "studyCount": 150,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Estimulación de la síntesis proteica y regeneración hepática",
+        "description": "La silimarina estimula la RNA polimerasa I en los hepatocitos, aumentando la síntesis de proteínas estructurales y enzimáticas necesarias para la regeneración celular. Incrementa la actividad de la RNA polimerasa hasta 40% en modelos experimentales, acelerando la reparación del tejido hepático dañado. Este efecto se ha observado en estudios con animales y se correlaciona con mejoras en marcadores de función hepática en humanos, aunque el mecanismo exacto en humanos requiere más investigación directa.",
+        "studyCount": 45,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Inhibición de factores inflamatorios y fibrogénicos",
+        "description": "La silimarina inhibe la activación de NF-κB, un factor de transcripción clave en procesos inflamatorios, reduciendo la producción de citoquinas proinflamatorias (TNF-α, IL-6, IL-1β). También inhibe la transformación de células estrelladas hepáticas en miofibroblastos, proceso central en la fibrosis hepática, mediante la modulación de TGF-β1. Estudios en modelos animales muestran reducción de 30-50% en marcadores de fibrosis, aunque la evidencia en humanos es más limitada y se basa principalmente en marcadores indirectos.",
+        "studyCount": 65,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "8-24 semanas según estudios incluidos",
+        "dose": "420-630mg/día de silimarina",
+        "year": 2017,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción significativa de ALT: diferencia media -23.5 U/L (IC 95%: -31.2 a -15.8, p<0.001) vs placebo",
+          "Reducción significativa de AST: diferencia media -18.3 U/L (IC 95%: -25.7 a -10.9, p<0.001)",
+          "Mejora en grado de esteatosis hepática por ultrasonido en 25-35% de pacientes",
+          "Sin efectos adversos graves reportados, tasa de discontinuación similar a placebo"
+        ],
+        "title": "Silymarin in the treatment of patients with primary non-alcoholic fatty liver disease: a randomized controlled trial",
+        "participants": 587,
+        "quality": "High"
+      },
+      {
+        "duration": "8-16 semanas",
+        "dose": "200-600mg/día de silimarina",
+        "year": 2019,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de glucosa en ayunas: diferencia media -20.4 mg/dL (IC 95%: -28.3 a -12.5, p<0.001)",
+          "Reducción de HbA1c: diferencia media -0.82% (IC 95%: -1.16 a -0.48, p<0.001)",
+          "Reducción de colesterol total: -22.6 mg/dL (IC 95%: -35.2 a -10.0, p<0.001)",
+          "Reducción de triglicéridos: -28.5 mg/dL (IC 95%: -42.1 a -14.9, p<0.001)",
+          "Efectos más pronunciados en pacientes con HbA1c basal >8%"
+        ],
+        "title": "The effect of silymarin on glycemic control and lipid profile in patients with type 2 diabetes: A systematic review and meta-analysis",
+        "participants": 850,
+        "quality": "High"
+      },
+      {
+        "duration": "6 meses",
+        "dose": "5.1mg/kg/día de silimarina (aproximadamente 420mg/día en adultos)",
+        "year": 2015,
+        "studyType": "RCT",
+        "findings": [
+          "Incidencia de hepatotoxicidad grado 3-4: 12% en grupo silimarina vs 44% en placebo (p<0.01)",
+          "Elevación de ALT >3x límite superior normal: 24% vs 56% (p<0.05)",
+          "Reducción significativa en necesidad de modificación de dosis de quimioterapia por hepatotoxicidad",
+          "Sin interacciones con eficacia de quimioterapia, tasas de remisión similares"
+        ],
+        "title": "Silymarin for the prevention of chemotherapy-induced hepatotoxicity: a randomized controlled trial in children with acute lymphoblastic leukemia",
+        "participants": 50,
+        "quality": "High"
+      },
+      {
+        "duration": "Variable, 1-41 meses",
+        "dose": "280-700mg/día de silimarina",
+        "year": 2010,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Revisión de 13 RCTs en cirrosis: beneficio en mortalidad no consistente (RR 0.86, IC 95%: 0.70-1.05)",
+          "Mejoras consistentes en marcadores bioquímicos (ALT, AST, bilirrubina) en múltiples condiciones hepáticas",
+          "Perfil de seguridad excelente: tasa de efectos adversos <5%, similar a placebo",
+          "Uso seguro documentado hasta 41 meses en estudio de cirrosis (n=170)"
+        ],
+        "title": "Milk thistle in liver diseases: past, present, future",
+        "participants": 1800,
+        "quality": "High"
+      },
+      {
+        "duration": "12 semanas",
+        "dose": "210mg de silimarina 3 veces al día (630mg/día total)",
+        "year": 2016,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de circunferencia de cintura: -3.5 cm vs -0.8 cm en placebo (p<0.01)",
+          "Reducción de triglicéridos: -28 mg/dL vs +5 mg/dL en placebo (p<0.05)",
+          "Reducción de glucosa en ayunas: -12 mg/dL (p<0.05)",
+          "Mejora en marcadores de inflamación: PCR reducida 25% (p<0.05)",
+          "Efectos modestos pero significativos en múltiples componentes del síndrome metabólico"
+        ],
+        "title": "Silymarin in metabolic syndrome: A review",
+        "participants": 179,
+        "quality": "Moderate"
+      }
+    ]
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.393Z",
+    "jobId": "job_1767144146896_lug7og99z",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "ginger",
+  "metadata": {
+    "supplementId": "ginger",
+    "generatedAt": "2025-12-31T01:22:28.265Z",
+    "tokensUsed": null,
+    "bedrockDuration": null,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 350,
+    "dosage": {
+      "standard": "500-1000mg/día",
+      "duration": "Efectos iniciales en 2-4 semanas, máximos en 8-12 semanas",
+      "notes": "Dividir dosis mejora tolerancia, tomar con comidas reduce efectos secundarios",
+      "timing": "Preferiblemente con alimentos para reducir molestias gastrointestinales",
+      "optimalDose": "1000mg/día",
+      "maxSafeDose": "2000mg/día",
+      "forms": [
+        {
+          "description": "Concentración de 5% de gingeroles, mayor biodisponibilidad",
+          "studyCount": 42,
+          "form": "Extracto estandarizado",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Cúrcuma",
+        "Omega-3"
+      ],
+      "effectiveDose": "500mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 3,
+        "condition": "Potencial neuroprotector",
+        "evidenceGrade": "C",
+        "notes": "Solo estudios preclínicos, se requieren RCTs en humanos"
+      },
+      {
+        "studyCount": 2,
+        "condition": "Balance hormonal en menopausia",
+        "evidenceGrade": "C",
+        "notes": "Estudios preliminares limitados, necesaria investigación adicional"
+      },
+      {
+        "studyCount": 4,
+        "condition": "Modulación del metabolismo lipídico",
+        "evidenceGrade": "C",
+        "notes": "Evidencia inicial prometedora, requiere confirmación en grandes RCTs"
+      }
+    ],
+    "primaryUses": [
+      "Reducción del dolor inflamatorio hasta 25%",
+      "Mejora de la función digestiva con reducción de náuseas 70%",
+      "Soporte a la función inmunológica con modulación de citoquinas"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 6,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron efecto significativo en pérdida de peso, p>0.05"
+      },
+      {
+        "studyCount": 3,
+        "condition": "Tratamiento directo del cáncer",
+        "evidenceGrade": "F",
+        "notes": "Sin evidencia clínica de efecto antitumoral directo en humanos"
+      },
+      {
+        "studyCount": 2,
+        "condition": "Mejora cognitiva dramática",
+        "evidenceGrade": "D",
+        "notes": "Estudios in vitro prometedores, sin confirmación en ensayos clínicos humanos"
+      },
+      {
+        "studyCount": 1,
+        "condition": "Curación de enfermedades autoinmunes",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia de efecto modificador de enfermedad"
+      },
+      {
+        "studyCount": 4,
+        "condition": "Reemplazo de medicamentos cardiovasculares",
+        "evidenceGrade": "F",
+        "notes": "No sustituye tratamientos farmacológicos establecidos"
+      }
+    ],
+    "whatIsIt": "El jengibre (Zingiber officinale) es un rizoma aromático perteneciente a la familia Zingiberaceae, conocido por sus compuestos bioactivos como gingeroles y shogaoles. Es un potente agente fitoquímico con propiedades antiinflamatorias y antioxidantes, que actúa modulando vías metabólicas y moleculares a través de sus componentes bioactivos.",
+    "worksFor": [
+      {
+        "studyCount": 22,
+        "condition": "Reducción de dolor articular en osteoartritis",
+        "evidenceGrade": "B",
+        "notes": "Efecto más pronunciado en rodilla, dosis de 1000mg/día, estudios con seguimiento de 12 semanas",
+        "effectSize": "Large",
+        "rctCount": 12,
+        "magnitude": "Reduce dolor articular 40-50% en dosis de 1000mg/día",
+        "totalParticipants": 1250,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 45,
+        "condition": "Control de náuseas y mareos",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva 1000-1500mg/día, mayor eficacia en primeras 12 semanas de embarazo",
+        "effectSize": "Very Large",
+        "rctCount": 28,
+        "magnitude": "Reduce náuseas hasta 70-80% en embarazadas y pacientes post-quimioterapia",
+        "totalParticipants": 3200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 18,
+        "condition": "Reducción de inflamación sistémica",
+        "evidenceGrade": "B",
+        "notes": "Reducción significativa de PCR e interleucinas, mejor en individuos con inflamación basal elevada",
+        "effectSize": "Moderate",
+        "rctCount": 9,
+        "magnitude": "Disminuye marcadores inflamatorios 25-35%",
+        "totalParticipants": 875,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 16,
+        "condition": "Mejora función digestiva",
+        "evidenceGrade": "B",
+        "notes": "Dosis de 500-1000mg/día, efecto más pronunciado en dispepsia funcional",
+        "effectSize": "Large",
+        "rctCount": 8,
+        "magnitude": "Reduce tiempo de vaciado gástrico 40% y mejora motilidad intestinal",
+        "totalParticipants": 620,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 7,
+        "condition": "Soporte función inmunológica",
+        "evidenceGrade": "C",
+        "notes": "Modulación de respuesta inmune más evidente en adultos mayores",
+        "effectSize": "Moderate",
+        "rctCount": 4,
+        "magnitude": "Incrementa producción de células NK 15-22%",
+        "totalParticipants": 350,
+        "metaAnalysis": false
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Trastornos de coagulación",
+        "Tratamientos anticoagulantes",
+        "Embarazo (consultar médico)"
+      ],
+      "longTermSafety": "Uso continuo documentado seguro hasta 12 meses",
+      "notes": "Perfil de seguridad superior a antiinflamatorios tradicionales",
+      "safetyScore": 8,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Más común en dosis altas, generalmente transitorio",
+          "effect": "Malestar gastrointestinal leve",
+          "frequency": "10-15% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede aumentar riesgo de sangrado, consultar médico antes de combinar",
+          "medication": "Anticoagulantes",
+          "mechanism": "Potencial inhibición de agregación plaquetaria"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Inhibición de COX-2 y lipoxigenasas",
+        "description": "Los gingeroles inhiben selectivamente enzimas proinflamatorias reduciendo la producción de prostaglandinas. Bloquean específicamente la ciclooxigenasa-2 (COX-2) disminuyendo la cascada inflamatoria a nivel molecular.",
+        "studyCount": 85,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Modulación de señalización NF-kB",
+        "description": "Interrumpe la activación del factor nuclear kappa B, reduciendo la expresión de genes proinflamatorios y modulando respuestas inmunes celulares mediante inhibición directa de vías de transducción de señales.",
+        "studyCount": 42,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [],
+    "practicalRecommendations": [
+      "Iniciar con dosis baja (500mg) y aumentar gradualmente",
+      "Tomar con alimentos para reducir molestias",
+      "Consultar médico en caso de condiciones preexistentes"
+    ]
+  }
+}

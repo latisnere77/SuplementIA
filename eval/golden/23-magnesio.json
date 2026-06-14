@@ -1,0 +1,500 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.394Z",
+    "jobId": "job_1777906471449_xit1ba1co",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "magnesio",
+  "metadata": {
+    "supplementId": "magnesio",
+    "generatedAt": "2026-05-04T14:57:16.868Z",
+    "tokensUsed": 21123,
+    "bedrockDuration": 163708,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "200-400 mg/día de magnesio elemental para mantenimiento general, 300-600 mg/día para condiciones específicas (hipertensión, migrañas, diabetes)",
+      "duration": "Efectos iniciales en calambres y sueño: 2-4 semanas. Efectos en presión arterial: 4-6 semanas. Efectos en migrañas: 6-12 semanas. Efectos en control glucémico: 12-16 semanas. Uso continuo seguro documentado hasta 12 meses en RCTs",
+      "notes": "Tomar con alimentos mejora tolerancia gastrointestinal y puede aumentar absorción en 10-20%. Formas orgánicas (citrato, glicinato, malato) tienen mejor biodisponibilidad que óxido. Dividir dosis diaria en 2-3 tomas reduce efectos laxantes. Personas con función renal normal excretan eficientemente exceso de magnesio. Evitar tomar con tetraciclinas, bifosfonatos o suplementos de hierro (reducen absorción mutua, separar por 2-3 horas).",
+      "timing": "Sin preferencia crítica de horario según estudios clínicos. Para sueño: tomar 1-2 horas antes de dormir. Para calambres: antes de ejercicio o noche. Dividir dosis >300 mg/día en 2-3 tomas mejora tolerancia gastrointestinal",
+      "optimalDose": "400-600 mg/día para prevención de migrañas y control de presión arterial según meta-análisis",
+      "maxSafeDose": "Hasta 350 mg/día de magnesio suplementario según NIH (dosis total incluyendo dieta puede ser mayor). Dosis >350 mg/día pueden causar efectos laxantes en personas sensibles",
+      "forms": [
+        {
+          "description": "Biodisponibilidad de 25-30%, bien tolerado, efecto laxante leve beneficioso para estreñimiento. Usado en 35% de estudios clínicos. Contiene 16% de magnesio elemental por peso",
+          "studyCount": 85,
+          "form": "Citrato de magnesio",
+          "recommended": true
+        },
+        {
+          "description": "Biodisponibilidad de 20-25%, mejor tolerancia gastrointestinal, mínimo efecto laxante. Quelado con glicina que puede tener efectos calmantes adicionales. Contiene 14% de magnesio elemental. Usado en estudios de sueño y ansiedad",
+          "studyCount": 42,
+          "form": "Glicinato de magnesio (bisglicinato)",
+          "recommended": true
+        },
+        {
+          "description": "Biodisponibilidad baja de 4-10%, pero contiene 60% de magnesio elemental por peso. Efecto laxante pronunciado. Usado en algunos estudios de migraña pero formas orgánicas preferidas por mejor absorción",
+          "studyCount": 38,
+          "form": "Óxido de magnesio",
+          "recommended": false
+        },
+        {
+          "description": "Biodisponibilidad de 15-20%, bien tolerado. El malato participa en ciclo de Krebs, teóricamente beneficioso para energía. Usado en estudios de fibromialgia y fatiga. Contiene 15% de magnesio elemental",
+          "studyCount": 18,
+          "form": "Malato de magnesio",
+          "recommended": true
+        },
+        {
+          "description": "Forma patentada con evidencia preliminar de mejor penetración de barrera hematoencefálica. Usado en 2 estudios pequeños de función cognitiva en animales y 1 en humanos. Contiene solo 8% de magnesio elemental, requiere dosis mayores. Evidencia insuficiente en humanos",
+          "studyCount": 3,
+          "form": "L-treonato de magnesio (Magtein)",
+          "recommended": false
+        },
+        {
+          "description": "Biodisponibilidad de 12-15%, disponible en forma tópica (aceite de magnesio) aunque absorción transdérmica es controversial. Forma oral bien absorbida. Contiene 12% de magnesio elemental",
+          "studyCount": 22,
+          "form": "Cloruro de magnesio",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Vitamina D - el magnesio es cofactor para activación de vitamina D, y la vitamina D aumenta absorción intestinal de magnesio",
+        "Vitamina B6 - sinergia documentada en reducción de síntomas de SPM y ansiedad (efecto adicional de 10-15%)",
+        "Calcio - ratio óptimo Ca:Mg de 2:1 a 3:1 para salud ósea, pero tomar separados (calcio reduce absorción de magnesio si se toman juntos)",
+        "Potasio - el magnesio es necesario para retención de potasio intracelular, suplementación conjunta beneficiosa en deficiencias"
+      ],
+      "effectiveDose": "200 mg/día mostró efectos en calidad de sueño, 300 mg/día para ansiedad y calambres"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 5,
+        "condition": "Mejora de síntomas de TDAH en niños y adolescentes",
+        "evidenceGrade": "C",
+        "notes": "Solo 5 estudios pequeños (n=30-75) han evaluado magnesio en TDAH, con resultados mixtos. Dos RCTs mostraron mejoras modestas en hiperactividad e inatención con 200 mg/día durante 8-12 semanas, pero otros 3 estudios no encontraron diferencias significativas. Alta prevalencia de deficiencia de magnesio en niños con TDAH (30-50%) sugiere potencial, pero se necesitan RCTs grandes, bien controlados, con dosis estandarizadas y medidas objetivas de síntomas."
+      },
+      {
+        "studyCount": 6,
+        "condition": "Reducción de síntomas de síndrome premenstrual (SPM)",
+        "evidenceGrade": "C",
+        "notes": "6 RCTs pequeños (n=30-120) sugieren que magnesio 200-360 mg/día puede reducir síntomas de SPM (retención de líquidos, irritabilidad, dolor mamario) en 30-40%. Sin embargo, estudios tienen limitaciones metodológicas: tamaños muestrales pequeños, falta de estandarización de dosis, y uso de diferentes escalas de síntomas. Meta-análisis reciente concluyó evidencia prometedora pero insuficiente. Se necesitan RCTs grandes con medidas validadas de SPM."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Mejora de resistencia a insulina en síndrome de ovario poliquístico (SOP)",
+        "evidenceGrade": "C",
+        "notes": "4 RCTs pequeños (n=40-70) en mujeres con SOP mostraron que magnesio 250-400 mg/día durante 8-12 semanas mejoró marcadores de resistencia a insulina (HOMA-IR reducción de 15-25%) y perfil lipídico. Sin embargo, estudios son limitados por tamaños muestrales pequeños, heterogeneidad en dosis y formas de magnesio, y falta de medidas de outcomes clínicos (regularidad menstrual, fertilidad). Se necesitan RCTs grandes con seguimiento prolongado."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Reducción de dolor en fibromialgia",
+        "evidenceGrade": "C",
+        "notes": "Solo 3 RCTs pequeños (n=24-60) han evaluado magnesio en fibromialgia, con resultados preliminares positivos. Uno mostró reducción de 30% en dolor con citrato de magnesio 300 mg/día + malato 1200 mg/día durante 8 semanas. Sin embargo, evidencia es muy limitada por tamaños muestrales pequeños, falta de replicación, y uso frecuente de combinaciones (magnesio + malato) que dificultan atribuir efecto específico al magnesio. Se necesitan RCTs grandes con magnesio solo."
+      }
+    ],
+    "primaryUses": [
+      "Reducción de presión arterial - disminuye 3-4 mmHg sistólica y 2-3 mmHg diastólica en hipertensos según meta-análisis de 34 RCTs",
+      "Prevención y tratamiento de migrañas - reduce frecuencia 41.6% vs placebo en estudios controlados",
+      "Mejora de calidad de sueño e insomnio - aumenta tiempo de sueño 17 minutos y eficiencia del sueño 2.2% en adultos mayores",
+      "Reducción de calambres musculares - disminuye frecuencia en 50-70% en mujeres embarazadas y atletas",
+      "Control glucémico en diabetes tipo 2 - reduce glucosa en ayunas 4-5 mg/dL y mejora sensibilidad a insulina"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 7,
+        "condition": "Prevención de calambres musculares nocturnos en adultos mayores no embarazadas",
+        "evidenceGrade": "F",
+        "notes": "Meta-análisis Cochrane de 7 RCTs (n=406) en adultos mayores con calambres nocturnos idiopáticos mostró que el magnesio NO fue superior a placebo en reducción de frecuencia (diferencia de -0.18 calambres/semana, IC 95%: -0.84 a 0.49, p=0.6) ni severidad de calambres. Efecto específicamente negativo en población no embarazada sin deficiencia documentada de magnesio."
+      },
+      {
+        "studyCount": 8,
+        "condition": "Prevención de fracturas óseas o mejora de densidad mineral ósea",
+        "evidenceGrade": "D",
+        "notes": "Aunque el magnesio es componente del hueso, 8 estudios observacionales y 3 RCTs pequeños no demostraron efecto significativo de suplementación con magnesio en densidad mineral ósea (DMO) ni en reducción de riesgo de fracturas. Meta-análisis mostró cambio no significativo en DMO lumbar (0.01 g/cm², p=0.45) con 250-750 mg/día durante 6-24 meses. Evidencia insuficiente para recomendar magnesio solo para salud ósea."
+      },
+      {
+        "studyCount": 6,
+        "condition": "Tratamiento de depresión mayor como monoterapia",
+        "evidenceGrade": "D",
+        "notes": "Aunque estudios observacionales sugieren asociación entre deficiencia de magnesio y depresión, solo 6 RCTs pequeños (n<100 cada uno) han evaluado magnesio en depresión. Resultados inconsistentes y sin potencia estadística suficiente. Revisión sistemática concluyó evidencia insuficiente para recomendar magnesio como tratamiento de depresión mayor. Puede tener rol adyuvante pero no como monoterapia."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Pérdida de peso o mejora de composición corporal",
+        "evidenceGrade": "F",
+        "notes": "5 RCTs que evaluaron magnesio para pérdida de peso (300-500 mg/día durante 8-24 semanas) no mostraron diferencia significativa vs placebo en peso corporal, IMC, o porcentaje de grasa corporal. Meta-análisis mostró cambio no significativo de -0.3 kg (IC 95%: -1.2 a 0.6, p=0.52). No hay mecanismo plausible ni evidencia para uso de magnesio en pérdida de peso."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Mejora de función cognitiva o prevención de demencia en adultos sanos",
+        "evidenceGrade": "D",
+        "notes": "Solo 4 estudios pequeños han evaluado magnesio en función cognitiva. Aunque estudios en animales muestran efectos prometedores del L-treonato de magnesio, evidencia en humanos es muy limitada. Un RCT en 44 adultos mayores no mostró mejora significativa en pruebas cognitivas con 300 mg/día durante 12 semanas. Se necesitan RCTs grandes para establecer eficacia."
+      },
+      {
+        "studyCount": 9,
+        "condition": "Prevención o tratamiento de enfermedades cardiovasculares mayores (infarto, ACV)",
+        "evidenceGrade": "D",
+        "notes": "Aunque estudios observacionales sugieren asociación inversa entre ingesta de magnesio y riesgo cardiovascular, RCTs de suplementación no han demostrado reducción en eventos cardiovasculares mayores. Meta-análisis de 9 estudios prospectivos mostró asociación en estudios observacionales pero falta evidencia de RCTs de intervención. Puede reducir factores de riesgo (PA, glucosa) pero efecto en eventos duros no establecido."
+      }
+    ],
+    "whatIsIt": "El magnesio es un mineral esencial y el cuarto catión más abundante en el cuerpo humano, actuando como cofactor en más de 300 reacciones enzimáticas. Participa críticamente en la síntesis de ATP, la función neuromuscular, la regulación de la presión arterial y el metabolismo de glucosa. Es fundamental para la estabilización de membranas celulares, la síntesis de proteínas y ácidos nucleicos, y la modulación de canales iónicos incluyendo receptores NMDA y canales de calcio tipo L. La deficiencia subclínica de magnesio (niveles séricos <0.85 mmol/L) afecta aproximadamente al 10-30% de la población general y se asocia con múltiples condiciones crónicas incluyendo hipertensión, diabetes tipo 2, migrañas y trastornos del sueño.",
+    "worksFor": [
+      {
+        "studyCount": 45,
+        "condition": "Reducción de presión arterial en hipertensión",
+        "evidenceGrade": "A",
+        "notes": "Meta-análisis de 34 RCTs (n=2028) mostró reducción significativa de PA con dosis de 300-1000 mg/día durante 3-24 semanas. Efecto mayor en personas con deficiencia de magnesio (reducción de 5.6/2.8 mmHg) y en hipertensos no tratados. Efecto dosis-dependiente: cada 100 mg/día adicional reduce PA sistólica en 0.5 mmHg. Población: adultos con prehipertensión o hipertensión estadio 1. Duración mínima: 4 semanas para efectos consistentes.",
+        "effectSize": "Small",
+        "rctCount": 34,
+        "magnitude": "Reducción de 3-4 mmHg en presión sistólica y 2-3 mmHg en presión diastólica",
+        "totalParticipants": 2028,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 21,
+        "condition": "Prevención de migrañas (reducción de frecuencia y severidad)",
+        "evidenceGrade": "A",
+        "notes": "Meta-análisis de 15 RCTs demostró reducción significativa en frecuencia de migrañas con 400-600 mg/día de magnesio elemental durante 12-16 semanas. Estudios muestran que 45-50% de pacientes con migraña tienen deficiencia de magnesio ionizado. Efecto preventivo se observa después de 4-6 semanas de suplementación continua. Particularmente efectivo en migraña menstrual (reducción de 50-60% en frecuencia). Dosis óptima: 600 mg/día dividida en 2 tomas.",
+        "effectSize": "Large",
+        "rctCount": 15,
+        "magnitude": "Reducción de 41.6% en frecuencia de ataques de migraña vs placebo",
+        "totalParticipants": 1291,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 12,
+        "condition": "Mejora de calidad de sueño e insomnio en adultos mayores",
+        "evidenceGrade": "B",
+        "notes": "RCTs en adultos mayores (>60 años) con 320-500 mg/día de magnesio elemental durante 8 semanas mostraron mejoras significativas en latencia de sueño (reducción de 17 minutos), tiempo total de sueño (aumento de 17 minutos), y eficiencia del sueño. También se observó aumento de 15-20% en melatonina sérica y reducción de 7-10% en cortisol matutino. Efecto mayor en personas con deficiencia de magnesio (niveles séricos <0.85 mmol/L). Mejor tomado 1-2 horas antes de dormir.",
+        "effectSize": "Moderate",
+        "rctCount": 8,
+        "magnitude": "Aumento de 17 minutos en tiempo total de sueño y mejora de 2.2% en eficiencia del sueño",
+        "totalParticipants": 543,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 18,
+        "condition": "Reducción de calambres musculares en embarazo y ejercicio",
+        "evidenceGrade": "B",
+        "notes": "Meta-análisis de 12 RCTs en mujeres embarazadas mostró reducción significativa de calambres nocturnos con 300-360 mg/día de magnesio elemental durante 4-6 semanas. En atletas, 400 mg/día redujo calambres inducidos por ejercicio en 60-70%. Efecto observable después de 2-3 semanas. Particularmente efectivo en personas con niveles bajos de magnesio eritrocitario. Formas mejor toleradas: citrato, glicinato, malato.",
+        "effectSize": "Large",
+        "rctCount": 12,
+        "magnitude": "Reducción de 50-70% en frecuencia de calambres musculares nocturnos",
+        "totalParticipants": 735,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 32,
+        "condition": "Mejora de control glucémico y sensibilidad a insulina en diabetes tipo 2",
+        "evidenceGrade": "A",
+        "notes": "Meta-análisis de 25 RCTs (n=1362) en diabéticos tipo 2 con 300-600 mg/día de magnesio elemental durante 6-24 semanas mostró reducción significativa en glucosa en ayunas (4.6 mg/dL), HbA1c (0.3%), e insulina en ayunas (10%). Mejora del índice HOMA-IR en 0.8 puntos. Efecto mayor en personas con hipomagnesemia (<0.85 mmol/L) y en aquellos con diabetes de larga duración. Duración mínima: 12 semanas para efectos en HbA1c.",
+        "effectSize": "Small",
+        "rctCount": 25,
+        "magnitude": "Reducción de 4-5 mg/dL en glucosa en ayunas y disminución de 0.3% en HbA1c",
+        "totalParticipants": 1362,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 14,
+        "condition": "Reducción de síntomas de ansiedad y estrés",
+        "evidenceGrade": "B",
+        "notes": "RCTs con 300-500 mg/día de magnesio elemental durante 8-12 semanas mostraron reducción significativa en síntomas de ansiedad medidos por escalas validadas (BAI, HADS-A). Estudio en 264 adultos con ansiedad leve-moderada mostró reducción de 31% en puntuación BAI con 300 mg/día durante 8 semanas. Efecto sinérgico con vitamina B6 (reducción adicional de 10-15%). Particularmente efectivo en ansiedad relacionada con síndrome premenstrual.",
+        "effectSize": "Moderate",
+        "rctCount": 9,
+        "magnitude": "Reducción de 20-25% en escalas de ansiedad (BAI, HADS-A)",
+        "totalParticipants": 687,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 16,
+        "condition": "Mejora de rendimiento físico y recuperación muscular en atletas",
+        "evidenceGrade": "B",
+        "notes": "RCTs en atletas con 350-500 mg/día de magnesio durante 4-12 semanas mostraron mejoras en fuerza isométrica (2-5%), potencia anaeróbica (3-7%), y reducción en creatina quinasa post-ejercicio (10-15%). Estudio en 26 triatletas mostró aumento de 5% en VO2max con 500 mg/día durante 4 semanas. Efecto mayor en atletas con pérdidas aumentadas de magnesio por sudor (>200 mg/día). Mejor tomado post-entrenamiento para recuperación.",
+        "effectSize": "Small",
+        "rctCount": 11,
+        "magnitude": "Aumento de 2-5% en fuerza muscular y reducción de 10-15% en marcadores de daño muscular",
+        "totalParticipants": 478,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamina D - el magnesio es cofactor para activación de vitamina D, y la vitamina D aumenta absorción intestinal de magnesio",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamina B6 - sinergia documentada en reducción de síntomas de SPM y ansiedad (efecto adicional de 10-15%)",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Calcio - ratio óptimo Ca:Mg de 2:1 a 3:1 para salud ósea, pero tomar separados (calcio reduce absorción de magnesio si se toman juntos)",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Potasio - el magnesio es necesario para retención de potasio intracelular, suplementación conjunta beneficiosa en deficiencias",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (200 mg/día) y aumentar gradualmente cada 3-5 días hasta dosis objetivo para minimizar efectos gastrointestinales",
+      "Elegir forma según objetivo: citrato para estreñimiento y absorción general, glicinato para sueño/ansiedad con mínimo efecto laxante, malato para energía/fatiga",
+      "Tomar con alimentos para mejorar tolerancia gastrointestinal y absorción. Dividir dosis >300 mg/día en 2-3 tomas (mañana y noche)",
+      "Para migrañas o hipertensión, esperar mínimo 4-6 semanas de uso consistente antes de evaluar eficacia. Para sueño y calambres, efectos pueden verse en 2-3 semanas",
+      "Verificar etiqueta para cantidad de magnesio ELEMENTAL (no peso total del compuesto). Calcular dosis basándose en magnesio elemental",
+      "Separar magnesio de antibióticos (tetraciclinas, fluoroquinolonas), bifosfonatos y suplementos de hierro/zinc por al menos 2 horas",
+      "Personas con función renal comprometida (TFG <60 mL/min) deben consultar médico antes de suplementar y usar dosis reducidas (máximo 200 mg/día)",
+      "Considerar análisis de magnesio eritrocitario (RBC magnesium) si sospecha deficiencia, ya que magnesio sérico no refleja bien estatus corporal total"
+    ],
+    "totalStudies": 850,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Insuficiencia renal severa (TFG <30 mL/min) - riesgo de hipermagnesemia por excreción reducida",
+        "Bloqueo cardíaco o bradicardia severa - el magnesio puede potenciar efectos en conducción cardíaca",
+        "Miastenia gravis - el magnesio puede exacerbar debilidad muscular por bloqueo neuromuscular",
+        "Obstrucción intestinal o íleo - contraindicación para formas orales por riesgo de acumulación",
+        "Hipersensibilidad conocida a magnesio o excipientes del producto"
+      ],
+      "longTermSafety": "Uso continuo de 200-400 mg/día de magnesio suplementario seguro hasta 12 meses documentado en múltiples RCTs sin efectos adversos significativos. Estudios observacionales de hasta 10 años no muestran toxicidad en personas con función renal normal. El magnesio tiene margen de seguridad muy amplio: dosis letal estimada >50 g en adultos con función renal normal. Monitoreo de niveles séricos no necesario en personas sanas con función renal normal",
+      "notes": "El magnesio es generalmente seguro en embarazo y lactancia en dosis fisiológicas (300-400 mg/día), usado rutinariamente para prevenir calambres y preeclampsia. Sin embargo, dosis altas (>600 mg/día) deben ser supervisadas médicamente. El sulfato de magnesio intravenoso es tratamiento estándar para preeclampsia y eclampsia. No hay reportes de teratogenicidad. Excreción renal eficiente previene toxicidad en personas con función renal normal. Perfil de seguridad superior a muchos medicamentos para condiciones similares (antihipertensivos, ansiolíticos)",
+      "safetyScore": 9,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Efecto laxante osmótico dosis-dependiente. Más común con óxido de magnesio (30-40% de usuarios) vs formas orgánicas como glicinato (5-10%). Generalmente se resuelve reduciendo dosis o dividiendo en tomas múltiples. Puede ser beneficioso en personas con estreñimiento",
+          "effect": "Diarrea y malestar gastrointestinal",
+          "frequency": "15-30% de usuarios con dosis >350 mg/día, especialmente con óxido de magnesio"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Más común en primeras 1-2 semanas de suplementación. Tomar con alimentos reduce incidencia en 50-70%. Formas queladas (glicinato, bisglicinato) mejor toleradas",
+          "effect": "Náuseas y calambres abdominales",
+          "frequency": "5-15% de usuarios, especialmente al inicio o con estómago vacío"
+        },
+        {
+          "severity": "Severe",
+          "notes": "Prácticamente imposible con suplementación oral en personas con función renal normal (riñones excretan hasta 260 mmol/día). Síntomas: debilidad muscular, hipotensión, bradicardia, depresión respiratoria. Requiere dosis masivas >5000 mg/día o insuficiencia renal severa (TFG <30 mL/min)",
+          "effect": "Hipermagnesemia (niveles séricos >2.5 mmol/L)",
+          "frequency": "Muy raro <0.1% en personas con función renal normal, más común en insuficiencia renal"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Efecto relacionado con propiedades relajantes del magnesio. Puede ser beneficioso para insomnio pero algunos usuarios reportan somnolencia matinal residual con dosis >500 mg antes de dormir. Reducir dosis o tomar más temprano en la noche",
+          "effect": "Somnolencia leve",
+          "frequency": "5-10% de usuarios, especialmente con dosis nocturnas altas"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Separar administración por al menos 2 horas. Tomar bifosfonatos en ayunas por la mañana y magnesio con alimentos más tarde. Reducción significativa de eficacia de bifosfonatos si se toman juntos",
+          "medication": "Bifosfonatos (alendronato, risedronato)",
+          "mechanism": "El magnesio forma complejos insolubles con bifosfonatos, reduciendo absorción de ambos en 40-60%"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Separar administración por 2-3 horas. Tomar antibiótico 2 horas antes o 4-6 horas después del magnesio. Falla terapéutica posible si se toman simultáneamente",
+          "medication": "Antibióticos tetraciclinas y fluoroquinolonas",
+          "mechanism": "Formación de quelatos insolubles que reducen absorción de antibióticos en 30-50%"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Suplementación con magnesio frecuentemente necesaria en usuarios crónicos de diuréticos. Monitorear niveles séricos de magnesio. Dosis de 200-400 mg/día generalmente segura y beneficiosa",
+          "medication": "Diuréticos de asa (furosemida) y tiazidas",
+          "mechanism": "Diuréticos aumentan excreción renal de magnesio en 30-50%, incrementando riesgo de deficiencia"
+        },
+        {
+          "severity": "Mild",
+          "description": "Monitorear niveles de magnesio en usuarios crónicos de IBPs. Considerar suplementación preventiva con 200-300 mg/día. Formas orgánicas (citrato, glicinato) menos afectadas que óxido",
+          "medication": "Inhibidores de bomba de protones (omeprazol, lansoprazol)",
+          "mechanism": "Uso prolongado (>1 año) de IBPs reduce absorción intestinal de magnesio en 10-30% por hipoclorhidria"
+        },
+        {
+          "severity": "Mild",
+          "description": "Puede potenciar efecto hipotensor en 5-10 mmHg adicionales. Generalmente beneficioso pero monitorear PA. Ajustar dosis de medicamento si es necesario. Riesgo bajo de hipotensión sintomática",
+          "medication": "Bloqueadores de canales de calcio (nifedipino, amlodipino)",
+          "mechanism": "Efecto aditivo en reducción de presión arterial y relajación de músculo liso vascular"
+        },
+        {
+          "severity": "Mild",
+          "description": "Puede aumentar debilidad muscular o sedación. Usar con precaución y monitorear síntomas. Generalmente seguro en dosis terapéuticas normales de magnesio (<400 mg/día)",
+          "medication": "Relajantes musculares (baclofeno, tizanidina)",
+          "mechanism": "Potenciación de efectos relajantes musculares por bloqueo neuromuscular del magnesio"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Citrato, glicinato (bisglicinato) o malato de magnesio por mejor biodisponibilidad y tolerancia gastrointestinal. Formas orgánicas queladas preferidas sobre óxido",
+      "avoidFlags": [
+        "Productos que no especifican cantidad de magnesio elemental (solo peso total del compuesto)",
+        "Óxido de magnesio como única forma si busca absorción óptima (biodisponibilidad solo 4-10%)",
+        "Productos con rellenos excesivos, colorantes artificiales o alérgenos innecesarios",
+        "Claims exagerados como absorción 100% o cura milagrosa sin respaldo científico",
+        "Productos sin información de fabricante, lote o fecha de caducidad"
+      ],
+      "qualityIndicators": [
+        "Certificación de terceros (USP, NSF International, ConsumerLab) que verifica contenido y pureza",
+        "Especificación clara de forma de magnesio y cantidad elemental por porción",
+        "Pruebas de metales pesados, especialmente plomo y arsénico (<10 mcg/porción)",
+        "Fabricación en instalaciones certificadas GMP (Good Manufacturing Practices)",
+        "Información completa de contacto del fabricante y transparencia en sourcing"
+      ],
+      "notes": "ConsumerLab evaluó 43 suplementos de magnesio en 2021: 15% no cumplieron con cantidad declarada (contenían 80-120% de lo indicado). Formas orgánicas (citrato, glicinato, malato) cuestan 20-40% más que óxido pero tienen 2-3x mejor biodisponibilidad. Para personas con estreñimiento, citrato u óxido pueden ser beneficiosos por efecto laxante. Para personas con intestino sensible, glicinato o bisglicinato son mejor tolerados. Evitar magnesio estearato en cantidades excesivas (>5% del producto) usado como lubricante en manufactura. Formas líquidas o en polvo pueden tener mejor absorción que tabletas comprimidas duras.",
+      "keyCompounds": [
+        {
+          "name": "Magnesio elemental",
+          "lookFor": "Cantidad de magnesio ELEMENTAL en etiqueta (no peso total del compuesto). Citrato: 16% elemental, Glicinato: 14% elemental, Óxido: 60% elemental, Malato: 15% elemental. Verificar que etiqueta especifique mg de magnesio elemental por porción",
+          "source": "Diversas sales orgánicas e inorgánicas (citrato, glicinato, óxido, malato, cloruro)"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Antagonismo de receptores NMDA y modulación de canales de calcio",
+        "description": "El magnesio actúa como bloqueador fisiológico de los receptores NMDA glutamatérgicos y regula los canales de calcio tipo L en membranas neuronales y vasculares. Este mecanismo reduce la excitabilidad neuronal excesiva, previene la despolarización cortical propagada (mecanismo clave en migrañas), y promueve la relajación del músculo liso vascular. La deficiencia de magnesio elimina este bloqueo natural, resultando en hiperexcitabilidad neuronal, vasoespasmo cerebral y mayor susceptibilidad a migrañas y convulsiones.",
+        "studyCount": 120,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Cofactor en síntesis de ATP y metabolismo energético",
+        "description": "El magnesio es esencial para todas las reacciones que involucran ATP, formando el complejo Mg-ATP que es el sustrato real para quinasas y ATPasas. Participa directamente en la glucólisis, el ciclo de Krebs y la fosforilación oxidativa. La deficiencia de magnesio reduce la eficiencia de producción de ATP en un 20-30%, afectando particularmente tejidos de alta demanda energética como músculo esquelético, cardíaco y cerebro. Este mecanismo explica la fatiga, debilidad muscular y calambres asociados con deficiencia de magnesio.",
+        "studyCount": 200,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Regulación de la bomba Na-K-ATPasa y homeostasis electrolítica",
+        "description": "El magnesio es cofactor esencial de la bomba sodio-potasio-ATPasa, que mantiene los gradientes iónicos transmembrana críticos para la función nerviosa, muscular y cardíaca. La deficiencia de magnesio reduce la actividad de esta bomba en 30-40%, causando acumulación intracelular de sodio y calcio, y pérdida de potasio. Esto resulta en hiperexcitabilidad neuromuscular (calambres, tetania), arritmias cardíacas y disfunción endotelial. El magnesio también regula directamente canales de potasio, particularmente los canales KATP que son cruciales para la vasodilatación y la secreción de insulina.",
+        "studyCount": 150,
+        "evidenceLevel": "strong"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "3-24 semanas",
+        "dose": "300-1000 mg/día de magnesio elemental",
+        "year": 2016,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción significativa de PA sistólica en 3.4 mmHg (IC 95%: 2.1-4.8, p<0.001)",
+          "Reducción de PA diastólica en 2.3 mmHg (IC 95%: 1.4-3.2, p<0.001)",
+          "Efecto dosis-dependiente: cada 100 mg/día adicional reduce PA sistólica en 0.5 mmHg",
+          "Mayor efecto en hipertensos (5.6/2.8 mmHg) vs normotensos (2.1/1.7 mmHg)"
+        ],
+        "title": "Effects of magnesium supplementation on blood pressure: a meta-analysis of randomized double-blind placebo-controlled trials",
+        "participants": 2028,
+        "quality": "High"
+      },
+      {
+        "duration": "12-16 semanas",
+        "dose": "400-600 mg/día de magnesio elemental",
+        "year": 2020,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de 41.6% en frecuencia de ataques de migraña vs placebo (p<0.001)",
+          "Reducción significativa en severidad de migraña (escala VAS -1.8 puntos, p=0.003)",
+          "Reducción en duración de ataques de 2.3 horas en promedio (p=0.02)",
+          "Mejor eficacia con dosis ≥600 mg/día y duración ≥12 semanas",
+          "NNT (número necesario a tratar) de 3.5 para reducción ≥50% en frecuencia"
+        ],
+        "title": "Magnesium in the prophylaxis of migraine: a systematic review and meta-analysis",
+        "participants": 1291,
+        "quality": "High"
+      },
+      {
+        "duration": "8 semanas",
+        "dose": "500 mg/día de óxido de magnesio",
+        "year": 2012,
+        "studyType": "RCT",
+        "findings": [
+          "Aumento significativo en tiempo total de sueño de 17 minutos (p=0.002)",
+          "Mejora en eficiencia de sueño de 2.2% (p=0.03)",
+          "Reducción en latencia de sueño de 17 minutos (p=0.007)",
+          "Aumento de 15.7% en melatonina sérica (p=0.01)",
+          "Reducción de 7.1% en cortisol matutino (p=0.04)"
+        ],
+        "title": "The effect of magnesium supplementation on primary insomnia in elderly: A double-blind placebo-controlled clinical trial",
+        "participants": 46,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "6-24 semanas",
+        "dose": "300-600 mg/día de magnesio elemental",
+        "year": 2016,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de glucosa en ayunas de 4.6 mg/dL (IC 95%: 2.8-6.4, p<0.001)",
+          "Reducción de HbA1c de 0.3% (IC 95%: 0.2-0.5, p<0.001)",
+          "Mejora en HOMA-IR de 0.82 puntos (IC 95%: 0.52-1.12, p<0.001)",
+          "Reducción de insulina en ayunas de 10% (p=0.002)",
+          "Mayor efecto en diabéticos tipo 2 con hipomagnesemia inicial"
+        ],
+        "title": "Oral magnesium supplementation reduces insulin resistance in non-diabetic subjects: a meta-analysis of randomized controlled trials",
+        "participants": 1362,
+        "quality": "High"
+      },
+      {
+        "duration": "4 semanas",
+        "dose": "300 mg/día de citrato de magnesio",
+        "year": 2015,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 70% en frecuencia de calambres nocturnos vs placebo (p<0.001)",
+          "Reducción de 50% en intensidad de calambres (escala VAS, p=0.002)",
+          "Mejora significativa en calidad de sueño (PSQI -2.3 puntos, p=0.01)",
+          "Bien tolerado sin efectos adversos significativos",
+          "Efecto observable después de 2 semanas de suplementación"
+        ],
+        "title": "Magnesium supplementation in the treatment of muscle cramps during pregnancy: a randomized controlled trial",
+        "participants": 86,
+        "quality": "High"
+      },
+      {
+        "duration": "8-12 semanas",
+        "dose": "300-500 mg/día de magnesio elemental",
+        "year": 2017,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Reducción significativa en escalas de ansiedad (BAI, HADS-A) de 20-25%",
+          "Mayor efecto en ansiedad leve-moderada vs ansiedad severa",
+          "Efecto sinérgico con vitamina B6 (reducción adicional de 10-15%)",
+          "Bien tolerado con tasa de abandono <5%",
+          "Evidencia de calidad moderada, se necesitan RCTs más grandes"
+        ],
+        "title": "Effects of magnesium supplementation on subjective anxiety and stress: a systematic review",
+        "participants": 687,
+        "quality": "Moderate"
+      }
+    ]
+  }
+}

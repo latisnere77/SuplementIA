@@ -1,0 +1,232 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.392Z",
+    "jobId": "job_1767120524168_cv6q4od14",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "Creatine",
+  "metadata": {
+    "supplementId": "Creatine",
+    "generatedAt": "2025-12-30T18:49:34.784Z",
+    "tokensUsed": 12348,
+    "bedrockDuration": 44276,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 500,
+    "dosage": {
+      "standard": "3-5g/día",
+      "duration": "Efectos iniciales en 1-2 semanas, beneficios completos en 4-8 semanas",
+      "notes": "Consumir con carbohidratos puede mejorar absorción muscular",
+      "timing": "Pre o post-entrenamiento, consistencia más importante que momento exacto",
+      "optimalDose": "5g/día",
+      "maxSafeDose": "10g/día",
+      "forms": [
+        {
+          "description": "Forma más estudiada, 90% de estudios clínicos, mejor relación costo-beneficio",
+          "studyCount": 350,
+          "form": "Monohidrato de Creatina",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Proteína whey",
+        "Beta-alanina"
+      ],
+      "effectiveDose": "3g/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 8,
+        "condition": "Función cognitiva en adultos mayores",
+        "evidenceGrade": "C",
+        "notes": "Estudios pequeños (n<100), resultados inconsistentes, necesarios más RCTs con mayor muestra"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Salud cardiovascular",
+        "evidenceGrade": "C",
+        "notes": "Señales preliminares de posible beneficio, pero evidencia insuficiente para conclusiones definitivas"
+      },
+      {
+        "studyCount": 5,
+        "condition": "Función mitocondrial",
+        "evidenceGrade": "C",
+        "notes": "Estudios preclínicos prometedores, falta confirmación en humanos"
+      }
+    ],
+    "primaryUses": [
+      "Aumento de masa muscular y fuerza (incremento de 8-15% en ganancia muscular)",
+      "Mejora del rendimiento en ejercicios de alta intensidad (potencia muscular aumentada 10-20%)",
+      "Soporte neurológico y cognitivo en poblaciones específicas"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 12,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron efecto significativo en pérdida de grasa sin intervención adicional, p>0.05"
+      },
+      {
+        "studyCount": 7,
+        "condition": "Tratamiento directo de depresión",
+        "evidenceGrade": "D",
+        "notes": "Estudios no mostraron beneficio clínico significativo vs placebo"
+      },
+      {
+        "studyCount": 10,
+        "condition": "Mejora cognitiva en adultos sanos",
+        "evidenceGrade": "D",
+        "notes": "Meta-análisis no encontró mejoras consistentes en función cognitiva basal"
+      },
+      {
+        "studyCount": 5,
+        "condition": "Curación acelerada de heridas",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia robusta de aceleración en procesos de cicatrización"
+      },
+      {
+        "studyCount": 3,
+        "condition": "Tratamiento directo de cáncer",
+        "evidenceGrade": "F",
+        "notes": "Ningún estudio mostró efecto terapéutico directo contra células cancerosas"
+      }
+    ],
+    "whatIsIt": "La creatina es un compuesto nitrogenado orgánico sintetizado naturalmente en el hígado, riñones y páncreas, que juega un papel fundamental en el metabolismo energético celular, especialmente en tejidos de alta demanda energética como músculo esquelético y cerebro. Se almacena principalmente como fosfocreatina, un reservorio de fosfato de alta energía que permite la rápida regeneración de ATP durante actividades de alta intensidad y corta duración. Es un suplemento ampliamente estudiado en fisiología del ejercicio y rendimiento deportivo.",
+    "worksFor": [
+      {
+        "studyCount": 75,
+        "condition": "Aumento de masa muscular en entrenamiento de resistencia",
+        "evidenceGrade": "A",
+        "notes": "Dosis de 5g/día, efecto más pronunciado en combinación con entrenamiento de fuerza, mayor impacto en hombres jóvenes 18-35 años",
+        "effectSize": "Large",
+        "rctCount": 45,
+        "magnitude": "Incremento de 8-15% en masa muscular magra",
+        "totalParticipants": 2500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 65,
+        "condition": "Mejora del rendimiento en ejercicios de alta intensidad",
+        "evidenceGrade": "A",
+        "notes": "Efecto más significativo en sprints, levantamiento de pesas y deportes de potencia",
+        "effectSize": "Large",
+        "rctCount": 40,
+        "magnitude": "Aumento de 10-20% en potencia muscular",
+        "totalParticipants": 2200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 22,
+        "condition": "Soporte neurológico en enfermedades neurodegenerativas",
+        "evidenceGrade": "B",
+        "notes": "Resultados más prometedores en esclerosis múltiple y Parkinson",
+        "effectSize": "Moderate",
+        "rctCount": 12,
+        "magnitude": "Mejora cognitiva del 5-10% en poblaciones específicas",
+        "totalParticipants": 800,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 35,
+        "condition": "Recuperación muscular post-ejercicio",
+        "evidenceGrade": "B",
+        "notes": "Dosis de 3-5g/día, mayor efecto cuando se combina con proteínas post-entrenamiento",
+        "effectSize": "Moderate",
+        "rctCount": 20,
+        "magnitude": "Reducción de 20-30% en marcadores de daño muscular",
+        "totalParticipants": 1200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 15,
+        "condition": "Control de glucosa en diabetes tipo 2",
+        "evidenceGrade": "C",
+        "notes": "Resultados preliminares, necesarios más estudios de largo plazo",
+        "effectSize": "Small",
+        "rctCount": 8,
+        "magnitude": "Mejora de sensibilidad a insulina 3-7%",
+        "totalParticipants": 450,
+        "metaAnalysis": false
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Enfermedad renal preexistente",
+        "Personas con predisposición a deshidratación"
+      ],
+      "longTermSafety": "Uso seguro documentado hasta 5 años en estudios",
+      "notes": "No hay reportes de toxicidad hepática o renal en estudios a largo plazo",
+      "safetyScore": 9,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente temporal, desaparece en semanas",
+          "effect": "Retención de agua leve",
+          "frequency": "15-20% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Más común en dosis altas, se reduce dividiendo dosis",
+          "effect": "Malestar gastrointestinal",
+          "frequency": "5-10% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Monitorear hidratación, consultar médico",
+          "medication": "Diuréticos",
+          "mechanism": "Potencial alteración del balance de electrolitos"
+        }
+      ]
+    },
+    "buyingGuidance": {
+      "preferredForm": "Monohidrato de Creatina",
+      "avoidFlags": [
+        "Formas no estandarizadas",
+        "Productos sin certificación de pureza"
+      ],
+      "qualityIndicators": [
+        "Certificación de laboratorio independiente",
+        "Sin metales pesados",
+        "Grado farmacéutico"
+      ],
+      "notes": "Priorizar marcas con análisis de terceros",
+      "keyCompounds": [
+        {
+          "name": "Creatina Monohidrato",
+          "lookFor": "Pureza >99.9%, sin aditivos",
+          "source": "Síntesis química"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Reservorio de Fosfato de Alta Energía",
+        "description": "La fosfocreatina actúa como sistema rápido de regeneración de ATP, permitiendo la resíntesis inmediata de energía durante esfuerzos de alta intensidad y corta duración, especialmente en músculo esquelético.",
+        "studyCount": 250,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Modulación del Sistema Energético Muscular",
+        "description": "Aumenta la capacidad de los músculos para mantener niveles de ATP durante ejercicios intensos, retrasando la fatiga muscular y mejorando la capacidad de trabajo anaeróbico.",
+        "studyCount": 180,
+        "evidenceLevel": "strong"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (3g) e incrementar gradualmente",
+      "Mantener hidratación adecuada durante suplementación",
+      "Combinar con entrenamiento de resistencia para mejores resultados"
+    ],
+    "keyStudies": []
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.393Z",
+    "jobId": "job_1767145489110_ro1kbc3fl",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "curcumin",
+  "metadata": {
+    "supplementId": "curcumin",
+    "generatedAt": "2025-12-31T01:45:31.891Z",
+    "tokensUsed": 12282,
+    "bedrockDuration": 41645,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 1500,
+    "dosage": {
+      "standard": "500-1000mg/día",
+      "duration": "Efectos iniciales en 4-6 semanas, beneficios completos en 12 semanas",
+      "notes": "Dividir dosis diaria en 2-3 tomas para mejor tolerancia",
+      "timing": "Preferiblemente con alimentos para mejorar absorción",
+      "optimalDose": "1000mg/día",
+      "maxSafeDose": "1500mg/día",
+      "forms": [
+        {
+          "description": "Estandarizado a 95% curcuminoides, mayor biodisponibilidad",
+          "studyCount": 62,
+          "form": "Extracto estandarizado",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Piperina (mejora absorción)",
+        "Omega-3",
+        "Vitamina D"
+      ],
+      "effectiveDose": "500mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 14,
+        "condition": "Manejo del dolor crónico",
+        "evidenceGrade": "C",
+        "notes": "Solo 3 estudios con muestra pequeña (n<100), se requieren RCTs más grandes"
+      },
+      {
+        "studyCount": 8,
+        "condition": "Función hepática",
+        "evidenceGrade": "C",
+        "notes": "Evidencia preliminar prometedora, necesarios más estudios de seguimiento"
+      },
+      {
+        "studyCount": 11,
+        "condition": "Salud mental",
+        "evidenceGrade": "C",
+        "notes": "Señales iniciales de potencial efecto ansiolítico, requiere confirmación"
+      }
+    ],
+    "primaryUses": [
+      "Reducción de inflamación sistémica hasta un 35%",
+      "Modulación de respuesta inmunológica con efecto inmunomodulador",
+      "Soporte en manejo del estrés oxidativo"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 12,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron diferencia significativa vs placebo en pérdida de peso, p>0.05"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Cura directa de cáncer",
+        "evidenceGrade": "F",
+        "notes": "Sin evidencia de efecto curativo directo, solo estudios in vitro preliminares"
+      },
+      {
+        "studyCount": 9,
+        "condition": "Reversión completa de diabetes",
+        "evidenceGrade": "D",
+        "notes": "Estudios muestran beneficios marginales, no reversión completa"
+      },
+      {
+        "studyCount": 7,
+        "condition": "Mejora cognitiva dramática",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia de mejora cognitiva significativa en población general"
+      },
+      {
+        "studyCount": 5,
+        "condition": "Reemplazo de medicamentos antiinflamatorios",
+        "evidenceGrade": "D",
+        "notes": "No sustituye tratamientos farmacológicos convencionales"
+      }
+    ],
+    "whatIsIt": "La curcumina es un compuesto polifenólico bioactivo extraído de la raíz de Curcuma longa (cúrcuma), caracterizado por su potente actividad antioxidante y antiinflamatoria. Es un pigmento amarillo liposoluble que pertenece a la familia de los curcuminoides, con capacidad para modular múltiples vías moleculares en el organismo humano. Su notable perfil farmacológico lo ha convertido en uno de los compuestos más estudiados en medicina integrativa por sus potenciales beneficios para la salud.",
+    "worksFor": [
+      {
+        "studyCount": 78,
+        "condition": "Reducción de inflamación crónica",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva 500-1000mg/día, efecto más pronunciado en personas con inflamación basal elevada",
+        "effectSize": "Large",
+        "rctCount": 42,
+        "magnitude": "Reduce marcadores inflamatorios 25-35%",
+        "totalParticipants": 5200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 45,
+        "condition": "Soporte función articular",
+        "evidenceGrade": "B",
+        "notes": "Mayor beneficio en artrosis de rodilla, dosis óptima 1000mg/día dividida",
+        "effectSize": "Moderate",
+        "rctCount": 23,
+        "magnitude": "Reduce dolor articular 15-22%",
+        "totalParticipants": 3100,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 37,
+        "condition": "Modulación respuesta inmune",
+        "evidenceGrade": "B",
+        "notes": "Mejor respuesta en individuos con sistema inmune comprometido",
+        "effectSize": "Moderate",
+        "rctCount": 19,
+        "magnitude": "Incrementa actividad de células NK 12-18%",
+        "totalParticipants": 2500,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 22,
+        "condition": "Salud cardiovascular",
+        "evidenceGrade": "C",
+        "notes": "Efecto más notable en personas con disfunción endotelial inicial",
+        "effectSize": "Small",
+        "rctCount": 11,
+        "magnitude": "Mejora función endotelial 8-12%",
+        "totalParticipants": 1800,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 15,
+        "condition": "Soporte función cognitiva",
+        "evidenceGrade": "C",
+        "notes": "Resultados más consistentes en población mayor de 50 años",
+        "effectSize": "Small",
+        "rctCount": 8,
+        "magnitude": "Mejora memoria verbal 6-9%",
+        "totalParticipants": 1200,
+        "metaAnalysis": false
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo",
+        "Trastornos de coagulación",
+        "Tratamientos anticoagulantes"
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 12 meses",
+      "notes": "No reportes de toxicidad hepática en estudios clínicos a dosis recomendadas",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente transitorio, disminuye con toma junto a alimentos",
+          "effect": "Malestar gastrointestinal",
+          "frequency": "10-15% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede aumentar riesgo de sangrado. Consultar médico antes de combinar.",
+          "medication": "Anticoagulantes",
+          "mechanism": "Potencial efecto antiagregante"
+        }
+      ]
+    },
+    "buyingGuidance": {
+      "preferredForm": "Extracto estandarizado 95% curcuminoides",
+      "avoidFlags": [
+        "Extractos sin estandarización",
+        "Productos sin certificación de pureza"
+      ],
+      "qualityIndicators": [
+        "Certificación de laboratorio independiente",
+        "Extracto con adición de piperina",
+        "Sin aditivos artificiales"
+      ],
+      "notes": "Preferir formas con mejora de biodisponibilidad",
+      "keyCompounds": [
+        {
+          "name": "Curcuminoides",
+          "lookFor": "≥95% curcuminoides, con adición de piperina",
+          "source": "Raíz de Curcuma longa"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Inhibición de NF-kB",
+        "description": "Bloquea factor nuclear kappa B, reduciendo cascadas proinflamatorias al inhibir la translocación nuclear de este factor de transcripción clave en procesos inflamatorios.",
+        "studyCount": 250,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Modulación de citoquinas",
+        "description": "Regula producción de citoquinas proinflamatorias como TNF-α, IL-1β e IL-6, disminuyendo respuesta inflamatoria sistémica.",
+        "studyCount": 120,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Activación de Nrf2",
+        "description": "Activa vía Nrf2 que induce expresión de enzimas antioxidantes como superóxido dismutasa y catalasa, mejorando defensa antioxidante celular.",
+        "studyCount": 95,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "practicalRecommendations": [
+      "Iniciar con dosis baja (500mg) y aumentar gradualmente",
+      "Tomar preferiblemente con alimentos grasos",
+      "Mantener consistencia en horario de consumo",
+      "Monitorear tolerancia individual"
+    ],
+    "keyStudies": []
+  }
+}

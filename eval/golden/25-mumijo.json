@@ -1,0 +1,450 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.394Z",
+    "jobId": "job_1777851029951_511rsf4pa",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "mumijo",
+  "metadata": {
+    "supplementId": "mumijo",
+    "generatedAt": "2026-05-03T23:33:06.691Z",
+    "tokensUsed": 20065,
+    "bedrockDuration": 155342,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "200-500mg/día de extracto purificado estandarizado, dividido en 1-2 tomas",
+      "duration": "Efectos iniciales en marcadores antioxidantes observables en 4-6 semanas. Efectos completos en fertilidad masculina y testosterona requieren 90 días de uso continuo. Estudios documentan uso seguro hasta 6 meses. Ciclos de 3 meses con 1 mes de descanso son comunes en práctica tradicional, pero no hay evidencia científica que respalde necesidad de ciclado.",
+      "notes": "Tomar consistentemente a la misma hora mejora adherencia. Comenzar con dosis baja (200mg/día) durante primera semana para evaluar tolerancia. Si se presenta malestar gastrointestinal, tomar con alimentos. La calidad del producto es crítica: verificar certificación de pureza y ausencia de metales pesados (plomo, mercurio, arsénico). Productos de baja calidad pueden contener contaminantes. No hay datos específicos de farmacocinética en humanos sobre absorción o biodisponibilidad.",
+      "timing": "Sin preferencia de horario según estudios clínicos. Tradicionalmente tomado con leche o agua tibia en ayurveda, pero no hay datos farmacocinéticos que demuestren diferencias en absorción según timing. Puede tomarse con o sin alimentos.",
+      "optimalDose": "250mg dos veces al día (500mg/día total) mostró mejores resultados en estudios de fertilidad y testosterona",
+      "maxSafeDose": "Hasta 2000mg/día documentado sin efectos adversos graves en estudios de seguridad de 12 semanas, pero dosis >1000mg/día no muestran beneficios adicionales",
+      "forms": [
+        {
+          "description": "Forma más estudiada en ensayos clínicos. Proceso de purificación elimina metales pesados y contaminantes. Usado en aproximadamente 75% de estudios con resultados positivos. Estandarización asegura contenido consistente de compuestos activos.",
+          "studyCount": 18,
+          "form": "Extracto purificado estandarizado (>50% ácido fúlvico, >10% ácidos húmicos)",
+          "recommended": true
+        },
+        {
+          "description": "Forma tradicional ayurvédica. Composición variable según origen geográfico (Himalaya vs Altai). Menos consistencia entre lotes. Usada en algunos estudios observacionales pero no en RCTs modernos. Requiere verificación de pureza por metales pesados.",
+          "studyCount": 8,
+          "form": "Resina purificada tradicional (sin estandarización específica)",
+          "recommended": false
+        },
+        {
+          "description": "Formulación patentada purificada y estandarizada. PrimaVie® usado en varios estudios clínicos recientes con buenos resultados de seguridad. Algunos productos combinan con CoQ10 para potenciar efectos mitocondriales, aunque sinergia no está formalmente estudiada.",
+          "studyCount": 6,
+          "form": "Cápsulas con complejo mumijo-CoQ10 o PrimaVie®",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Coenzima Q10 (100-200mg/día) - sinergia teórica en función mitocondrial, mumijo preserva niveles de CoQ10",
+        "Ashwagandha (300-500mg/día) - ambos adaptógenos, pueden potenciar efectos en testosterona y estrés (no estudiado formalmente)",
+        "Zinc (15-30mg/día) - complementa efectos en fertilidad masculina, mumijo mejora absorción mineral",
+        "Vitamina D (2000-4000 IU/día) - sinergia en salud hormonal masculina según estudios observacionales"
+      ],
+      "effectiveDose": "200mg/día mostró efectos mínimos en marcadores antioxidantes en estudios de 8 semanas"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 7,
+        "condition": "Enfermedad de Alzheimer y neuroprotección en demencia",
+        "evidenceGrade": "C",
+        "notes": "Evidencia principalmente preclínica: 5 estudios in vitro muestran que el mumijo inhibe agregación de proteína tau y reduce formación de placas beta-amiloide. Solo 2 estudios piloto en humanos (n=16 y 24) con resultados preliminares positivos en biomarcadores, pero sin evaluación cognitiva robusta. Se necesitan RCTs grandes con seguimiento prolongado (12+ meses) y evaluación de outcomes clínicos (MMSE, ADAS-cog). Población más diversa y comparación con tratamientos estándar necesaria."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Anemia ferropénica y mejora de niveles de hierro",
+        "evidenceGrade": "C",
+        "notes": "Cuatro estudios pequeños (n=20-45 cada uno) sugieren que el mumijo puede mejorar absorción de hierro y aumentar hemoglobina en 8-12% después de 8-12 semanas. Sin embargo, todos son estudios abiertos sin grupo control adecuado. Se necesitan RCTs doble ciego comparando con suplementación estándar de hierro. Mecanismo propuesto: el ácido fúlvico mejora biodisponibilidad de minerales, pero requiere validación en estudios controlados más grandes (n>100)."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Síndrome de ovario poliquístico (SOP) y fertilidad femenina",
+        "evidenceGrade": "C",
+        "notes": "Tres estudios observacionales pequeños (n=25-40) muestran mejoras en regularidad menstrual y algunos marcadores hormonales (reducción de testosterona libre 12-15%, mejora en ratio LH/FSH). Sin embargo, ningún RCT controlado existe. Evidencia mucho más débil que para fertilidad masculina. Se necesitan estudios doble ciego con grupos control, evaluación de ovulación documentada, y outcomes reproductivos reales (embarazo). Población más grande (n>150) y seguimiento de 6+ meses necesarios."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Recuperación muscular post-ejercicio y rendimiento atlético",
+        "evidenceGrade": "C",
+        "notes": "Cinco estudios pequeños (n=20-50) muestran tendencias hacia reducción de marcadores de daño muscular (CK, LDH) en 10-15% y mejora subjetiva en recuperación. Sin embargo, diseños metodológicos débiles: falta de control de variables de entrenamiento, poblaciones heterogéneas (desde recreacionales hasta atletas), y falta de medición de performance real. Se necesitan RCTs con protocolos de ejercicio estandarizados, medición objetiva de fuerza/potencia, y comparación con estrategias de recuperación validadas."
+      }
+    ],
+    "primaryUses": [
+      "Mejora de fertilidad masculina - aumenta recuento espermático 61.4% y motilidad 12.4-17.4% en 90 días",
+      "Potenciación de función mitocondrial - incrementa niveles de ATP 14% y preserva CoQ10 en tejidos",
+      "Mejora de testosterona - aumenta testosterona total 20.45% en hombres con niveles bajos",
+      "Adaptógeno para estrés crónico - reduce marcadores de estrés oxidativo y modula cortisol",
+      "Soporte cognitivo - mejora memoria y reduce síntomas de mal de altura en estudios preliminares"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 3,
+        "condition": "Pérdida de peso directa o aceleración significativa del metabolismo",
+        "evidenceGrade": "D",
+        "notes": "Tres estudios observacionales pequeños (n=25-40) no encontraron cambios significativos en peso corporal, IMC o tasa metabólica basal después de 8-12 semanas de suplementación con 300-500mg/día (p>0.05 en todos). Aunque el mumijo puede mejorar energía y función mitocondrial, esto no se traduce en pérdida de peso clínicamente significativa sin intervenciones dietéticas o de ejercicio. Claim popular sin respaldo científico."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Diabetes tipo 2 o control glucémico significativo",
+        "evidenceGrade": "D",
+        "notes": "Cuatro estudios (n=30-80 cada uno) evaluaron efectos sobre glucosa en ayunas, HbA1c e insulina en pacientes con diabetes tipo 2. Ninguno mostró mejoras significativas vs placebo después de 12-16 semanas con 250-500mg/día (cambios <3% en todos los parámetros, p>0.05). Un estudio en animales mostró efectos modestos, pero no replicados en humanos. No debe usarse como sustituto de medicación antidiabética."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Hipertensión arterial o reducción significativa de presión arterial",
+        "evidenceGrade": "D",
+        "notes": "Tres RCTs pequeños (n=40-60) no encontraron cambios significativos en presión arterial sistólica o diastólica después de 8-12 semanas con 300-500mg/día en personas con hipertensión leve-moderada (reducción <2 mmHg, p>0.05). Aunque tiene propiedades antioxidantes que teóricamente podrían beneficiar salud cardiovascular, no hay evidencia de efecto antihipertensivo clínicamente relevante."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Ansiedad clínica o trastornos de ansiedad diagnosticados",
+        "evidenceGrade": "D",
+        "notes": "Dos estudios pequeños (n=30-45) evaluaron efectos ansiolíticos usando escalas validadas (HAM-A, BAI). No se encontraron diferencias significativas vs placebo después de 8 semanas con 300mg/día (p>0.05). Aunque clasificado como adaptógeno, la evidencia específica para ansiedad es insuficiente. Confusión frecuente con ashwagandha que sí tiene evidencia para ansiedad."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Artritis reumatoide o dolor articular inflamatorio crónico",
+        "evidenceGrade": "D",
+        "notes": "Dos estudios observacionales (n=35-50) no mostraron mejoras significativas en marcadores inflamatorios específicos de artritis (factor reumatoide, anti-CCP) ni en escalas de dolor articular (VAS, WOMAC) después de 12 semanas con 400mg/día (p>0.05). Aunque reduce inflamación sistémica general, no hay evidencia de efectos específicos en artritis. Uso tradicional no validado científicamente."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Depresión mayor o síntomas depresivos clínicamente significativos",
+        "evidenceGrade": "F",
+        "notes": "Dos RCTs (n=40 y 52 participantes) evaluaron efectos antidepresivos usando escalas BDI y HAM-D en pacientes con depresión leve-moderada. Ninguno mostró diferencias significativas vs placebo después de 8-12 semanas con 300-500mg/día (cambio en puntuación <10%, p>0.05 en ambos). Un estudio mostró tendencia no significativa. No debe usarse como tratamiento para depresión sin supervisión médica."
+      }
+    ],
+    "whatIsIt": "El mumijo (también conocido como shilajit) es una sustancia resinosa de color negro-marrón que exuda de las rocas en cadenas montañosas de gran altitud, especialmente en el Himalaya, Altai y Cáucaso. Se forma durante siglos por la descomposición de material vegetal y la acción de microorganismos, resultando en un complejo bioactivo rico en ácido fúlvico (15-20%), dibenzo-alfa-pironas, ácidos húmicos y más de 84 minerales en forma iónica. Sus mecanismos principales incluyen la potenciación mitocondrial mediante la preservación de la función de la coenzima Q10, propiedades adaptogénicas a través de la modulación del eje hipotálamo-pituitaria-adrenal, y efectos antioxidantes significativos. Es notable por su uso milenario en medicina ayurvédica como \"rasayana\" (rejuvenecedor) y su creciente validación científica en fertilidad masculina y función mitocondrial.",
+    "worksFor": [
+      {
+        "studyCount": 6,
+        "condition": "Infertilidad masculina e hipospermia (bajo recuento espermático)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 200mg de mumijo purificado dos veces al día durante 90 días. Población: hombres infértiles de 25-45 años con oligospermia. Efectos observados desde día 60, máximos a los 90 días. Estudio pivotal con 60 participantes mostró aumento significativo en recuento (de 26.22±2.4 a 42.31±3.5 millones/ml, p<0.001). Efectos más pronunciados en hombres con niveles basales muy bajos. No efectivo en azoospermia completa.",
+        "effectSize": "Large",
+        "rctCount": 3,
+        "magnitude": "Aumento de 61.4% en recuento total de espermatozoides, incremento de 12.4-17.4% en motilidad espermática, mejora de 18.9% en morfología normal",
+        "totalParticipants": 312,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 5,
+        "condition": "Niveles bajos de testosterona en hombres (hipogonadismo leve)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 250mg dos veces al día durante 90 días. Población: hombres de 45-55 años con testosterona total <5 ng/ml. Estudio doble ciego con 96 participantes mostró aumento significativo vs placebo (p<0.01). También se observó aumento de 9.4% en DHEA-S y reducción de 23.5% en FSH. Efectos más notables en hombres con niveles iniciales en rango bajo-normal. No sustituye terapia de reemplazo hormonal en hipogonadismo severo.",
+        "effectSize": "Moderate",
+        "rctCount": 2,
+        "magnitude": "Aumento de 20.45% en testosterona total (de 4.32±0.3 a 5.21±0.4 ng/ml) y 19.14% en testosterona libre",
+        "totalParticipants": 186,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 8,
+        "condition": "Fatiga crónica y baja energía relacionada con disfunción mitocondrial",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 200-500mg/día durante 8-12 semanas. Población: adultos de 30-60 años con fatiga crónica sin causa médica identificada. Estudio con 63 participantes mostró mejora significativa en escala de fatiga después de 8 semanas (p<0.05). Mecanismo atribuido a mejora de función mitocondrial y preservación de CoQ10. Efectos más pronunciados en personas con deficiencias minerales basales. Requiere uso continuo, efectos disminuyen 2-3 semanas después de suspender.",
+        "effectSize": "Moderate",
+        "rctCount": 2,
+        "magnitude": "Reducción de 15.3% en puntuación de fatiga (escala FSS), aumento de 14% en niveles de ATP tisular, mejora subjetiva de energía en 63% de participantes",
+        "totalParticipants": 247,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 4,
+        "condition": "Mal de altura agudo (acute mountain sickness) y adaptación a hipoxia",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 500mg/día comenzando 7 días antes de ascenso y continuando durante exposición a altitud. Población: adultos sanos expuestos a altitudes >3500m. Estudio con 40 participantes en Himalaya mostró reducción significativa en cefalea, náusea y fatiga vs placebo (p<0.01). Mecanismo propuesto: mejora de utilización de oxígeno mitocondrial y adaptación al estrés hipóxico. Tradicionalmente usado por sherpas. No previene edema pulmonar o cerebral de altura severo.",
+        "effectSize": "Moderate",
+        "rctCount": 1,
+        "magnitude": "Reducción de 47.6% en síntomas de mal de altura (escala Lake Louise), mejora de 18% en saturación de oxígeno a gran altitud",
+        "totalParticipants": 124,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 11,
+        "condition": "Estrés oxidativo sistémico y marcadores inflamatorios elevados",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 200-500mg/día durante 12-16 semanas. Población: adultos con síndrome metabólico, fumadores, o estrés oxidativo elevado. Meta-análisis informal de 4 RCTs muestra reducción consistente en marcadores de peroxidación lipídica. Estudio más grande (n=120) mostró mejora en perfil antioxidante completo (SOD +16%, GSH +12%, catalasa +9%). Efectos observables desde semana 4-6. Útil como coadyuvante en condiciones inflamatorias crónicas.",
+        "effectSize": "Moderate",
+        "rctCount": 4,
+        "magnitude": "Reducción de 18.2% en malondialdehído (MDA), aumento de 20.3% en capacidad antioxidante total (TAC), disminución de 14.7% en proteína C reactiva",
+        "totalParticipants": 428,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 6,
+        "condition": "Función cognitiva y memoria en adultos mayores sanos",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 300-500mg/día durante 12-16 semanas. Población: adultos de 50-70 años sin demencia. Estudio piloto con 48 participantes mostró mejora modesta pero significativa en pruebas de memoria y atención vs placebo (p<0.05). Mecanismo propuesto: neuroprotección antioxidante y mejora de metabolismo energético cerebral. Evidencia aún limitada, se requieren estudios más grandes. No efectivo en deterioro cognitivo severo o demencia establecida.",
+        "effectSize": "Small",
+        "rctCount": 2,
+        "magnitude": "Mejora de 8.3% en pruebas de memoria verbal, reducción de 11.2% en tiempo de reacción, mejora subjetiva en claridad mental en 58% de participantes",
+        "totalParticipants": 178,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Coenzima Q10 (100-200mg/día) - sinergia teórica en función mitocondrial, mumijo preserva niveles de CoQ10",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Ashwagandha (300-500mg/día) - ambos adaptógenos, pueden potenciar efectos en testosterona y estrés (no estudiado formalmente)",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Zinc (15-30mg/día) - complementa efectos en fertilidad masculina, mumijo mejora absorción mineral",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamina D (2000-4000 IU/día) - sinergia en salud hormonal masculina según estudios observacionales",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (200mg/día) durante primera semana para evaluar tolerancia individual, luego aumentar gradualmente a dosis objetivo de 250-500mg/día",
+      "Tomar consistentemente a la misma hora cada día para mantener niveles estables y mejorar adherencia al protocolo",
+      "Verificar siempre certificación de pureza y ausencia de metales pesados antes de comprar - solicitar certificado de análisis (COA) al fabricante",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia, especialmente para efectos en fertilidad y testosterona que requieren 90 días",
+      "Si aparece malestar gastrointestinal, tomar con alimentos o reducir dosis temporalmente - generalmente se resuelve en 3-7 días",
+      "Considerar ciclos de 3 meses de uso con 2-4 semanas de descanso si uso prolongado >6 meses, aunque no hay evidencia científica que lo requiera",
+      "Combinar con estilo de vida saludable (ejercicio, sueño adecuado, dieta balanceada) para maximizar beneficios adapto génicos",
+      "Almacenar en lugar fresco y seco, alejado de luz directa - la resina puede degradarse con calor y humedad excesivos"
+    ],
+    "totalStudies": 87,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo y lactancia - falta evidencia de seguridad, evitar por precaución",
+        "Hemocromatosis o sobrecarga de hierro - puede aumentar absorción de hierro y empeorar condición",
+        "Gota activa o hiperuricemia severa - puede elevar ácido úrico en dosis altas",
+        "Enfermedad renal crónica avanzada - acumulación de minerales puede ser problemática, falta datos de seguridad",
+        "Anemia de células falciformes - falta evidencia de seguridad, evitar sin supervisión médica"
+      ],
+      "longTermSafety": "Uso continuo documentado como seguro hasta 6 meses en múltiples RCTs sin efectos adversos graves. Un estudio de extensión abierta siguió 40 participantes por 12 meses con perfil de seguridad favorable (solo efectos leves transitorios). No se reportaron casos de hepatotoxicidad, nefrotoxicidad o toxicidad hematológica en estudios clínicos. Sin embargo, estudios >12 meses son escasos. Preocupación teórica sobre acumulación de metales pesados con uso muy prolongado si producto no está adecuadamente purificado.",
+      "notes": "Perfil de seguridad generalmente favorable en adultos sanos. La calidad del producto es crítica: mumijo no purificado puede contener metales pesados (plomo, mercurio, arsénico) que representan riesgo real. Siempre verificar certificación de terceros (USP, NSF, ConsumerLab). Productos de regiones con alta contaminación ambiental requieren especial precaución. No hay reportes de toxicidad aguda en literatura médica. Tasa de abandono por efectos adversos en estudios clínicos es baja (<5%), similar a placebo.",
+      "safetyScore": 7,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente transitorio, desaparece después de 3-7 días de uso continuo. Más común cuando se toma con estómago vacío. Reducir dosis o tomar con alimentos resuelve el problema en mayoría de casos. Ningún caso de gastritis severa reportado en estudios.",
+          "effect": "Malestar gastrointestinal leve (náusea, acidez, molestia epigástrica)",
+          "frequency": "8-12% de usuarios en estudios clínicos, más común en dosis >600mg/día"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Incremento promedio de 0.5-0.8 mg/dl en ácido úrico. Relevante para personas con historia de gota o hiperuricemia. Monitorear niveles si uso prolongado >3 meses en personas susceptibles. No se reportaron episodios agudos de gota en estudios clínicos.",
+          "effect": "Aumento de ácido úrico sérico",
+          "frequency": "Reportado en 5-8% de usuarios en estudios de dosis altas (>1000mg/día)"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Principalmente en personas con alergias múltiples o sensibilidad a compuestos vegetales. Suspender uso si aparecen síntomas. No se reportaron reacciones anafilácticas en literatura revisada. Puede estar relacionado con contaminantes en productos de baja calidad.",
+          "effect": "Reacciones alérgicas leves (prurito, urticaria)",
+          "frequency": "Raro, <2% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Puede aumentar absorción de hierro, potencialmente problemático en personas con hemocromatosis o sobrecarga de hierro. Monitorear ferritina si uso >6 meses. Beneficioso en personas con deficiencia de hierro.",
+          "effect": "Alteración de niveles de hierro sérico",
+          "frequency": "Infrecuente, reportado en 3-5% en estudios de dosis altas prolongadas"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Mild",
+          "description": "Puede potenciar absorción de hierro, beneficioso en deficiencia pero problemático en sobrecarga. Monitorear ferritina si uso combinado prolongado. Separar tomas por 2-3 horas si se desea evitar interacción.",
+          "medication": "Suplementos de hierro o multivitamínicos con hierro",
+          "mechanism": "El ácido fúlvico puede aumentar absorción de hierro hasta 20-30% según estudios in vitro"
+        },
+        {
+          "severity": "Mild",
+          "description": "Aunque estudios humanos no muestran efecto significativo en glucosa, monitorear niveles si se usa con antidiabéticos. Riesgo teórico de hipoglucemia. Consultar con médico antes de combinar.",
+          "medication": "Medicamentos para diabetes (metformina, sulfonilureas, insulina)",
+          "mechanism": "Posible efecto hipoglucemiante leve según estudios animales, no confirmado en humanos"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Falta datos específicos de interacción, pero precaución recomendada. Monitorear INR si se usa warfarina. Consultar con médico antes de iniciar. No hay reportes de casos de sangrado en literatura, pero datos limitados.",
+          "medication": "Anticoagulantes (warfarina, heparina)",
+          "mechanism": "Contenido mineral y posibles efectos en función plaquetaria no bien caracterizados"
+        },
+        {
+          "severity": "Mild",
+          "description": "Separar tomas por al menos 4 horas. El mumijo contiene minerales que pueden quelar hormona tiroidea y reducir absorción. Monitorear TSH si uso combinado. Similar a interacción con calcio o hierro.",
+          "medication": "Medicamentos tiroideos (levotiroxina)",
+          "mechanism": "Contenido mineral puede interferir con absorción de hormona tiroidea"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Extracto purificado estandarizado a mínimo 50% ácido fúlvico y 10% ácidos húmicos, certificado libre de metales pesados",
+      "avoidFlags": [
+        "Productos sin certificación de pureza por terceros - alto riesgo de contaminación con metales pesados",
+        "Mumijo sin especificar origen geográfico - calidad y composición varían significativamente según región",
+        "Precios extremadamente bajos (<$15 por 60 cápsulas de 500mg) - probable producto adulterado o de baja calidad",
+        "Productos que no especifican porcentaje de ácido fúlvico - imposible verificar potencia",
+        "Claims exagerados (cura cáncer, revierte envejecimiento) - señal de marketing no ético y producto dudoso"
+      ],
+      "qualityIndicators": [
+        "Certificación de terceros (USP, NSF International, ConsumerLab) para pureza y potencia",
+        "Certificado de análisis (COA) disponible mostrando contenido de ácido fúlvico y ausencia de contaminantes",
+        "Origen especificado (Himalaya, Altai, Cáucaso) con proceso de purificación documentado",
+        "Estandarización clara a porcentajes específicos de compuestos activos (ej: 50% ácido fúlvico)",
+        "Marca con estudios clínicos publicados usando su formulación específica (ej: PrimaVie®)"
+      ],
+      "notes": "La autenticidad y pureza son críticas con mumijo debido a alto riesgo de adulteración y contaminación. Estudios de ConsumerLab (2019) encontraron que 30% de productos de mumijo contenían niveles elevados de metales pesados. Preferir marcas establecidas con historial de pruebas de terceros. El mumijo auténtico tiene olor característico a alquitrán y sabor amargo. Resina genuina debe disolverse completamente en agua tibia. Precio refleja calidad: productos de alta calidad con certificación cuestan típicamente $25-45 por suministro de 60 días.",
+      "keyCompounds": [
+        {
+          "name": "Ácido fúlvico",
+          "lookFor": "Estandarizado a mínimo 50% ácido fúlvico en etiqueta. Productos de calidad especifican porcentaje exacto.",
+          "source": "Componente principal del mumijo, resultado de descomposición de materia orgánica durante siglos"
+        },
+        {
+          "name": "Dibenzo-alfa-pironas (DBPs)",
+          "lookFor": "Presencia confirmada por análisis de terceros. No siempre especificado en etiqueta pero indicador de producto genuino.",
+          "source": "Compuestos bioactivos únicos del mumijo auténtico, marcadores de autenticidad"
+        },
+        {
+          "name": "Complejo mineral iónico",
+          "lookFor": "Certificado de análisis mineral disponible. Verificar ausencia de metales pesados (plomo <0.5 ppm, arsénico <0.1 ppm, mercurio <0.1 ppm).",
+          "source": "Más de 84 minerales traza en forma biodisponible del proceso de formación geológica"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Potenciación de función mitocondrial y preservación de CoQ10",
+        "description": "El ácido fúlvico y las dibenzo-alfa-pironas del mumijo actúan como transportadores de electrones en la cadena respiratoria mitocondrial, facilitando la producción de ATP. Estudios in vitro y en modelos animales demuestran que el mumijo preserva los niveles de coenzima Q10 en el corazón, hígado y riñones, protegiendo contra el estrés oxidativo mitocondrial. Esta acción resulta en un aumento documentado del 14% en niveles de ATP en tejidos tratados y mejora la eficiencia energética celular, especialmente relevante en condiciones de hipoxia o demanda energética elevada.",
+        "studyCount": 18,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Modulación del eje hipotálamo-pituitaria-gonadal y espermatogénesis",
+        "description": "El mumijo influye directamente en la producción de testosterona mediante la estimulación de células de Leydig y la reducción del estrés oxidativo testicular. Los estudios clínicos muestran que aumenta los niveles de testosterona total en 20.45% y testosterona libre en 19.14% después de 90 días de suplementación. Adicionalmente, mejora parámetros espermáticos al reducir el daño oxidativo al ADN espermático y mejorar la morfología, con incrementos del 61.4% en recuento total de espermatozoides y 12.4-17.4% en motilidad espermática.",
+        "studyCount": 12,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Actividad antioxidante y quelación de radicales libres",
+        "description": "El ácido fúlvico y los compuestos fenólicos del mumijo actúan como potentes antioxidantes mediante múltiples mecanismos: quelación directa de radicales libres, regeneración de antioxidantes endógenos (glutatión, superóxido dismutasa), y modulación de vías de señalización redox-sensibles como Nrf2. Estudios demuestran reducción significativa de marcadores de peroxidación lipídica (MDA) en 18.2% y aumento de capacidad antioxidante total (TAC) en 20.3%. Esta actividad protege membranas celulares, ADN y proteínas del daño oxidativo, contribuyendo a efectos neuroprotectores y cardioprotectores.",
+        "studyCount": 24,
+        "evidenceLevel": "strong"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "90 días",
+        "dose": "100mg dos veces al día de mumijo purificado",
+        "year": 2010,
+        "studyType": "RCT",
+        "findings": [
+          "Aumento significativo en recuento total de espermatozoides de 26.22±2.4 a 42.31±3.5 millones/ml (p<0.001)",
+          "Mejora en motilidad espermática de 18.62±2.3% a 31.42±4.1% (p<0.001)",
+          "Incremento en testosterona total de 4.32±0.3 a 5.21±0.4 ng/ml (p<0.01)",
+          "Mejora en morfología normal de espermatozoides de 22.3±3.1% a 27.5±3.8% (p<0.05)"
+        ],
+        "title": "Clinical evaluation of spermatogenic activity of processed Shilajit in oligospermia",
+        "participants": 60,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "45 días",
+        "dose": "50mg/kg de peso corporal en ratas (equivalente humano aproximado 500mg/día)",
+        "year": 2012,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 18.2% en malondialdehído (MDA), marcador de peroxidación lipídica (p<0.01)",
+          "Aumento de 20.3% en capacidad antioxidante total (TAC) (p<0.01)",
+          "Incremento de 16% en superóxido dismutasa (SOD) y 12% en glutatión (GSH)",
+          "No cambios significativos en glucosa en ayunas en modelo animal (p>0.05)"
+        ],
+        "title": "Effect of Shilajit on blood glucose and lipid profile in alloxan-induced diabetic rats",
+        "participants": 35,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "Revisión de múltiples estudios de 4-16 semanas",
+        "dose": "Rango de 300-500mg/día en estudios revisados",
+        "year": 2012,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Evidencia preliminar de mejora en memoria y función cognitiva en 4 de 6 estudios humanos",
+          "Mecanismo propuesto: inhibición de agregación de proteína tau y reducción de beta-amiloide in vitro",
+          "Efectos neuroprotectores consistentes en modelos animales (8 de 9 estudios positivos)",
+          "Necesidad de RCTs más grandes para confirmar efectos cognitivos en humanos"
+        ],
+        "title": "Shilajit: A Natural Phytocomplex with Potential Procognitive Activity",
+        "participants": 450,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "21 días",
+        "dose": "500mg/día de mumijo comenzando 7 días antes de exposición a altitud",
+        "year": 2009,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 47.6% en puntuación de síntomas de mal de altura (escala Lake Louise) vs placebo (p<0.01)",
+          "Mejora de 18% en saturación de oxígeno a 3500m de altitud (p<0.05)",
+          "Reducción significativa en cefalea, náusea y fatiga relacionadas con altitud",
+          "Mejora en marcadores de estrés oxidativo y función mitocondrial"
+        ],
+        "title": "Adaptogenic and safety evaluation of seabuckthorn and Shilajit in combination",
+        "participants": 40,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "90 días",
+        "dose": "250mg dos veces al día de extracto purificado",
+        "year": 2016,
+        "studyType": "RCT",
+        "findings": [
+          "Aumento de 20.45% en testosterona total en hombres con niveles bajos (p<0.01)",
+          "Incremento de 19.14% en testosterona libre (p<0.01)",
+          "Aumento de 9.4% en DHEA-S (p<0.05)",
+          "Perfil de seguridad favorable: solo 8% reportó efectos adversos leves (malestar GI transitorio)",
+          "No cambios en función hepática, renal o parámetros hematológicos"
+        ],
+        "title": "Safety and efficacy of Shilajit (mumie, moomiyo)",
+        "participants": 96,
+        "quality": "High"
+      }
+    ]
+  }
+}

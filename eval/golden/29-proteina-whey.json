@@ -1,0 +1,431 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.395Z",
+    "jobId": "job_1777906519523_ys2unx6ti",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "proteína whey",
+  "metadata": {
+    "supplementId": "proteína whey",
+    "generatedAt": "2026-05-04T14:58:33.480Z",
+    "tokensUsed": 21830,
+    "bedrockDuration": 192196,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "20-30g por porción, 1-3 veces al día según necesidades proteicas totales. Target total: 1.6-2.2g/kg/día de proteína para hipertrofia, 1.2-1.6g/kg/día para mantenimiento",
+      "duration": "Efectos en composición corporal visibles desde 4-6 semanas, máximos a 8-12 semanas con entrenamiento. Uso continuo seguro documentado >12 meses. No requiere ciclos de descanso.",
+      "notes": "Distribución proteica en el día más importante que timing preciso. Regla práctica: 0.25-0.40g/kg por comida cada 3-4 horas. Tomar con agua o leche (no afecta absorción significativamente). Mezclar con alimentos sólidos retrasa absorción pero no reduce biodisponibilidad total. No es necesario tomar inmediatamente post-ejercicio si comida proteica completa se consume dentro de 3-4 horas. Personas con función renal normal pueden consumir hasta 2.5g/kg/día sin riesgo documentado.",
+      "timing": "Post-ejercicio (0-2 horas) muestra ventaja marginal pero no crítico. Distribución uniforme en el día (cada 3-4 horas) más importante que timing específico. Antes de dormir (30-40g) puede reducir proteólisis nocturna y apoyar recuperación. Sin preferencia absoluta según estudios de balance proteico de 24 horas.",
+      "optimalDose": "25-30g por porción para adultos mayores (>65 años) debido a resistencia anabólica. 0.25-0.40g/kg por comida distribuido en 3-4 tomas maximiza síntesis proteica diaria",
+      "maxSafeDose": "Hasta 2.5-3.0g/kg/día documentado como seguro en estudios de 12+ meses en atletas. Dosis únicas >40-50g no aumentan síntesis proteica adicional y exceso se oxida",
+      "forms": [
+        {
+          "description": "Contiene 70-80% proteína, 3-5% lactosa, pequeñas cantidades de grasa. Forma más económica y común. Retiene más fracciones bioactivas (inmunoglobulinas, lactoferrina). Usado en mayoría de estudios clínicos. Absorción completa en 2-3 horas.",
+          "studyCount": 180,
+          "form": "Concentrado de whey (WPC 80)",
+          "recommended": true
+        },
+        {
+          "description": "Contiene >90% proteína, <1% lactosa, mínima grasa. Procesado por microfiltración o intercambio iónico. Ventaja para intolerantes a lactosa o en déficit calórico estricto. No muestra superioridad en síntesis proteica vs WPC en estudios directos. Absorción similar a WPC.",
+          "studyCount": 85,
+          "form": "Aislado de whey (WPI 90+)",
+          "recommended": true
+        },
+        {
+          "description": "Pre-digerida enzimáticamente en péptidos pequeños. Absorción 10-20 minutos más rápida que WPC/WPI. Estudios muestran ventaja marginal (5-10%) en recuperación inmediata post-ejercicio pero no en ganancias a largo plazo. Más cara. Sabor amargo. Útil para sensibilidad gastrointestinal.",
+          "studyCount": 32,
+          "form": "Whey hidrolizada (WPH)",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Creatina monohidrato (3-5g/día) - sinergia documentada para fuerza y masa muscular, efectos aditivos independientes",
+        "Carbohidratos simples post-ejercicio (0.5-1.0g/kg) - potencia respuesta insulínica y reposición de glucógeno, útil para múltiples sesiones diarias",
+        "Vitamina D (2000-4000 UI/día) - optimiza función muscular y respuesta anabólica, especialmente en deficientes (<30 ng/mL)",
+        "Omega-3 (2-3g EPA+DHA/día) - puede reducir inflamación y mejorar sensibilidad anabólica en adultos mayores"
+      ],
+      "effectiveDose": "20g por porción es dosis mínima para maximizar síntesis proteica muscular post-ejercicio en adultos jóvenes (contiene ~2-2.5g leucina, umbral anabólico)"
+    },
+    "primaryUses": [
+      "Aumento de masa muscular y fuerza en entrenamiento de resistencia - incrementos de 1.2-2.4 kg de masa magra adicional vs placebo en 8-12 semanas",
+      "Optimización de recuperación post-ejercicio - reduce marcadores de daño muscular (CK, mioglobina) en 15-25% y acelera recuperación de fuerza en 24-48 horas",
+      "Preservación de masa muscular en déficit calórico - retiene 0.5-1.5 kg más de masa magra durante pérdida de peso comparado con dietas isocalóricas bajas en proteína",
+      "Mejora de composición corporal en adultos mayores - contrarresta sarcopenia con ganancias de 0.8-1.5 kg de masa muscular en 12-24 semanas combinado con ejercicio",
+      "Saciedad y control de apetito - reduce ingesta calórica subsecuente en 8-15% y aumenta sensación de plenitud vs carbohidratos isocalóricos"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 18,
+        "condition": "Pérdida de peso significativa como intervención única sin déficit calórico",
+        "evidenceGrade": "F",
+        "notes": "Meta-análisis de Wirunsawanya et al. (2018) con 14 RCTs mostró que suplementación con whey sin déficit calórico resulta en pérdida de peso no significativa (-0.68 kg, IC 95%: -1.32 a -0.05, p=0.04 pero clínicamente irrelevante). Estudios isocalóricos donde whey reemplaza otros macronutrientes sin reducir calorías totales no producen pérdida de peso adicional. Whey es herramienta útil DENTRO de déficit calórico pero no genera pérdida de grasa por sí sola."
+      },
+      {
+        "studyCount": 15,
+        "condition": "Mejora de rendimiento de resistencia aeróbica (VO2max, tiempo hasta fatiga)",
+        "evidenceGrade": "D",
+        "notes": "Revisión sistemática de Pasiakos et al. (2015) encontró evidencia insuficiente para beneficios en rendimiento aeróbico. 12 RCTs no mostraron mejoras significativas en VO2max, economía de carrera, o tiempo hasta fatiga en atletas de resistencia (p>0.05 en todos). Whey no ofrece ventajas sobre carbohidratos para reposición de glucógeno o rendimiento en ejercicios >60 minutos. Proteína es secundaria a carbohidratos para deportes de resistencia."
+      },
+      {
+        "studyCount": 12,
+        "condition": "Prevención o tratamiento de diabetes tipo 2 establecida",
+        "evidenceGrade": "D",
+        "notes": "Aunque mejora marcadores metabólicos menores, evidencia insuficiente para prevención o tratamiento de diabetes. Meta-análisis de Xu et al. (2019) con 9 RCTs en diabéticos tipo 2 mostró reducción no significativa en HbA1c (-0.16%, IC 95%: -0.42 a 0.10, p=0.23). Efectos sobre control glucémico a largo plazo son modestos y no superiores a intervenciones dietéticas estándar. No reemplaza terapia farmacológica ni modificación dietética integral."
+      },
+      {
+        "studyCount": 6,
+        "condition": "Mejora cognitiva, memoria o función cerebral en adultos sanos",
+        "evidenceGrade": "D",
+        "notes": "No existe evidencia robusta de beneficios cognitivos directos. 5 estudios pequeños (n<40 cada uno) no mostraron mejoras en memoria, atención, o función ejecutiva vs placebo (p>0.10 en todos los dominios). Aunque contiene triptófano (precursor de serotonina), concentraciones insuficientes para efectos neurotrópicos significativos. Beneficios cognitivos indirectos posibles vía mejora de composición corporal y salud metabólica, pero no hay efecto directo documentado."
+      },
+      {
+        "studyCount": 22,
+        "condition": "Reducción de colesterol LDL o mejora de perfil lipídico cardiovascular",
+        "evidenceGrade": "D",
+        "notes": "Evidencia mixta e inconsistente. Meta-análisis de Wirunsawanya et al. (2018) mostró reducción no significativa en colesterol total (-0.13 mmol/L, p=0.14) y LDL (-0.09 mmol/L, p=0.23). Algunos estudios reportan reducciones modestas (5-8%) pero otros no muestran efecto. Heterogeneidad alta (I²=78%) sugiere variabilidad por población y diseño. No hay consenso sobre beneficios cardiovasculares directos. Efectos sobre triglicéridos igualmente inconsistentes."
+      },
+      {
+        "studyCount": 8,
+        "condition": "Aumento de densidad mineral ósea o prevención de osteoporosis",
+        "evidenceGrade": "D",
+        "notes": "Evidencia insuficiente y contradictoria. Aunque whey contiene calcio y aminoácidos esenciales para hueso, 7 RCTs no mostraron mejoras significativas en DMO (densidad mineral ósea) vs controles (diferencia media: 0.008 g/cm², p=0.42). Teoría de que proteína alta aumenta excreción urinaria de calcio no confirmada en estudios a largo plazo. Proteína adecuada es necesaria para salud ósea pero whey específicamente no muestra beneficios superiores a otras fuentes proteicas."
+      }
+    ],
+    "whatIsIt": "La proteína de suero de leche (whey protein) es una mezcla de proteínas globulares derivadas del suero lácteo, el líquido remanente de la producción de queso. Contiene todas las fracciones proteicas esenciales incluyendo beta-lactoglobulina (≈50%), alfa-lactoalbúmina (≈20%), inmunoglobulinas, lactoferrina y glicomacropéptidos. Es notable por su perfil completo de aminoácidos esenciales, particularmente su alto contenido de leucina (≈11% del total proteico), que actúa como señal anabólica primaria para la síntesis proteica muscular vía activación de mTOR. Su tasa de digestión rápida (absorción pico a 60-90 minutos post-ingesta) y su valor biológico elevado (104-159 según método) la posicionan como el estándar de oro para suplementación proteica en contextos de hipertrofia, recuperación y mantenimiento de masa magra.",
+    "worksFor": [
+      {
+        "studyCount": 85,
+        "condition": "Aumento de masa muscular y fuerza en entrenamiento de resistencia",
+        "evidenceGrade": "A",
+        "notes": "Dosis óptima: 20-40g post-entrenamiento o distribuidos en el día para alcanzar 1.6-2.2g/kg/día de proteína total. Efectos visibles desde 4-6 semanas, máximos a 8-12 semanas. Meta-análisis de Cermak et al. (2012) con 22 RCTs mostró efecto estandarizado de 0.69 (IC 95%: 0.47-0.91) favoreciendo suplementación proteica. Efectos mayores en: individuos jóvenes entrenados, déficit proteico basal (<1.2g/kg/día), y cuando se combina con entrenamiento progresivo. Respuesta atenuada en personas ya consumiendo >1.6g/kg/día de proteína dietética.",
+        "effectSize": "Moderate",
+        "rctCount": 78,
+        "magnitude": "Incremento adicional de 1.2-2.4 kg de masa magra y 5-15% en fuerza máxima comparado con placebo o entrenamiento solo",
+        "totalParticipants": 4200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 42,
+        "condition": "Recuperación muscular post-ejercicio y reducción de daño muscular",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 20-25g inmediatamente post-ejercicio y/o antes de dormir. Timing crítico: ventana de 0-2 horas post-ejercicio muestra mayores beneficios. Meta-análisis de Davies et al. (2018) con 27 estudios demostró reducción significativa en dolor muscular percibido (DOMS) de 0.41 puntos en escala VAS (p<0.01) y recuperación acelerada de fuerza isométrica máxima. Efectos más pronunciados después de ejercicio excéntrico intenso o no habitual. Whey hidrolizada puede ofrecer ventaja marginal (5-10% adicional) sobre concentrado debido a absorción más rápida.",
+        "effectSize": "Moderate",
+        "rctCount": 38,
+        "magnitude": "Reducción de 15-25% en marcadores de daño muscular (CK, LDH, mioglobina) y recuperación 20-30% más rápida de fuerza máxima en 24-48 horas",
+        "totalParticipants": 1850,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 38,
+        "condition": "Preservación de masa muscular durante pérdida de peso y déficit calórico",
+        "evidenceGrade": "A",
+        "notes": "Dosis requerida: 1.8-2.7g/kg/día de proteína total (whey como suplemento para alcanzar target). Duración mínima: 8-12 semanas de déficit calórico. Meta-análisis de Pasiakos et al. (2013) mostró que dietas altas en proteína (>1.6g/kg/día) preservan significativamente más masa magra vs dietas control (diferencia media: 1.05 kg, IC 95%: 0.58-1.52 kg). Efecto termodinámico: proteína tiene TEF (efecto térmico) de 20-30% vs 5-10% de carbohidratos, contribuyendo a mayor gasto energético diario (50-100 kcal adicionales). Combinación con entrenamiento de resistencia potencia efectos protectores sobre músculo.",
+        "effectSize": "Moderate",
+        "rctCount": 35,
+        "magnitude": "Retención de 0.5-1.5 kg adicionales de masa magra durante déficit calórico de 500-750 kcal/día comparado con dietas bajas en proteína",
+        "totalParticipants": 2100,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 35,
+        "condition": "Mejora de composición corporal y función muscular en adultos mayores (sarcopenia)",
+        "evidenceGrade": "B",
+        "notes": "Dosis óptima para adultos mayores: 25-40g por comida (dosis más altas necesarias para superar resistencia anabólica relacionada con edad). Timing: distribución uniforme en 3-4 comidas maximiza síntesis proteica muscular diaria. Meta-análisis de Finger et al. (2015) con 20 RCTs mostró que suplementación proteica combinada con ejercicio aumenta masa magra en 0.99 kg (IC 95%: 0.68-1.30) y fuerza de piernas en 13.5% vs placebo. Leucina suplementaria (3-4g adicionales) puede potenciar respuesta en población geriátrica. Efectos mayores cuando ingesta basal <1.0g/kg/día. Mejoras funcionales incluyen velocidad de marcha (+0.05-0.10 m/s) y test de levantarse de silla.",
+        "effectSize": "Moderate",
+        "rctCount": 32,
+        "magnitude": "Incremento de 0.8-1.5 kg de masa muscular y mejora de 10-20% en fuerza y función física en 12-24 semanas",
+        "totalParticipants": 2400,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 48,
+        "condition": "Control de apetito, saciedad y reducción de ingesta calórica",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 20-50g como pre-carga 30-90 minutos antes de comida principal. Mecanismo: estimulación de CCK, GLP-1, PYY y supresión de grelina. Meta-análisis de Dhillon et al. (2016) mostró que whey reduce ingesta energética ad libitum en promedio 70-100 kcal por comida vs controles isocalóricos. Efectos de saciedad más pronunciados con: whey en forma líquida vs sólida, dosis >40g, y en individuos con sobrepeso/obesidad. Impacto modesto en pérdida de peso a largo plazo cuando se usa solo (0.5-1.5 kg adicionales en 12 semanas) pero útil como herramienta para adherencia a déficit calórico. Respuesta individual variable.",
+        "effectSize": "Small",
+        "rctCount": 42,
+        "magnitude": "Reducción de 8-15% en ingesta calórica subsecuente y aumento de 15-25% en sensación de plenitud comparado con carbohidratos isocalóricos",
+        "totalParticipants": 1650,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 28,
+        "condition": "Mejora de marcadores metabólicos y sensibilidad a insulina en sobrepeso/obesidad",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 20-60g/día durante 12-24 semanas, típicamente reemplazando carbohidratos isocalóricos. Meta-análisis de Wirunsawanya et al. (2018) con 14 RCTs mostró mejoras significativas en glucosa plasmática en ayunas (-0.22 mmol/L, p=0.008) e insulina (-1.13 μU/mL, p=0.04) en individuos con sobrepeso/obesidad o síndrome metabólico. Efectos más pronunciados cuando: se combina con pérdida de peso (≥5% peso corporal), reemplaza carbohidratos refinados, y en población con resistencia insulínica basal. Reducción modesta en HbA1c (-0.2-0.4%) en pre-diabéticos. Mecanismo: mejora de composición corporal, reducción de grasa visceral, y efectos directos sobre metabolismo de glucosa.",
+        "effectSize": "Small",
+        "rctCount": 25,
+        "magnitude": "Reducción de 5-12% en glucosa en ayunas, 8-15% en insulina basal, y mejora de 10-18% en HOMA-IR",
+        "totalParticipants": 1450,
+        "metaAnalysis": true
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Creatina monohidrato (3-5g/día) - sinergia documentada para fuerza y masa muscular, efectos aditivos independientes",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Carbohidratos simples post-ejercicio (0.5-1.0g/kg) - potencia respuesta insulínica y reposición de glucógeno, útil para múltiples sesiones diarias",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamina D (2000-4000 UI/día) - optimiza función muscular y respuesta anabólica, especialmente en deficientes (<30 ng/mL)",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Omega-3 (2-3g EPA+DHA/día) - puede reducir inflamación y mejorar sensibilidad anabólica en adultos mayores",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Calcular necesidades proteicas totales primero (1.6-2.2g/kg/día para hipertrofia) y usar whey para completar déficit si dieta no alcanza target - no reemplazar alimentos enteros innecesariamente",
+      "Distribuir proteína uniformemente en el día (0.25-0.40g/kg cada 3-4 horas) en lugar de concentrar en 1-2 comidas - maximiza síntesis proteica muscular de 24 horas",
+      "Comenzar con dosis baja (15-20g) si es primera vez usando whey y aumentar gradualmente para evaluar tolerancia gastrointestinal - especialmente importante en intolerantes a lactosa",
+      "Priorizar consistencia sobre timing perfecto - diferencia entre tomar inmediatamente post-ejercicio vs 2-3 horas después es marginal (<5%) si proteína total diaria es adecuada",
+      "Elegir WPC (concentrado) para uso general por mejor costo-beneficio, cambiar a WPI (aislado) solo si hay intolerancia a lactosa o necesidad de minimizar calorías/carbohidratos",
+      "Verificar certificaciones de terceros (Informed-Sport, NSF) especialmente si eres atleta competitivo - evita riesgo de contaminación con sustancias prohibidas",
+      "Combinar con carbohidratos post-ejercicio (0.5-1.0g/kg) solo si entrenas múltiples veces al día o necesitas reposición rápida de glucógeno - no necesario para sesión única diaria",
+      "Monitorear respuesta individual durante 4-6 semanas antes de evaluar eficacia - cambios en composición corporal requieren tiempo y adherencia consistente"
+    ],
+    "totalStudies": 450,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Alergia documentada a proteínas de leche de vaca (mediada por IgE) - riesgo de anafilaxia",
+        "Enfermedad renal crónica avanzada (estadios 4-5, TFG <30 mL/min) - requiere restricción proteica, consultar nefrólogo",
+        "Fenilcetonuria - whey contiene fenilalanina, aminoácido que pacientes con PKU no pueden metabolizar",
+        "Intolerancia severa a lactosa - usar WPI o whey hidrolizada con <1% lactosa, evitar WPC"
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 24 meses en múltiples RCTs con dosis de 1.5-2.5g/kg/día sin efectos adversos significativos. Estudios observacionales en atletas muestran consumo habitual >5 años sin deterioro de función renal, hepática o ósea en individuos sanos. No evidencia de daño renal en personas con función renal normal (TFG >60 mL/min). Perfil de seguridad superior a muchos suplementos deportivos.",
+      "notes": "Whey es alimento derivado de lácteos, no medicamento. GRAS (Generally Recognized As Safe) por FDA. No reportes de hepatotoxicidad en estudios clínicos. Mito desmentido: proteína alta NO daña riñones sanos (evidencia de estudios en atletas consumiendo >3g/kg/día). Personas con función renal comprometida deben consultar médico antes de aumentar ingesta proteica. Calidad del producto variable: preferir marcas con certificación de terceros (Informed-Sport, NSF Certified for Sport) para evitar contaminación con sustancias prohibidas o metales pesados.",
+      "safetyScore": 9,
+      "pregnancyCategory": "Insufficient Data",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Relacionado con contenido de lactosa en WPC (3-5%) o velocidad de consumo. Desaparece con cambio a WPI o whey hidrolizada. Tomar con alimentos reduce incidencia. Introducción gradual (comenzar con 10-15g) mejora tolerancia.",
+          "effect": "Molestias gastrointestinales (distensión, gases, cólicos)",
+          "frequency": "10-15% de usuarios, más común con WPC en intolerantes a lactosa o dosis >40g en una toma"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Mecanismo propuesto: estimulación de IGF-1 y mTORC1 en glándulas sebáceas. Evidencia anecdótica más fuerte que estudios controlados. Puede mejorar con reducción de dosis o cambio a proteínas vegetales. No ocurre en mayoría de usuarios.",
+          "effect": "Acné o exacerbación de acné existente",
+          "frequency": "5-8% de usuarios susceptibles, más común en adolescentes y adultos jóvenes con historial de acné"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Diferente de intolerancia a lactosa. Mediado por IgE contra beta-lactoglobulina o alfa-lactoalbúmina. Contraindicado en alergia a leche de vaca. Whey hidrolizada puede reducir pero no eliminar antigenicidad. Requiere prueba de alergia si sospecha.",
+          "effect": "Reacciones alérgicas (urticaria, prurito, raramente anafilaxia)",
+          "frequency": "Raro <1%, principalmente en individuos con alergia documentada a proteínas lácteas"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Relacionado con carga osmótica y velocidad de vaciado gástrico. Más común con whey hidrolizada debido a absorción ultra-rápida. Mitigado tomando con alimentos, diluyendo más, o dividiendo dosis. Tolerancia mejora con uso regular.",
+          "effect": "Náuseas o malestar estomacal",
+          "frequency": "8-12% con dosis altas (>50g) o consumo rápido en ayunas"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede reducir absorción y efectividad de levodopa en 30-50%. Separar administración por 2-3 horas. Tomar levodopa con estómago vacío y whey con alimentos. Consultar neurólogo para ajuste de dosis.",
+          "medication": "Levodopa (tratamiento de Parkinson)",
+          "mechanism": "Aminoácidos de cadena ramificada compiten con levodopa por transportadores LAT1 en intestino y barrera hematoencefálica"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Puede reducir biodisponibilidad de antibiótico en 20-40%. Separar administración por mínimo 2 horas (idealmente 4 horas). Tomar antibiótico con estómago vacío y whey alejado de dosis de medicamento.",
+          "medication": "Antibióticos quinolonas y tetraciclinas",
+          "mechanism": "Calcio en whey forma quelatos con antibióticos, reduciendo absorción intestinal"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Reduce absorción de bifosfonato significativamente. Tomar bifosfonato en ayunas al despertar, esperar 60 minutos antes de consumir whey o cualquier alimento. No afecta eficacia si se respeta timing.",
+          "medication": "Alendronato y otros bifosfonatos (osteoporosis)",
+          "mechanism": "Calcio y proteína interfieren con absorción de bifosfonatos que requieren estómago vacío"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Concentrado de whey (WPC 80) para mayoría de usuarios por costo-beneficio. Aislado (WPI 90+) para intolerantes a lactosa o déficit calórico estricto",
+      "avoidFlags": [
+        "Proteína <70% del peso total en productos etiquetados como concentrado - indica relleno excesivo con maltodextrina o carbohidratos",
+        "Mezclas propietarias sin desglose de cantidades - oculta proporción real de whey vs proteínas más baratas (soya, colágeno)",
+        "Claims exagerados como 'absorción instantánea 400% superior' o 'anabólico 10x más potente' - marketing sin respaldo científico",
+        "Ausencia de información del fabricante o lote - dificulta trazabilidad y control de calidad",
+        "Precio excesivamente bajo (<50% del promedio de mercado) - sugiere calidad inferior, adulteración o contaminación"
+      ],
+      "qualityIndicators": [
+        "Certificación de terceros: Informed-Sport, NSF Certified for Sport, o USP Verified - garantiza ausencia de sustancias prohibidas y verificación de contenido",
+        "Pruebas de laboratorio publicadas mostrando contenido proteico real y ausencia de metales pesados (plomo, mercurio, arsénico, cadmio <límites FDA)",
+        "Procesamiento por microfiltración de flujo cruzado (CFM) o ultrafiltración - preserva fracciones bioactivas y minimiza desnaturalización",
+        "Transparencia en etiquetado: lista completa de ingredientes, origen de la leche, información de contacto del fabricante",
+        "Perfil completo de aminoácidos publicado - permite verificar calidad y no adulteración con aminoácidos libres baratos"
+      ],
+      "notes": "Estudios de ConsumerLab (2020) encontraron que 12% de productos de whey contenían <90% de proteína declarada, algunos con solo 60-70%. Spike de aminoácidos: práctica fraudulenta de agregar aminoácidos libres baratos (glicina, taurina, creatina) para inflar contenido de nitrógeno total sin agregar proteína completa - verificar que aminoácidos listados sean parte de la proteína, no agregados. Whey de vacas alimentadas con pasto (grass-fed) puede contener perfil de ácidos grasos ligeramente mejor (más omega-3, CLA) pero sin diferencia en contenido proteico o eficacia para hipertrofia. Saborizantes y edulcorantes no afectan eficacia pero pueden causar molestias GI en sensibles - versiones sin sabor disponibles.",
+      "keyCompounds": [
+        {
+          "name": "Proteína total",
+          "lookFor": "Mínimo 70-75% proteína por peso en WPC, >90% en WPI. Verificar en tabla nutricional: 20-25g proteína por porción de 30g",
+          "source": "Suero de leche procesado por ultrafiltración o microfiltración"
+        },
+        {
+          "name": "Leucina",
+          "lookFor": "2.0-2.5g de leucina por porción de 25g proteína. Algunos productos especifican contenido de BCAAs (5-6g por porción)",
+          "source": "Aminoácido de cadena ramificada naturalmente presente en whey"
+        },
+        {
+          "name": "Lactosa",
+          "lookFor": "WPC: 3-5% lactosa. WPI: <1% lactosa. Importante para intolerantes verificar contenido específico en etiqueta",
+          "source": "Azúcar natural de la leche, remanente del procesamiento"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Activación de la vía mTORC1 mediada por leucina",
+        "description": "La leucina presente en concentraciones elevadas (2-3g por porción de 25g) actúa como señal nutricional que activa directamente el complejo mTORC1 (mechanistic target of rapamycin complex 1) en células musculares. Esta activación fosforila proteínas downstream como p70S6K y 4E-BP1, iniciando la traducción de ARNm y síntesis de proteínas musculares. La respuesta anabólica alcanza su pico 1-2 horas post-ingesta, con tasas de síntesis proteica muscular aumentadas en 50-150% sobre valores basales en presencia de aminoácidos adecuados.",
+        "studyCount": 85,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Estimulación rápida de aminoacidemia e hiperinsulinemia",
+        "description": "La digestión y absorción acelerada de whey (tasa de digestión 8-10g/hora) genera un pico pronunciado de aminoácidos plasmáticos a los 60-90 minutos post-ingesta, elevando concentraciones totales en 150-250% sobre baseline. Simultáneamente, los aminoácidos insulinotrópicos (leucina, isoleucina, valina, lisina) estimulan secreción de insulina pancreática, aumentando niveles en 50-100%. Esta combinación crea un ambiente anabólico óptimo al maximizar disponibilidad de sustrato y señalización hormonal para síntesis proteica mientras suprime proteólisis muscular vía inhibición del sistema ubiquitina-proteasoma.",
+        "studyCount": 120,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Modulación de hormonas de saciedad y péptidos gastrointestinales",
+        "description": "La ingesta de whey estimula liberación de péptidos anorexigénicos incluyendo CCK (colecistoquinina), GLP-1 (péptido similar al glucagón-1) y PYY (péptido YY) desde células enteroendocrinas intestinales. Estos péptidos actúan sobre receptores hipotalámicos reduciendo señales de hambre y prolongando sensación de saciedad. Estudios muestran aumentos de 15-35% en GLP-1 y 20-50% en PYY comparado con carbohidratos isocalóricos, con efectos sostenidos 2-4 horas post-ingesta. Adicionalmente, whey reduce niveles de grelina (hormona orexigénica) en 10-20%, contribuyendo a menor ingesta calórica voluntaria.",
+        "studyCount": 65,
+        "evidenceLevel": "strong"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "6-24 semanas por estudio",
+        "dose": "Promedio 33g/día de suplementación proteica (mayoría whey)",
+        "year": 2012,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Suplementación proteica aumentó masa libre de grasa en 0.69 kg adicionales vs placebo (IC 95%: 0.47-0.91, p<0.001)",
+          "Efecto más pronunciado en individuos entrenados vs no entrenados (0.75 kg vs 0.54 kg)",
+          "Beneficios mayores cuando ingesta proteica basal <1.2g/kg/día",
+          "Fuerza máxima mejoró significativamente con suplementación (diferencia estandarizada: 0.38, p<0.01)"
+        ],
+        "title": "Protein supplementation augments the adaptive response of skeletal muscle to resistance-type exercise training: a meta-analysis",
+        "participants": 1863,
+        "quality": "High"
+      },
+      {
+        "duration": "Variable, 6 semanas a 12 meses",
+        "dose": "20-50g/día de proteína suplementaria",
+        "year": 2015,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Suplementación proteica combinada con entrenamiento de resistencia aumentó masa muscular significativamente (diferencia media: 1.1 kg, IC 95%: 0.64-1.56)",
+          "Mejoras en fuerza de 1RM en press de banca (8.7 kg adicionales) y sentadilla (13.5 kg adicionales) vs placebo",
+          "No beneficios significativos en rendimiento aeróbico (VO2max, tiempo hasta fatiga)",
+          "Efectos dependientes de dosis: >1.6g/kg/día proteína total mostró mayores beneficios"
+        ],
+        "title": "The effects of protein supplements on muscle mass, strength, and aerobic and anaerobic power in healthy adults: a systematic review",
+        "participants": 2800,
+        "quality": "High"
+      },
+      {
+        "duration": "8-12 semanas promedio",
+        "dose": "25-50g/día de whey protein",
+        "year": 2013,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Whey aumentó masa magra en 2.11 kg más que controles sin suplementación (p<0.001)",
+          "Reducción de masa grasa adicional de 0.68 kg vs controles (p=0.03)",
+          "Efectos más pronunciados en adultos jóvenes (<40 años) vs mayores",
+          "Timing de consumo (post-ejercicio vs otros momentos) no mostró diferencias significativas en resultados finales"
+        ],
+        "title": "Whey protein supplementation during resistance training augments lean body mass",
+        "participants": 680,
+        "quality": "High"
+      },
+      {
+        "duration": "8-24 semanas",
+        "dose": "1.8-2.7g/kg/día proteína total durante déficit calórico",
+        "year": 2013,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Dietas altas en proteína preservaron 1.05 kg más de masa magra durante pérdida de peso vs dietas control (IC 95%: 0.58-1.52)",
+          "Reducción de grasa corporal similar entre grupos pero mejor composición final con alta proteína",
+          "Efecto térmico aumentado: 50-100 kcal/día adicionales de gasto energético con proteína alta",
+          "Saciedad mejorada resultó en 10-15% menor ingesta calórica ad libitum"
+        ],
+        "title": "Protein intake and energy balance",
+        "participants": 1200,
+        "quality": "High"
+      },
+      {
+        "duration": "12 semanas",
+        "dose": "28g/día de whey protein",
+        "year": 2016,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de presión arterial sistólica de 3.9 mmHg vs placebo (p=0.03)",
+          "Presión diastólica reducida en 2.5 mmHg (p=0.08, tendencia)",
+          "Mejora en función endotelial medida por dilatación mediada por flujo (+1.7%, p=0.04)",
+          "Reducción modesta en colesterol total (-0.21 mmol/L) y LDL (-0.15 mmol/L)"
+        ],
+        "title": "Whey protein lowers blood pressure and improves endothelial function and lipid biomarkers in adults with prehypertension and mild hypertension: results from the chronic Whey2Go randomized controlled trial",
+        "participants": 42,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "6 semanas",
+        "dose": "1.2g/kg/día whey ± 0.1g/kg/día creatina",
+        "year": 2006,
+        "studyType": "RCT",
+        "findings": [
+          "Whey + creatina aumentó masa magra en 4.0 kg vs 2.3 kg solo con whey (p<0.05)",
+          "Fuerza en press de banca mejoró 24% con combinación vs 16% solo whey",
+          "Efectos sinérgicos documentados entre whey y creatina",
+          "No efectos adversos reportados con combinación"
+        ],
+        "title": "The effect of whey protein supplementation with and without creatine monohydrate combined with resistance training on lean tissue mass and muscle strength",
+        "participants": 36,
+        "quality": "Moderate"
+      }
+    ]
+  }
+}

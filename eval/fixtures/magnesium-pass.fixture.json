@@ -1,0 +1,63 @@
+{
+  "modelId": "fixture.model.pass",
+  "inputTokens": 10000,
+  "outputTokens": 1800,
+  "output": {
+    "whatIsIt": "El magnesio es un mineral esencial involucrado en funcion muscular, nerviosa y metabolismo energetico.",
+    "primaryUses": ["Apoyo a ingesta insuficiente", "Funcion muscular", "Sueno cuando hay deficiencia o baja ingesta"],
+    "dosage": {
+      "standard": "200-400 mg/dia de magnesio elemental, ajustado por tolerancia y contexto clinico.",
+      "maxSafeDose": "Evitar dosis altas sin supervision medica, especialmente con enfermedad renal.",
+      "forms": [
+        {
+          "form": "Glicinato de magnesio",
+          "recommended": true,
+          "description": "Forma generalmente bien tolerada."
+        }
+      ]
+    },
+    "mechanisms": ["Cofactor enzimatico", "Participa en senalizacion neuromuscular"],
+    "worksFor": [
+      {
+        "condition": "Correccion de ingesta insuficiente de magnesio",
+        "evidenceGrade": "B",
+        "studyCount": 10,
+        "notes": "La suplementacion puede ayudar cuando la ingesta es baja."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Calidad del sueno en poblaciones seleccionadas",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Evidencia mixta; requiere contexto."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Sustituir tratamiento medico",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No debe usarse como sustituto de atencion medica."
+      }
+    ],
+    "safety": {
+      "sideEffects": ["Diarrea", "Molestia gastrointestinal"],
+      "interactions": ["Separar de tetraciclinas, fluoroquinolonas y bifosfonatos"],
+      "contraindications": ["Enfermedad renal sin supervision medica"]
+    },
+    "buyingGuidance": {
+      "qualityMarkers": ["Indicar magnesio elemental por porcion", "Pruebas de terceros cuando sea posible"]
+    },
+    "practicalRecommendations": ["Empezar con dosis baja", "Tomar con alimentos si hay molestia gastrointestinal"],
+    "keyStudies": [
+      {
+        "title": "Fixture study",
+        "year": 2026,
+        "studyType": "Fixture",
+        "quality": "Fixture"
+      }
+    ],
+    "totalStudies": 1
+  }
+}

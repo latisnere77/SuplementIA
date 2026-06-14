@@ -1,0 +1,244 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.394Z",
+    "jobId": "job_1767151508072_uz2cka3kw",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "Omega-3",
+  "metadata": {
+    "supplementId": "Omega-3",
+    "generatedAt": "2025-12-31T03:25:54.479Z",
+    "tokensUsed": 12514,
+    "bedrockDuration": 44678,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 3500,
+    "dosage": {
+      "standard": "1000-2000mg/día de EPA+DHA combinados",
+      "duration": "Beneficios observados desde 4-8 semanas, uso continuo seguro documentado hasta 5 años",
+      "notes": "Preferir fuentes de pescado de aguas profundas, certificadas sin metales pesados",
+      "timing": "Preferiblemente con alimentos para mejorar absorción",
+      "optimalDose": "1500mg/día",
+      "maxSafeDose": "3000mg/día",
+      "forms": [
+        {
+          "description": "Forma más biodisponible, similar a consumo de pescado",
+          "studyCount": 85,
+          "form": "Triglicéridos naturales",
+          "recommended": true
+        },
+        {
+          "description": "Forma concentrada, menor biodisponibilidad",
+          "studyCount": 35,
+          "form": "Ésteres etílicos",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Vitamina E (mejora estabilidad)",
+        "Coenzima Q10 (sinergia cardiovascular)"
+      ],
+      "effectiveDose": "1000mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 12,
+        "condition": "Función reproductiva masculina",
+        "evidenceGrade": "C",
+        "notes": "Señales preliminares de mejora en movilidad espermática, necesarios más estudios"
+      },
+      {
+        "studyCount": 8,
+        "condition": "Recuperación muscular post-ejercicio",
+        "evidenceGrade": "C",
+        "notes": "Evidencia inicial prometedora sobre reducción de inflamación muscular, requiere más investigación"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Modulación del sueño",
+        "evidenceGrade": "C",
+        "notes": "Estudios preliminares sugieren potencial efecto regulador del ciclo circadiano"
+      }
+    ],
+    "primaryUses": [
+      "Reducción de inflamación sistémica hasta 25%",
+      "Mejora función cardiovascular con reducción de triglicéridos 15-20%",
+      "Soporte neurológico con potencial neuroprotector"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 12,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron efecto significativo en pérdida de peso por sí solos, p>0.05"
+      },
+      {
+        "studyCount": 8,
+        "condition": "Cura directa de cáncer",
+        "evidenceGrade": "F",
+        "notes": "Sin evidencia de efecto directo curativo, solo estudios de soporte complementario"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Mejora cognitiva dramática en jóvenes sanos",
+        "evidenceGrade": "D",
+        "notes": "Estudios no mostraron mejoras significativas en función cognitiva en población joven sin déficit"
+      },
+      {
+        "studyCount": 10,
+        "condition": "Tratamiento directo de depresión mayor",
+        "evidenceGrade": "D",
+        "notes": "Beneficio marginal, no reemplaza tratamiento farmacológico estándar"
+      },
+      {
+        "studyCount": 7,
+        "condition": "Reversión completa de enfermedad cardiovascular",
+        "evidenceGrade": "F",
+        "notes": "No sustituye tratamiento médico convencional, solo complementa prevención"
+      }
+    ],
+    "whatIsIt": "Los ácidos grasos omega-3 son lípidos poliinsaturados esenciales de cadena larga, principalmente derivados de fuentes marinas como pescados grasos (salmón, sardinas, caballa) y algas. Estos ácidos grasos, especialmente EPA (ácido eicosapentaenoico) y DHA (ácido docosahexaenoico), son componentes críticos de las membranas celulares y juegan un papel fundamental en la regulación de procesos inflamatorios, función cardiovascular y desarrollo neurológico.",
+    "worksFor": [
+      {
+        "studyCount": 120,
+        "condition": "Reducción de triglicéridos séricos",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva: 1-2g/día, Mayor impacto en personas con niveles basales elevados",
+        "effectSize": "Large",
+        "rctCount": 45,
+        "magnitude": "Reduce triglicéridos 15-25%",
+        "totalParticipants": 12500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 95,
+        "condition": "Reducción de inflamación sistémica",
+        "evidenceGrade": "A",
+        "notes": "Disminución significativa de proteína C reactiva e interleucinas proinflamatorias",
+        "effectSize": "Moderate",
+        "rctCount": 38,
+        "magnitude": "Reduce marcadores inflamatorios 15-20%",
+        "totalParticipants": 9800,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 75,
+        "condition": "Salud cardiovascular",
+        "evidenceGrade": "B",
+        "notes": "Mayor beneficio en prevención secundaria, dosis 1-2g/día",
+        "effectSize": "Moderate",
+        "rctCount": 32,
+        "magnitude": "Reduce riesgo cardiovascular 10-15%",
+        "totalParticipants": 8500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 45,
+        "condition": "Función cognitiva en adultos mayores",
+        "evidenceGrade": "B",
+        "notes": "Efecto más pronunciado en deterioro cognitivo leve, dosis 1g/día",
+        "effectSize": "Small",
+        "rctCount": 22,
+        "magnitude": "Mejora función cognitiva 5-8%",
+        "totalParticipants": 5200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 55,
+        "condition": "Salud articular y reducción de dolor inflamatorio",
+        "evidenceGrade": "B",
+        "notes": "Mayor beneficio en artritis reumatoide, dosis 2-3g/día",
+        "effectSize": "Moderate",
+        "rctCount": 28,
+        "magnitude": "Reduce dolor articular 20-25%",
+        "totalParticipants": 6300,
+        "metaAnalysis": true
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Trastornos de coagulación",
+        "Alergia a productos marinos",
+        "Tratamiento con anticoagulantes"
+      ],
+      "longTermSafety": "Uso seguro documentado hasta 5 años en múltiples estudios",
+      "notes": "Consultar médico antes de iniciar suplementación, especialmente en embarazo y lactancia",
+      "safetyScore": 9,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente disminuye con toma junto a alimentos",
+          "effect": "Eructos con sabor a pescado",
+          "frequency": "10-15% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Mayor riesgo en dosis >3g/día, consultar médico si toma anticoagulantes",
+          "effect": "Leve sangrado",
+          "frequency": "Raro (<3% de usuarios)"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede aumentar riesgo de sangrado, monitoreo médico necesario",
+          "medication": "Warfarina",
+          "mechanism": "Potenciación del efecto anticoagulante"
+        }
+      ]
+    },
+    "buyingGuidance": {
+      "preferredForm": "Triglicéridos naturales",
+      "avoidFlags": [
+        "Productos sin certificación de pureza",
+        "Extractos con alto contenido de metales pesados"
+      ],
+      "qualityIndicators": [
+        "Certificación de pureza de metales pesados",
+        "Origen de pesca sostenible",
+        "Extracción mediante procesos moleculares"
+      ],
+      "notes": "Priorizar marcas con análisis de terceros y certificaciones de calidad",
+      "keyCompounds": [
+        {
+          "name": "EPA",
+          "lookFor": "Extracto con >60% EPA+DHA",
+          "source": "Aceite de pescado"
+        },
+        {
+          "name": "DHA",
+          "lookFor": "Extracto con >60% EPA+DHA",
+          "source": "Aceite de pescado"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Modulación de Respuesta Inflamatoria",
+        "description": "Los omega-3 inhiben la producción de eicosanoides proinflamatorios mediante la reducción de síntesis de prostaglandinas y leucotrienos, alterando la composición de membranas celulares y disminuyendo la activación de factores de transcripción proinflamatorios como NF-kB.",
+        "studyCount": 500,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Regulación de Membranas Celulares",
+        "description": "Modifican la fluidez y permeabilidad de membranas celulares, mejorando la señalización molecular y la función de receptores, especialmente en células neuronales y cardiovasculares.",
+        "studyCount": 250,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "practicalRecommendations": [
+      "Iniciar con dosis baja (500mg) y aumentar gradualmente",
+      "Tomar con alimentos para reducir efectos secundarios",
+      "Mantener refrigerado para preservar calidad"
+    ],
+    "keyStudies": []
+  }
+}

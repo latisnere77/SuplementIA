@@ -1,0 +1,430 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.394Z",
+    "jobId": "job_prod_matrix_1777855491608_l7pfje8a1k",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "lions mane",
+  "metadata": {
+    "supplementId": "lions mane",
+    "generatedAt": "2026-05-04T00:46:58.016Z",
+    "tokensUsed": 18164,
+    "bedrockDuration": 124668,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "500-3000mg/día de extracto de cuerpo fructífero en polvo o cápsulas, dividido en 1-3 tomas",
+      "duration": "Efectos cognitivos observables después de 8-16 semanas de uso continuo según estudios. Efectos en ansiedad reportados desde 4 semanas. Uso continuo seguro hasta 16 semanas documentado en RCTs. Seguridad a largo plazo (>6 meses) no establecida en estudios clínicos.",
+      "notes": "La mayoría de estudios clínicos usaron extractos estandarizados de cuerpo fructífero. No hay datos farmacocinéticos específicos publicados sobre absorción, biodisponibilidad o timing óptimo en humanos. La concentración de compuestos activos varía significativamente entre productos comerciales. Buscar productos con pruebas de terceros para beta-glucanos y ausencia de contaminantes. Comenzar con dosis baja (500-750mg) y aumentar gradualmente para evaluar tolerancia.",
+      "timing": "Sin preferencia de horario según estudios clínicos. Puede tomarse con o sin alimentos. Algunos usuarios reportan mejor tolerancia con alimentos.",
+      "optimalDose": "1000-1500mg/día parece ser el rango más utilizado en estudios clínicos con balance entre eficacia y practicidad",
+      "maxSafeDose": "Hasta 3000mg/día documentado sin efectos adversos significativos en estudios de 16 semanas",
+      "forms": [
+        {
+          "description": "Forma más estudiada en investigación clínica. Contiene hericenones y mayor concentración de beta-glucanos (20-40%) comparado con micelio. Usado en estudios japoneses de función cognitiva.",
+          "studyCount": 4,
+          "form": "Extracto de cuerpo fructífero en polvo (ratio 10:1 o superior)",
+          "recommended": true
+        },
+        {
+          "description": "Contiene erinacinas, que en estudios preclínicos muestran mayor capacidad de estimular NGF que hericenones. Sin embargo, menos estudios clínicos en humanos. Productos de micelio en grano pueden contener principalmente almidón del sustrato.",
+          "studyCount": 1,
+          "form": "Extracto de micelio",
+          "recommended": false
+        },
+        {
+          "description": "Combina hericenones y erinacinas. Teóricamente podría ofrecer espectro completo de compuestos bioactivos, pero no hay estudios comparativos directos con extracto de cuerpo fructífero solo.",
+          "studyCount": 0,
+          "form": "Extracto dual (cuerpo fructífero + micelio)",
+          "recommended": true
+        },
+        {
+          "description": "Menor concentración de compuestos activos. Requiere dosis mucho mayores (5-10g/día) para equivaler a extractos. No usado en mayoría de estudios clínicos. Menos práctico.",
+          "studyCount": 0,
+          "form": "Polvo de hongo entero (no extracto)",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Otros hongos medicinales (Reishi, Cordyceps) - sinergia teórica en inmunomodulación, sin estudios específicos",
+        "Omega-3 (DHA/EPA) - sinergia teórica en neuroprotección y salud cerebral, sin estudios de combinación",
+        "Vitaminas B (especialmente B12) - sinergia teórica en salud neurológica, sin estudios específicos"
+      ],
+      "effectiveDose": "750mg/día mostró efectos en función cognitiva en estudios pequeños"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 4,
+        "condition": "Neuropatía diabética y neuroprotección en diabetes",
+        "evidenceGrade": "C",
+        "notes": "Estudios en modelos animales de diabetes muestran reducción de dolor neuropático y protección de nervios periféricos. Mecanismo: reducción de estrés oxidativo, estimulación de NGF, mejora de mielinización. No hay RCTs en humanos con neuropatía diabética. Se necesitan estudios clínicos para establecer dosis efectiva y magnitud de beneficio en pacientes diabéticos."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Protección gástrica y úlceras por H. pylori",
+        "evidenceGrade": "C",
+        "notes": "Estudios in vitro y en animales muestran actividad anti-H. pylori y protección de mucosa gástrica contra úlceras inducidas por etanol y AINES. Un estudio observacional pequeño en humanos (n=50) sugirió mejora en síntomas de gastritis. Se necesitan RCTs controlados con placebo en humanos con úlcera péptica o infección por H. pylori para confirmar eficacia clínica."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Mejora de calidad de sueño y reducción de fatiga",
+        "evidenceGrade": "C",
+        "notes": "El estudio de Nagano et al. (2010) reportó mejora subjetiva en calidad de sueño y reducción de fatiga en mujeres menopáusicas, pero no usó medidas objetivas de sueño (polisomnografía, actigrafía). No hay estudios específicos en personas con insomnio o trastornos del sueño. Se necesitan RCTs con medidas objetivas de arquitectura del sueño y en poblaciones con trastornos del sueño diagnosticados."
+      }
+    ],
+    "primaryUses": [
+      "Mejora leve de función cognitiva en deterioro cognitivo leve - mejora de 2-4 puntos en escalas cognitivas vs placebo en estudios pequeños",
+      "Reducción de síntomas de ansiedad y depresión leve - reducción de 15-20% en escalas de ansiedad en mujeres menopáusicas",
+      "Soporte de salud neurológica y neuroprotección - estimulación de NGF en estudios preclínicos, efectos en humanos preliminares",
+      "Modulación del sistema inmune - aumento de actividad de células NK y citoquinas en estudios pequeños"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 0,
+        "condition": "Enfermedad de Alzheimer establecida o demencia moderada-severa",
+        "evidenceGrade": "D",
+        "notes": "No existen RCTs en humanos con diagnóstico de Alzheimer o demencia establecida. Aunque estudios en modelos animales de Alzheimer muestran efectos neuroprotectores (reducción de placas beta-amiloide, mejora cognitiva), estos hallazgos no se han traducido a estudios clínicos. La evidencia se limita a deterioro cognitivo leve. Extrapolar beneficios a Alzheimer establecido no está respaldado por datos clínicos."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Mejora de rendimiento cognitivo en adultos jóvenes sanos",
+        "evidenceGrade": "D",
+        "notes": "No hay estudios clínicos que evalúen efectos nootrópicos (mejora de memoria, atención, velocidad de procesamiento) en adultos jóvenes sanos sin deterioro cognitivo. Los estudios existentes se enfocan en poblaciones con deterioro cognitivo o adultos mayores. Claims de mejora cognitiva en personas sanas son especulativos y no respaldados por evidencia."
+      },
+      {
+        "studyCount": 1,
+        "condition": "Tratamiento de depresión mayor clínica",
+        "evidenceGrade": "D",
+        "notes": "Solo un estudio pequeño mostró reducción de síntomas depresivos leves en mujeres menopáusicas, pero no hay RCTs en pacientes con diagnóstico de trastorno depresivo mayor según DSM-5. La magnitud del efecto observado (15-20% reducción) es inferior a antidepresivos estándar (30-50%). No debe considerarse tratamiento para depresión clínica sin supervisión médica."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Pérdida de peso o mejora de composición corporal",
+        "evidenceGrade": "D",
+        "notes": "No existen estudios clínicos que evalúen efectos de Lion's Mane en peso corporal, masa grasa, o metabolismo. Aunque algunos hongos medicinales tienen efectos metabólicos, no hay evidencia específica para Lion's Mane. Claims de pérdida de peso son marketing sin respaldo científico."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Prevención o tratamiento de cáncer",
+        "evidenceGrade": "D",
+        "notes": "Aunque estudios in vitro muestran actividad citotóxica contra líneas celulares de cáncer (gástrico, hepático, colon) y un estudio observacional pequeño en pacientes con cáncer gástrico mostró mejora en parámetros inmunes post-cirugía, no hay RCTs que evalúen eficacia anticancerígena. Los efectos in vitro no predicen eficacia clínica. No debe usarse como tratamiento o prevención de cáncer."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Mejora de fuerza muscular o rendimiento atlético",
+        "evidenceGrade": "D",
+        "notes": "No hay estudios que evalúen efectos ergogénicos, fuerza muscular, resistencia, o recuperación post-ejercicio. Lion's Mane no tiene mecanismos conocidos relacionados con metabolismo muscular o rendimiento físico. Claims en comunidades de fitness carecen de respaldo científico."
+      }
+    ],
+    "whatIsIt": "Lion's Mane (Hericium erinaceus) es un hongo medicinal comestible originario de Asia, Europa y Norteamérica, caracterizado por su apariencia distintiva de espinas blancas colgantes. Este hongo contiene compuestos bioactivos únicos llamados hericenones (en el cuerpo fructífero) y erinacinas (en el micelio), que han demostrado en estudios preclínicos la capacidad de estimular la síntesis del Factor de Crecimiento Nervioso (NGF), una proteína crucial para el crecimiento, mantenimiento y supervivencia de las neuronas. Además, contiene beta-glucanos polisacáridos con propiedades inmunomoduladoras y antioxidantes. Es notable por ser uno de los pocos suplementos naturales con evidencia preliminar en neuroprotección y función cognitiva en humanos, aunque la mayoría de la investigación aún es limitada.",
+    "worksFor": [
+      {
+        "studyCount": 3,
+        "condition": "Deterioro cognitivo leve en adultos mayores",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 750-3000mg/día de extracto de cuerpo fructífero. Duración: 12-16 semanas para efectos observables. Población: adultos mayores 50-80 años con deterioro cognitivo leve diagnosticado. El estudio japonés más citado (Mori et al. 2009) usó 3000mg/día durante 16 semanas en 30 participantes, mostrando mejora significativa que desapareció 4 semanas después de suspender. Efecto mayor en personas con puntuaciones basales más bajas. Se necesitan estudios más grandes para confirmar.",
+        "effectSize": "Small",
+        "rctCount": 2,
+        "magnitude": "Mejora de 2-4 puntos en escala HDS-R (Hasegawa Dementia Scale-Revised) comparado con placebo, equivalente a 5-10% de mejora en función cognitiva",
+        "totalParticipants": 80,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 2,
+        "condition": "Síntomas de ansiedad y depresión leve en mujeres",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 2000mg/día de extracto (cookies fortificadas con Lion's Mane). Duración: 4 semanas. Población: mujeres menopáusicas o perimenopáusicas. El estudio de Nagano et al. (2010) mostró reducción en síntomas de ansiedad, depresión, irritación y dificultad de concentración. Mecanismo propuesto: efectos antiinflamatorios y neuroprotectores. Limitación: solo un RCT pequeño (n=30), se necesitan estudios en poblaciones más diversas y con mayor tamaño muestral.",
+        "effectSize": "Small",
+        "rctCount": 1,
+        "magnitude": "Reducción de 15-20% en puntuaciones de escalas de ansiedad e irritabilidad comparado con placebo",
+        "totalParticipants": 60,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 8,
+        "condition": "Neuroprotección en lesión nerviosa periférica (modelos animales con evidencia humana preliminar)",
+        "evidenceGrade": "C",
+        "notes": "Dosis en animales: 100-300mg/kg. Estudios en ratas muestran regeneración acelerada de nervios ciáticos y motores después de lesión. Mecanismo: estimulación de NGF y mielinización. En humanos, solo hay reportes anecdóticos y un estudio piloto pequeño sin grupo control. Se necesitan RCTs en humanos con lesiones nerviosas periféricas para establecer eficacia clínica. Duración estimada para efectos: 8-12 semanas basado en modelos animales.",
+        "effectSize": "Moderate",
+        "rctCount": 0,
+        "magnitude": "Aceleración de 20-30% en regeneración nerviosa periférica en modelos animales, evidencia humana limitada a reportes de caso",
+        "totalParticipants": 150,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 4,
+        "condition": "Modulación de función inmune y actividad de células NK",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 1800-3000mg/día de extracto. Duración: 4 semanas. Población: adultos sanos. Estudios pequeños muestran aumento en marcadores inmunes innatos sin efectos adversos. Un estudio en pacientes con cáncer gástrico mostró mejora en parámetros inmunológicos post-cirugía. Significancia clínica (reducción de infecciones, mejora de respuesta vacunal) no establecida. Se necesitan estudios más grandes con outcomes clínicos relevantes.",
+        "effectSize": "Small",
+        "rctCount": 1,
+        "magnitude": "Aumento de 15-25% en actividad de células natural killer y niveles de IgA secretora",
+        "totalParticipants": 100,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 6,
+        "condition": "Reducción de inflamación intestinal y síntomas gastrointestinales",
+        "evidenceGrade": "C",
+        "notes": "Evidencia principalmente en modelos animales de enfermedad inflamatoria intestinal (colitis inducida). Mecanismo: modulación de microbiota intestinal, reducción de citoquinas proinflamatorias, protección de barrera intestinal. Dosis en animales: 200-400mg/kg. No hay RCTs en humanos con enfermedad inflamatoria intestinal o síndrome de intestino irritable. Evidencia preliminar sugiere efectos prebióticos y protección de mucosa gástrica. Se necesitan estudios clínicos en humanos.",
+        "effectSize": "Small",
+        "rctCount": 0,
+        "magnitude": "Reducción de 10-20% en marcadores inflamatorios intestinales en modelos animales de colitis",
+        "totalParticipants": 180,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Lion's Mane (Hericium erinaceus)",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "neuro",
+          "neuro"
+        ],
+        "type": "cognitive_stack",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Lion's Mane (Hericium erinaceus)",
+        "effect": "Balanced cognitive function with reduced anxiety",
+        "categories": [
+          "neuro",
+          "gaba"
+        ],
+        "type": "calm_focus",
+        "mechanism": "Neuro-GABAergic synergy providing structural brain support with functional relaxation",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Lion's Mane (Hericium erinaceus)",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "immune",
+          "antiinflam"
+        ],
+        "type": "inflammation_immunity",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Lion's Mane (Hericium erinaceus)",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "immune",
+          "immune"
+        ],
+        "type": "immune_stack",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Lion's Mane (Hericium erinaceus)",
+        "effect": "Enhanced cognitive protection",
+        "categories": [
+          "neuro",
+          "antioxidant"
+        ],
+        "type": "brain_protection",
+        "mechanism": "Neuroprotective antioxidant combination for comprehensive brain protection",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Lion's Mane (Hericium erinaceus)",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "neuro",
+          "energy"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (500-750mg/día) durante 1-2 semanas para evaluar tolerancia antes de aumentar a dosis terapéutica de 1000-1500mg/día",
+      "Ser paciente - los efectos cognitivos requieren mínimo 8-12 semanas de uso consistente según estudios clínicos. No esperar resultados inmediatos",
+      "Priorizar calidad del producto - invertir en extracto de cuerpo fructífero con pruebas de terceros. Productos baratos probablemente son micelio en grano con bajo contenido de compuestos activos",
+      "Tomar consistentemente todos los días - los estudios usaron dosificación diaria continua. Uso esporádico probablemente no producirá efectos observables",
+      "Consultar médico si se toman anticoagulantes, antidiabéticos o inmunosupresores antes de iniciar suplementación",
+      "No usar como reemplazo de tratamiento médico para depresión, Alzheimer u otras condiciones neurológicas serias. Puede ser complemento bajo supervisión médica",
+      "Almacenar en lugar fresco y seco, protegido de luz y humedad para preservar compuestos activos"
+    ],
+    "totalStudies": 45,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo y lactancia - sin datos de seguridad en humanos, evitar por precaución",
+        "Alergia conocida a hongos o productos fúngicos",
+        "Cirugía programada - suspender 2 semanas antes por posible efecto anticoagulante teórico (no documentado en humanos)",
+        "Trastornos de coagulación - precaución teórica por posibles efectos anticoagulantes observados in vitro"
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 16 semanas documentado en RCTs sin efectos adversos significativos. No hay estudios de seguridad a largo plazo (>6 meses) en humanos. Uso tradicional en Asia como alimento sugiere perfil de seguridad favorable, pero datos clínicos limitados. No hay reportes de hepatotoxicidad, nefrotoxicidad o toxicidad orgánica en estudios clínicos.",
+      "notes": "Lion's Mane tiene perfil de seguridad favorable en estudios clínicos cortos (hasta 16 semanas). La mayoría de efectos adversos son leves y transitorios. Sin embargo, la investigación en humanos es limitada. No hay estudios de toxicidad a largo plazo, genotoxicidad, o carcinogenicidad en humanos. Como alimento, se consume tradicionalmente en Asia sin reportes significativos de toxicidad. Calidad del producto es crítica - contaminación con metales pesados o micotoxinas es posible en productos de baja calidad. Buscar productos con pruebas de terceros.",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente transitorio y leve. Más común al inicio del tratamiento. Puede reducirse tomando con alimentos o dividiendo la dosis.",
+          "effect": "Malestar gastrointestinal leve (náusea, molestia abdominal)",
+          "frequency": "Raro, reportado en menos de 5% de participantes en estudios clínicos"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Posible en personas con alergia a hongos. Suspender uso si aparecen síntomas alérgicos. Un reporte de caso de dermatitis de contacto en trabajador que manipulaba el hongo.",
+          "effect": "Reacciones alérgicas cutáneas (picazón, erupción)",
+          "frequency": "Muy raro, reportes de caso aislados"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Reportado en contexto ocupacional (cultivadores). No reportado con suplementos orales en estudios clínicos. Precaución en personas con asma o alergias a hongos.",
+          "effect": "Dificultad respiratoria (en personas con asma o alergias respiratorias a hongos)",
+          "frequency": "Muy raro, principalmente por inhalación de esporas"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Precaución teórica. No hay reportes de caso de sangrado con Lion's Mane, pero algunos hongos medicinales tienen efectos antiplaquetarios. Monitorear INR si se usa warfarina. Consultar médico antes de combinar.",
+          "medication": "Anticoagulantes y antiplaquetarios (warfarina, aspirina, clopidogrel)",
+          "mechanism": "Posible efecto anticoagulante aditivo teórico basado en estudios in vitro, no documentado en humanos"
+        },
+        {
+          "severity": "Mild",
+          "description": "Estudios en animales diabéticos muestran reducción de glucosa. No hay estudios en humanos diabéticos. Monitorear glucosa si se combina con antidiabéticos. Posible necesidad de ajuste de dosis de medicamento.",
+          "medication": "Medicamentos antidiabéticos (insulina, metformina, sulfonilureas)",
+          "mechanism": "Posible efecto hipoglucemiante aditivo observado en modelos animales"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Teóricamente, los efectos inmunomoduladores de Lion's Mane podrían interferir con inmunosupresión intencional en trasplantes o enfermedades autoinmunes. No hay estudios específicos. Consultar médico antes de usar en pacientes con trasplante o en terapia inmunosupresora.",
+          "medication": "Inmunosupresores (ciclosporina, tacrolimus, corticosteroides)",
+          "mechanism": "Posible interferencia con inmunosupresión debido a efectos inmunoestimulantes de beta-glucanos"
+        }
+      ]
+    },
+    "synergiesSource": "external_db",
+    "buyingGuidance": {
+      "preferredForm": "Extracto de cuerpo fructífero (fruiting body) estandarizado a mínimo 25-30% beta-glucanos, ratio de extracción 10:1 o superior",
+      "avoidFlags": [
+        "Productos de 'micelio en grano' (mycelium on grain) - contienen principalmente almidón del sustrato de arroz/avena, no compuestos activos del hongo",
+        "Productos que solo listan 'polisacáridos totales' sin especificar beta-glucanos - pueden incluir almidón como polisacárido",
+        "Ausencia de pruebas de terceros para metales pesados (plomo, cadmio, arsénico) y micotoxinas",
+        "Claims exagerados no respaldados (cura Alzheimer, elimina cáncer, mejora IQ dramáticamente)",
+        "Precio extremadamente bajo - sugiere calidad inferior o producto adulterado"
+      ],
+      "qualityIndicators": [
+        "Certificación orgánica (USDA Organic, EU Organic) - reduce riesgo de pesticidas y contaminantes",
+        "Pruebas de laboratorio de terceros disponibles (metales pesados, micotoxinas, beta-glucanos verificados)",
+        "Especifica origen del hongo y método de cultivo (cultivado en madera es preferible a grano para cuerpo fructífero)",
+        "Estandarización verificable a porcentaje de beta-glucanos (mínimo 25-30%)",
+        "Transparencia del fabricante (proporciona certificados de análisis, responde preguntas sobre sourcing y procesamiento)"
+      ],
+      "notes": "La industria de hongos medicinales tiene problemas significativos de calidad y etiquetado engañoso. Según análisis de ConsumerLab y expertos como el micólogo Paul Stamets, muchos productos comerciales contienen principalmente micelio cultivado en grano de arroz, donde el producto final es 60-70% almidón del arroz, no compuestos activos del hongo. El cuerpo fructífero contiene 3-5 veces más beta-glucanos que productos de micelio en grano según análisis publicados. Buscar marcas reputables que usen cuerpo fructífero y proporcionen pruebas de terceros. Extractos con ratio 10:1 o superior indican concentración (10kg de hongo producen 1kg de extracto). Método de extracción (agua caliente, alcohol, o dual) afecta perfil de compuestos pero no hay consenso sobre método superior.",
+      "keyCompounds": [
+        {
+          "name": "Hericenones",
+          "lookFor": "Producto especifica 'fruiting body extract' o 'extracto de cuerpo fructífero'. Hericenones no suelen cuantificarse en etiquetas comerciales.",
+          "source": "Cuerpo fructífero (fruiting body)"
+        },
+        {
+          "name": "Erinacinas",
+          "lookFor": "Producto especifica 'mycelium extract' o 'extracto de micelio'. Erinacinas raramente cuantificadas en productos comerciales.",
+          "source": "Micelio cultivado"
+        },
+        {
+          "name": "Beta-glucanos",
+          "lookFor": "Mínimo 25-30% beta-glucanos verificados por método enzimático. Evitar productos que solo listan 'polisacáridos totales' sin especificar beta-glucanos.",
+          "source": "Cuerpo fructífero (mayor concentración) y micelio"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Estimulación de síntesis de Factor de Crecimiento Nervioso (NGF)",
+        "description": "Los hericenones y erinacinas, compuestos de bajo peso molecular presentes en Lion's Mane, han demostrado en estudios in vitro e in vivo (modelos animales) la capacidad de cruzar la barrera hematoencefálica y estimular la biosíntesis de NGF en el cerebro. El NGF es esencial para la diferenciación, crecimiento y supervivencia de neuronas, particularmente neuronas colinérgicas del cerebro basal. Este mecanismo podría explicar los efectos neuroprotectores observados en modelos animales de enfermedad de Alzheimer y deterioro cognitivo, aunque la traducción a humanos aún requiere más investigación.",
+        "studyCount": 15,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Actividad antioxidante y antiinflamatoria",
+        "description": "Los polisacáridos beta-glucanos y otros compuestos fenólicos de Lion's Mane exhiben propiedades antioxidantes significativas, reduciendo el estrés oxidativo mediante la neutralización de radicales libres y la regulación positiva de enzimas antioxidantes endógenas como superóxido dismutasa (SOD) y glutatión peroxidasa. Además, modulan la respuesta inflamatoria al inhibir la producción de citoquinas proinflamatorias como TNF-α e IL-6, lo que podría contribuir a la neuroprotección y efectos ansiolíticos observados en estudios clínicos preliminares.",
+        "studyCount": 20,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Modulación del sistema inmune innato",
+        "description": "Los beta-glucanos de Lion's Mane actúan como modificadores de respuesta biológica, interactuando con receptores de reconocimiento de patrones como Dectin-1 y receptores tipo Toll en células inmunes. Esta interacción activa macrófagos, células dendríticas y células natural killer (NK), aumentando su actividad citotóxica y la producción de citoquinas inmunomoduladoras. Estudios en humanos han mostrado aumentos en la actividad de células NK y niveles de IgA secretora, sugiriendo un efecto inmunoestimulante, aunque la significancia clínica requiere más investigación.",
+        "studyCount": 10,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "16 semanas de tratamiento + 4 semanas de seguimiento",
+        "dose": "3000mg/día (cuatro tabletas de 250mg, tres veces al día) de extracto de cuerpo fructífero",
+        "year": 2009,
+        "studyType": "RCT",
+        "findings": [
+          "Grupo tratamiento mostró aumento significativo en puntuaciones de escala cognitiva HDS-R durante tratamiento (p<0.05)",
+          "Mejora desapareció 4 semanas después de suspender el tratamiento",
+          "No efectos adversos significativos reportados",
+          "Mejora más pronunciada en participantes con puntuaciones basales más bajas"
+        ],
+        "title": "Improving effects of the mushroom Yamabushitake (Hericium erinaceus) on mild cognitive impairment: a double-blind placebo-controlled clinical trial",
+        "participants": 30,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "4 semanas",
+        "dose": "2000mg/día (cookies fortificadas con extracto de Lion's Mane)",
+        "year": 2010,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción significativa en puntuaciones de Center for Epidemiologic Studies Depression Scale en grupo tratamiento vs placebo",
+          "Reducción en síntomas de irritación y ansiedad medidos por cuestionarios indefinidos",
+          "Mejora subjetiva en concentración y calidad de sueño reportada",
+          "Tendencia a mejora en síntomas menopáusicos"
+        ],
+        "title": "Reduction of depression and anxiety by 4 weeks Hericium erinaceus intake",
+        "participants": 30,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "4 semanas",
+        "dose": "1800mg/día de extracto acuoso",
+        "year": 2013,
+        "studyType": "RCT",
+        "findings": [
+          "Aumento significativo en actividad de células natural killer (NK) en grupo tratamiento",
+          "Aumento en niveles de IgA secretora comparado con placebo",
+          "No cambios significativos en otros parámetros inmunológicos (IgG, IgM, citoquinas séricas)",
+          "Buena tolerabilidad sin efectos adversos"
+        ],
+        "title": "Neurotrophic properties of the Lion's mane medicinal mushroom, Hericium erinaceus (Higher Basidiomycetes) from Malaysia",
+        "participants": 30,
+        "quality": "Moderate"
+      }
+    ]
+  }
+}

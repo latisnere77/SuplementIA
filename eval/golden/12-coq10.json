@@ -1,0 +1,295 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.392Z",
+    "jobId": "job_1767406269314_gvf69q8wf",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "CoQ10",
+  "metadata": {
+    "supplementId": "CoQ10",
+    "generatedAt": "2026-01-03T02:11:55.454Z",
+    "tokensUsed": 12288,
+    "bedrockDuration": 41290,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "100-300mg/día",
+      "duration": "Efectos iniciales en 4-8 semanas, uso continuo seguro documentado hasta 12 meses",
+      "notes": "Tomar consistentemente, preferiblemente con comidas que contengan grasas para optimizar absorción",
+      "timing": "Preferiblemente con alimentos para mejorar absorción",
+      "optimalDose": "200mg/día",
+      "maxSafeDose": "600mg/día",
+      "forms": [
+        {
+          "description": "Forma reducida, potencialmente mejor absorción",
+          "studyCount": 45,
+          "form": "Ubiquinol",
+          "recommended": true
+        },
+        {
+          "description": "Forma oxidada tradicional, más económica",
+          "studyCount": 30,
+          "form": "Ubiquinona",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Vitamina E - Sinergia antioxidante",
+        "Statinas - Reducción de efectos secundarios"
+      ],
+      "effectiveDose": "100mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 5,
+        "condition": "Reducción del dolor inflamatorio crónico",
+        "evidenceGrade": "C",
+        "notes": "Solo 5 estudios pequeños, se requieren más investigaciones con mayor muestra"
+      },
+      {
+        "studyCount": 4,
+        "condition": "Mejora de función cognitiva en adultos mayores",
+        "evidenceGrade": "C",
+        "notes": "Estudios preliminares con muestras reducidas, necesidad de RCTs más grandes"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Soporte en enfermedades mitocondriales",
+        "evidenceGrade": "C",
+        "notes": "Evidencia inicial prometedora, requiere más investigación en poblaciones específicas"
+      }
+    ],
+    "primaryUses": [
+      "Mejora la función mitocondrial y producción de energía",
+      "Protección antioxidante contra el daño celular",
+      "Soporte a la salud cardiovascular"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 8,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron efecto significativo en pérdida de peso, p>0.05"
+      },
+      {
+        "studyCount": 12,
+        "condition": "Cura directa del cáncer",
+        "evidenceGrade": "F",
+        "notes": "Estudios no demuestran efecto directo en curación, solo soporte complementario"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Mejora cognitiva dramática",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia de mejora cognitiva significativa en población general"
+      },
+      {
+        "studyCount": 10,
+        "condition": "Reversión completa de enfermedades neurodegenerativas",
+        "evidenceGrade": "F",
+        "notes": "No hay evidencia de reversión, solo posible soporte sintomático"
+      },
+      {
+        "studyCount": 7,
+        "condition": "Tratamiento independiente de hipertensión",
+        "evidenceGrade": "D",
+        "notes": "Efectos limitados, no reemplaza tratamiento farmacológico"
+      }
+    ],
+    "whatIsIt": "La Coenzima Q10 (CoQ10) es un compuesto liposoluble similar a una vitamina, sintetizado naturalmente en el cuerpo humano y crucial para la producción de energía mitocondrial. Actúa como un potente antioxidante y componente esencial de la cadena de transporte electrónico en las mitocondrias, participando en la generación de ATP en todas las células del organismo. Su importancia radica en su papel fundamental en el metabolismo energético celular y la protección contra el estrés oxidativo.",
+    "worksFor": [
+      {
+        "studyCount": 42,
+        "condition": "Salud cardiovascular",
+        "evidenceGrade": "B",
+        "notes": "Dosis de 100-200mg/día, efectos observados en 3-6 meses, mayor impacto en pacientes con enfermedad cardiovascular preexistente",
+        "effectSize": "Moderate",
+        "rctCount": 18,
+        "magnitude": "Reduce marcadores de inflamación cardiovascular 15-25%",
+        "totalParticipants": 3500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 22,
+        "condition": "Función mitocondrial en enfermedades neurodegenerativas",
+        "evidenceGrade": "C",
+        "notes": "Dosis de 300mg/día, estudios preliminares en Parkinson y Alzheimer",
+        "effectSize": "Small",
+        "rctCount": 8,
+        "magnitude": "Mejora función mitocondrial 8-12%",
+        "totalParticipants": 1200,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 15,
+        "condition": "Fertilidad masculina",
+        "evidenceGrade": "B",
+        "notes": "Dosis de 200mg/día, mejores resultados en hombres con subfertilidad",
+        "effectSize": "Moderate",
+        "rctCount": 7,
+        "magnitude": "Aumenta movilidad espermática 20-35%",
+        "totalParticipants": 800,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 18,
+        "condition": "Rendimiento físico",
+        "evidenceGrade": "C",
+        "notes": "Dosis de 100-200mg/día, efectos más pronunciados en adultos mayores",
+        "effectSize": "Small",
+        "rctCount": 6,
+        "magnitude": "Reduce fatiga muscular 10-15%",
+        "totalParticipants": 450,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 12,
+        "condition": "Salud de la piel",
+        "evidenceGrade": "C",
+        "notes": "Dosis tópica e interna de 50-100mg/día, resultados preliminares",
+        "effectSize": "Small",
+        "rctCount": 5,
+        "magnitude": "Reduce marcadores de envejecimiento cutáneo 7-12%",
+        "totalParticipants": 350,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 95,
+        "tier": 1,
+        "supplement": "omega_3",
+        "effect": "Tier 1 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 95,
+        "tier": 1,
+        "supplement": "vitamin_e",
+        "effect": "Tier 1 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 65,
+        "tier": 3,
+        "supplement": "acetyl_l_carnitine",
+        "effect": "Tier 3 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 65,
+        "tier": 3,
+        "supplement": "b_vitamins",
+        "effect": "Tier 3 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 65,
+        "tier": 3,
+        "supplement": "hawthorn",
+        "effect": "Tier 3 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 65,
+        "tier": 3,
+        "supplement": "pqq",
+        "effect": "Tier 3 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (100mg) e incrementar gradualmente",
+      "Tomar con alimentos que contengan grasas",
+      "Monitorear respuesta individual"
+    ],
+    "totalStudies": 350,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo sin supervisión médica",
+        "Tratamientos con anticoagulantes"
+      ],
+      "longTermSafety": "Uso continuo documentado seguro hasta 12 meses",
+      "notes": "Generalmente bien tolerado, sin reportes de toxicidad hepática significativa",
+      "safetyScore": 8,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente disminuyen con toma junto a alimentos",
+          "effect": "Molestias gastrointestinales leves",
+          "frequency": "10-15% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Consultar médico antes de combinar",
+          "medication": "Warfarina",
+          "mechanism": "Potencial alteración de coagulación"
+        }
+      ]
+    },
+    "synergiesSource": "external_db",
+    "buyingGuidance": {
+      "preferredForm": "Ubiquinol",
+      "avoidFlags": [
+        "Formas sintéticas de baja calidad",
+        "Sin certificación de pureza"
+      ],
+      "qualityIndicators": [
+        "Certificación de terceros",
+        "Forma Ubiquinol",
+        "Sin aditivos"
+      ],
+      "notes": "Preferir marcas con estudios de biodisponibilidad publicados",
+      "keyCompounds": [
+        {
+          "name": "Ubiquinol",
+          "lookFor": ">100mg por cápsula, forma reducida",
+          "source": "Síntesis mitocondrial"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Generación de ATP mitocondrial",
+        "description": "La CoQ10 actúa como transportador de electrones en la cadena respiratoria mitocondrial, facilitando la fosforilación oxidativa y la producción de energía celular mediante la síntesis de ATP en los complejos mitocondriales I y III.",
+        "studyCount": 120,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Neutralización de radicales libres",
+        "description": "Funciona como antioxidante lipofílico potente, neutralizando especies reactivas de oxígeno (ROS) y protegiendo las membranas celulares y el ADN del daño oxidativo.",
+        "studyCount": 95,
+        "evidenceLevel": "strong"
+      }
+    ],
+    "keyStudies": []
+  }
+}

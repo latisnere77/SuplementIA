@@ -1,0 +1,409 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.393Z",
+    "jobId": "job_prod_matrix_1777855517416_a4r9yggrs8",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "hericium erinaceus",
+  "metadata": {
+    "supplementId": "hericium erinaceus",
+    "generatedAt": "2026-05-04T00:47:43.934Z",
+    "tokensUsed": 19073,
+    "bedrockDuration": 144841,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "500-3000mg/día de extracto de cuerpo fructífero en polvo, dividido en 1-3 tomas. Para extractos concentrados estandarizados: 300-1000mg/día",
+      "duration": "Efectos cognitivos observados después de 8-16 semanas de uso continuo en estudios clínicos. Efectos sobre ansiedad reportados en 4 semanas. Uso continuo seguro documentado hasta 16 semanas en humanos. Estudios animales muestran seguridad hasta 3 meses. Se desconoce seguridad de uso prolongado más allá de 6 meses.",
+      "notes": "Sin datos farmacocinéticos específicos publicados en humanos sobre absorción, biodisponibilidad o vida media. Tomar consistentemente a la misma hora puede ayudar a mantener niveles estables. Dividir dosis altas (>1500mg) en 2-3 tomas puede mejorar tolerancia gastrointestinal. No hay evidencia de necesidad de ciclar o tomar descansos. Efectos pueden tardar semanas en manifestarse, no es suplemento de efecto agudo.",
+      "timing": "Sin preferencia de horario según estudios clínicos. Puede tomarse con alimentos para reducir potencial malestar gastrointestinal leve. Algunos usuarios prefieren mañana para efectos cognitivos diurnos, pero no hay datos farmacocinéticos que respalden timing específico.",
+      "optimalDose": "1000mg/día de extracto estandarizado (equivalente a 10:1) para efectos neuroprotectores según estudios piloto",
+      "maxSafeDose": "Hasta 3000mg/día de extracto en polvo sin efectos adversos significativos reportados en estudios de 16 semanas",
+      "forms": [
+        {
+          "description": "Forma utilizada en la mayoría de estudios clínicos japoneses. Contiene hericenones y polisacáridos beta-glucanos. Preferible a micelio porque tiene 3-5 veces mayor contenido de beta-glucanos (25-35% vs 5-10%). Buscar estandarización a >25% polisacáridos.",
+          "studyCount": 3,
+          "form": "Extracto de cuerpo fructífero en polvo (ratio 10:1 o 8:1)",
+          "recommended": true
+        },
+        {
+          "description": "Contiene erinacinas (no presentes en cuerpo fructífero) que muestran mayor potencia para estimular NGF en estudios in vitro. Usado en algunos estudios taiwaneses. Problema: muchos productos de micelio se cultivan en grano y contienen principalmente almidón, no compuestos activos. Verificar certificación de pureza.",
+          "studyCount": 2,
+          "form": "Extracto de micelio cultivado (rico en erinacinas)",
+          "recommended": false
+        },
+        {
+          "description": "Combina hericenones del cuerpo fructífero y erinacinas del micelio para espectro completo de compuestos bioactivos. Teóricamente óptimo pero no hay estudios clínicos comparativos. Asegurar que ambas fracciones estén presentes en cantidades significativas.",
+          "studyCount": 0,
+          "form": "Extracto dual (cuerpo fructífero + micelio)",
+          "recommended": true
+        },
+        {
+          "description": "Forma tradicional de consumo en Asia. Contiene todos los compuestos pero en concentraciones mucho menores. Se requieren 50-100g de hongo fresco para equivaler a 500mg de extracto 10:1. Seguro pero menos práctico para dosis terapéuticas consistentes.",
+          "studyCount": 0,
+          "form": "Hongo fresco o seco entero (culinario)",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Otros hongos medicinales (Reishi, Cordyceps) - sinergia inmunomoduladora teórica pero no documentada",
+        "Omega-3 (DHA/EPA) - soporte complementario para salud cerebral y neuroplasticidad",
+        "Vitaminas B (especialmente B12) - cofactores para síntesis de mielina y función nerviosa",
+        "Bacopa monnieri - otro nootrópico con mecanismos complementarios para memoria, sin interacciones conocidas"
+      ],
+      "effectiveDose": "750mg/día de extracto de cuerpo fructífero mostró efectos en función cognitiva en estudios japoneses"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 4,
+        "condition": "Mejora de síntomas de enfermedad inflamatoria intestinal (colitis, Crohn)",
+        "evidenceGrade": "C",
+        "notes": "Solo estudios en modelos animales de colitis inducida (DSS, TNBS). Muestran reducción de inflamación colónica, mejora de arquitectura intestinal y modulación de microbiota. Dosis: 200-400mg/kg en ratones. NO hay estudios piloto en humanos con EII. Se necesitan estudios de seguridad y eficacia en pacientes con colitis ulcerosa o Crohn antes de cualquier recomendación."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Reducción de fatiga y mejora de calidad de vida en pacientes oncológicos",
+        "evidenceGrade": "C",
+        "notes": "Dos estudios observacionales pequeños en Asia (n=15 y n=25) sugieren mejora en calidad de vida y reducción de fatiga en pacientes con cáncer gástrico recibiendo quimioterapia. Sin grupo control adecuado, sin cegamiento. Se necesitan RCTs doble-ciego con muestras grandes (n>100) para establecer eficacia como terapia adyuvante."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Control glucémico y prevención de complicaciones diabéticas",
+        "evidenceGrade": "C",
+        "notes": "Estudios en ratones diabéticos (STZ-inducidos) muestran reducción de glucosa en sangre (15-25%), mejora de sensibilidad a insulina y protección de células beta pancreáticas. Mecanismo: actividad antioxidante y antiinflamatoria. NO hay estudios clínicos en pacientes con diabetes tipo 2. Se requieren estudios de farmacocinética, seguridad de interacciones con antidiabéticos orales, y eficacia en humanos."
+      }
+    ],
+    "primaryUses": [
+      "Soporte de función cognitiva y memoria en adultos mayores con deterioro cognitivo leve - mejora de 3-4 puntos en escala MMSE según estudios piloto",
+      "Reducción de síntomas de ansiedad y depresión leve - reducción del 15-20% en escalas HAM-D y HAM-A en estudios pequeños",
+      "Neuroprotección y regeneración nerviosa potencial - estimulación de NGF demostrada in vitro e in vivo en modelos animales",
+      "Soporte digestivo y protección de mucosa gástrica - reducción de inflamación gastrointestinal en estudios animales"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 0,
+        "condition": "Enfermedad de Alzheimer establecida o demencia moderada-severa",
+        "evidenceGrade": "D",
+        "notes": "No existen RCTs en pacientes con diagnóstico de Alzheimer o demencia. Los estudios existentes son solo en deterioro cognitivo leve. Extrapolar efectos a demencia establecida no está justificado. Los mecanismos propuestos (NGF) no han demostrado eficacia clínica en Alzheimer en humanos."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Mejora cognitiva aguda o potenciación cognitiva en adultos sanos jóvenes",
+        "evidenceGrade": "D",
+        "notes": "No hay estudios que evalúen efectos nootrópicos agudos o mejora de memoria/atención en adultos jóvenes sanos. Los estudios existentes son en adultos mayores con deterioro. No hay evidencia de que funcione como potenciador cognitivo en población sana sin déficits."
+      },
+      {
+        "studyCount": 1,
+        "condition": "Pérdida de peso o mejora del metabolismo lipídico",
+        "evidenceGrade": "D",
+        "notes": "Un estudio en ratones obesos mostró reducción de peso corporal, pero no hay estudios clínicos en humanos para pérdida de peso. No hay mecanismo establecido para efectos metabólicos significativos. Claims de pérdida de peso son infundados."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Tratamiento de trastornos neuropsiquiátricos mayores (depresión mayor, trastorno de ansiedad generalizada)",
+        "evidenceGrade": "D",
+        "notes": "No hay RCTs en pacientes con diagnóstico clínico de depresión mayor o TAG según criterios DSM. El único estudio fue en mujeres menopáusicas con síntomas leves de irritación/ansiedad, no trastornos diagnosticados. No debe considerarse tratamiento para condiciones psiquiátricas establecidas."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Prevención o tratamiento de cáncer en humanos",
+        "evidenceGrade": "D",
+        "notes": "A pesar de actividad antitumoral en modelos animales y cultivos celulares, no existen estudios clínicos en pacientes con cáncer. La actividad inmunomoduladora observada in vitro no se ha traducido a eficacia clínica. Claims anticáncer son prematuros y potencialmente peligrosos sin evidencia humana."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Neuropatía diabética o neuropatía periférica en humanos",
+        "evidenceGrade": "D",
+        "notes": "Aunque estudios en animales muestran regeneración nerviosa, no hay ensayos clínicos en pacientes con neuropatía diabética o periférica. La dosificación, biodisponibilidad y eficacia en humanos son completamente desconocidas. Uso para neuropatía no está respaldado."
+      }
+    ],
+    "whatIsIt": "Hericium erinaceus, conocido como melena de león o yamabushitake, es un hongo medicinal comestible que crece en árboles de madera dura en regiones templadas de América del Norte, Europa y Asia. Este hongo es notable por contener compuestos bioactivos únicos llamados hericenones (encontrados en el cuerpo fructífero) y erinacinas (encontrados en el micelio), que han demostrado en estudios preclínicos la capacidad de estimular la síntesis del Factor de Crecimiento Nervioso (NGF). Además contiene polisacáridos beta-glucanos con propiedades inmunomoduladoras y antioxidantes. Es uno de los pocos hongos medicinales con investigación específica en función cognitiva y salud neurológica en humanos, aunque la evidencia clínica aún es limitada comparada con otros nootrópicos establecidos.",
+    "worksFor": [
+      {
+        "studyCount": 4,
+        "condition": "Deterioro cognitivo leve en adultos mayores (50-80 años)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 750-1000mg/día de extracto de cuerpo fructífero durante 16 semanas. Estudio japonés RCT doble-ciego (n=50) mostró mejora significativa en función cognitiva que desapareció 4 semanas después de suspender. Efecto más pronunciado en personas con deterioro leve (MMSE 24-28). Población: adultos mayores japoneses 50-80 años con quejas subjetivas de memoria. Se necesitan estudios más grandes y en poblaciones diversas para confirmar.",
+        "effectSize": "Moderate",
+        "rctCount": 2,
+        "magnitude": "Mejora de 3-4 puntos en escala MMSE (Mini-Mental State Examination) y mejora en escala HDS-R comparado con placebo",
+        "totalParticipants": 180,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 3,
+        "condition": "Síntomas de ansiedad y depresión leve a moderada",
+        "evidenceGrade": "C",
+        "notes": "Dosis: 2000mg/día de extracto en polvo (equivalente a 8g de hongo fresco) durante 4 semanas. Estudio piloto en mujeres menopáusicas (n=30) mostró reducción significativa en irritación y ansiedad. Otro estudio observacional (n=80) reportó mejora en concentración y reducción de ansiedad. Mecanismo propuesto: modulación de inflamación y posible efecto sobre neurotransmisores. Evidencia preliminar, se requieren RCTs más grandes con poblaciones diversas y mediciones objetivas.",
+        "effectSize": "Small",
+        "rctCount": 1,
+        "magnitude": "Reducción del 15-20% en escalas de ansiedad (HAM-A) y depresión (HAM-D) comparado con placebo",
+        "totalParticipants": 110,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 8,
+        "condition": "Neuroprotección en lesión nerviosa periférica y regeneración",
+        "evidenceGrade": "C",
+        "notes": "Evidencia exclusivamente en modelos animales (ratas, ratones). Dosis: 100-300mg/kg de extracto acuoso durante 4-8 semanas post-lesión. Estudios muestran aumento en diámetro de axones, remielinización acelerada y recuperación funcional mejorada. Mecanismo: estimulación de NGF y BDNF. NO hay estudios clínicos en humanos con neuropatía periférica. Traducción a humanos incierta debido a diferencias en dosificación y metabolismo.",
+        "effectSize": "Moderate",
+        "rctCount": 0,
+        "magnitude": "Aceleración de 20-30% en velocidad de regeneración nerviosa en modelos animales de lesión del nervio ciático",
+        "totalParticipants": 0,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 6,
+        "condition": "Protección de mucosa gástrica y úlceras inducidas por estrés",
+        "evidenceGrade": "C",
+        "notes": "Evidencia en modelos animales (ratas). Dosis: 200-500mg/kg de extracto acuoso administrado antes o después de inducción de úlcera. Mecanismo: aumento de mucina gástrica, reducción de inflamación (IL-1beta, TNF-alfa), actividad antioxidante. Un estudio in vitro mostró actividad contra Helicobacter pylori. NO hay estudios clínicos en humanos con gastritis o úlcera péptica. Potencial terapéutico pero requiere validación clínica.",
+        "effectSize": "Moderate",
+        "rctCount": 0,
+        "magnitude": "Reducción de 40-60% en área de úlcera gástrica en modelos animales de úlcera inducida por etanol y estrés",
+        "totalParticipants": 0,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 10,
+        "condition": "Modulación de respuesta inmune y actividad antitumoral",
+        "evidenceGrade": "C",
+        "notes": "Evidencia principalmente preclínica. Polisacáridos beta-glucanos (especialmente fracción de alto peso molecular) muestran actividad inmunoestimulante en cultivos celulares y ratones. Estudios en modelos de cáncer (sarcoma, leucemia) muestran reducción de 40-70% en crecimiento tumoral cuando se combina con quimioterapia. Mecanismo: activación de macrófagos, células NK, producción de citoquinas Th1. NO hay ensayos clínicos en pacientes con cáncer. Uso como adyuvante es especulativo sin datos humanos.",
+        "effectSize": "Small",
+        "rctCount": 0,
+        "magnitude": "Aumento de 30-50% en actividad de células NK y macrófagos en estudios in vitro y animales",
+        "totalParticipants": 0,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Otros hongos medicinales (Reishi, Cordyceps) - sinergia inmunomoduladora teórica pero no documentada",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Omega-3 (DHA/EPA) - soporte complementario para salud cerebral y neuroplasticidad",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitaminas B (especialmente B12) - cofactores para síntesis de mielina y función nerviosa",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Bacopa monnieri - otro nootrópico con mecanismos complementarios para memoria, sin interacciones conocidas",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (500mg/día) durante 1 semana para evaluar tolerancia gastrointestinal, luego aumentar gradualmente a 1000-1500mg/día",
+      "Tomar consistentemente a la misma hora cada día para mantener niveles estables. Puede tomarse con o sin alimentos, aunque con alimentos reduce riesgo de malestar gástrico",
+      "Ser paciente - efectos cognitivos requieren mínimo 8-12 semanas de uso continuo según estudios. No es suplemento de efecto inmediato",
+      "Priorizar calidad sobre precio - invertir en extracto de cuerpo fructífero certificado con pruebas de terceros. Productos baratos suelen ser micelio en grano con mínimos compuestos activos",
+      "Mantener expectativas realistas - evidencia más sólida es para deterioro cognitivo leve en adultos mayores, no para potenciación cognitiva dramática en personas sanas. Efectos son modestos y graduales",
+      "Consultar médico si toma anticoagulantes, inmunosupresores o antidiabéticos antes de iniciar debido a interacciones teóricas",
+      "Suspender uso 2 semanas antes de cirugía programada por precaución (aunque riesgo hemorrágico no está documentado en humanos)"
+    ],
+    "totalStudies": 45,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo y lactancia - falta evidencia de seguridad, evitar por precaución",
+        "Alergia conocida a hongos o especies de Hericium - riesgo de reacción alérgica",
+        "Cirugía programada - suspender 2 semanas antes por potencial efecto anticoagulante teórico (no documentado pero precautorio)",
+        "Trastornos de coagulación - precaución teórica por actividad antiagregante plaquetaria observada in vitro, no confirmada en humanos"
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 16 semanas en estudios clínicos humanos sin efectos adversos significativos. Estudios en animales (ratas) muestran ausencia de toxicidad en dosis hasta 5g/kg durante 3 meses (equivalente a dosis muy altas en humanos). No hay reportes de hepatotoxicidad, nefrotoxicidad o toxicidad hematológica. Seguridad más allá de 6 meses no está documentada en estudios formales. Uso tradicional en Asia durante siglos sugiere seguridad a largo plazo, pero faltan datos clínicos rigurosos.",
+      "notes": "Perfil de seguridad generalmente favorable con efectos adversos mínimos en estudios clínicos. Más seguro que muchos nootrópicos sintéticos y medicamentos psicotrópicos. No hay reportes de dependencia, tolerancia o síndrome de abstinencia. No afecta función hepática o renal en estudios de toxicología animal. Calidad del producto es crítica - contaminación con metales pesados o micotoxinas es riesgo en productos de baja calidad. Comprar de fuentes certificadas con pruebas de terceros.",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Más común al inicio del tratamiento o con dosis altas (>2000mg/día). Generalmente transitorio y desaparece en 3-7 días. Tomar con alimentos reduce incidencia.",
+          "effect": "Malestar gastrointestinal leve (náusea, distensión abdominal)",
+          "frequency": "Raro, reportado en <5% de participantes en estudios clínicos"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Reportado en casos aislados. Personas con alergia conocida a hongos deben evitar. Suspender uso si aparece erupción cutánea o dificultad respiratoria.",
+          "effect": "Reacciones alérgicas cutáneas (prurito, erupción)",
+          "frequency": "Muy raro, <1% en estudios. Más común en personas con alergias a hongos"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Irritación de vías respiratorias por inhalación de esporas o polvo. No relacionado con consumo oral. Usar mascarilla al manipular polvos finos.",
+          "effect": "Síntomas respiratorios (en polvo inhalado)",
+          "frequency": "Raro, principalmente en trabajadores que manipulan grandes cantidades de polvo"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Precaución teórica. Monitorear INR si se usa warfarina. Aunque no hay interacciones documentadas en humanos, la actividad antiagregante in vitro sugiere precaución. Consultar médico antes de combinar.",
+          "medication": "Anticoagulantes y antiplaquetarios (warfarina, aspirina, clopidogrel)",
+          "mechanism": "Posible potenciación de efectos anticoagulantes basado en actividad antiagregante plaquetaria in vitro. No hay reportes de casos en humanos."
+        },
+        {
+          "severity": "Mild",
+          "description": "Precaución teórica. Monitorear glucosa más frecuentemente al iniciar. Aunque no hay estudios en humanos diabéticos, los efectos en animales sugieren posible interacción. Ajustar dosis de medicamentos si es necesario.",
+          "medication": "Antidiabéticos orales e insulina",
+          "mechanism": "Posible efecto hipoglucemiante aditivo basado en estudios animales que muestran reducción de glucosa."
+        },
+        {
+          "severity": "Moderate",
+          "description": "Evitar en pacientes con trasplante de órganos o enfermedades autoinmunes en tratamiento inmunosupresor. La activación inmune podría contrarrestar terapia inmunosupresora. Consultar médico especialista antes de usar.",
+          "medication": "Inmunosupresores (ciclosporina, tacrolimus, corticosteroides)",
+          "mechanism": "Posible antagonismo por actividad inmunoestimulante de beta-glucanos que podría reducir eficacia de inmunosupresores."
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Extracto de cuerpo fructífero (fruiting body) estandarizado a >25% polisacáridos beta-glucanos, ratio de extracción 8:1 o 10:1",
+      "avoidFlags": [
+        "Productos de 'mycelium on grain' o 'micelio en grano' - contienen principalmente almidón del grano (arroz, avena) con <5% de compuestos activos según análisis de laboratorio independientes",
+        "Sin especificación de parte del hongo usada - si no dice 'fruiting body' o 'cuerpo fructífero', probablemente es micelio en grano de baja calidad",
+        "Sin estandarización de polisacáridos o beta-glucanos - indica falta de control de calidad y potencia inconsistente",
+        "Ausencia de pruebas de terceros para metales pesados, pesticidas y micotoxinas - hongos bioacumulan contaminantes del sustrato",
+        "Claims exagerados como 'cura Alzheimer' o 'elimina tumores' - señal de marketing deshonesto sin respaldo científico"
+      ],
+      "qualityIndicators": [
+        "Certificación orgánica (USDA Organic, EU Organic) - reduce riesgo de pesticidas y contaminantes",
+        "Pruebas de laboratorio de terceros disponibles (COA - Certificate of Analysis) mostrando contenido de beta-glucanos, ausencia de metales pesados y micotoxinas",
+        "Especificación clara: '100% fruiting body' o 'dual extract' con porcentajes de cada parte",
+        "Estandarización verificable: >25% polisacáridos, >20% beta-glucanos, ratio de extracción especificado (8:1, 10:1)",
+        "Origen del hongo especificado - cultivado en madera dura (preferible) vs sustrato de grano",
+        "Método de extracción especificado - extracción en agua caliente para polisacáridos, dual (agua + alcohol) para espectro completo"
+      ],
+      "notes": "La industria de hongos medicinales tiene problemas significativos de calidad. Estudios independientes (Nammex, Real Mushrooms) muestran que 60-70% de productos en mercado estadounidense son micelio en grano con <5% beta-glucanos vs 30-40% declarado. Preferir marcas especializadas en hongos medicinales sobre marcas generalistas de suplementos. Cuerpo fructífero es más caro de producir pero contiene mayor concentración de compuestos activos. Extractos son preferibles a polvo de hongo entero porque concentran compuestos bioactivos y mejoran biodisponibilidad de polisacáridos (pared celular de quitina es difícil de digerir). Verificar que el producto especifique origen (China, USA, Europa) - China produce 85% de hongos medicinales mundiales con calidad variable.",
+      "keyCompounds": [
+        {
+          "name": "Hericenones (A-H)",
+          "lookFor": "Etiqueta debe especificar 'fruiting body extract' o 'extracto de cuerpo fructífero'. Hericenones no se cuantifican típicamente en etiquetas pero están presentes solo en cuerpo fructífero.",
+          "source": "Cuerpo fructífero (fruiting body) exclusivamente"
+        },
+        {
+          "name": "Erinacinas (A-K)",
+          "lookFor": "Si busca erinacinas, producto debe especificar 'mycelium extract'. Erinacinas A-I son las más estudiadas. Algunos productos duales contienen ambos.",
+          "source": "Micelio cultivado (no presente en cuerpo fructífero)"
+        },
+        {
+          "name": "Beta-glucanos (polisacáridos)",
+          "lookFor": ">25% polisacáridos o >20% beta-glucanos en etiqueta. Cuerpo fructífero de calidad contiene 30-40% beta-glucanos. Micelio puro 5-15%.",
+          "source": "Principalmente cuerpo fructífero (3-5x mayor concentración que micelio)"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Estimulación de síntesis de Factor de Crecimiento Nervioso (NGF)",
+        "description": "Los hericenones y erinacinas son compuestos de bajo peso molecular capaces de cruzar la barrera hematoencefálica. Estudios in vitro demuestran que estos compuestos inducen la expresión génica de NGF en células gliales y neuronas, promoviendo la diferenciación, supervivencia y regeneración neuronal. En modelos animales, la administración de extractos de H. erinaceus aumentó los niveles de NGF en hipocampo y corteza cerebral entre 20-40% comparado con controles. Este mecanismo es la base teórica para sus efectos neuroprotectores y cognitivos, aunque la traducción a humanos requiere más investigación.",
+        "studyCount": 15,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Actividad inmunomoduladora vía polisacáridos beta-glucanos",
+        "description": "Los beta-glucanos de H. erinaceus, principalmente beta-1,3/1,6-glucanos, activan receptores de reconocimiento de patrones como Dectin-1 en células inmunes innatas (macrófagos, células dendríticas, neutrófilos). Esta activación desencadena cascadas de señalización que aumentan la fagocitosis, producción de citoquinas proinflamatorias (TNF-alfa, IL-6) y actividad de células NK. Estudios en animales muestran aumento de 30-50% en actividad fagocítica y proliferación de esplenocitos. También se ha observado modulación del balance Th1/Th2 hacia respuesta Th1.",
+        "studyCount": 12,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Efectos antioxidantes y antiinflamatorios",
+        "description": "Los compuestos fenólicos y polisacáridos de H. erinaceus exhiben actividad antioxidante mediante neutralización de radicales libres (DPPH, ABTS) y aumento de enzimas antioxidantes endógenas como superóxido dismutasa (SOD) y catalasa. En modelos de estrés oxidativo, extractos de H. erinaceus redujeron peroxidación lipídica en 25-35% y aumentaron actividad de SOD en 40-60%. También inhiben la producción de mediadores inflamatorios como óxido nítrico (NO) y prostaglandina E2 mediante supresión de iNOS y COX-2, reduciendo inflamación en modelos de colitis y gastritis.",
+        "studyCount": 18,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "16 semanas de tratamiento + 4 semanas de seguimiento",
+        "dose": "750mg tres veces al día (2250mg/día total) de tabletas de Yamabushitake (96% de Hericium erinaceus en polvo seco)",
+        "year": 2009,
+        "studyType": "RCT",
+        "findings": [
+          "Grupo tratamiento mostró aumento significativo en puntuación de escala cognitiva (HDS-R) en semanas 8, 12 y 16 comparado con placebo (p<0.05)",
+          "Puntuaciones cognitivas disminuyeron significativamente 4 semanas después de suspender tratamiento, sugiriendo necesidad de uso continuo",
+          "No efectos adversos significativos reportados. Seguridad confirmada en análisis de sangre y función hepática",
+          "Efecto más pronunciado en individuos con puntuaciones iniciales más bajas (deterioro cognitivo más marcado)"
+        ],
+        "title": "Improving effects of the mushroom Yamabushitake (Hericium erinaceus) on mild cognitive impairment: a double-blind placebo-controlled clinical trial",
+        "participants": 50,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "4 semanas",
+        "dose": "2g/día de galletas que contenían 0.5g de Hericium erinaceus (equivalente a 4g de hongo fresco)",
+        "year": 2010,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción significativa en puntuaciones de Center for Epidemiologic Studies Depression Scale en grupo tratamiento vs placebo (p<0.05)",
+          "Reducción en síntomas de irritación y ansiedad medidos por escala indefinida",
+          "Concentración mejorada reportada subjetivamente por participantes",
+          "Población: mujeres menopáusicas japonesas. Limitación: muestra pequeña y homogénea"
+        ],
+        "title": "Reduction of depression and anxiety by 4 weeks Hericium erinaceus intake",
+        "participants": 30,
+        "quality": "Low"
+      },
+      {
+        "duration": "4 semanas (estudio en ratones)",
+        "dose": "300mg/kg de extracto de micelio enriquecido con erinacina A",
+        "year": 2018,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción significativa en comportamiento tipo-depresivo en pruebas de natación forzada y suspensión de cola (p<0.01)",
+          "Aumento de niveles de BDNF en hipocampo y corteza prefrontal (40-50% vs control)",
+          "Modulación de vía de señalización PI3K/Akt/GSK-3β asociada con neuroplasticidad",
+          "Efectos comparables a fluoxetina (antidepresivo ISRS) en modelos animales"
+        ],
+        "title": "Erinacine A-enriched Hericium erinaceus mycelium produces antidepressant-like effects through modulating BDNF/PI3K/Akt/GSK-3β signaling in mice",
+        "participants": 0,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "Estudio in vitro",
+        "dose": "Extracto acuoso a concentraciones de 10-50 μg/mL",
+        "year": 2013,
+        "studyType": "Observational",
+        "findings": [
+          "Extracto de cuerpo fructífero indujo crecimiento de neuritas en células PC12 y neuronas primarias de ratón",
+          "Aumento dependiente de dosis en expresión de NGF mRNA (hasta 5 veces vs control a 50 μg/mL)",
+          "Hericenones C-H identificados como compuestos bioactivos responsables de estimulación de NGF",
+          "Actividad neuroprotectora contra estrés oxidativo inducido por H2O2 (reducción de 60% en muerte celular)"
+        ],
+        "title": "Neurotrophic properties of the Lion's mane medicinal mushroom, Hericium erinaceus (Higher Basidiomycetes) from Malaysia",
+        "participants": 0,
+        "quality": "Moderate"
+      }
+    ]
+  }
+}

@@ -1,0 +1,445 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.393Z",
+    "jobId": "job_1777912672874_b2rrwmkyt",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "folic acid",
+  "metadata": {
+    "supplementId": "folic acid",
+    "generatedAt": "2026-05-04T16:40:35.522Z",
+    "tokensUsed": 20887,
+    "bedrockDuration": 160668,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "400-800 mcg/día para prevención general y embarazo, 1-5 mg/día para tratamiento de deficiencia establecida",
+      "duration": "Para prevención de defectos del tubo neural: desde 1 mes antes de concepción hasta final del primer trimestre (mínimo 12 semanas gestacionales). Para reducción de homocisteína: efecto máximo en 6-8 semanas, uso continuo seguro documentado por años. Para anemia: 4-8 semanas para normalización de hemoglobina, 2-3 meses para normalización completa de médula ósea.",
+      "notes": "Importante: Siempre descartar deficiencia de vitamina B12 antes de suplementar con dosis altas de folato, ya que puede enmascarar anemia megaloblástica por B12 mientras permite progresión de daño neurológico irreversible. Personas con polimorfismo MTHFR C677T homocigoto (10-15% de población) pueden beneficiarse de L-metilfolato en lugar de ácido fólico, aunque evidencia clínica de superioridad es limitada. Evitar dosis >1000 mcg/día sin supervisión médica debido a preocupaciones teóricas sobre enmascaramiento de deficiencia de B12 y posible promoción de lesiones preneoplásicas.",
+      "timing": "Sin preferencia de horario según estudios clínicos. Puede tomarse con o sin alimentos. Para embarazo, idealmente iniciar al menos 1 mes antes de concepción.",
+      "optimalDose": "400-800 mcg/día para embarazo y prevención cardiovascular según meta-análisis, 1 mg/día para tratamiento de deficiencia leve a moderada",
+      "maxSafeDose": "1000 mcg/día como límite superior tolerable (UL) establecido por autoridades sanitarias para población general, dosis terapéuticas de hasta 5 mg/día bajo supervisión médica son seguras",
+      "forms": [
+        {
+          "description": "Forma más común y económica, usada en 95% de estudios clínicos y programas de fortificación. Requiere conversión a 5-MTHF mediante enzima MTHFR. Biodisponibilidad aproximada 85% en ayunas, 50% con alimentos.",
+          "studyCount": 750,
+          "form": "Ácido fólico sintético (forma oxidada)",
+          "recommended": true
+        },
+        {
+          "description": "Forma activa reducida, no requiere conversión por MTHFR. Teóricamente ventajosa para personas con polimorfismos MTHFR (40-60% de población), pero evidencia clínica de superioridad es limitada excepto en depresión (dosis 7.5-15 mg/día). Más costosa.",
+          "studyCount": 85,
+          "form": "L-metilfolato (5-MTHF, Metafolin®, Quatrefolic®)",
+          "recommended": true
+        },
+        {
+          "description": "Forma reducida usada principalmente en contexto médico para rescate de toxicidad por metotrexato o potenciación de quimioterapia. No necesaria para suplementación general. Usada en algunos estudios de artritis reumatoide.",
+          "studyCount": 45,
+          "form": "Ácido folínico (leucovorina, 5-formiltetrahidrofolato)",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Vitamina B12 (400-1000 mcg/día) - sinergia en metabolismo de homocisteína, reducción adicional de 7-10% vs folato solo",
+        "Vitamina B6 (10-50 mg/día) - complementa vía de transulfuración de homocisteína, efecto aditivo en reducción de homocisteína",
+        "Hierro - para tratamiento completo de anemia cuando hay deficiencia mixta de folato y hierro",
+        "Multivitamínico prenatal - contiene dosis adecuada de folato más otros nutrientes esenciales para embarazo"
+      ],
+      "effectiveDose": "400 mcg/día para prevención de defectos del tubo neural y reducción de homocisteína en personas sin deficiencia severa"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 8,
+        "condition": "Reducción de riesgo de trastornos del espectro autista en descendencia",
+        "evidenceGrade": "C",
+        "notes": "Estudios observacionales sugieren que suplementación periconcepcional con ácido fólico puede reducir riesgo de autismo en 30-40%, pero evidencia limitada a estudios de cohorte (no RCTs por razones éticas). Estudios en Noruega (n=85,000) y California (n=700) muestran asociación, pero confusión residual posible. Se necesitan más estudios con mejor control de factores confusores. Mecanismo propuesto: metilación del ADN durante desarrollo cerebral temprano."
+      },
+      {
+        "studyCount": 15,
+        "condition": "Mejora de función endotelial y reducción de rigidez arterial",
+        "evidenceGrade": "C",
+        "notes": "Estudios pequeños (n=30-100) muestran que ácido fólico mejora dilatación mediada por flujo (FMD) en 2-4% y reduce velocidad de onda de pulso en personas con disfunción endotelial. Sin embargo, falta evidencia de que esto se traduzca en reducción de eventos cardiovasculares. Meta-análisis de 2012 con 15 estudios (n=732) muestra mejora significativa en FMD, pero estudios heterogéneos y de corto plazo (2-8 semanas). Se necesitan RCTs grandes a largo plazo."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Reducción de síntomas de síndrome de piernas inquietas en personas con deficiencia de folato",
+        "evidenceGrade": "C",
+        "notes": "Evidencia muy preliminar de estudios pequeños (n=20-60) sugiere que suplementación con ácido fólico (5-15 mg/día) puede mejorar síntomas en pacientes con síndrome de piernas inquietas y niveles bajos de folato eritrocitario. Sin embargo, solo 2 RCTs pequeños disponibles, ambos con limitaciones metodológicas. Se necesitan RCTs más grandes, doble ciego, con poblaciones mejor caracterizadas y medición de niveles de folato."
+      },
+      {
+        "studyCount": 12,
+        "condition": "Mejora de respuesta a metotrexato en artritis reumatoide (reducción de efectos secundarios)",
+        "evidenceGrade": "C",
+        "notes": "Suplementación con ácido fólico (5-10 mg/semana) o ácido folínico reduce efectos secundarios gastrointestinales y hepáticos del metotrexato sin comprometer eficacia. Meta-análisis Cochrane 2013 con 6 RCTs (n=624) muestra reducción en eventos adversos (RR 0.61, IC 95%: 0.46-0.81), pero calidad de estudios variable y dosis óptima no establecida. Práctica clínica común pero evidencia de calidad moderada."
+      }
+    ],
+    "primaryUses": [
+      "Prevención de defectos del tubo neural en embarazo - reduce riesgo 72% con suplementación periconcepcional",
+      "Reducción de niveles de homocisteína - disminuye 25-30% en personas con hiperhomocisteinemia",
+      "Prevención de anemia megaloblástica por deficiencia de folato - normaliza parámetros hematológicos en 4-8 semanas",
+      "Soporte en embarazo para desarrollo fetal adecuado - reduce riesgo de bajo peso al nacer y parto prematuro",
+      "Reducción de riesgo cardiovascular asociado a hiperhomocisteinemia - efecto moderado en prevención primaria"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 28,
+        "condition": "Prevención de eventos cardiovasculares mayores (infarto de miocardio, mortalidad cardiovascular) en prevención primaria o secundaria",
+        "evidenceGrade": "F",
+        "notes": "A pesar de reducir efectivamente homocisteína en 25-30%, múltiples RCTs grandes y meta-análisis no muestran reducción significativa en infarto de miocardio (RR 0.98, IC 95%: 0.93-1.03, p=0.41) o mortalidad cardiovascular (RR 0.99, IC 95%: 0.93-1.06). Meta-análisis de 2013 con 50,000 participantes confirma ausencia de beneficio. Estudios HOPE-2, VISP, NORVIT, SEARCH todos negativos. Hipótesis de homocisteína como factor causal cardiovascular no confirmada."
+      },
+      {
+        "studyCount": 35,
+        "condition": "Prevención de cáncer colorrectal o cualquier tipo de cáncer",
+        "evidenceGrade": "F",
+        "notes": "RCTs grandes no muestran reducción en incidencia de cáncer colorrectal (RR 1.07, IC 95%: 0.95-1.21, p=0.27) ni otros cánceres con suplementación de 400-5000 mcg/día por 5-10 años. Meta-análisis de 2013 con 50,000 participantes muestra incluso tendencia no significativa al aumento de cáncer (RR 1.06, IC 95%: 1.00-1.12). Preocupación teórica: folato puede promover crecimiento de lesiones preneoplásicas existentes al facilitar síntesis de ADN. Estudios ASPREE, CAPP2 negativos."
+      },
+      {
+        "studyCount": 22,
+        "condition": "Mejora de función cognitiva o prevención de demencia en adultos mayores sin deficiencia",
+        "evidenceGrade": "D",
+        "notes": "Aunque deficiencia de folato se asocia con deterioro cognitivo, RCTs de suplementación en adultos mayores sin deficiencia no muestran beneficio consistente. Meta-análisis de 2014 con 14 RCTs (n=5000) no encuentra mejora significativa en función cognitiva global, memoria o velocidad de procesamiento. Estudios FACIT, VITACOG muestran resultados mixtos. Posible beneficio solo en subgrupos con homocisteína muy elevada (>13 μmol/L) o deficiencia subclínica, pero evidencia insuficiente."
+      },
+      {
+        "studyCount": 12,
+        "condition": "Tratamiento de depresión como monoterapia en personas sin deficiencia de folato",
+        "evidenceGrade": "D",
+        "notes": "Ácido fólico solo (sin antidepresivos) no es efectivo para tratar depresión mayor. RCTs pequeños (n<100) muestran resultados inconsistentes. Meta-análisis de 2008 concluye evidencia insuficiente para recomendar folato como monoterapia. Beneficio solo documentado como adjunto a antidepresivos en personas con niveles bajos de folato o como L-metilfolato en dosis altas (15 mg/día). Folato no reemplaza tratamiento antidepresivo estándar."
+      },
+      {
+        "studyCount": 8,
+        "condition": "Mejora de fertilidad masculina o calidad espermática",
+        "evidenceGrade": "D",
+        "notes": "Evidencia muy limitada y contradictoria. Estudio grande (n=2370) publicado en JAMA 2020 no encontró beneficio de ácido fólico (5 mg/día) + zinc en parámetros espermáticos o tasas de nacidos vivos (p>0.05 para todos los outcomes). Estudios previos pequeños (n<100) con resultados mixtos. No hay evidencia robusta que respalde uso rutinario para fertilidad masculina."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Prevención de pérdida auditiva relacionada con la edad",
+        "evidenceGrade": "D",
+        "notes": "Evidencia muy limitada. Un RCT holandés (n=728) mostró reducción modesta en pérdida auditiva de bajas frecuencias con 800 mcg/día por 3 años, pero sin efecto en frecuencias altas. No replicado en otras poblaciones. Meta-análisis no disponible. Evidencia insuficiente para recomendar suplementación con este propósito."
+      }
+    ],
+    "whatIsIt": "El ácido fólico (vitamina B9) es la forma sintética oxidada del folato, una vitamina hidrosoluble esencial que el cuerpo no puede sintetizar y debe obtener de la dieta o suplementación. A nivel molecular, funciona como cofactor en reacciones de transferencia de un carbono, siendo crítico para la síntesis de ADN, división celular, metabolismo de homocisteína y producción de neurotransmisores. Es especialmente notable por su papel bien establecido en la prevención de defectos del tubo neural durante el embarazo, con evidencia tan robusta que ha llevado a programas de fortificación obligatoria en más de 80 países. El ácido fólico se convierte en el cuerpo a su forma activa (5-metiltetrahidrofolato o 5-MTHF) mediante la enzima MTHFR, aunque aproximadamente 40-60% de la población tiene polimorfismos genéticos que reducen la eficiencia de esta conversión.",
+    "worksFor": [
+      {
+        "studyCount": 85,
+        "condition": "Prevención de defectos del tubo neural (espina bífida, anencefalia) en embarazo",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 400-800 mcg/día iniciando al menos 1 mes antes de la concepción y continuando durante el primer trimestre. Población: Todas las mujeres en edad reproductiva. Efecto mayor en mujeres con historia previa de embarazo afectado (reducción hasta 85% con dosis de 4-5 mg/día). Meta-análisis de estudios observacionales y RCTs muestra consistencia robusta. Evidencia tan fuerte que llevó a fortificación obligatoria de alimentos en más de 80 países desde 1998.",
+        "effectSize": "Very Large",
+        "rctCount": 12,
+        "magnitude": "Reducción de 72% en riesgo de defectos del tubo neural con suplementación periconcepcional de 400-800 mcg/día",
+        "totalParticipants": 95000,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 120,
+        "condition": "Reducción de niveles elevados de homocisteína plasmática (hiperhomocisteinemia)",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 400-800 mcg/día reduce homocisteína aproximadamente 25%, dosis mayores (5 mg/día) pueden reducir hasta 30-35%. Duración: Efecto máximo en 6-8 semanas. Población: Personas con hiperhomocisteinemia (>15 μmol/L). Efecto mayor cuando se combina con vitamina B12 (400 mcg) y B6 (10 mg). Meta-análisis de 2010 con 37,485 participantes confirma efecto consistente. Importante: Reducción de homocisteína no se traduce necesariamente en reducción proporcional de eventos cardiovasculares.",
+        "effectSize": "Large",
+        "rctCount": 45,
+        "magnitude": "Disminución de 25-30% en homocisteína plasmática con dosis de 400-5000 mcg/día, efecto dosis-dependiente",
+        "totalParticipants": 38000,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 65,
+        "condition": "Tratamiento y prevención de anemia megaloblástica por deficiencia de folato",
+        "evidenceGrade": "A",
+        "notes": "Dosis terapéutica: 1-5 mg/día para deficiencia establecida, 400 mcg/día para prevención. Duración: Respuesta reticulocitaria en 3-5 días, normalización de hemoglobina en 4-8 semanas, normalización completa de médula ósea en 2-3 meses. Población: Personas con deficiencia documentada (folato sérico <3 ng/mL o eritrocitario <140 ng/mL). Importante: Descartar deficiencia de B12 antes de tratar, ya que folato puede enmascarar anemia por B12 mientras permite progresión de daño neurológico.",
+        "effectSize": "Very Large",
+        "rctCount": 18,
+        "magnitude": "Normalización de hemoglobina (aumento de 2-4 g/dL) y parámetros hematológicos en 4-8 semanas con dosis terapéuticas",
+        "totalParticipants": 8500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 42,
+        "condition": "Reducción de riesgo de accidente cerebrovascular en prevención primaria",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 400-2500 mcg/día en estudios. Duración: Seguimiento promedio de 3-5 años necesario para observar efecto. Población: Adultos sin enfermedad cardiovascular previa. Meta-análisis de 2016 con 58,000 participantes muestra reducción de 10% en stroke (RR 0.90, IC 95%: 0.85-0.96). Efecto más pronunciado en: 1) Países sin fortificación de alimentos (reducción 18%), 2) Personas con homocisteína basal >12 μmol/L, 3) Seguimiento >3 años. No efecto significativo en infarto de miocardio o mortalidad cardiovascular total.",
+        "effectSize": "Small",
+        "rctCount": 15,
+        "magnitude": "Reducción de 10-18% en riesgo de accidente cerebrovascular con suplementación de 400-800 mcg/día",
+        "totalParticipants": 58000,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 28,
+        "condition": "Mejora de respuesta a antidepresivos en depresión mayor con niveles bajos de folato",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 500 mcg-15 mg/día de ácido fólico, o 7.5-15 mg/día de L-metilfolato (forma activa). Duración: 4-12 semanas de tratamiento adjunto. Población: Pacientes con depresión mayor en tratamiento con ISRS con respuesta parcial o inadecuada, especialmente aquellos con niveles bajos de folato (<11 nmol/L) o polimorfismos MTHFR. Meta-análisis muestra que L-metilfolato (15 mg/día) como adjunto mejora respuesta en 15-20% vs placebo. Efecto mayor en mujeres y en personas con polimorfismo MTHFR C677T. Evidencia más fuerte para L-metilfolato que para ácido fólico.",
+        "effectSize": "Moderate",
+        "rctCount": 11,
+        "magnitude": "Aumento de 15-20% en tasa de respuesta a antidepresivos cuando se añade folato o metilfolato",
+        "totalParticipants": 3500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 55,
+        "condition": "Prevención de complicaciones del embarazo (bajo peso al nacer, parto prematuro)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 400-800 mcg/día durante embarazo. Duración: Idealmente desde antes de concepción hasta término. Población: Todas las embarazadas, efecto mayor en poblaciones con deficiencia de folato o malnutrición. Meta-análisis Cochrane 2015 con 31 estudios muestra reducción modesta pero significativa en bajo peso al nacer (RR 0.93, IC 95%: 0.87-0.99) y parto prematuro (RR 0.92, IC 95%: 0.86-0.98). Efecto más pronunciado en países en desarrollo y en mujeres con niveles bajos basales de folato.",
+        "effectSize": "Small",
+        "rctCount": 22,
+        "magnitude": "Reducción de 5-12% en riesgo de bajo peso al nacer y 8-15% en parto prematuro con suplementación",
+        "totalParticipants": 125000,
+        "metaAnalysis": true
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "phenytoin",
+        "effect": "Folic acid may reduce phenytoin levels; phenytoin depletes folate",
+        "categories": [
+          "mineral_interaction",
+          "absorption_inhibition"
+        ],
+        "type": "ANTAGONIST",
+        "mechanism": "Bidirectional interaction affecting metabolism and absorption",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamin B12",
+        "effect": "Homocysteine -32% (B12 adds 7% to folate alone)",
+        "categories": [
+          "general"
+        ],
+        "type": "general_synergy",
+        "mechanism": "Combined methionine synthase reaction",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Para mujeres en edad reproductiva: Tomar 400-800 mcg/día de ácido fólico diariamente, incluso si no planean embarazo inmediato, ya que 50% de embarazos no son planificados y el tubo neural se cierra en las primeras 4 semanas de gestación",
+      "Antes de iniciar suplementación con dosis altas de folato (>1000 mcg/día), solicitar medición de vitamina B12 sérica para descartar deficiencia, especialmente en adultos mayores, vegetarianos y personas con síntomas neurológicos",
+      "Para personas con depresión resistente a tratamiento: Considerar L-metilfolato (7.5-15 mg/día) como adjunto a antidepresivos bajo supervisión médica, especialmente si hay niveles bajos de folato o polimorfismo MTHFR",
+      "Mantenerse en dosis de 400-1000 mcg/día para uso preventivo general. Dosis mayores (1-5 mg/día) solo bajo supervisión médica para indicaciones específicas como anemia megaloblástica o hiperhomocisteinemia severa",
+      "Para reducción de homocisteína: Combinar ácido fólico (400-800 mcg/día) con vitamina B12 (400-1000 mcg/día) y B6 (10-50 mg/día) para efecto óptimo, especialmente en prevención de stroke"
+    ],
+    "totalStudies": 850,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Anemia no diagnosticada (debe descartarse deficiencia de B12 antes de suplementar con folato)",
+        "Cáncer activo o historia reciente de cáncer (precaución, consultar oncólogo debido a preocupación teórica sobre promoción de crecimiento tumoral)",
+        "Epilepsia tratada con fenitoína (folato puede reducir niveles de fenitoína y aumentar riesgo de convulsiones)",
+        "Alergia conocida al ácido fólico o componentes de la formulación (muy raro)"
+      ],
+      "longTermSafety": "Uso continuo de dosis de 400-1000 mcg/día es seguro según décadas de experiencia clínica y estudios de fortificación de alimentos en múltiples países desde 1998. RCTs de hasta 7 años de duración con dosis de 400-5000 mcg/día no muestran toxicidad significativa. Límite superior tolerable (UL) establecido en 1000 mcg/día para adultos por autoridades sanitarias (FDA, EFSA) basado en preocupación por enmascaramiento de deficiencia de B12, no por toxicidad directa. Dosis terapéuticas de 5 mg/día bajo supervisión médica son seguras por períodos prolongados.",
+      "notes": "Ácido fólico es esencial y seguro durante embarazo en dosis de 400-800 mcg/día, con beneficio bien establecido en prevención de defectos del tubo neural. Sin embargo, algunos estudios observacionales sugieren que dosis muy altas (>1000 mcg/día) durante embarazo podrían asociarse con mayor riesgo de sibilancias/asma en descendencia, aunque evidencia es inconsistente. Mantenerse en rango de 400-800 mcg/día durante embarazo a menos que haya indicación médica para dosis mayores. Crítico: Siempre descartar deficiencia de vitamina B12 antes de suplementar con dosis altas de folato para evitar enmascaramiento de anemia perniciosa y progresión de daño neurológico. Perfil de seguridad excelente en dosis recomendadas.",
+      "safetyScore": 9,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente transitorio y leve. Más común con dosis terapéuticas altas (5 mg/día). Tomar con alimentos puede reducir molestias.",
+          "effect": "Molestias gastrointestinales leves (náusea, distensión, flatulencia)",
+          "frequency": "Raro, <5% de usuarios, principalmente con dosis >1000 mcg/día"
+        },
+        {
+          "severity": "Severe",
+          "notes": "Folato puede corregir anemia megaloblástica por deficiencia de B12 mientras permite progresión de daño neurológico irreversible (degeneración combinada subaguda de médula espinal). Crítico descartar deficiencia de B12 antes de iniciar suplementación con dosis altas de folato, especialmente en adultos mayores, vegetarianos estrictos y personas con malabsorción.",
+          "effect": "Enmascaramiento de deficiencia de vitamina B12",
+          "frequency": "Riesgo significativo con dosis >1000 mcg/día en personas con deficiencia no diagnosticada de B12"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Algunos estudios observacionales sugieren que dosis altas de ácido fólico (>1000 mcg/día) podrían acelerar crecimiento de lesiones preneoplásicas colorrectales existentes al facilitar síntesis de ADN. Sin embargo, RCTs no han confirmado aumento en incidencia de cáncer. Precaución en personas con historia de pólipos colorrectales o cáncer.",
+          "effect": "Posible promoción de lesiones preneoplásicas existentes (teórico)",
+          "frequency": "Preocupación teórica basada en estudios observacionales y mecanismos biológicos, no confirmada en RCTs"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Reportes de caso aislados de reacciones de hipersensibilidad. Generalmente leves y resuelven con discontinuación.",
+          "effect": "Reacciones alérgicas (rash, prurito, eritema)",
+          "frequency": "Muy raro, <0.1% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "En quimioterapia con metotrexato, evitar suplementación con folato excepto como rescate con ácido folínico bajo supervisión oncológica. En artritis reumatoide/psoriasis con dosis bajas de metotrexato, suplementación con 5 mg/semana de ácido fólico es recomendada para reducir toxicidad sin comprometer eficacia. Consultar médico.",
+          "medication": "Metotrexato (quimioterapia, artritis reumatoide, psoriasis)",
+          "mechanism": "Metotrexato es antagonista de folato que inhibe dihidrofolato reductasa. Folato puede reducir eficacia de metotrexato en dosis altas de quimioterapia."
+        },
+        {
+          "severity": "Moderate",
+          "description": "Monitorear niveles de fenitoína si se inicia suplementación con folato. Puede requerir ajuste de dosis de anticonvulsivante. Paradójicamente, anticonvulsivantes también reducen niveles de folato, creando situación compleja que requiere supervisión médica.",
+          "medication": "Anticonvulsivantes (fenitoína, fenobarbital, primidona)",
+          "mechanism": "Folato puede reducir niveles séricos de fenitoína en 15-30% mediante inducción de metabolismo hepático o reducción de absorción, aumentando riesgo de convulsiones."
+        },
+        {
+          "severity": "Mild",
+          "description": "Pacientes en tratamiento crónico con sulfasalazina tienen mayor riesgo de deficiencia de folato. Suplementación con 1-2 mg/día de ácido fólico es apropiada y no interfiere con eficacia de sulfasalazina.",
+          "medication": "Sulfasalazina (enfermedad inflamatoria intestinal)",
+          "mechanism": "Sulfasalazina inhibe absorción y metabolismo de folato mediante inhibición competitiva de enzimas dependientes de folato."
+        },
+        {
+          "severity": "Mild",
+          "description": "Uso prolongado de trimetoprima (>2 semanas) puede causar deficiencia de folato. Considerar suplementación con 1 mg/día en tratamientos prolongados, especialmente en personas con ingesta dietética baja.",
+          "medication": "Trimetoprima (antibiótico, componente de Bactrim)",
+          "mechanism": "Trimetoprima inhibe dihidrofolato reductasa bacteriana pero también tiene efecto débil en enzima humana, pudiendo causar deficiencia de folato con uso prolongado."
+        },
+        {
+          "severity": "Mild",
+          "description": "Uso crónico de IBP puede contribuir a deficiencia de folato en personas con ingesta dietética marginal. Suplementación con ácido fólico es bien absorbida incluso con IBP. Monitorear niveles de folato en uso prolongado de IBP.",
+          "medication": "Inhibidores de bomba de protones (omeprazol, lansoprazol) y antiácidos",
+          "mechanism": "Reducción de acidez gástrica puede disminuir absorción de folato de alimentos (forma poliglutamato), pero no afecta significativamente absorción de ácido fólico suplementario (monoglutamato)."
+        }
+      ]
+    },
+    "synergiesSource": "external_db",
+    "buyingGuidance": {
+      "preferredForm": "Ácido fólico sintético en dosis de 400-800 mcg para uso general y embarazo, o L-metilfolato (5-MTHF) para personas con polimorfismos MTHFR o depresión resistente",
+      "avoidFlags": [
+        "Productos que no especifican cantidad exacta de ácido fólico o folato en mcg",
+        "Suplementos que afirman contener solo folato de alimentos sin fortificación, ya que es difícil alcanzar dosis efectivas (400+ mcg) solo con extractos de alimentos",
+        "Productos sin certificación de pureza o pruebas de terceros, especialmente importante para embarazo",
+        "Dosis excesivas >1000 mcg sin justificación médica clara",
+        "Productos que combinan folato con hierbas o compuestos no regulados durante embarazo"
+      ],
+      "qualityIndicators": [
+        "Certificación USP (United States Pharmacopeia) o NSF International que verifica pureza y potencia",
+        "Pruebas de terceros para contaminantes (metales pesados, microbiológicos)",
+        "Especificación clara de forma química (ácido fólico vs L-metilfolato)",
+        "Productos de marcas farmacéuticas establecidas con buenas prácticas de manufactura (GMP)",
+        "Para embarazo: fórmulas prenatales que incluyen 400-800 mcg de ácido fólico más otros nutrientes esenciales"
+      ],
+      "notes": "Para la mayoría de personas, ácido fólico sintético estándar es adecuado, efectivo y económico. L-metilfolato es más costoso y la evidencia de superioridad clínica es limitada excepto en: 1) Personas con polimorfismo MTHFR C677T homocigoto (10-15% de población, puede determinarse con prueba genética), 2) Depresión resistente a tratamiento (dosis altas de 7.5-15 mg/día como adjunto a antidepresivos), 3) Personas con malabsorción severa. Para embarazo, cualquier forma es efectiva para prevención de defectos del tubo neural. Importante: Verificar que multivitamínicos prenatales contengan al menos 400 mcg de folato. Evitar dosis >1000 mcg/día sin supervisión médica.",
+      "keyCompounds": [
+        {
+          "name": "Ácido fólico (forma sintética oxidada)",
+          "lookFor": "400-800 mcg por dosis para prevención, 1-5 mg para tratamiento. Verificar que sea ácido fólico puro, no solo folato de alimentos",
+          "source": "Síntesis química"
+        },
+        {
+          "name": "L-metilfolato (5-MTHF, forma activa reducida)",
+          "lookFor": "Formas patentadas como Metafolin®, Quatrefolic®, o L-5-MTHF. Dosis típicas 400-1000 mcg para prevención, 7.5-15 mg para depresión",
+          "source": "Síntesis química de forma biológicamente activa"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Cofactor en síntesis de ADN y división celular",
+        "description": "El folato activo (5-MTHF) dona grupos metilo en la conversión de desoxiuridilato a timidilato, paso esencial para la síntesis de timina y por tanto de ADN. Esta función es crítica durante períodos de rápida división celular como el desarrollo fetal, la hematopoyesis y la renovación de tejidos epiteliales. La deficiencia resulta en síntesis defectuosa de ADN, produciendo células megaloblásticas características de la anemia por deficiencia de folato.",
+        "studyCount": 200,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Remetilación de homocisteína a metionina",
+        "description": "El 5-MTHF actúa como donador de metilo en la conversión de homocisteína a metionina, reacción catalizada por la metionina sintasa dependiente de vitamina B12. Este ciclo es fundamental para mantener niveles bajos de homocisteína plasmática, cuya elevación se asocia con riesgo cardiovascular aumentado. La suplementación con ácido fólico reduce consistentemente homocisteína en 25-30% en personas con niveles elevados.",
+        "studyCount": 150,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Síntesis de neurotransmisores y función cerebral",
+        "description": "El folato participa en la síntesis de SAMe (S-adenosilmetionina), donador universal de metilos necesario para producir neurotransmisores como serotonina, dopamina y norepinefrina. También es esencial para la metilación del ADN y proteínas en el sistema nervioso central. Niveles bajos de folato se asocian con depresión y deterioro cognitivo, aunque la suplementación en personas sin deficiencia muestra resultados mixtos.",
+        "studyCount": 120,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "Periconcepcional hasta 12 semanas de gestación",
+        "dose": "4 mg/día de ácido fólico",
+        "year": 1991,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 72% en recurrencia de defectos del tubo neural (RR 0.28, IC 95%: 0.12-0.71)",
+          "Efecto protector robusto y consistente en todas las subpoblaciones analizadas",
+          "Estudio landmark que estableció recomendación de suplementación con folato en embarazo"
+        ],
+        "title": "Prevention of neural tube defects: results of the Medical Research Council Vitamin Study",
+        "participants": 1817,
+        "quality": "High"
+      },
+      {
+        "duration": "5 años",
+        "dose": "2.5 mg ácido fólico + 50 mg B6 + 1 mg B12 diarios",
+        "year": 2006,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 25% en homocisteína plasmática vs placebo",
+          "No reducción significativa en eventos cardiovasculares mayores (RR 0.95, IC 95%: 0.84-1.07, p=0.41)",
+          "Reducción de 25% en stroke (RR 0.75, IC 95%: 0.59-0.97), pero no en infarto o mortalidad",
+          "Demostró que reducción de homocisteína no se traduce en reducción proporcional de eventos cardiovasculares"
+        ],
+        "title": "Homocysteine lowering with folic acid and B vitamins in vascular disease (HOPE-2 trial)",
+        "participants": 5522,
+        "quality": "High"
+      },
+      {
+        "duration": "Seguimiento promedio 3-5 años",
+        "dose": "400-5000 mcg/día en diferentes estudios",
+        "year": 2016,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de 10% en riesgo de stroke (RR 0.90, IC 95%: 0.85-0.96)",
+          "Efecto mayor (18% reducción) en países sin fortificación de alimentos",
+          "No efecto en infarto de miocardio (RR 0.98, IC 95%: 0.93-1.03) o mortalidad cardiovascular",
+          "Beneficio limitado a prevención de stroke, no eventos cardiovasculares en general"
+        ],
+        "title": "Effect of folic acid supplementation on the risk of cardiovascular diseases: a meta-analysis of randomized controlled trials",
+        "participants": 58000,
+        "quality": "High"
+      },
+      {
+        "duration": "5-10 años de seguimiento",
+        "dose": "400-5000 mcg/día",
+        "year": 2013,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "No reducción en incidencia de cáncer colorrectal (RR 1.07, IC 95%: 0.95-1.21)",
+          "Tendencia no significativa al aumento de cáncer total (RR 1.06, IC 95%: 1.00-1.12)",
+          "No beneficio en prevención de cáncer de próstata, pulmón, mama u otros sitios",
+          "Descarta hipótesis de que suplementación con folato previene cáncer"
+        ],
+        "title": "Effects of folic acid supplementation on overall and site-specific cancer incidence during randomised trials: meta-analyses of data on 50,000 individuals",
+        "participants": 50000,
+        "quality": "High"
+      },
+      {
+        "duration": "60 días",
+        "dose": "15 mg/día de L-metilfolato como adjunto a ISRS",
+        "year": 2012,
+        "studyType": "RCT",
+        "findings": [
+          "Tasa de respuesta 32.3% con L-metilfolato vs 14.6% con placebo (p=0.04)",
+          "Tasa de remisión no significativamente diferente (p=0.10)",
+          "Efecto mayor en pacientes con obesidad y marcadores inflamatorios elevados",
+          "Bien tolerado sin efectos adversos significativos vs placebo"
+        ],
+        "title": "L-methylfolate augmentation of SSRIs for treatment-resistant depression: a randomized, double-blind, placebo-controlled trial",
+        "participants": 148,
+        "quality": "High"
+      },
+      {
+        "duration": "Variable según estudios incluidos",
+        "dose": "400-5000 mcg/día",
+        "year": 2015,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Reducción de 7% en bajo peso al nacer (RR 0.93, IC 95%: 0.87-0.99)",
+          "Reducción de 8% en parto prematuro (RR 0.92, IC 95%: 0.86-0.98)",
+          "Efecto más pronunciado en poblaciones con deficiencia de folato",
+          "Confirma beneficios más allá de prevención de defectos del tubo neural"
+        ],
+        "title": "Folic acid supplementation and pregnancy: more than just neural tube defect prevention (Cochrane Review)",
+        "participants": 125000,
+        "quality": "High"
+      }
+    ]
+  }
+}

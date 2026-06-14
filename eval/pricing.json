@@ -1,0 +1,57 @@
+{
+  "generatedAt": "2026-06-14T23:43:00Z",
+  "source": "AWS Pricing API, serviceCode=AmazonBedrock, location=US East (N. Virginia), feature=On-demand Inference",
+  "unit": "USD per 1M tokens",
+  "models": {
+    "amazon.nova-lite-v1:0": {
+      "label": "Nova Lite",
+      "status": "CONFIRMED",
+      "inputPer1M": 0.06,
+      "outputPer1M": 0.24,
+      "inputSku": "QRGWJ3P8FT28EYX2",
+      "outputSku": "CBZ6A6U7XK8WJ3KA",
+      "effectiveDate": "2026-06-01T00:00:00Z"
+    },
+    "amazon.nova-2-lite-v1:0": {
+      "label": "Nova 2.0 Lite",
+      "status": "CONFIRMED",
+      "inputPer1M": 0.33,
+      "outputPer1M": 2.75,
+      "inputSku": "FY8T82UUN7VZR55K",
+      "outputSku": "DY69Q8C3F88CHA2Q",
+      "effectiveDate": "2026-06-01T00:00:00Z"
+    },
+    "amazon.nova-pro-v1:0": {
+      "label": "Nova Pro",
+      "status": "CONFIRMED",
+      "inputPer1M": 0.8,
+      "outputPer1M": 3.2,
+      "inputSku": "8X836UXRHN5Q5T2H",
+      "outputSku": "ARFVY95XGU794VBG",
+      "effectiveDate": "2026-06-01T00:00:00Z"
+    },
+    "mistral.mistral-large-3-675b-instruct": {
+      "label": "Mistral Large 3",
+      "status": "CONFIRMED",
+      "inputPer1M": 0.5,
+      "outputPer1M": 1.5,
+      "inputSku": "F6SEZYUB98SAU4VQ",
+      "outputSku": "3BG26FXFTP3HQ6SM",
+      "effectiveDate": "2026-06-01T00:00:00Z"
+    },
+    "anthropic.claude-haiku-4-5-20251001-v1:0": {
+      "label": "Claude Haiku 4.5",
+      "status": "NOT_CONFIRMED",
+      "inputPer1M": null,
+      "outputPer1M": null,
+      "note": "No matching us-east-1 Bedrock Pricing API On-demand Inference SKU was found in this run."
+    },
+    "anthropic.claude-sonnet-4-5-20250929-v1:0": {
+      "label": "Claude Sonnet 4.5 baseline",
+      "status": "NOT_CONFIRMED",
+      "inputPer1M": null,
+      "outputPer1M": null,
+      "note": "No matching us-east-1 Bedrock Pricing API On-demand Inference SKU was found in this run."
+    }
+  }
+}

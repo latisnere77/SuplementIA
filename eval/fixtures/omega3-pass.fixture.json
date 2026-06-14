@@ -1,0 +1,63 @@
+{
+  "modelId": "fixture.model.pass",
+  "inputTokens": 9500,
+  "outputTokens": 1700,
+  "output": {
+    "whatIsIt": "Omega 3 se refiere principalmente a EPA y DHA, acidos grasos presentes en pescado graso y suplementos.",
+    "primaryUses": ["Apoyo a ingesta de EPA/DHA", "Trigliceridos bajo supervision clinica"],
+    "dosage": {
+      "standard": "250-1000 mg/dia combinados de EPA y DHA para apoyo general, segun dieta y objetivo.",
+      "maxSafeDose": "Dosis altas deben revisarse con un profesional, especialmente si se usan anticoagulantes.",
+      "forms": [
+        {
+          "form": "Aceite de pescado concentrado",
+          "recommended": true,
+          "description": "Debe declarar EPA y DHA por porcion."
+        }
+      ]
+    },
+    "mechanisms": ["Modulacion de mediadores lipidicos", "Aporte de EPA y DHA"],
+    "worksFor": [
+      {
+        "condition": "Reduccion de trigliceridos con dosis terapeuticas",
+        "evidenceGrade": "A",
+        "studyCount": 20,
+        "notes": "Requiere dosis y seguimiento adecuados."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Molestia articular leve",
+        "evidenceGrade": "C",
+        "studyCount": 5,
+        "notes": "Efectos modestos e inconsistentes."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Reemplazar dieta cardioprotectora",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No sustituye dieta ni tratamiento."
+      }
+    ],
+    "safety": {
+      "sideEffects": ["Regusto a pescado", "Molestia gastrointestinal"],
+      "interactions": ["Precaucion con anticoagulantes o antiagregantes en dosis altas"],
+      "contraindications": ["Alergia a pescado o mariscos segun producto"]
+    },
+    "buyingGuidance": {
+      "qualityMarkers": ["EPA y DHA declarados", "Pruebas de oxidacion", "Certificacion de terceros"]
+    },
+    "practicalRecommendations": ["Tomar con comida", "Revisar cantidad real de EPA/DHA"],
+    "keyStudies": [
+      {
+        "title": "Fixture study",
+        "year": 2026,
+        "studyType": "Fixture",
+        "quality": "Fixture"
+      }
+    ],
+    "totalStudies": 1
+  }
+}
