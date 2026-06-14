@@ -69,6 +69,18 @@ export function buildCategorySeoCopy({
           'Review omega-3, coenzyme Q10, and garlic for heart health with evidence level, safety context, and responsible-use guidance.',
       },
     },
+    'common-deficiencies': {
+      es: {
+        title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
+        description:
+          'Compara vitamina D, hierro, B12, folato y zinc cuando se sospecha una deficiencia: qué se evalúa con análisis, señales frecuentes y cuándo consultar a un profesional.',
+      },
+      en: {
+        title: 'Common deficiencies: vitamin D, iron, B12, folate, and zinc',
+        description:
+          'Compare vitamin D, iron, B12, folate, and zinc when a deficiency is suspected: what labs assess, common signs, and when to talk to a professional.',
+      },
+    },
   };
 
   const targeted = targetedCopy[slug]?.[locale];
@@ -503,6 +515,166 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Heart health supplement guides',
+      },
+    },
+    'common-deficiencies': {
+      es: {
+        intro:
+          'Esta guía reúne nutrientes que suelen evaluarse por análisis de laboratorio o por contexto dietario, donde la suplementación depende de los niveles, la dieta y la etapa de vida. No promete resultados: ordena las opciones por evidencia, seguridad y cuándo conviene confirmar una deficiencia con un profesional.',
+        highlights: [
+          'La vitamina D puede asociarse con salud ósea, inmunidad y función muscular; su deficiencia es frecuente y se evalúa con análisis de 25-hidroxivitamina D.',
+          'El hierro debe guiarse por laboratorio (ferritina y hemoglobina); suplementar sin confirmar puede ser innecesario o contraproducente.',
+          'La vitamina B12 y el folato son especialmente relevantes en dietas veganas o vegetarianas, malabsorción y etapas tempranas del embarazo; conviene confirmarlos con análisis.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Vitamina D y deficiencia',
+            description:
+              'Deficiencia frecuente que se evalúa con análisis (25-OH vitamina D). Puede asociarse con salud ósea, inmunidad y función muscular; la dosis prudente depende del nivel y del contexto.',
+            supplementSlug: 'vitamin-d',
+            searchLabel: 'Abrir la guía de vitamina D',
+          },
+          {
+            title: 'Hierro guiado por análisis',
+            description:
+              'La suplementación se decide con ferritina y hemoglobina, no por síntomas aislados. Revisa dosis, tolerancia digestiva e interacciones con un profesional.',
+            supplementSlug: 'iron',
+            searchLabel: 'Abrir la guía de hierro',
+          },
+          {
+            title: 'Vitamina B12 en dietas y malabsorción',
+            description:
+              'Relevante en dietas veganas o vegetarianas y en malabsorción. Se confirma con análisis y se ajusta según la causa y los niveles.',
+            supplementSlug: 'vitamin-b12',
+            searchLabel: 'Abrir la guía de vitamina B12',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Folato y embarazo',
+            description:
+              'Importante para la división celular; su uso es clave antes y durante etapas tempranas de la gestación, con seguimiento profesional.',
+            href: '/portal/supplement/folic-acid?benefit=common-deficiencies',
+            label: 'Revisar folato',
+          },
+          {
+            title: 'Zinc según dieta y contexto',
+            description:
+              'Mineral para inmunidad, piel y función reproductiva; la suplementación depende de la dieta y del contexto clínico.',
+            href: '/portal/supplement/zinc?benefit=common-deficiencies',
+            label: 'Revisar zinc',
+          },
+          {
+            title: 'Energía y fatiga',
+            description:
+              'Cuando el cansancio es el motivo principal, conviene descartar deficiencias (hierro, B12, vitamina D) con análisis antes de elegir suplementos.',
+            href: '/portal/category/energy',
+            label: 'Abrir suplementos para energía',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre deficiencias comunes',
+        faqs: [
+          {
+            question: '¿Cómo sé si tengo una deficiencia?',
+            answer:
+              'Las deficiencias se confirman con análisis de laboratorio (por ejemplo 25-OH vitamina D, ferritina, hemoglobina, B12 y folato), no solo por síntomas. Un profesional interpreta los resultados según tu dieta, etapa de vida y antecedentes.',
+          },
+          {
+            question: '¿Qué análisis conviene pedir?',
+            answer:
+              'Depende del caso, pero suelen evaluarse vitamina D (25-OH), perfil de hierro (ferritina y hemoglobina), vitamina B12 y folato. Comenta con tu profesional cuáles aplican a tu situación.',
+          },
+          {
+            question: '¿Puedo suplementar sin hacerme análisis?',
+            answer:
+              'No es lo ideal, sobre todo con hierro: suplementar sin confirmar niveles puede ser innecesario o contraproducente. Lo prudente es evaluar con análisis y consultar a un profesional.',
+          },
+          {
+            question: '¿Cuándo debo hablar con un profesional?',
+            answer:
+              'Cuando hay síntomas persistentes, embarazo o búsqueda de embarazo, dietas restrictivas, malabsorción o uso de medicamentos. En esos casos la evaluación clínica tiene prioridad sobre la autosuplementación.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para deficiencias',
+      },
+      en: {
+        intro:
+          'This guide gathers nutrients usually checked through lab tests or dietary context, where supplementation depends on levels, diet, and life stage. It does not promise outcomes: it orders the options by evidence, safety, and when a deficiency should be confirmed with a professional.',
+        highlights: [
+          'Vitamin D may be associated with bone health, immunity, and muscle function; deficiency is common and is assessed with a 25-hydroxyvitamin D test.',
+          'Iron should be guided by labs (ferritin and hemoglobin); supplementing without confirming can be unnecessary or counterproductive.',
+          'Vitamin B12 and folate are especially relevant for vegan or vegetarian diets, malabsorption, and early pregnancy; confirming them with labs is advisable.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Vitamin D and deficiency',
+            description:
+              'A common deficiency assessed with a 25-OH vitamin D test. It may be associated with bone health, immunity, and muscle function; a prudent dose depends on the level and context.',
+            supplementSlug: 'vitamin-d',
+            searchLabel: 'Open the vitamin D guide',
+          },
+          {
+            title: 'Iron guided by labs',
+            description:
+              'Supplementation is decided with ferritin and hemoglobin, not isolated symptoms. Review dose, digestive tolerance, and interactions with a professional.',
+            supplementSlug: 'iron',
+            searchLabel: 'Open the iron guide',
+          },
+          {
+            title: 'Vitamin B12 for diets and malabsorption',
+            description:
+              'Relevant for vegan or vegetarian diets and malabsorption. It is confirmed with labs and adjusted by cause and levels.',
+            supplementSlug: 'vitamin-b12',
+            searchLabel: 'Open the vitamin B12 guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Folate and pregnancy',
+            description:
+              'Important for cell division; its use matters before and during early pregnancy, with professional follow-up.',
+            href: '/portal/supplement/folic-acid?benefit=common-deficiencies',
+            label: 'Review folate',
+          },
+          {
+            title: 'Zinc by diet and context',
+            description:
+              'A mineral for immunity, skin, and reproductive function; supplementation depends on diet and clinical context.',
+            href: '/portal/supplement/zinc?benefit=common-deficiencies',
+            label: 'Review zinc',
+          },
+          {
+            title: 'Energy and fatigue',
+            description:
+              'When tiredness is the main concern, it helps to rule out deficiencies (iron, B12, vitamin D) with labs before choosing supplements.',
+            href: '/portal/category/energy',
+            label: 'Open energy supplements',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about common deficiencies',
+        faqs: [
+          {
+            question: 'How do I know if I have a deficiency?',
+            answer:
+              'Deficiencies are confirmed with lab tests (for example 25-OH vitamin D, ferritin, hemoglobin, B12, and folate), not symptoms alone. A professional interprets the results based on your diet, life stage, and history.',
+          },
+          {
+            question: 'Which lab tests are worth requesting?',
+            answer:
+              'It depends on the case, but vitamin D (25-OH), an iron panel (ferritin and hemoglobin), vitamin B12, and folate are commonly assessed. Discuss with your professional which ones apply to you.',
+          },
+          {
+            question: 'Can I supplement without lab tests?',
+            answer:
+              'It is not ideal, especially with iron: supplementing without confirming levels can be unnecessary or counterproductive. The prudent path is to assess with labs and consult a professional.',
+          },
+          {
+            question: 'When should I talk to a professional?',
+            answer:
+              'When there are persistent symptoms, pregnancy or trying to conceive, restrictive diets, malabsorption, or medication use. In those cases clinical assessment takes priority over self-supplementation.',
+          },
+        ],
+        supplementLinksHeading: 'Deficiency supplement guides',
       },
     },
   };
