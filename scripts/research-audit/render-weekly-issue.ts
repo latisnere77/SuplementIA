@@ -1,6 +1,15 @@
 #!/usr/bin/env tsx
 
+import { mkdirSync, writeFileSync } from 'fs';
+import path from 'path';
 import {
+  DEFAULT_GITHUB_ISSUE_TOKEN_SECRET_ID,
+  loadResearchAuditGitHubIssueToken,
+} from '../../lib/research-audit/aws-secret-loader';
+import {
+  createResearchAuditGitHubClient,
+  loadProviderAuditReportFromFile,
+  publishResearchAuditWeeklyIssue,
   renderLocalResearchAuditWeeklyIssue,
   type ResearchAuditIssuePublisherInput,
 } from '../../lib/research-audit/github-issue-publisher';
@@ -12,12 +21,19 @@ interface CliOptions {
   weekId?: string;
   repository: string;
   outputDir: string;
+  createGithubIssue: boolean;
+  useAwsSecret: boolean;
+  githubTokenSecretId: string;
+  awsRegion?: string;
 }
 
 function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = {
     repository: 'latisnere77/SuplementIA',
     outputDir: '.research-audit-reports',
+    createGithubIssue: false,
+    useAwsSecret: false,
+    githubTokenSecretId: DEFAULT_GITHUB_ISSUE_TOKEN_SECRET_ID,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -41,6 +57,16 @@ function parseArgs(argv: string[]): CliOptions {
       index += 1;
     } else if (arg === '--output-dir') {
       options.outputDir = requireValue(arg, next);
+      index += 1;
+    } else if (arg === '--create-github-issue') {
+      options.createGithubIssue = true;
+    } else if (arg === '--use-aws-secret') {
+      options.useAwsSecret = true;
+    } else if (arg === '--github-token-secret-id') {
+      options.githubTokenSecretId = requireValue(arg, next);
+      index += 1;
+    } else if (arg === '--aws-region') {
+      options.awsRegion = requireValue(arg, next);
       index += 1;
     } else if (arg === '--help') {
       printHelp();
@@ -69,7 +95,14 @@ function printHelp() {
     '    --json-report .research-audit-reports/provider-audit.json \\',
     '    --week-id 2026-W23',
     '',
-    'This is dry-run/local only. It renders a proposed GitHub Issue Markdown file and never calls GitHub.',
+    'Default behavior is dry-run/local only. It renders a proposed GitHub Issue Markdown file and never calls GitHub.',
+    '',
+    'Real GitHub issue creation is manual-only:',
+    '  --create-github-issue',
+    '',
+    'Credentials are loaded from GITHUB_ISSUE_TOKEN/GITHUB_TOKEN, or from AWS Secrets Manager only when',
+    'explicitly passing --use-aws-secret. Default secret:',
+    `  ${DEFAULT_GITHUB_ISSUE_TOKEN_SECRET_ID}`,
   ].join('\n'));
 }
 
@@ -88,30 +121,89 @@ async function main() {
   const input: ResearchAuditIssuePublisherInput = {
     weekId: options.weekId || defaultWeekId(),
     repository: options.repository,
-    dryRun: true,
-    createIssue: false,
+    dryRun: !options.createGithubIssue,
+    createIssue: options.createGithubIssue,
     reports: {
       json: options.jsonReport,
       markdown: options.markdownReport,
       summary: options.summaryReport,
     },
   };
-  const { result, markdownPath } = await renderLocalResearchAuditWeeklyIssue({
-    input,
-    outputDir: options.outputDir,
-  });
+  const { result, markdownPath } = options.createGithubIssue
+    ? await publishAndRenderLocalIssue(input, options)
+    : await renderLocalResearchAuditWeeklyIssue({
+        input,
+        outputDir: options.outputDir,
+      });
 
   console.log(JSON.stringify({
     dryRun: result.dryRun,
     createIssue: result.createIssue,
     action: result.action,
+    issue: result.issue
+      ? { number: result.issue.number, title: result.issue.title }
+      : undefined,
     title: result.plan.title,
     labels: result.plan.labels,
     shouldCreateIssue: result.plan.shouldCreateIssue,
     noActionableFindings: result.plan.noActionableFindings,
+    error: result.error,
     markdownPath,
     metrics: result.plan.metrics,
   }, null, 2));
+}
+
+async function publishAndRenderLocalIssue(
+  input: ResearchAuditIssuePublisherInput,
+  options: CliOptions
+) {
+  if (!input.reports.json) {
+    throw new Error('input.reports.json is required for GitHub issue publishing');
+  }
+
+  const report = loadProviderAuditReportFromFile(input.reports.json);
+  const preflight = await publishResearchAuditWeeklyIssue({
+    input,
+    report,
+  });
+
+  if (!preflight.plan.shouldCreateIssue) {
+    const markdownPath = writeIssueMarkdown(options.outputDir, input.weekId, preflight.plan.body);
+    return { result: preflight, markdownPath };
+  }
+
+  const token = await loadResearchAuditGitHubIssueToken({
+    enabled: options.useAwsSecret,
+    existingToken: process.env.GITHUB_ISSUE_TOKEN || process.env.GITHUB_TOKEN,
+    secretId: options.githubTokenSecretId,
+    region: options.awsRegion,
+  });
+
+  if (!token) {
+    throw new Error(
+      'GitHub issue token is required. Set GITHUB_ISSUE_TOKEN or pass --use-aws-secret.'
+    );
+  }
+
+  const result = await publishResearchAuditWeeklyIssue({
+    input,
+    report,
+    github: createResearchAuditGitHubClient({ token }),
+  });
+  const markdownPath = writeIssueMarkdown(options.outputDir, input.weekId, result.plan.body);
+
+  return { result, markdownPath };
+}
+
+function writeIssueMarkdown(outputDir: string, weekId: string, body: string): string {
+  mkdirSync(outputDir, { recursive: true });
+  const markdownPath = path.join(
+    outputDir,
+    `github-issue-${weekId}-${new Date().toISOString().replace(/[:.]/g, '-')}.md`
+  );
+  writeFileSync(markdownPath, body);
+
+  return markdownPath;
 }
 
 main().catch((error) => {
