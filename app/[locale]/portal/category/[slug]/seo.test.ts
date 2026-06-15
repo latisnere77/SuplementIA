@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const womensHealthUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for womens health', () => {
+    const womensCopyEs = buildCategorySeoCopy({
+      slug: 'womens-health',
+      categoryName: 'Salud Femenina',
+      categoryDescription: 'Apoyo para el equilibrio hormonal, el ciclo menstrual y la salud ósea en mujeres.',
+      locale: 'es',
+    });
+    const womensCopyEn = buildCategorySeoCopy({
+      slug: 'womens-health',
+      categoryName: 'Women’s Health',
+      categoryDescription: 'Support for hormone balance, menstrual cycle, and bone health in women.',
+      locale: 'en',
+    });
+    const womensContentEs = buildCategorySeoContent('womens-health', 'es');
+    const womensContentEn = buildCategorySeoContent('womens-health', 'en');
+
+    expect(womensCopyEs.title).toBe('Suplementos para salud femenina: folato, hierro y calcio');
+    expect(womensCopyEs.description).toContain('laboratorios');
+    expect(womensCopyEs.title).not.toContain('evidencia científica');
+    expect(womensCopyEn.title).toBe('Women’s health supplements: folate, iron, and calcium');
+    expect(womensCopyEn.description).toContain('professional review');
+    expect(womensCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(womensContentEs).not.toBeNull();
+    expect(womensContentEn).not.toBeNull();
+    expect(womensContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'folic-acid',
+      'iron',
+      'calcium',
+    ]);
+    expect(womensContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'folic-acid',
+      'iron',
+      'calcium',
+    ]);
+    expect(womensContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/joint-bone-health',
+      '/portal/supplement/folic-acid?benefit=womens-health',
+      '/portal/supplement/iron?benefit=womens-health',
+    ]);
+    expect(womensContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/joint-bone-health',
+      '/portal/supplement/folic-acid?benefit=womens-health',
+      '/portal/supplement/iron?benefit=womens-health',
+    ]);
+    expect(womensContentEs?.faqs).toHaveLength(4);
+    expect(womensContentEn?.faqs).toHaveLength(4);
+    expect(womensContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué revisar antes de usar hierro?'
+    );
+    expect(womensContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'What should I review before using iron?'
+    );
+
+    const serialized = JSON.stringify([womensCopyEs, womensCopyEn, womensContentEs, womensContentEn]);
+    expect(serialized).not.toMatch(womensHealthUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('womens-health', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);

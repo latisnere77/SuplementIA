@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'womens-health': {
+      es: {
+        title: 'Suplementos para salud femenina: folato, hierro y calcio',
+        description:
+          'Compara folato, hierro y calcio por ciclo menstrual, embarazo, dieta, laboratorios, salud ósea y señales que requieren evaluación profesional.',
+      },
+      en: {
+        title: 'Women’s health supplements: folate, iron, and calcium',
+        description:
+          'Compare folate, iron, and calcium by menstrual cycle, pregnancy context, diet, labs, bone health, and signs that need professional review.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'womens-health': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para salud femenina, ciclo menstrual, embarazo, energía y salud ósea. La lectura responsable separa etapa de vida, dieta, laboratorios, medicamentos y señales que requieren evaluación profesional.',
+        highlights: [
+          'Folato se interpreta por etapa reproductiva, embarazo posible o planeado, dieta y seguimiento profesional.',
+          'Hierro debe revisarse con ferritina, hemoglobina, pérdidas menstruales, tolerancia digestiva e interacciones.',
+          'Calcio y vitamina D pertenecen al contexto de salud ósea, ingesta dietaria, edad y riesgo individual.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Folato y etapa reproductiva',
+            description:
+              'Revisar embarazo posible o planeado, dieta, medicamentos y dosis con orientación profesional.',
+            supplementSlug: 'folic-acid',
+            searchLabel: 'Abrir la guía de folato',
+          },
+          {
+            title: 'Hierro guiado por análisis',
+            description:
+              'Comparar ferritina, hemoglobina, menstruación, tolerancia digestiva e interacciones antes de suplementar.',
+            supplementSlug: 'iron',
+            searchLabel: 'Abrir la guía de hierro',
+          },
+          {
+            title: 'Calcio y salud ósea',
+            description:
+              'Revisar ingesta dietaria, vitamina D, edad, menopausia y antecedentes antes de elegir dosis.',
+            supplementSlug: 'calcium',
+            searchLabel: 'Abrir la guía de calcio',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'Hierro, folato, B12, vitamina D y zinc se interpretan mejor con dieta, etapa de vida y análisis.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Salud articular y ósea',
+            description:
+              'Calcio, vitamina D, colágeno y glucosamina se comparan mejor dentro del contexto óseo y articular.',
+            href: '/portal/category/joint-bone-health',
+            label: 'Revisar salud ósea',
+          },
+          {
+            title: 'Folato',
+            description:
+              'Guía específica para revisar etapa reproductiva, dieta, dosis y seguimiento.',
+            href: '/portal/supplement/folic-acid?benefit=womens-health',
+            label: 'Comparar folato',
+          },
+          {
+            title: 'Hierro',
+            description:
+              'Útil para revisar laboratorio, tolerancia digestiva, dieta e interacciones.',
+            href: '/portal/supplement/iron?benefit=womens-health',
+            label: 'Comparar hierro',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos y salud femenina',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de usar hierro?',
+            answer:
+              'Ferritina, hemoglobina, pérdidas menstruales, dieta, embarazo, tolerancia digestiva y medicamentos. El hierro no debería elegirse solo por cansancio sin contexto.',
+          },
+          {
+            question: '¿Folato y ácido fólico son lo mismo?',
+            answer:
+              'Se relacionan, pero la forma, dosis y momento importan. En embarazo posible o planeado conviene revisar la decisión con un profesional.',
+          },
+          {
+            question: '¿Calcio siempre debe suplementarse?',
+            answer:
+              'No. Primero conviene estimar ingesta dietaria, vitamina D, edad, menopausia, antecedentes y medicamentos para evitar dosis innecesarias.',
+          },
+          {
+            question: '¿Cuándo buscar atención profesional?',
+            answer:
+              'Sangrado abundante, dolor intenso, embarazo, lactancia, anemia, fatiga persistente, mareos, pérdida de peso o enfermedades crónicas requieren orientación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para salud femenina',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for women’s health, menstrual cycle context, pregnancy context, energy, and bone health. Responsible review separates life stage, diet, labs, medications, and signs that need professional review.',
+        highlights: [
+          'Folate is interpreted through reproductive stage, possible or planned pregnancy, diet, and professional follow-up.',
+          'Iron should be reviewed with ferritin, hemoglobin, menstrual losses, digestive tolerance, and interactions.',
+          'Calcium and vitamin D belong in the bone-health context, including dietary intake, age, and individual risk.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Folate and reproductive stage',
+            description:
+              'Review possible or planned pregnancy, diet, medications, and dose with professional guidance.',
+            supplementSlug: 'folic-acid',
+            searchLabel: 'Open the folate guide',
+          },
+          {
+            title: 'Iron guided by labs',
+            description:
+              'Compare ferritin, hemoglobin, menstruation, digestive tolerance, and interactions before supplementing.',
+            supplementSlug: 'iron',
+            searchLabel: 'Open the iron guide',
+          },
+          {
+            title: 'Calcium and bone health',
+            description:
+              'Review dietary intake, vitamin D, age, menopause, and history before choosing a dose.',
+            supplementSlug: 'calcium',
+            searchLabel: 'Open the calcium guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Common deficiencies',
+            description:
+              'Iron, folate, B12, vitamin D, and zinc are interpreted better with diet, life stage, and labs.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Joint and bone health',
+            description:
+              'Calcium, vitamin D, collagen, and glucosamine compare better inside bone and joint context.',
+            href: '/portal/category/joint-bone-health',
+            label: 'Review bone health',
+          },
+          {
+            title: 'Folate',
+            description:
+              'A specific guide for reviewing reproductive stage, diet, dose, and follow-up.',
+            href: '/portal/supplement/folic-acid?benefit=womens-health',
+            label: 'Compare folate',
+          },
+          {
+            title: 'Iron',
+            description:
+              'Useful for reviewing labs, digestive tolerance, diet, and interactions.',
+            href: '/portal/supplement/iron?benefit=womens-health',
+            label: 'Compare iron',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about supplements and women’s health',
+        faqs: [
+          {
+            question: 'What should I review before using iron?',
+            answer:
+              'Ferritin, hemoglobin, menstrual losses, diet, pregnancy, digestive tolerance, and medications. Iron should not be chosen based on tiredness alone without context.',
+          },
+          {
+            question: 'Are folate and folic acid the same?',
+            answer:
+              'They are related, but form, dose, and timing matter. With possible or planned pregnancy, review the decision with a professional.',
+          },
+          {
+            question: 'Should calcium always be supplemented?',
+            answer:
+              'No. First estimate dietary intake, vitamin D, age, menopause, history, and medications to avoid unnecessary dosing.',
+          },
+          {
+            question: 'When should I seek professional care?',
+            answer:
+              'Heavy bleeding, intense pain, pregnancy, breastfeeding, anemia, persistent fatigue, dizziness, weight loss, or chronic disease warrant professional guidance.',
+          },
+        ],
+        supplementLinksHeading: 'Women’s health supplement guides',
       },
     },
     'common-deficiencies': {
