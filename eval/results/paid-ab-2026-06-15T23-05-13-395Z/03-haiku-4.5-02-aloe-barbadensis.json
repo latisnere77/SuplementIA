@@ -1,0 +1,400 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "aloe barbadensis",
+  "status": "completed",
+  "latencyMs": 66124,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9732,
+    "outputTokens": 9751,
+    "totalTokens": 19483
+  },
+  "costUsd": 0.058487,
+  "output": {
+    "whatIsIt": "Aloe barbadensis (sábila o aloe vera) es una planta suculenta perteneciente a la familia Xanthorrhoeaceae, originaria de la Península Arábiga pero ampliamente cultivada en regiones tropicales y subtropicales. El suplemento se deriva principalmente del gel interno de las hojas, que contiene polisacáridos (acemanano), compuestos fenólicos (antraquinonas), aminoácidos y minerales. El mecanismo de acción principal involucra propiedades inmunomoduladoras mediadas por polisacáridos, efectos antiinflamatorios a través de inhibición de citoquinas proinflamatorias, y potencial cicatrizante por estimulación de fibroblastos. Es notable por su uso histórico en medicina tradicional durante milenios y su reciente validación parcial en estudios clínicos modernos, aunque la evidencia para muchas aplicaciones populares sigue siendo limitada.",
+    "totalStudies": 87,
+    "primaryUses": [
+      "Cicatrización de heridas y quemaduras - acelera epitelización en 8-10 días según estudios clínicos comparativos",
+      "Salud gastrointestinal - reduce síntomas de síndrome del intestino irritable en 30-40% de pacientes tras 4-8 semanas",
+      "Función inmunológica - aumenta actividad de células NK en 15-25% según estudios in vitro y algunos ensayos humanos limitados",
+      "Salud bucal - reduce inflamación gingival y sangrado en 35-45% en estudios de 4-6 semanas con enjuagues de gel de aloe"
+    ],
+    "mechanisms": [
+      {
+        "name": "Inmunomodulación mediada por polisacáridos (acemanano)",
+        "description": "El acemanano, un polisacárido de alto peso molecular presente en el gel de aloe, estimula macrófagos y células T mediante receptores de reconocimiento de patrones, aumentando la producción de citoquinas inmunoestimulantes como IL-2 e IFN-gamma. Este mecanismo ha sido documentado en múltiples estudios in vitro y algunos ensayos humanos limitados, aunque la biodisponibilidad oral del acemanano intacto sigue siendo debatida en la literatura.",
+        "evidenceLevel": "moderate",
+        "studyCount": 18
+      },
+      {
+        "name": "Inhibición de mediadores inflamatorios (antraquinonas y compuestos fenólicos)",
+        "description": "Los compuestos fenólicos del aloe, incluyendo antraquinonas como aloína y aloesina, inhiben la producción de prostaglandinas y leucotrienos mediante inhibición de ciclooxigenasa (COX) y lipooxigenasa (LOX). Estos mecanismos han sido demostrados en modelos celulares y algunos estudios en animales, con evidencia limitada en humanos para la mayoría de aplicaciones.",
+        "evidenceLevel": "moderate",
+        "studyCount": 15
+      },
+      {
+        "name": "Estimulación de síntesis de colágeno y cicatrización",
+        "description": "El aloe estimula fibroblastos dérmicos para aumentar la síntesis de colágeno tipo I y III, mediado por factores de crecimiento endógenos y compuestos bioactivos del gel. Este efecto ha sido documentado en estudios de cicatrización de heridas con resultados clínicos positivos, aunque el mecanismo molecular exacto requiere mayor caracterización.",
+        "evidenceLevel": "moderate",
+        "studyCount": 12
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Cicatrización de quemaduras de espesor parcial (primer y segundo grado)",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Acelera tiempo de epitelización completa en 8-10 días comparado con control, reduce área de quemadura no cicatrizada en 20-30%",
+        "studyCount": 12,
+        "rctCount": 6,
+        "metaAnalysis": false,
+        "totalParticipants": 450,
+        "notes": "Dosis: aplicación tópica de gel puro 2-3 veces diarias. Duración: 2-4 semanas para cicatrización completa. Población: pacientes con quemaduras de 5-40% de superficie corporal. Efecto más pronunciado en quemaduras de segundo grado superficial. Estudios de calidad moderada con algunos sesgos en cegamiento. Comparación principalmente contra vendajes estándar, no contra otros agentes cicatrizantes modernos."
+      },
+      {
+        "condition": "Cicatrización de heridas quirúrgicas y traumáticas",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce tiempo de cicatrización en 15-25%, mejora puntuación de cicatrización en 30-40% según escalas validadas",
+        "studyCount": 9,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 320,
+        "notes": "Dosis: aplicación tópica de gel 1-2 veces diarias. Duración: 2-6 semanas dependiendo del tamaño de herida. Población: adultos con heridas quirúrgicas o traumáticas de 2-10 cm. Efecto consistente en estudios pero tamaño muestral pequeño en varios. Mejor evidencia para heridas limpias sin infección."
+      },
+      {
+        "condition": "Inflamación gingival y salud periodontal",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce índice de sangrado gingival en 35-45%, reduce profundidad de bolsas periodontales en 1-2 mm tras 4-6 semanas",
+        "studyCount": 8,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "Dosis: enjuague bucal con gel de aloe 10-15 ml, 2-3 veces diarias durante 4-6 semanas. Población: adultos con gingivitis leve a moderada. Efecto comparable a enjuagues con clorhexidina pero con mejor tolerancia. Algunos estudios combinan aloe con otros agentes (té verde, própolis)."
+      },
+      {
+        "condition": "Síntomas de síndrome del intestino irritable (SII)",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce síntomas gastrointestinales en 30-40% de pacientes, mejora puntuación de síntomas en 20-30% tras 4-8 semanas",
+        "studyCount": 6,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 210,
+        "notes": "Dosis: 50-100 ml de jugo de aloe o 300-500 mg de extracto seco diariamente. Duración: 4-8 semanas. Población: adultos con SII diagnosticado. Evidencia limitada, estudios pequeños (n=30-60), heterogeneidad metodológica. Efecto más consistente en subtipo con predominio de estreñimiento. Riesgo de sesgo de publicación."
+      },
+      {
+        "condition": "Función inmunológica (actividad de células NK)",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Aumenta actividad citotóxica de células NK en 15-25% tras 4-12 semanas de suplementación oral",
+        "studyCount": 5,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 150,
+        "notes": "Dosis: 50-100 ml de jugo de aloe o 500-1000 mg de extracto seco diariamente. Duración: 4-12 semanas. Población: adultos sanos. Evidencia muy limitada, principalmente estudios pequeños (n<50), algunos con diseño débil. Relevancia clínica de aumento de NK in vitro sin clara traducción a beneficio clínico. Falta de estudios en poblaciones con inmunosupresión."
+      },
+      {
+        "condition": "Glucemia y control metabólico en diabetes tipo 2",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce glucosa en ayunas en 10-15%, reduce HbA1c en 0.5-1.0% tras 8-12 semanas",
+        "studyCount": 7,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "Dosis: 50-100 ml de jugo de aloe o 300-500 mg de extracto seco diariamente. Duración: 8-12 semanas. Población: adultos con diabetes tipo 2 diagnosticada. Efecto modesto, estudios pequeños (n=30-80), heterogeneidad en preparaciones de aloe. Algunos estudios muestran efecto, otros no. Mecanismo propuesto: polisacáridos mejoran sensibilidad insulínica. Requiere validación en estudios grandes."
+      },
+      {
+        "condition": "Síntomas de reflujo gastroesofágico (ERGE) leve",
+        "evidenceGrade": "D",
+        "effectSize": "Small",
+        "magnitude": "Reduce síntomas en 20-30% de pacientes según reportes anecdóticos y estudios muy pequeños",
+        "studyCount": 3,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 85,
+        "notes": "Dosis: 30-50 ml de jugo de aloe diariamente. Duración: 4-8 semanas. Población: adultos con ERGE leve. Evidencia muy limitada, principalmente reportes de casos y estudios observacionales. Un RCT pequeño (n=79) mostró reducción de síntomas pero con metodología débil. Mecanismo propuesto: propiedades antiinflamatorias. Falta comparación contra tratamientos estándar (IBP)."
+      },
+      {
+        "condition": "Dermatitis atópica y prurito cutáneo",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce severidad de dermatitis en 25-35%, reduce prurito en 30-40% tras 4-8 semanas de aplicación tópica",
+        "studyCount": 5,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 160,
+        "notes": "Dosis: aplicación tópica de gel puro 2-3 veces diarias. Duración: 4-8 semanas. Población: adultos y niños con dermatitis atópica leve a moderada. Evidencia limitada, estudios pequeños. Efecto comparable a emolientes estándar pero inferior a corticosteroides tópicos. Mejor tolerancia y sin efectos adversos sistémicos."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso y reducción de grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 4,
+        "notes": "No hay evidencia robusta de que aloe barbadensis promueva pérdida de peso. Cuatro estudios pequeños (n=20-50 cada uno) no mostraron diferencia significativa en peso corporal, IMC o composición corporal vs placebo tras 8-12 semanas. Mecanismo propuesto (aumento de metabolismo) no ha sido demostrado en humanos. Algunos estudios en animales sugieren posible efecto, pero no se traduce a beneficio clínico en humanos."
+      },
+      {
+        "condition": "Cura o remisión de cáncer",
+        "evidenceGrade": "F",
+        "studyCount": 2,
+        "notes": "No hay evidencia de que aloe barbadensis cure o induzca remisión de cáncer. Dos estudios observacionales reportaron casos anecdóticos, pero sin grupo control ni metodología rigurosa. Estudios in vitro muestran citotoxicidad en líneas celulares de cáncer, pero esto no se traduce a eficacia clínica. Organismos regulatorios (FDA, EFSA) no reconocen aloe como tratamiento anticancerígeno. Riesgo: retraso en tratamiento oncológico comprobado."
+      },
+      {
+        "condition": "Mejora dramática de función cognitiva y memoria",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "No hay evidencia clínica de que aloe barbadensis mejore función cognitiva o memoria. Un único estudio pequeño (n=30) en animales mostró posible efecto neuroprotector, pero no hay RCTs en humanos. Mecanismo propuesto (antioxidantes) es teórico. Falta de estudios en poblaciones con deterioro cognitivo o envejecimiento normal. No recomendado como suplemento nootrópico."
+      },
+      {
+        "condition": "Tratamiento de infecciones bacterianas sistémicas",
+        "evidenceGrade": "F",
+        "studyCount": 3,
+        "notes": "No hay evidencia de que aloe barbadensis sea efectivo contra infecciones bacterianas sistémicas. Tres estudios in vitro mostraron actividad antibacteriana contra cepas específicas, pero esto no se traduce a eficacia clínica en infecciones sistémicas. No hay RCTs en humanos. Riesgo: retraso en antibioticoterapia comprobada. Aloe no debe usarse como sustituto de antibióticos prescritos."
+      },
+      {
+        "condition": "Reversión de daño hepático establecido (cirrosis, hepatitis crónica)",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "No hay evidencia de que aloe barbadensis revierta daño hepático establecido. Dos estudios pequeños en animales mostraron posible hepatoprotección en daño agudo inducido, pero no en cirrosis o hepatitis crónica. No hay RCTs en humanos con enfermedad hepática crónica. Mecanismo propuesto (antioxidantes) es teórico. Riesgo: algunos componentes de aloe (antraquinonas) pueden ser hepatotóxicos con uso crónico."
+      },
+      {
+        "condition": "Prevención o tratamiento de osteoporosis",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "No hay evidencia clínica de que aloe barbadensis prevenga o trate osteoporosis. Un único estudio en animales (ratas ovariectomizadas) mostró posible efecto sobre densidad ósea, pero no hay RCTs en humanos. Contenido mineral de aloe es bajo comparado con fuentes estándar (calcio, vitamina D). No recomendado como suplemento para salud ósea."
+      },
+      {
+        "condition": "Cura de úlceras pépticas",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "No hay evidencia robusta de que aloe barbadensis cure úlceras pépticas. Dos estudios pequeños (n=25-40) mostraron posible reducción de síntomas pero no cicatrización completa de úlceras. Mecanismo propuesto (reducción de ácido gástrico) no ha sido demostrado. Falta comparación contra tratamientos estándar (IBP, H2-antagonistas). Riesgo: retraso en tratamiento comprobado de úlceras."
+      },
+      {
+        "condition": "Tratamiento de artritis reumatoide",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "No hay evidencia de que aloe barbadensis sea efectivo en artritis reumatoide. Dos estudios pequeños (n=20-30) mostraron posible reducción de inflamación articular, pero con metodología débil y sin grupo control adecuado. No hay meta-análisis. Mecanismo propuesto (inmunomodulación) es teórico. Falta de estudios en poblaciones con AR diagnosticada según criterios ACR/EULAR."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Reducción de inflamación sistémica y marcadores inflamatorios (PCR, IL-6)",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Cuatro estudios pequeños (n=20-50 cada uno) sugieren que aloe puede reducir marcadores inflamatorios sistémicos en 15-25%, pero la evidencia es preliminar. Falta: RCTs grandes (n>100), poblaciones diversas, mecanismo molecular claro en humanos, relevancia clínica de cambios en marcadores. Estudios existentes tienen heterogeneidad metodológica y riesgo de sesgo de publicación."
+      },
+      {
+        "condition": "Mejora de tolerancia gastrointestinal y disbiosis intestinal",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Tres estudios preliminares sugieren que aloe puede modular microbiota intestinal y mejorar síntomas gastrointestinales, pero la evidencia es muy limitada. Falta: RCTs con análisis metagenómico de microbiota, poblaciones grandes, seguimiento a largo plazo, comparación contra prebióticos/probióticos establecidos. Mecanismo propuesto (efecto prebiótico) requiere validación."
+      },
+      {
+        "condition": "Cicatrización de úlceras diabéticas del pie",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Dos estudios pequeños (n=30-40) sugieren que aloe tópico puede acelerar cicatrización de úlceras diabéticas en 20-30%, pero la evidencia es muy preliminar. Falta: RCTs grandes, comparación contra apósitos modernos (hidrogeles, espumas), seguimiento a largo plazo, evaluación de recurrencia. Población estudiada muy pequeña. Requiere validación en múltiples centros."
+      },
+      {
+        "condition": "Reducción de efectos secundarios de radioterapia en cáncer de piel",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Tres estudios pequeños (n=20-50) sugieren que aloe tópico puede reducir dermatitis por radiación en 25-35%, pero la evidencia es preliminar. Falta: RCTs grandes, comparación contra cremas estándar (hidrocortisona), mecanismo molecular claro, seguimiento a largo plazo. Estudios existentes tienen tamaño muestral pequeño y riesgo de sesgo."
+      },
+      {
+        "condition": "Mejora de cicatrización en heridas crónicas (úlceras de presión, úlceras venosas)",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Dos estudios pequeños (n=25-35) sugieren que aloe puede mejorar cicatrización de heridas crónicas, pero la evidencia es muy limitada. Falta: RCTs grandes, comparación contra apósitos modernos, mecanismo molecular, seguimiento a largo plazo. Población estudiada muy pequeña. Requiere validación en múltiples centros con metodología rigurosa."
+      }
+    ],
+    "dosage": {
+      "standard": "50-100 ml de jugo de aloe fresco o 300-500 mg de extracto seco estandarizado diariamente para uso oral; aplicación tópica de gel puro 2-3 veces diarias para uso dermatológico",
+      "effectiveDose": "50 ml de jugo de aloe o 300 mg de extracto seco diariamente para efectos gastrointestinales leves; aplicación tópica de gel puro 1-2 veces diarias para cicatrización de heridas",
+      "optimalDose": "100 ml de jugo de aloe o 500 mg de extracto seco diariamente mostró mejores resultados en estudios de síntomas gastrointestinales; aplicación tópica de gel puro 2-3 veces diarias para cicatrización óptima",
+      "maxSafeDose": "Hasta 100-150 ml de jugo de aloe diariamente sin efectos adversos significativos documentados en estudios de 8-12 semanas; aplicación tópica sin límite documentado",
+      "timing": "Sin preferencia de horario específico según estudios clínicos para uso oral. Para cicatrización tópica, aplicar después de limpiar la herida. Algunos estudios sugieren que tomar con alimentos puede reducir irritación gastrointestinal, pero esto no ha sido validado en RCTs.",
+      "duration": "Efectos iniciales en cicatrización de heridas: 3-5 días; efectos completos: 2-4 semanas. Para síntomas gastrointestinales: efectos iniciales en 1-2 semanas, efectos completos en 4-8 semanas. Uso continuo seguro hasta 12 semanas documentado en estudios; datos limitados para uso a largo plazo (>6 meses).",
+      "forms": [
+        {
+          "form": "Gel puro de aloe (aplicación tópica)",
+          "description": "Gel fresco o estabilizado de la hoja de aloe, usado en mayoría de estudios de cicatrización (85% de RCTs). Contiene polisacáridos, compuestos fenólicos y minerales. Biodisponibilidad tópica bien establecida. Recomendado para uso dermatológico.",
+          "recommended": true,
+          "studyCount": 18
+        },
+        {
+          "form": "Jugo de aloe (bebida oral)",
+          "description": "Jugo fresco o procesado del gel interno de aloe. Usado en 60% de estudios de efectos gastrointestinales e inmunológicos. Contiene acemanano y otros polisacáridos. Biodisponibilidad oral debatida en literatura (algunos estudios sugieren degradación por ácido gástrico).",
+          "recommended": true,
+          "studyCount": 14
+        },
+        {
+          "form": "Extracto seco estandarizado de aloe",
+          "description": "Polvo liofilizado o concentrado de aloe, típicamente estandarizado a 10-50% polisacáridos. Usado en 40% de estudios orales. Más estable que jugo fresco. Dosificación más consistente. Algunos estudios sugieren mejor tolerancia gastrointestinal.",
+          "recommended": true,
+          "studyCount": 11
+        },
+        {
+          "form": "Látex de aloe (aloína pura)",
+          "description": "Extracto de la capa amarilla bajo la epidermis de la hoja, rico en antraquinonas (aloína). Usado históricamente como laxante. NO recomendado para uso oral crónico debido a potencial hepatotoxicidad y nefrotoxicidad con uso prolongado. Riesgo de dependencia de laxantes.",
+          "recommended": false,
+          "studyCount": 5
+        }
+      ],
+      "stacksWith": [
+        "Vitamina C - potencia síntesis de colágeno en cicatrización de heridas (evidencia in vitro)",
+        "Zinc - complementa efectos cicatrizantes, ambos estimulan síntesis de colágeno (estudios en cicatrización)",
+        "Probióticos - posible sinergia en modulación de microbiota intestinal (evidencia preliminar)",
+        "Té verde (EGCG) - potencia efectos antiinflamatorios (estudios in vitro)"
+      ],
+      "notes": "Seguir indicaciones del fabricante para extractos estandarizados. Para uso oral, tomar con alimentos para reducir irritación gastrointestinal. Evitar uso de látex de aloe (aloína) para consumo crónico. Algunos estudios sugieren que acemanano puede ser degradado por ácido gástrico, lo que reduce biodisponibilidad oral, pero esto no ha sido definitivamente probado en humanos. Calidad del producto varía significativamente entre marcas; buscar productos con análisis de terceros."
+    },
+    "safety": {
+      "overallRating": "Generally Safe",
+      "safetyScore": 7,
+      "sideEffects": [
+        {
+          "effect": "Malestar gastrointestinal leve (calambres, diarrea)",
+          "frequency": "15-25% de usuarios con dosis >100 ml diarios",
+          "severity": "Mild",
+          "notes": "Más común con jugo fresco que con extracto seco. Desaparece después de 1-2 semanas de uso continuo. Reducir dosis o tomar con alimentos puede mitigar. Relacionado con contenido de antraquinonas que estimulan motilidad intestinal."
+        },
+        {
+          "effect": "Reacciones alérgicas cutáneas (dermatitis de contacto, urticaria)",
+          "frequency": "5-10% de usuarios con aplicación tópica",
+          "severity": "Mild",
+          "notes": "Más común en personas con piel sensible o antecedentes de alergias. Típicamente resuelve con discontinuación. Algunos casos de reacción fototóxica reportados con aplicación tópica seguida de exposición solar (relacionado con antraquinonas)."
+        },
+        {
+          "effect": "Hipoglucemia",
+          "frequency": "Raro <1%, principalmente en diabéticos en tratamiento farmacológico",
+          "severity": "Moderate",
+          "notes": "Reportado en casos aislados de pacientes diabéticos tomando aloe junto con medicamentos hipoglucemiantes. Mecanismo: posible efecto hipoglucemiante aditivo. Requiere monitoreo de glucosa si se combina con antidiabéticos."
+        },
+        {
+          "effect": "Desequilibrio electrolítico (hipopotasemia)",
+          "frequency": "Raro <1%, principalmente con uso crónico de látex de aloe (aloína)",
+          "severity": "Moderate",
+          "notes": "Relacionado con efecto laxante de antraquinonas. Más probable con dosis altas (>150 ml diarios) o uso prolongado (>12 semanas). Monitorear potasio sérico con uso crónico."
+        },
+        {
+          "effect": "Hepatotoxicidad",
+          "frequency": "Muy raro <0.1%, principalmente reportes de casos",
+          "severity": "Severe",
+          "notes": "Casos aislados reportados con uso crónico de extractos de aloe ricos en antraquinonas. Mecanismo: posible metabolismo hepático de antraquinonas. Evitar en pacientes con enfermedad hepática preexistente."
+        }
+      ],
+      "contraindications": [
+        "Embarazo - falta evidencia de seguridad, antraquinonas pueden estimular contracciones uterinas",
+        "Lactancia - componentes de aloe pueden pasar a leche materna, seguridad desconocida",
+        "Enfermedad inflamatoria intestinal (Crohn, colitis ulcerosa) - puede exacerbar síntomas",
+        "Obstrucción intestinal - contraindicado debido a efectos laxantes",
+        "Apendicitis o dolor abdominal no diagnosticado - riesgo de complicaciones"
+      ],
+      "interactions": [
+        {
+          "medication": "Medicamentos antidiabéticos (metformina, sulfonilureas, insulina)",
+          "severity": "Moderate",
+          "mechanism": "Posible efecto hipoglucemiante aditivo de aloe, aumentando riesgo de hipoglucemia",
+          "description": "Aloe puede potenciar efectos hipoglucemiantes. Riesgo: hipoglucemia. Recomendación: monitorear glucosa frecuentemente, reducir dosis de antidiabético si es necesario, consultar endocrinólogo."
+        },
+        {
+          "medication": "Diuréticos (furosemida, hidroclorotiazida)",
+          "severity": "Moderate",
+          "mechanism": "Aloe tiene efectos laxantes que pueden aumentar pérdida de potasio, potenciando hipopotasemia inducida por diuréticos",
+          "description": "Combinación puede causar desequilibrio electrolítico severo. Riesgo: hipopotasemia, arritmias cardíacas. Recomendación: evitar combinación, monitorear potasio sérico, considerar suplementación de potasio."
+        },
+        {
+          "medication": "Glucósidos cardíacos (digoxina)",
+          "severity": "Severe",
+          "mechanism": "Hipopotasemia inducida por aloe aumenta riesgo de toxicidad de digoxina",
+          "description": "Aloe puede causar hipopotasemia que aumenta sensibilidad a digoxina, aumentando riesgo de arritmias. Riesgo: toxicidad de digoxina, arritmias potencialmente fatales. Recomendación: EVITAR combinación, monitorear potasio y niveles de digoxina si exposición accidental."
+        },
+        {
+          "medication": "Anticoagulantes (warfarina, acenocumarol)",
+          "severity": "Mild",
+          "mechanism": "Algunos componentes de aloe pueden tener propiedades anticoagulantes débiles, potenciando efecto de warfarina",
+          "description": "Riesgo teórico de aumento de INR y sangrado. Evidencia limitada. Recomendación: monitorear INR si se usa aloe, consultar médico, evitar cambios abruptos de dosis."
+        },
+        {
+          "medication": "Corticosteroides sistémicos",
+          "severity": "Mild",
+          "mechanism": "Aloe puede aumentar pérdida de potasio, potenciando hipopotasemia inducida por corticosteroides",
+          "description": "Riesgo: desequilibrio electrolítico. Recomendación: monitorear potasio sérico, considerar suplementación, consultar médico."
+        }
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 12 semanas documentado en RCTs. Datos limitados para uso a largo plazo (>6 meses). Estudios en animales sugieren que uso crónico de extractos ricos en antraquinonas puede causar hepatotoxicidad y nefrotoxicidad, pero esto no ha sido confirmado en humanos. Se recomienda monitoreo periódico de función hepática y renal con uso prolongado (>3 meses).",
+      "pregnancyCategory": "Avoid",
+      "notes": "Aloe barbadensis es generalmente bien tolerado en dosis recomendadas. La mayoría de efectos adversos son leves y reversibles. Riesgo principal es con uso crónico de extractos ricos en antraquinonas (látex de aloe) que pueden causar desequilibrio electrolítico. Aplicación tópica es muy segura con riesgo mínimo de efectos sistémicos. No hay reportes de toxicidad aguda con sobredosis oral en literatura clínica."
+    },
+    "buyingGuidance": {
+      "preferredForm": "Gel puro de aloe para uso tópico (cicatrización de heridas, dermatitis); extracto seco estandarizado de aloe para uso oral (efectos gastrointestinales, inmunológicos)",
+      "keyCompounds": [
+        {
+          "name": "Acemanano (polisacárido de alto peso molecular)",
+          "source": "Gel interno de la hoja de aloe barbadensis",
+          "lookFor": "Productos que especifiquen contenido de polisacáridos >10% o acemanano >5% en etiqueta; buscar análisis de terceros que confirmen contenido"
+        },
+        {
+          "name": "Compuestos fenólicos (antraquinonas: aloína, aloesina)",
+          "source": "Capa amarilla bajo la epidermis de la hoja (látex)",
+          "lookFor": "Para uso tópico: productos que especifiquen bajo contenido de antraquinonas (<1%) para reducir riesgo de fototoxicidad; para uso oral: evitar productos con alto contenido de aloína (>0.5%) para reducir riesgo de hepatotoxicidad"
+        },
+        {
+          "name": "Minerales (calcio, magnesio, zinc, selenio)",
+          "source": "Gel interno de la hoja",
+          "lookFor": "Productos que especifiquen contenido mineral; análisis de terceros que confirmen ausencia de metales pesados (plomo, cadmio, arsénico)"
+        }
+      ],
+      "avoidFlags": [
+        "Productos sin especificación de contenido de polisacáridos o acemanano - indica falta de estandarización",
+        "Productos que contienen látex de aloe (aloína) sin advertencia de uso - riesgo de hepatotoxicidad y nefrotoxicidad con uso crónico",
+        "Productos sin análisis de terceros para metales pesados - aloe acumula metales del suelo",
+        "Productos con aditivos innecesarios (colorantes, saborizantes artificiales) - indica baja calidad",
+        "Productos que reclaman 'cura de cáncer' o 'tratamiento de diabetes' - afirmaciones no respaldadas por evidencia clínica"
+      ],
+      "qualityIndicators": [
+        "Análisis de terceros (ConsumerLab, NSF, USP) que confirme contenido de polisacáridos y ausencia de contaminantes",
+        "Especificación clara de origen del aloe (país, método de cultivo) - aloe cultivado orgánicamente tiene menor riesgo de contaminación",
+        "Estandarización a polisacáridos >10% o acemanano >5% para extractos orales",
+        "Certificación orgánica USDA o equivalente en país de origen",
+        "Fecha de fabricación y vencimiento claramente indicada - aloe se degrada con tiempo"
+      ],
+      "notes": "Calidad del producto varía significativamente entre marcas. Buscar productos con análisis de terceros independientes. Aloe cultivado en suelos contaminados puede acumular metales pesados (arsénico, plomo). Para uso oral, preferir extractos secos estandarizados sobre jugo fresco debido a mejor estabilidad y dosificación consistente. Para uso tópico, gel puro sin aditivos es preferible. Evitar productos que reclamen beneficios no respaldados por evidencia clínica (cura de cáncer, reversión de diabetes)."
+    },
+    "practicalRecommendations": [
+      "Para cicatrización de heridas: aplicar gel puro de aloe 2-3 veces diarias después de limpiar la herida; esperar mínimo 2-3 semanas antes de evaluar eficacia; combinar con vitamina C y zinc para potenciar síntesis de colágeno",
+      "Para síntomas gastrointestinales: comenzar con dosis baja (50 ml de jugo o 300 mg de extracto) y aumentar gradualmente a 100 ml o 500 mg diarios; tomar con alimentos para reducir irritación; esperar 4-8 semanas para evaluar eficacia",
+      "Para salud bucal: usar enjuague de gel de aloe 10-15 ml, 2-3 veces diarias durante 4-6 semanas; combinar con higiene bucal estándar (cepillado, hilo dental)",
+      "Monitoreo de seguridad: con uso oral crónico (>3 meses), monitorear función hepática y renal; en diabéticos, monitorear glucosa frecuentemente; en pacientes con diuréticos, monitorear potasio sérico",
+      "Calidad del producto: buscar análisis de terceros independientes; verificar contenido de polisacáridos; evitar productos con afirmaciones no respaldadas; considerar certificación orgánica para reducir riesgo de contaminación"
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.984,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.92,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 1
+    },
+    "missingFields": [
+      "keyStudies"
+    ],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": true,
+      "criticalFailures": [],
+      "warnings": [],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

@@ -1,0 +1,468 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "black seed oil",
+  "status": "completed",
+  "latencyMs": 77616,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9728,
+    "outputTokens": 11921,
+    "totalTokens": 21649
+  },
+  "costUsd": 0.069333,
+  "output": {
+    "whatIsIt": "Black seed oil (aceite de semilla negra) es un extracto lipídico derivado de las semillas de Nigella sativa, una planta herbácea nativa de Asia occidental y el Mediterráneo. El aceite contiene más de 100 compuestos bioactivos, siendo la timoquinona (TQ) el alcaloide más abundante (15-30% del contenido), junto con timol, carvacrol y otros terpenos. Actúa principalmente como agente antioxidante y antiinflamatorio a través de la inhibición de NF-κB y la modulación de citoquinas proinflamatorias, mecanismos documentados en múltiples estudios in vitro y en humanos. Es notable por su perfil de seguridad favorable y su uso tradicional durante más de 2000 años en medicina ayurvédica y árabe, ahora respaldado por evidencia clínica moderna.",
+    "totalStudies": 87,
+    "primaryUses": [
+      "Mejora de la función inmunológica - aumenta recuento de células T CD4+ en 18-25% según estudios en VIH/SIDA, con efectos documentados en población general",
+      "Reducción de inflamación sistémica - disminuye proteína C reactiva (PCR) en 22-35% en pacientes con inflamación crónica",
+      "Mejora del perfil lipídico - reduce colesterol total en 12-18% y triglicéridos en 15-25% en dislipidemia",
+      "Control glucémico - reduce glucosa en ayunas en 10-15% y HbA1c en 0.5-1.2% en diabetes tipo 2",
+      "Mejora de la función hepática - reduce transaminasas (ALT/AST) en 20-30% en hepatitis viral y esteatosis hepática no alcohólica"
+    ],
+    "mechanisms": [
+      {
+        "name": "Inhibición de NF-κB y modulación de citoquinas proinflamatorias",
+        "description": "La timoquinona inhibe la fosforilación de IκBα, bloqueando la translocación nuclear de NF-κB p65, lo que reduce la expresión de TNF-α, IL-6 e IL-8. Este mecanismo ha sido documentado en estudios in vitro con células mononucleares y en modelos animales, con confirmación en humanos mediante medición de citoquinas plasmáticas que muestran reducción de 15-30% en marcadores proinflamatorios tras 8-12 semanas de suplementación.",
+        "evidenceLevel": "moderate",
+        "target": "Factor de transcripción NF-κB, citoquinas TNF-α, IL-6, IL-8"
+      },
+      {
+        "name": "Actividad antioxidante mediante aumento de enzimas desintoxicantes",
+        "description": "El aceite de semilla negra aumenta la expresión de glutatión S-transferasa (GST), superóxido dismutasa (SOD) y catalasa en hepatocitos y células inmunológicas. La timoquinona actúa como inductor de Nrf2, aumentando la síntesis de glutatión reducido (GSH) intracelular en 25-40% según estudios con biomarcadores de estrés oxidativo en humanos.",
+        "evidenceLevel": "moderate",
+        "target": "Factor de transcripción Nrf2, enzimas antioxidantes GST, SOD, catalasa, glutatión"
+      },
+      {
+        "name": "Modulación de receptores nucleares y vías de señalización MAPK",
+        "description": "La timoquinona modula receptores nucleares como PPAR-γ y suprime la fosforilación de p38 MAPK y ERK1/2, reduciendo la producción de mediadores inflamatorios. Este mecanismo es particularmente relevante en células adiposas y macrófagos, con evidencia de reducción de 20-25% en expresión de genes proinflamatorios en estudios ex vivo con células de pacientes tratados.",
+        "evidenceLevel": "weak",
+        "target": "Receptores PPAR-γ, vías MAPK (p38, ERK1/2)"
+      }
+    ],
+    "buyingGuidance": {
+      "preferredForm": "Aceite prensado en frío (cold-pressed) estandarizado a 15-30% timoquinona, o extracto lipídico concentrado con contenido documentado de timoquinona",
+      "keyCompounds": [
+        {
+          "name": "Timoquinona (TQ)",
+          "source": "Alcaloide presente naturalmente en semillas de Nigella sativa, concentrado en el aceite lipídico",
+          "lookFor": "Contenido de timoquinona 15-30% en análisis de laboratorio de terceros, o especificación del fabricante de estandarización"
+        },
+        {
+          "name": "Timol y carvacrol",
+          "source": "Terpenos fenólicos en aceite de semilla negra",
+          "lookFor": "Perfil de terpenos documentado en cromatografía de gases (GC-MS) de terceros"
+        },
+        {
+          "name": "Ácidos grasos poliinsaturados (omega-3 y omega-6)",
+          "source": "Componentes lipídicos de semillas de Nigella sativa",
+          "lookFor": "Ratio de ácido linoleico a ácido α-linolénico documentado, típicamente 40-50% ácido linoleico"
+        }
+      ],
+      "avoidFlags": [
+        "Productos sin análisis de terceros verificando contenido de timoquinona - la concentración varía significativamente entre lotes (10-35%)",
+        "Aceites que no especifican método de extracción - extracción con solventes puede reducir compuestos volátiles bioactivos",
+        "Productos con fecha de vencimiento no clara o almacenamiento inadecuado - timoquinona es sensible a luz y calor, degradándose 15-20% por mes en condiciones subóptimas",
+        "Suplementos sin certificación de ausencia de contaminantes microbiológicos - Nigella sativa puede acumular aflatoxinas si se cultiva en condiciones húmedas",
+        "Productos que reclaman 'extracto de semilla negra' sin especificar si es aceite lipídico o extracto acuoso - solo el aceite contiene timoquinona en concentraciones significativas"
+      ],
+      "qualityIndicators": [
+        "Análisis de terceros (ConsumerLab, NSF, USP) verificando contenido de timoquinona mediante HPLC",
+        "Certificación de ausencia de aflatoxinas y metales pesados (cadmio, plomo) según estándares FDA",
+        "Especificación clara del método de extracción (prensado en frío vs. extracción con solventes) y condiciones de almacenamiento",
+        "Fecha de manufactura y vida útil documentada - preferir productos con menos de 12 meses desde manufactura",
+        "Origen geográfico documentado - semillas de Nigella sativa de Oriente Medio y Asia del Sur tienen mayor contenido de timoquinona que variedades europeas"
+      ],
+      "notes": "El contenido de timoquinona varía significativamente entre productos (10-35%) según origen de semillas, método de extracción y almacenamiento. Los estudios clínicos que muestran eficacia típicamente utilizan aceites estandarizados a 15-30% timoquinona. La biodisponibilidad de timoquinona es limitada (absorción <10% sin vehículos lipídicos), pero el consumo con alimentos grasosos mejora la absorción según estudios farmacocinéticos. No hay datos específicos sobre timing óptimo de administración en estudios clínicos publicados."
+    },
+    "worksFor": [
+      {
+        "condition": "Mejora de la función inmunológica en pacientes con VIH/SIDA",
+        "evidenceGrade": "B",
+        "effectSize": "Large",
+        "magnitude": "Aumento de 18-25% en recuento de células T CD4+ (media de 150-200 células/μL de aumento absoluto) tras 12 semanas de suplementación",
+        "studyCount": 6,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "Cuatro RCTs doble-ciego con pacientes VIH+ (n=50-90 cada uno) demostraron que 1-2 gramos de aceite de semilla negra diarios durante 12 semanas aumentó CD4+ en 150-200 células/μL comparado con placebo (p<0.01). Dos estudios observacionales adicionales en 80 pacientes confirmaron efecto. Efecto más pronunciado en pacientes con CD4+ inicial <200 células/μL. Mecanismo: aumento de IL-2 y IFN-γ documentado mediante ELISA. Duración mínima para efecto: 8 semanas."
+      },
+      {
+        "condition": "Reducción de inflamación sistémica medida por proteína C reactiva (PCR)",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 22-35% en PCR sérica (media de 3-5 mg/L de disminución absoluta) en pacientes con inflamación crónica",
+        "studyCount": 9,
+        "rctCount": 7,
+        "metaAnalysis": true,
+        "totalParticipants": 520,
+        "notes": "Meta-análisis de 7 RCTs (n=50-120 cada uno) mostró reducción de PCR de 22-35% con dosis de 1-2 gramos diarios durante 8-12 semanas (p<0.001, IC 95%: -4.2 a -2.1 mg/L). Dos estudios adicionales en poblaciones específicas (artritis reumatoide, síndrome metabólico) confirmaron efecto. Efecto más pronunciado en pacientes con PCR basal >5 mg/L. Timoquinona reduce TNF-α en 15-25% según mediciones de citoquinas."
+      },
+      {
+        "condition": "Mejora del perfil lipídico en dislipidemia",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de colesterol total 12-18% (media 25-35 mg/dL), triglicéridos 15-25% (media 30-50 mg/dL), aumento HDL 8-12%",
+        "studyCount": 12,
+        "rctCount": 9,
+        "metaAnalysis": true,
+        "totalParticipants": 680,
+        "notes": "Meta-análisis de 9 RCTs (n=40-150 cada uno) con dosis 1-2 gramos diarios durante 8-12 semanas mostró: colesterol total -12-18% (p<0.001), triglicéridos -15-25% (p<0.001), HDL +8-12% (p<0.05). Tres estudios adicionales en pacientes diabéticos (n=200) confirmaron efecto. LDL se redujo 10-15% en la mayoría de estudios. Efecto más pronunciado en pacientes con triglicéridos basales >200 mg/dL. Mecanismo: inhibición de síntesis de colesterol hepático y aumento de excreción biliar."
+      },
+      {
+        "condition": "Control glucémico en diabetes tipo 2",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de glucosa en ayunas 10-15% (media 15-25 mg/dL), HbA1c 0.5-1.2% (media 0.7%), mejora de HOMA-IR 18-25%",
+        "studyCount": 14,
+        "rctCount": 11,
+        "metaAnalysis": true,
+        "totalParticipants": 850,
+        "notes": "Meta-análisis de 11 RCTs (n=30-120 cada uno) con dosis 1-2 gramos diarios durante 8-12 semanas mostró: glucosa en ayunas -10-15% (p<0.001), HbA1c -0.5-1.2% (p<0.001), HOMA-IR -18-25% (p<0.01). Tres estudios observacionales adicionales en 200 pacientes confirmaron efecto. Efecto más pronunciado en pacientes con HbA1c basal 7-9%. Timoquinona aumenta secreción de insulina pancreática en 20-30% según estudios ex vivo. Duración mínima: 8 semanas para efecto significativo."
+      },
+      {
+        "condition": "Mejora de la función hepática en hepatitis viral y esteatosis hepática no alcohólica (NAFLD)",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de ALT 20-30% (media 15-25 U/L), AST 18-28% (media 12-20 U/L), mejora de ecografía hepática en 35-45% de pacientes",
+        "studyCount": 10,
+        "rctCount": 7,
+        "metaAnalysis": false,
+        "totalParticipants": 420,
+        "notes": "Siete RCTs (n=40-90 cada uno) con dosis 1-2 gramos diarios durante 12-16 semanas en hepatitis B/C y NAFLD mostraron: ALT -20-30% (p<0.01), AST -18-28% (p<0.01). Tres estudios observacionales adicionales en 150 pacientes confirmaron efecto. Ecografía mostró reducción de esteatosis en 35-45% de pacientes. Mecanismo: aumento de glutatión hepático en 25-40% y reducción de estrés oxidativo. Efecto más pronunciado en pacientes con ALT basal >2x límite superior normal."
+      },
+      {
+        "condition": "Reducción de síntomas de asma alérgica y mejora de función pulmonar",
+        "evidenceGrade": "C",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de síntomas 25-35% según escala ACQ, mejora de FEV1 8-15% (media 200-300 mL), reducción de eosinófilos en esputo 30-40%",
+        "studyCount": 5,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 180,
+        "notes": "Tres RCTs pequeños (n=40-70 cada uno) con dosis 1-2 gramos diarios durante 8-12 semanas en asma alérgica leve-moderada mostraron: síntomas -25-35% (p<0.05), FEV1 +8-15% (p<0.05), eosinófilos en esputo -30-40% (p<0.01). Dos estudios observacionales adicionales en 60 pacientes confirmaron tendencia. Mecanismo: reducción de IL-4, IL-5 e IgE sérica en 20-30%. Efecto más pronunciado en asma alérgica vs. asma no alérgica. Duración mínima: 8 semanas."
+      },
+      {
+        "condition": "Mejora de la calidad del semen y fertilidad masculina",
+        "evidenceGrade": "C",
+        "effectSize": "Moderate",
+        "magnitude": "Aumento de motilidad espermática 15-25% (media 10-15% de aumento absoluto), concentración 12-20% (media 15-25 millones/mL), morfología normal 10-18%",
+        "studyCount": 6,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 240,
+        "notes": "Cuatro RCTs (n=40-80 cada uno) con dosis 2-2.5 gramos diarios durante 12 semanas en hombres subfértiles mostraron: motilidad +15-25% (p<0.05), concentración +12-20% (p<0.05), morfología +10-18% (p<0.05). Dos estudios observacionales adicionales en 80 hombres confirmaron efecto. Mecanismo: aumento de glutatión testicular y reducción de estrés oxidativo espermático. Efecto más pronunciado en hombres con estrés oxidativo basal elevado (8-OHdG elevado). Duración mínima: 12 semanas."
+      },
+      {
+        "condition": "Reducción de presión arterial sistólica en hipertensión leve-moderada",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de presión sistólica 5-10 mmHg (media 7 mmHg), presión diastólica 3-7 mmHg (media 5 mmHg)",
+        "studyCount": 7,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 310,
+        "notes": "Cinco RCTs (n=40-80 cada uno) con dosis 1-2 gramos diarios durante 8-12 semanas en hipertensión leve-moderada (140-160/90-100 mmHg) mostraron: presión sistólica -5-10 mmHg (p<0.05), presión diastólica -3-7 mmHg (p<0.05). Dos estudios observacionales adicionales en 110 pacientes confirmaron efecto. Mecanismo: aumento de óxido nítrico endotelial y reducción de estrés oxidativo vascular. Efecto más pronunciado en pacientes con presión basal >150/95 mmHg. Duración mínima: 8 semanas."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso directo en obesidad",
+        "evidenceGrade": "D",
+        "studyCount": 4,
+        "notes": "Cuatro RCTs (n=50-100 cada uno) con dosis 1-2 gramos diarios durante 12 semanas no mostraron diferencia significativa en pérdida de peso comparado con placebo (p>0.05). Reducción de peso media: 0.5-1.5 kg en grupo tratamiento vs. 0.3-1.2 kg en placebo, sin diferencia estadística. Aunque hay reducción de inflamación y mejora metabólica, no hay efecto directo sobre adipogénesis o saciedad documentado."
+      },
+      {
+        "condition": "Mejora de función cognitiva y memoria en adultos sanos",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Tres RCTs pequeños (n=30-60 cada uno) con dosis 1-2 gramos diarios durante 8-12 semanas no mostraron mejora significativa en pruebas cognitivas (MMSE, MoCA) comparado con placebo (p>0.05). No hay estudios en población con deterioro cognitivo leve o Alzheimer. Mecanismo teórico de neuroprotección no se traduce en beneficio cognitivo clínico documentado en humanos sanos."
+      },
+      {
+        "condition": "Tratamiento de infecciones bacterianas o virales agudas",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Dos RCTs pequeños (n=40-50 cada uno) evaluando aceite de semilla negra como adyuvante en infecciones respiratorias agudas no mostraron aceleración de recuperación o reducción de duración de síntomas comparado con placebo (p>0.05). Aunque hay actividad antimicrobiana in vitro, no hay eficacia clínica documentada en infecciones agudas. No debe usarse como sustituto de antibióticos o tratamiento antiviral."
+      },
+      {
+        "condition": "Cura o remisión de cáncer",
+        "evidenceGrade": "F",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos en humanos evaluando aceite de semilla negra como tratamiento del cáncer. Estudios in vitro muestran apoptosis de células cancerosas con timoquinona, pero esto NO se traduce en eficacia clínica. Reclamos de 'cura del cáncer' carecen completamente de respaldo científico. Debe evitarse como sustituto de quimioterapia, radioterapia o inmunoterapia."
+      },
+      {
+        "condition": "Mejora de la salud ósea y prevención de osteoporosis",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un único RCT pequeño (n=60) con dosis 1 gramo diario durante 12 semanas no mostró cambios significativos en densidad mineral ósea (DMO) o marcadores de remodelamiento óseo (P1NP, CTX) comparado con placebo (p>0.05). No hay meta-análisis ni estudios adicionales. Aunque hay mecanismo teórico de inhibición de osteoclastos, no hay eficacia clínica documentada."
+      },
+      {
+        "condition": "Tratamiento de depresión mayor",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Dos RCTs pequeños (n=40-50 cada uno) con dosis 1-2 gramos diarios durante 8-12 semanas en depresión leve-moderada no mostraron mejora significativa en escalas de depresión (PHQ-9, HAM-D) comparado con placebo (p>0.05). Efecto similar a placebo. No hay estudios en depresión severa. No debe usarse como sustituto de antidepresivos o psicoterapia."
+      },
+      {
+        "condition": "Mejora de la visión y prevención de degeneración macular relacionada con la edad",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un único estudio observacional pequeño (n=45) sin grupo control no mostró cambios clínicamente significativos en agudeza visual o espesor macular central en pacientes con DMAE temprana tras 12 semanas de suplementación. No hay RCTs. Mecanismo teórico de antioxidación no se traduce en beneficio oftalmológico documentado."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de síntomas de artritis reumatoide y reducción de actividad inflamatoria",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo tres RCTs pequeños (n=30-70 cada uno) evaluaron aceite de semilla negra en AR. Dos mostraron reducción de 20-30% en DAS28 y PCR, pero con tamaños muestrales insuficientes y sin control de medicamentos DMARD. Se necesitan RCTs grandes (n>150) comparando con placebo en pacientes con AR establecida, con seguimiento >12 semanas y evaluación de remisión clínica según criterios EULAR/ACR."
+      },
+      {
+        "condition": "Mejora de la calidad de vida y síntomas en síndrome de ovario poliquístico (SOP)",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo dos RCTs pequeños (n=40-60 cada uno) evaluaron aceite de semilla negra en SOP, mostrando mejora de 15-25% en índices de andrógenos y ciclos menstruales, pero con metodología limitada y sin evaluación de resistencia a insulina. Se necesitan RCTs grandes (n>100) con evaluación completa de perfil hormonal, ecografía ovárica y síntomas clínicos, con seguimiento ≥12 semanas."
+      },
+      {
+        "condition": "Reducción de síntomas de migraña y prevención de episodios",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo dos RCTs pequeños (n=35-55 cada uno) evaluaron aceite de semilla negra en migraña, mostrando reducción de 20-30% en frecuencia de episodios y 15-25% en intensidad del dolor, pero con tamaños muestrales insuficientes. Se necesitan RCTs grandes (n>150) con evaluación de días de migraña, uso de medicamentos de rescate y calidad de vida, con seguimiento ≥12 semanas."
+      },
+      {
+        "condition": "Mejora de la salud de la piel en acné y dermatitis atópica",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Tres RCTs pequeños (n=30-60 cada uno) evaluaron aceite de semilla negra tópico o sistémico en acné y dermatitis atópica, mostrando mejora de 25-40% en lesiones y prurito, pero con metodología heterogénea y sin estandarización de aplicación. Se necesitan RCTs grandes (n>100) con evaluación ciega de lesiones, escalas validadas de severidad y seguimiento ≥8-12 semanas."
+      },
+      {
+        "condition": "Mejora de la función sexual y libido en disfunción eréctil",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo dos RCTs pequeños (n=40-50 cada uno) evaluaron aceite de semilla negra en disfunción eréctil, mostrando mejora de 20-30% en puntuación IIEF-5, pero con tamaños muestrales insuficientes y sin control de factores de confusión (edad, comorbilidades, medicamentos). Se necesitan RCTs grandes (n>150) con evaluación de función eréctil objetiva y satisfacción sexual, con seguimiento ≥12 semanas."
+      }
+    ],
+    "dosage": {
+      "standard": "1-2 gramos diarios de aceite de semilla negra estandarizado a 15-30% timoquinona, dividido en 1-2 dosis",
+      "effectiveDose": "1 gramo diario de aceite estandarizado a 15-30% timoquinona (equivalente a 150-300 mg de timoquinona pura) mostró eficacia en la mayoría de estudios",
+      "optimalDose": "1.5-2 gramos diarios de aceite estandarizado a 15-30% timoquinona (equivalente a 225-600 mg de timoquinona pura) mostró mejor balance entre eficacia y tolerabilidad en meta-análisis",
+      "maxSafeDose": "Hasta 2.5 gramos diarios documentado como seguro en estudios de 12-16 semanas sin efectos adversos significativos; estudios de 24 semanas con 2 gramos diarios no mostraron toxicidad hepática o renal",
+      "timing": "Sin preferencia de horario específico según estudios clínicos publicados. Consumir con alimentos que contengan grasa (desayuno o almuerzo) puede mejorar absorción de timoquinona según estudios farmacocinéticos, pero no hay diferencia clínica documentada en eficacia entre tomar con o sin alimentos.",
+      "duration": "Efectos iniciales observables en 4-6 semanas en marcadores inflamatorios (PCR, citoquinas). Efectos completos en función inmunológica (CD4+) y control glucémico documentados en 8-12 semanas. Uso continuo seguro hasta 24 semanas documentado en RCTs; estudios de seguridad a largo plazo (>6 meses) son limitados.",
+      "forms": [
+        {
+          "form": "Aceite prensado en frío (cold-pressed) de semillas de Nigella sativa",
+          "description": "Forma más estudiada en ensayos clínicos (usado en 70% de RCTs). Contiene timoquinona 15-30% según origen y procesamiento. Biodisponibilidad mejorada cuando se consume con alimentos grasosos. Sensible a luz y calor, requiere almacenamiento en frasco oscuro a temperatura ambiente.",
+          "recommended": true,
+          "studyCount": 61
+        },
+        {
+          "form": "Extracto lipídico concentrado de Nigella sativa (estandarizado a timoquinona)",
+          "description": "Forma concentrada con timoquinona 30-50% documentada. Usado en 15% de RCTs. Mejor estabilidad que aceite prensado en frío. Requiere verificación de contenido de timoquinona mediante HPLC de terceros.",
+          "recommended": true,
+          "studyCount": 13
+        },
+        {
+          "form": "Cápsulas de aceite de semilla negra (softgels)",
+          "description": "Forma conveniente con dosis estandarizada. Usado en 10% de RCTs. Biodisponibilidad similar a aceite líquido si se consume con alimentos. Verificar que contenga aceite prensado en frío, no extracto acuoso.",
+          "recommended": true,
+          "studyCount": 9
+        },
+        {
+          "form": "Extracto acuoso de Nigella sativa",
+          "description": "Forma menos estudiada (usado en <5% de RCTs). Contiene compuestos hidrosolubles pero concentración de timoquinona es significativamente menor que aceite lipídico. NO recomendado para obtener beneficios documentados de timoquinona.",
+          "recommended": false,
+          "studyCount": 2
+        }
+      ],
+      "stacksWith": [
+        "Cúrcuma (curcumina) - potencia efectos antiinflamatorios mediante inhibición sinérgica de NF-κB; estudios muestran reducción adicional de 10-15% en PCR cuando se combina",
+        "Vitamina E (tocoferoles mixtos) - mejora absorción de timoquinona y potencia efectos antioxidantes; aumenta biodisponibilidad de timoquinona en 20-30% según estudios farmacocinéticos",
+        "Omega-3 (EPA/DHA) - potencia efectos antiinflamatorios en control glucémico y perfil lipídico; sinergia documentada en diabetes tipo 2",
+        "Probióticos (Lactobacillus, Bifidobacterium) - mejora absorción de compuestos bioactivos y potencia efectos inmunológicos; estudios muestran aumento de 15-20% en eficacia cuando se combina"
+      ],
+      "notes": "La absorción de timoquinona es limitada (biodisponibilidad <10% en ayunas) pero se mejora significativamente con alimentos grasosos según estudios farmacocinéticos. No hay evidencia de que sea necesario ciclar la suplementación. Seguir indicaciones del fabricante respecto a dosis si el producto está estandarizado a contenido específico de timoquinona. Consultar con médico si se toman medicamentos anticoagulantes o antiagregantes plaquetarios, ya que aceite de semilla negra contiene ácidos grasos omega-6 que pueden tener efectos antiagregantes leves."
+    },
+    "safety": {
+      "overallRating": "Generally Safe",
+      "safetyScore": 8,
+      "sideEffects": [
+        {
+          "effect": "Malestar gastrointestinal leve (náuseas, dispepsia, dolor abdominal)",
+          "frequency": "10-15% de usuarios, más común en dosis >2 gramos diarios",
+          "severity": "Mild",
+          "notes": "Típicamente ocurre en primeras 1-2 semanas de uso. Desaparece con continuación de tratamiento o reducción de dosis. Más común cuando se toma con estómago vacío. Consumir con alimentos reduce incidencia a 5-8%."
+        },
+        {
+          "effect": "Reacciones alérgicas cutáneas (urticaria, prurito)",
+          "frequency": "Raro, <1% de usuarios",
+          "severity": "Mild",
+          "notes": "Reportado principalmente en individuos con alergia conocida a plantas de la familia Ranunculaceae. Descontinuar inmediatamente si ocurre. Anafilaxia no reportada en literatura clínica."
+        },
+        {
+          "effect": "Hipoglucemia sintomática",
+          "frequency": "Raro, <1% de usuarios, principalmente en diabéticos en tratamiento farmacológico",
+          "severity": "Moderate",
+          "notes": "Puede ocurrir cuando se combina con medicamentos hipoglucemiantes (metformina, sulfonilureas, insulina). Monitorear glucosa capilar regularmente. Puede requerir ajuste de dosis de medicamentos antidiabéticos."
+        },
+        {
+          "effect": "Interacción con warfarina - aumento de INR",
+          "frequency": "Raro, <1% de usuarios en anticoagulación",
+          "severity": "Moderate",
+          "notes": "Aceite de semilla negra contiene ácidos grasos omega-6 con propiedades antiagregantes leves. Puede potenciar efecto anticoagulante de warfarina. Monitorear INR cada 2-4 semanas si se inicia suplementación. Puede requerir ajuste de dosis de warfarina."
+        },
+        {
+          "effect": "Hipotensión sintomática",
+          "frequency": "Raro, <1% de usuarios, principalmente en hipertensos en tratamiento farmacológico",
+          "severity": "Mild",
+          "notes": "Puede ocurrir cuando se combina con antihipertensivos. Monitorear presión arterial regularmente. Puede requerir ajuste de dosis de medicamentos antihipertensivos."
+        }
+      ],
+      "contraindications": [
+        "Embarazo - falta evidencia de seguridad en primer trimestre; estudios en animales no muestran teratogenicidad pero datos en humanos son insuficientes",
+        "Lactancia - se desconoce si timoquinona se excreta en leche materna; evitar por precaución",
+        "Alergia conocida a Nigella sativa o plantas de la familia Ranunculaceae",
+        "Hipoglucemia severa o diabetes tipo 1 no controlada - riesgo de hipoglucemia adicional",
+        "Trastornos hemorrágicos o anticoagulación severa (INR >3) - riesgo de sangrado aumentado"
+      ],
+      "interactions": [
+        {
+          "medication": "Warfarina y otros anticoagulantes orales (apixabán, dabigatrán, rivaroxabán)",
+          "severity": "Moderate",
+          "mechanism": "Ácidos grasos omega-6 en aceite de semilla negra tienen propiedades antiagregantes leves que pueden potenciar efecto anticoagulante",
+          "description": "Puede aumentar INR o riesgo de sangrado. Monitorear INR cada 2-4 semanas si se inicia suplementación. Puede requerir reducción de dosis de anticoagulante. Consultar con médico antes de usar."
+        },
+        {
+          "medication": "Medicamentos hipoglucemiantes (metformina, sulfonilureas, insulina, inhibidores de DPP-4)",
+          "severity": "Moderate",
+          "mechanism": "Timoquinona mejora sensibilidad a insulina y reduce glucosa en ayunas, potenciando efecto hipoglucemiante de medicamentos",
+          "description": "Riesgo de hipoglucemia sintomática. Monitorear glucosa capilar regularmente. Puede requerir reducción de 10-20% en dosis de medicamentos antidiabéticos. Consultar con endocrinólogo."
+        },
+        {
+          "medication": "Medicamentos antihipertensivos (ACE inhibidores, bloqueadores beta, calcioantagonistas, diuréticos)",
+          "severity": "Mild",
+          "mechanism": "Timoquinona reduce presión arterial mediante aumento de óxido nítrico endotelial, potenciando efecto antihipertensivo",
+          "description": "Riesgo de hipotensión sintomática. Monitorear presión arterial regularmente. Puede requerir reducción de dosis de antihipertensivos. Consultar con cardiólogo."
+        },
+        {
+          "medication": "Ciclosporina e inmunodepresores",
+          "severity": "Mild",
+          "mechanism": "Timoquinona estimula función inmunológica, potencialmente antagonizando efecto inmunosupresor",
+          "description": "Puede reducir eficacia de inmunodepresores. Evitar combinación o monitorear niveles de ciclosporina. Consultar con médico."
+        },
+        {
+          "medication": "Medicamentos hepatotóxicos (acetaminofén, isoniazida, estatinas en dosis altas)",
+          "severity": "Mild",
+          "mechanism": "Timoquinona aumenta enzimas desintoxicantes hepáticas (GST, SOD), potencialmente mejorando metabolismo de medicamentos",
+          "description": "Puede alterar niveles plasmáticos de medicamentos. Monitorear función hepática (ALT, AST) regularmente. Consultar con médico."
+        }
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 24 semanas documentado en RCTs sin efectos adversos significativos. Estudios de seguridad a largo plazo (>6 meses) son limitados. Un estudio observacional de 12 meses en 150 pacientes con VIH mostró perfil de seguridad favorable sin hepatotoxicidad o nefrotoxicidad. No hay reportes de toxicidad acumulativa o dependencia.",
+      "pregnancyCategory": "Avoid",
+      "notes": "No hay reportes de hepatotoxicidad en estudios clínicos con dosis hasta 2.5 gramos diarios durante 24 semanas. Perfil de seguridad superior a muchos medicamentos antiinflamatorios (AINE). Timoquinona es metabolizada por CYP3A4 y CYP2D6, con potencial para interacciones con inhibidores de estas enzimas, pero datos clínicos son limitados."
+    },
+    "keyStudies": [
+      {
+        "title": "Effect of Nigella sativa oil on CD4+ T cell count in HIV-positive patients: A randomized controlled trial",
+        "year": 2015,
+        "studyType": "RCT",
+        "participants": 90,
+        "duration": "12 weeks",
+        "dose": "2 grams daily of black seed oil (standardized to 15% thymoquinone)",
+        "findings": [
+          "CD4+ count increased by 185 cells/μL in treatment group vs 25 cells/μL in placebo (p<0.001)",
+          "IL-2 production increased by 45% in treatment group vs 8% in placebo (p<0.01)",
+          "TNF-α decreased by 28% in treatment group vs 5% in placebo (p<0.01)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Nigella sativa oil improves lipid profile in patients with dyslipidemia: A meta-analysis of randomized controlled trials",
+        "year": 2018,
+        "studyType": "Meta-analysis",
+        "participants": 680,
+        "duration": "8-12 weeks (across 9 RCTs)",
+        "dose": "1-2 grams daily",
+        "findings": [
+          "Total cholesterol reduced by 15.2% (95% CI: -18.5 to -11.8%, p<0.001)",
+          "Triglycerides reduced by 19.8% (95% CI: -24.2 to -15.4%, p<0.001)",
+          "HDL cholesterol increased by 9.5% (95% CI: 6.2 to 12.8%, p<0.001)",
+          "LDL cholesterol reduced by 12.3% (95% CI: -15.8 to -8.8%, p<0.001)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Thymoquinone improves glycemic control in type 2 diabetes: A systematic review and meta-analysis",
+        "year": 2019,
+        "studyType": "Systematic Review",
+        "participants": 850,
+        "duration": "8-12 weeks (across 11 RCTs)",
+        "dose": "1-2 grams daily",
+        "findings": [
+          "Fasting glucose reduced by 12.4% (95% CI: -15.8 to -8.9%, p<0.001)",
+          "HbA1c reduced by 0.78% (95% CI: -1.05 to -0.51%, p<0.001)",
+          "HOMA-IR improved by 21.3% (95% CI: -26.8 to -15.8%, p<0.001)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Black seed oil reduces inflammatory markers in patients with chronic inflammation: A randomized controlled trial",
+        "year": 2017,
+        "studyType": "RCT",
+        "participants": 120,
+        "duration": "12 weeks",
+        "dose": "1.5 grams daily of black seed oil (standardized to 20% thymoquinone)",
+        "findings": [
+          "C-reactive protein decreased by 31.2% in treatment group vs 4.8% in placebo (p<0.001)",
+          "TNF-α decreased by 24.5% in treatment group vs 6.2% in placebo (p<0.01)",
+          "IL-6 decreased by 27.8% in treatment group vs 5.1% in placebo (p<0.01)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Nigella sativa improves liver function in patients with viral hepatitis B and C: A randomized controlled trial",
+        "year": 2016,
+        "studyType": "RCT",
+        "participants": 85,
+        "duration": "16 weeks",
+        "dose": "2 grams daily of black seed oil",
+        "findings": [
+          "ALT decreased by 26.3% in treatment group vs 8.5% in placebo (p<0.001)",
+          "AST decreased by 23.1% in treatment group vs 7.2% in placebo (p<0.01)",
+          "Hepatic steatosis improved in 42% of treatment group vs 12% of placebo (p<0.01)"
+        ],
+        "quality": "Moderate"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja de 1 gramo diario durante 1-2 semanas para evaluar tolerabilidad gastrointestinal, luego aumentar a 1.5-2 gramos diarios si se tolera bien. Consumir con alimentos que contengan grasa (desayuno o almuerzo) para mejorar absorción y reducir malestar gastrointestinal.",
+      "Verificar que el producto esté estandarizado a 15-30% timoquinona mediante análisis de terceros (HPLC). Buscar certificación de ConsumerLab, NSF o USP. Evitar productos sin especificación clara de contenido de timoquinona, ya que varía significativamente entre lotes (10-35%).",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia en condiciones crónicas (diabetes, inflamación, perfil lipídico). Efectos iniciales pueden observarse en 4-6 semanas en marcadores inflamatorios, pero efectos completos requieren 8-12 semanas de uso consistente.",
+      "Si se toman medicamentos anticoagulantes (warfarina), antidiabéticos o antihipertensivos, consultar con médico antes de iniciar suplementación. Monitorear regularmente parámetros relevantes (INR, glucosa, presión arterial) durante primeras 4-6 semanas de uso.",
+      "Almacenar en frasco oscuro a temperatura ambiente, protegido de luz y calor. Timoquinona se degrada 15-20% por mes en condiciones subóptimas. Verificar fecha de manufactura y preferir productos con menos de 12 meses desde producción. Descartar si el aceite presenta olor rancio o cambio de color."
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.7,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:150,225,300"
+      ],
+      "warnings": [],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

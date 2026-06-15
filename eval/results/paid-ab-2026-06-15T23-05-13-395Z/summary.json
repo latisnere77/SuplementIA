@@ -1,0 +1,400 @@
+{
+  "mode": "paid-ab",
+  "runId": "2026-06-15T23-05-13-395Z",
+  "generatedAt": "2026-06-15T23:48:15.527Z",
+  "promptSource": "eval/fixtures/enricher-live-dist/prompts.js",
+  "toolSchemaSource": "eval/fixtures/enricher-live-dist/toolSchema.js",
+  "goldenDir": "eval/golden",
+  "goldenCount": 30,
+  "projection": {
+    "mode": "paid-ab",
+    "runId": "2026-06-15T23-05-13-395Z",
+    "goldenCount": 30,
+    "candidates": [
+      {
+        "id": "haiku-4.5",
+        "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+        "maxTokens": 16000,
+        "inputPer1M": 1,
+        "outputPer1M": 5,
+        "priceSource": "manual fallback: AWS Pricing API/eval pricing did not expose Haiku 4.5 SKU; matches public Anthropic/Bedrock listed rate used for budget cap"
+      },
+      {
+        "id": "nova-lite",
+        "modelId": "amazon.nova-lite-v1:0",
+        "maxTokens": 5000,
+        "inputPer1M": 0.06,
+        "outputPer1M": 0.24,
+        "priceSource": "eval/pricing.json AWS Pricing API confirmed SKU"
+      }
+    ],
+    "projectedInputTokensPerCandidate": 218719,
+    "projectedWorstCaseUsd": 2.667842,
+    "maxBudgetUsd": 9
+  },
+  "actual": {
+    "totalCostUsd": 1.815766,
+    "byCandidate": [
+      {
+        "candidateId": "haiku-4.5",
+        "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+        "completed": 30,
+        "failed": 0,
+        "averageScore": 0.697,
+        "medicalGatePasses": 5,
+        "medicalGateFailures": 38,
+        "medicalFailures": [
+          {
+            "supplementName": "ashwagandha-test-1767124305",
+            "failure": "dosage_numeric_drift:1,1.2,2,3,6,15,30,50,100,125,200"
+          },
+          {
+            "supplementName": "ashwagandha-test-1767124305",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "berberina",
+            "failure": "dosage_numeric_drift:30,50"
+          },
+          {
+            "supplementName": "berberina",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "Berberine",
+            "failure": "dosage_numeric_drift:1,1.5,2,250,300"
+          },
+          {
+            "supplementName": "Berberine",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "black seed",
+            "failure": "dosage_numeric_drift:1,2,4"
+          },
+          {
+            "supplementName": "black seed",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "black seed oil",
+            "failure": "dosage_numeric_drift:150,225,300"
+          },
+          {
+            "supplementName": "cardo mariano",
+            "failure": "dosage_numeric_drift:70"
+          },
+          {
+            "supplementName": "cardo mariano",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "coenzyme q10",
+            "failure": "dosage_numeric_drift:300,1200"
+          },
+          {
+            "supplementName": "coenzyme q10",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "colágen",
+            "failure": "dosage_numeric_drift:1500"
+          },
+          {
+            "supplementName": "CoQ10",
+            "failure": "dosage_numeric_drift:0.8,1.5,3000"
+          },
+          {
+            "supplementName": "CoQ10",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "Creatina",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "Creatine",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "curcumin",
+            "failure": "dosage_numeric_drift:5,20,300,2000,4000"
+          },
+          {
+            "supplementName": "curcumin",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "fish oil",
+            "failure": "dosage_numeric_drift:1,1.5,2,2.5,3,4,5,200,300,400,500,600"
+          },
+          {
+            "supplementName": "folic acid",
+            "failure": "dosage_numeric_drift:2000,5000"
+          },
+          {
+            "supplementName": "garcinia cambogia",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "ginger",
+            "failure": "dosage_numeric_drift:1,2,3,4,5,10,20,3000,4000"
+          },
+          {
+            "supplementName": "ginger",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "hericium erinaceus",
+            "failure": "dosage_numeric_drift:1,2,3,5"
+          },
+          {
+            "supplementName": "hericium erinaceus",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "hierbabuena",
+            "failure": "dosage_numeric_drift:600"
+          },
+          {
+            "supplementName": "hierbabuena",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "lions mane",
+            "failure": "dosage_numeric_drift:2000,5000"
+          },
+          {
+            "supplementName": "magnesio",
+            "failure": "dosage_numeric_drift:1200"
+          },
+          {
+            "supplementName": "magnesium",
+            "failure": "dosage_numeric_drift:1200"
+          },
+          {
+            "supplementName": "Omega-3",
+            "failure": "dosage_numeric_drift:1,2,3,4,5,10,12,15,150,500,5000"
+          },
+          {
+            "supplementName": "omega 3 epa",
+            "failure": "unsupported_pmids:16585764,18199473,21677272,29046396,9884124"
+          },
+          {
+            "supplementName": "omega 3 epa",
+            "failure": "dosage_numeric_drift:1,2,3,4,5,17,500"
+          },
+          {
+            "supplementName": "omega 3 epa",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "proteína whey",
+            "failure": "dosage_numeric_drift:150,200"
+          },
+          {
+            "supplementName": "sábila",
+            "failure": "dosage_numeric_drift:1000"
+          }
+        ],
+        "totalInputTokens": 291894,
+        "totalOutputTokens": 298494,
+        "totalCostUsd": 1.784364,
+        "averageLatencyMs": 70763,
+        "priceSource": "manual fallback: AWS Pricing API/eval pricing did not expose Haiku 4.5 SKU; matches public Anthropic/Bedrock listed rate used for budget cap"
+      },
+      {
+        "candidateId": "nova-lite",
+        "modelId": "amazon.nova-lite-v1:0",
+        "completed": 30,
+        "failed": 0,
+        "averageScore": 0.634,
+        "medicalGatePasses": 1,
+        "medicalGateFailures": 43,
+        "medicalFailures": [
+          {
+            "supplementName": "aceite de comino negro",
+            "failure": "unsupported_pmids:23456789,34567890"
+          },
+          {
+            "supplementName": "aloe barbadensis",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "ashwagandha-test-1767124305",
+            "failure": "unsupported_pmids:32123456,76543210"
+          },
+          {
+            "supplementName": "berberina",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "Berberine",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "black seed",
+            "failure": "unsupported_pmids:23456789"
+          },
+          {
+            "supplementName": "black seed",
+            "failure": "dosage_numeric_drift:300"
+          },
+          {
+            "supplementName": "black seed oil",
+            "failure": "unsupported_pmids:23456789,34567890"
+          },
+          {
+            "supplementName": "cardo mariano",
+            "failure": "unsupported_pmids:12345678"
+          },
+          {
+            "supplementName": "coenzyme q10",
+            "failure": "unsupported_pmids:12345678"
+          },
+          {
+            "supplementName": "coenzyme q10",
+            "failure": "dosage_numeric_drift:300,1200"
+          },
+          {
+            "supplementName": "colágen",
+            "failure": "unsupported_pmids:23456789,34567890"
+          },
+          {
+            "supplementName": "colágen",
+            "failure": "missing_safety_interactions"
+          },
+          {
+            "supplementName": "collagen",
+            "failure": "unsupported_pmids:23456789,34567890"
+          },
+          {
+            "supplementName": "CoQ10",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "CoQ10",
+            "failure": "dosage_numeric_drift:1200"
+          },
+          {
+            "supplementName": "Creatina",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "Creatina",
+            "failure": "dosage_numeric_drift:300"
+          },
+          {
+            "supplementName": "Creatine",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "Creatine",
+            "failure": "dosage_numeric_drift:300"
+          },
+          {
+            "supplementName": "curcumin",
+            "failure": "unsupported_pmids:23456789,34567890"
+          },
+          {
+            "supplementName": "curcumin",
+            "failure": "dosage_numeric_drift:2000"
+          },
+          {
+            "supplementName": "fish oil",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "fish oil",
+            "failure": "dosage_numeric_drift:1,2,4,6"
+          },
+          {
+            "supplementName": "folic acid",
+            "failure": "unsupported_pmids:12345678"
+          },
+          {
+            "supplementName": "garcinia cambogia",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "ginger",
+            "failure": "unsupported_pmids:12345678,98765432"
+          },
+          {
+            "supplementName": "ginger",
+            "failure": "dosage_numeric_drift:1,1.5,2,4"
+          },
+          {
+            "supplementName": "hericium erinaceus",
+            "failure": "unsupported_pmids:23456789,34567890"
+          },
+          {
+            "supplementName": "hericium erinaceus",
+            "failure": "dosage_numeric_drift:1,2,3"
+          },
+          {
+            "supplementName": "hierbabuena",
+            "failure": "unsupported_pmids:12345678"
+          },
+          {
+            "supplementName": "hierbabuena",
+            "failure": "dosage_numeric_drift:300,600,1200"
+          },
+          {
+            "supplementName": "lions mane",
+            "failure": "unsupported_pmids:23456789"
+          },
+          {
+            "supplementName": "lions mane",
+            "failure": "dosage_numeric_drift:300,2000"
+          },
+          {
+            "supplementName": "magnesio",
+            "failure": "unsupported_pmids:12345678"
+          },
+          {
+            "supplementName": "magnesium",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "mumijo",
+            "failure": "unsupported_pmids:23456789,34567890"
+          },
+          {
+            "supplementName": "Omega-3",
+            "failure": "unsupported_pmids:12345678,87654321"
+          },
+          {
+            "supplementName": "Omega-3",
+            "failure": "dosage_numeric_drift:500,5000"
+          },
+          {
+            "supplementName": "omega 3 epa",
+            "failure": "unsupported_pmids:12345678"
+          },
+          {
+            "supplementName": "omega 3 epa",
+            "failure": "dosage_numeric_drift:4000"
+          },
+          {
+            "supplementName": "probiotics",
+            "failure": "unsupported_pmids:23456789"
+          },
+          {
+            "supplementName": "proteína whey",
+            "failure": "unsupported_pmids:23456789"
+          }
+        ],
+        "totalInputTokens": 251977,
+        "totalOutputTokens": 67861,
+        "totalCostUsd": 0.031402,
+        "averageLatencyMs": 15266,
+        "priceSource": "eval/pricing.json AWS Pricing API confirmed SKU"
+      }
+    ]
+  },
+  "verdict": {
+    "recommendation": "No candidate fully cleared deterministic medical gate; do not migrate yet.",
+    "recommendedCandidateId": null
+  }
+}

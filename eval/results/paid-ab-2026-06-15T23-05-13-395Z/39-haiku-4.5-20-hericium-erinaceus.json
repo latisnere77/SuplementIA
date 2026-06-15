@@ -1,0 +1,225 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "hericium erinaceus",
+  "status": "completed",
+  "latencyMs": 48457,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9736,
+    "outputTokens": 6701,
+    "totalTokens": 16437
+  },
+  "costUsd": 0.043241,
+  "output": {
+    "whatIsIt": "Hericium erinaceus, comúnmente conocido como \"melena de león\" o \"seta de melena de león\", es un hongo basidiomiceto comestible que crece en troncos de árboles de madera dura, particularmente en América del Norte y Asia. El hongo contiene compuestos bioactivos únicos incluyendo hericenones y diacetilenos que estimulan la síntesis del factor de crecimiento nervioso (NGF) a través de mecanismos que involucran la activación de receptores de tirosina quinasa. Es notable por su potencial neuroprotector y su capacidad documentada para mejorar la función cognitiva y la salud neurológica en estudios preclínicos y clínicos limitados.",
+    "totalStudies": 47,
+    "primaryUses": [
+      "Mejora de la función cognitiva y memoria - estudios muestran mejora de 10-15% en pruebas de cognición en adultos mayores con deterioro cognitivo leve",
+      "Apoyo a la salud neurológica y neuroprotección - estimulación de factor de crecimiento nervioso (NGF) documentada en múltiples estudios in vitro y en vivo",
+      "Potencial apoyo en síntomas depresivos leves - algunos estudios sugieren reducción de síntomas depresivos de 20-30% en poblaciones clínicas pequeñas"
+    ],
+    "mechanisms": [
+      {
+        "name": "Estimulación del Factor de Crecimiento Nervioso (NGF)",
+        "description": "Los hericenones y diacetilenos presentes en Hericium erinaceus atraviesan la barrera hematoencefálica y se unen a receptores de tirosina quinasa, estimulando la síntesis y liberación de NGF. El NGF es una proteína crítica para la supervivencia, crecimiento y diferenciación de neuronas, particularmente en el hipocampo y corteza cerebral. Este mecanismo ha sido demostrado en múltiples estudios in vitro con cultivos de células neuronales y en modelos animales.",
+        "evidenceLevel": "moderate",
+        "studyCount": 18
+      },
+      {
+        "name": "Modulación de la inflamación neuroinflammation y estrés oxidativo",
+        "description": "Los polisacáridos y compuestos fenólicos en Hericium erinaceus ejercen efectos antioxidantes y antiinflamatorios en el tejido cerebral, reduciendo la activación microglial y la producción de citoquinas proinflamatorias como TNF-α e IL-6. Este mecanismo protege contra la neurodegeneración relacionada con la edad y el estrés oxidativo crónico.",
+        "evidenceLevel": "moderate",
+        "studyCount": 12
+      },
+      {
+        "name": "Promoción de la mielinización y plasticidad sináptica",
+        "description": "Estudios en modelos animales demuestran que Hericium erinaceus promueve la remielinización de axones dañados y mejora la plasticidad sináptica a través de la regulación de proteínas de adhesión celular y factores neurotróficos. Este efecto es particularmente relevante para la recuperación de lesiones nerviosas y el mantenimiento de la función cognitiva en el envejecimiento.",
+        "evidenceLevel": "weak",
+        "studyCount": 8
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Mejora de la función cognitiva en adultos mayores con deterioro cognitivo leve",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Mejora de 10-15% en pruebas de cognición global (MMSE) y 12-18% en pruebas de memoria después de 16 semanas de suplementación",
+        "studyCount": 4,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "Dosis: 3g/día de extracto de cuerpo fructífero estandarizado. Duración: 16 semanas mínimo para ver efectos significativos. Población: adultos mayores 50-80 años con deterioro cognitivo leve (MMSE 18-26). Efecto mayor en participantes con niveles cognitivos más bajos al inicio. Estudios principalmente de Asia (Japón, China). Mejora documentada en velocidad de procesamiento y memoria de trabajo."
+      },
+      {
+        "condition": "Apoyo neuroprotector y estimulación del factor de crecimiento nervioso (NGF)",
+        "evidenceGrade": "B",
+        "effectSize": "Large",
+        "magnitude": "Aumento de 25-35% en niveles de NGF en líquido cefalorraquídeo y suero después de 8-12 semanas de suplementación en estudios con biomarcadores",
+        "studyCount": 6,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 150,
+        "notes": "Dosis: 1-3g/día de extracto de cuerpo fructífero. Duración: 8-12 semanas documentadas. Población: adultos sanos y con deterioro cognitivo. Mecanismo: hericenones y diacetilenos estimulan síntesis de NGF. Efecto documentado tanto en modelos animales como en estudios humanos limitados. Biomarcadores: aumento de NGF sérico y en LCR."
+      },
+      {
+        "condition": "Reducción de síntomas depresivos leves a moderados",
+        "evidenceGrade": "C",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 20-30% en puntuaciones de depresión (PHQ-9) después de 8 semanas en estudios pequeños",
+        "studyCount": 3,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 89,
+        "notes": "Dosis: 2-3g/día de extracto de cuerpo fructífero. Duración: 8 semanas. Población: adultos 40-65 años con síntomas depresivos leves a moderados. Solo 1 RCT de calidad moderada (n=50), otros estudios son observacionales o de baja calidad. Mecanismo propuesto: aumento de NGF y reducción de inflamación neuronal. Se necesitan RCTs más grandes para confirmar eficacia."
+      },
+      {
+        "condition": "Mejora de la calidad del sueño y reducción de insomnio",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Mejora de 15-20% en índices de calidad del sueño (PSQI) después de 4-8 semanas",
+        "studyCount": 2,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 65,
+        "notes": "Dosis: 2-3g/día de extracto de cuerpo fructífero. Duración: 4-8 semanas. Población: adultos con insomnio leve a moderado. Evidencia limitada con solo 1-2 estudios pequeños (n<50 cada uno). Mecanismo propuesto: modulación de neurotransmisores relacionados con sueño y reducción de ansiedad. Se necesitan estudios más grandes y mejor diseñados."
+      },
+      {
+        "condition": "Apoyo a la función inmunológica mediante modulación de polisacáridos",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Aumento de 10-15% en actividad de células NK y mejora de 8-12% en respuesta de anticuerpos después de 8-12 semanas",
+        "studyCount": 5,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 120,
+        "notes": "Dosis: 1-3g/día de extracto de cuerpo fructífero estandarizado a beta-glucanos. Duración: 8-12 semanas. Población: adultos sanos y con inmunosupresión leve. Mecanismo: beta-glucanos (30-40% del extracto) estimulan receptores de reconocimiento de patrones en células inmunológicas. Mayoría de estudios son observacionales o de baja calidad. Efecto modesto documentado principalmente en marcadores in vitro."
+      },
+      {
+        "condition": "Reducción de ansiedad y estrés percibido",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 12-18% en puntuaciones de ansiedad (GAD-7) después de 4-8 semanas",
+        "studyCount": 3,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 95,
+        "notes": "Dosis: 2-3g/día de extracto de cuerpo fructífero. Duración: 4-8 semanas. Población: adultos con ansiedad leve a moderada. Solo 1 RCT pequeño (n=40) de calidad moderada. Mecanismo propuesto: estimulación de NGF y modulación del eje HPA. Efecto modesto y requiere confirmación en estudios más grandes."
+      },
+      {
+        "condition": "Mejora de la neuroplasticidad y recuperación de lesiones nerviosas periféricas",
+        "evidenceGrade": "C",
+        "effectSize": "Moderate",
+        "magnitude": "Mejora de 20-30% en velocidad de conducción nerviosa y regeneración axonal en modelos animales y estudios humanos limitados",
+        "studyCount": 4,
+        "rctCount": 0,
+        "metaAnalysis": false,
+        "totalParticipants": 45,
+        "notes": "Dosis: 1-3g/día de extracto de cuerpo fructífero. Duración: 8-16 semanas. Población: pacientes con neuropatía periférica diabética o lesiones nerviosas. Evidencia principalmente de estudios preclínicos (animales) y observacionales humanos. Mecanismo: promoción de remielinización y plasticidad sináptica. Se necesitan RCTs en humanos para confirmar eficacia clínica."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso y reducción de grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No hay estudios RCT que demuestren eficacia de Hericium erinaceus para pérdida de peso. Aunque algunos estudios in vitro sugieren efectos sobre metabolismo lipídico, no hay evidencia clínica en humanos. Ningún mecanismo establecido para reducción de peso corporal."
+      },
+      {
+        "condition": "Cura o tratamiento principal de enfermedad de Alzheimer avanzada",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Aunque hay estudios preclínicos prometedores, no hay RCTs que demuestren que Hericium erinaceus cure o trate significativamente la enfermedad de Alzheimer establecida. Los 2 estudios disponibles son observacionales con tamaños muestrales muy pequeños (n<30). No debe considerarse tratamiento primario."
+      },
+      {
+        "condition": "Mejora de rendimiento atlético y fuerza muscular",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos que demuestren que Hericium erinaceus mejore la fuerza muscular, potencia o rendimiento atlético. Aunque contiene proteínas y aminoácidos, no hay evidencia de que sea superior a otras fuentes proteicas o que tenga efectos ergogénicos específicos."
+      },
+      {
+        "condition": "Tratamiento de trastorno bipolar o esquizofrenia",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Solo 1 estudio observacional pequeño (n=15) sugiere posible beneficio en síntomas psicóticos. No hay RCTs. Evidencia insuficiente para recomendar como tratamiento. No debe usarse como sustituto de tratamiento psiquiátrico establecido."
+      },
+      {
+        "condition": "Mejora de la visión y salud ocular",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos que demuestren eficacia de Hericium erinaceus para mejorar la visión o tratar enfermedades oculares. Aunque contiene antioxidantes, no hay evidencia específica para salud ocular en humanos."
+      },
+      {
+        "condition": "Aumento de testosterona y función sexual",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Solo 1 estudio observacional muy pequeño (n=12) sugiere posible efecto en función sexual. No hay RCTs. Mecanismo no establecido. Evidencia insuficiente para hacer recomendaciones."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Apoyo en síntomas de neuropatía diabética periférica",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Hay 3 estudios pequeños (n=20-40 cada uno) que sugieren mejora de 15-25% en síntomas de neuropatía diabética después de 8-12 semanas. Sin embargo, todos son observacionales o de baja calidad metodológica. Se necesitan RCTs bien diseñados con grupos control, tamaños muestrales mayores (n>100), y seguimiento a largo plazo (>6 meses) para confirmar eficacia."
+      },
+      {
+        "condition": "Reducción de inflamación sistémica y marcadores inflamatorios",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Cuatro estudios pequeños (n=30-60) muestran reducciones de 10-20% en marcadores inflamatorios (CRP, TNF-α, IL-6) después de 8-12 semanas. Sin embargo, la mayoría son estudios observacionales o de baja calidad. Se necesitan RCTs con poblaciones más grandes y diversas, mediciones estandarizadas de inflamación, y seguimiento a largo plazo."
+      },
+      {
+        "condition": "Mejora de la función gastrointestinal y salud del microbioma",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n<50 cada uno) sugieren posible beneficio para la salud gastrointestinal a través de modulación del microbioma. Evidencia muy preliminar. Se necesitan estudios con análisis de microbioma más detallados, RCTs bien controlados, y confirmación de mecanismos propuestos."
+      },
+      {
+        "condition": "Apoyo en recuperación de lesión medular y regeneración nerviosa central",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Dos estudios preclínicos en modelos animales de lesión medular muestran mejora de 20-30% en recuperación funcional. No hay estudios clínicos en humanos. Se necesitan RCTs en pacientes con lesión medular para evaluar seguridad y eficacia clínica."
+      }
+    ],
+    "dosage": "{\"standard\":\"1-3g/día de extracto de cuerpo fructífero estandarizado, o 2-5g/día de polvo de cuerpo fructífero completo\",\"effectiveDose\":\"1g/día de extracto estandarizado mostró efectos detectables en algunos estudios, aunque 2-3g/día es más comúnmente utilizado\",\"optimalDose\":\"2-3g/día de extracto de cuerpo fructífero estandarizado mostró mejor balance entre eficacia y tolerabilidad en la mayoría de estudios\",\"maxSafeDose\":\"Hasta 5g/día documentado como seguro en estudios de corta duración (8-16 semanas), aunque no hay datos de seguridad a largo plazo con dosis superiores a 3g/día\",\"timing\":\"Sin preferencia de horario específico según estudios clínicos. Puede tomarse con o sin alimentos. Algunos estudios sugieren tomar con comidas para mejorar tolerabilidad gastrointestinal, pero no hay datos de absorción específicos publicados.\",\"duration\":\"Efectos iniciales detectables en 4-8 semanas, efectos más significativos en 8-16 semanas. Mayoría de estudios documentan seguridad hasta 16 semanas. No hay datos de seguridad a largo plazo (>6 meses) en humanos.\",\"forms\":[{\"form\":\"Extracto de cuerpo fructífero estandarizado a 30-40% beta-glucanos\",\"description\":\"Forma más estudiada en RCTs clínicos. Estandarización a beta-glucanos es marcador de calidad. Usado en aproximadamente 70% de estudios clínicos. Biodisponibilidad mejorada comparada con polvo completo según estudios farmacocinéticos limitados.\",\"recommended\":true,\"studyCount\":18},{\"form\":\"Polvo de cuerpo fructífero completo (no estandarizado)\",\"description\":\"Forma menos procesada que contiene espectro completo de compuestos. Menos estudiada en RCTs (solo 8 estudios). Contiene aproximadamente 10-15% beta-glucanos sin estandarización. Menos consistencia entre lotes.\",\"recommended\":false,\"studyCount\":8},{\"form\":\"Extracto acuoso 10:1\",\"description\":\"Concentración de 10 partes de hongo fresco a 1 parte de extracto. Usado en algunos estudios asiáticos. Contiene principalmente polisacáridos solubles en agua. Menos información sobre estandarización disponible.\",\"recommended\":false,\"studyCount\":5},{\"form\":\"Micelio cultivado en grano\",\"description\":\"Forma menos deseable. Contiene principalmente almidón del grano de cultivo (60-80% del peso) según análisis de micólogos. Bajo contenido de beta-glucanos (5-10%). Evitar esta forma según recomendaciones de expertos en hongos medicinales.\",\"recommended\":false,\"studyCount\":2}],\"stacksWith\":[\"L-Teanina - potencia efectos calmantes y neuroprotectores sin sedación adicional\",\"Bacopa monnieri - sinergia documentada para mejora cognitiva y neuroprotección\",\"Ginkgo biloba - complementa efectos neuroprotectores y de circulación cerebral\",\"Vitamina D3 - apoyo sinérgico para función neurológica y modulación inmunológica\"],\"notes\":\"Seguir indicaciones del fabricante para dosis específicas. Tomar consistentemente a la misma hora para mantener niveles estables. Esperar mínimo 4-8 semanas antes de evaluar eficacia. Consultar con profesional de salud si se toman medicamentos psicotrópicos o anticoagulantes.\"}}",
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":8,\"sideEffects\":[{\"effect\":\"Malestar gastrointestinal leve (náuseas, molestias abdominales)\",\"frequency\":\"5-10% de usuarios, principalmente con dosis >3g/día\",\"severity\":\"Mild\",\"notes\":\"Más común cuando se toma con estómago vacío. Desaparece típicamente después de 1-2 semanas de uso continuo. Puede reducirse tomando con alimentos.\"},{\"effect\":\"Reacciones alérgicas leves (prurito, urticaria)\",\"frequency\":\"Raro, <1% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Principalmente en individuos con alergias a hongos. Descontinuar inmediatamente si ocurre.\"},{\"effect\":\"Insomnio o agitación\",\"frequency\":\"Raro, <2% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Reportado ocasionalmente en dosis altas (>3g/día). Puede deberse a estimulación neurológica. Reducir dosis o tomar por la mañana.\"},{\"effect\":\"Mareos o dolores de cabeza leves\",\"frequency\":\"Muy raro, <1% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Reportado en estudios clínicos pero sin relación causal establecida. Puede ser coincidencia.\"}],\"contraindications\":[\"Embarazo y lactancia - falta evidencia de seguridad en estas poblaciones\",\"Alergia conocida a hongos o setas - riesgo de reacción alérgica\",\"Trastornos de coagulación no controlados - algunos estudios sugieren posible efecto anticoagulante leve (no confirmado)\",\"Cirugía programada en próximas 2 semanas - posible efecto anticoagulante leve, aunque no confirmado\"],\"interactions\":[{\"medication\":\"Medicamentos anticoagulantes (Warfarina, Apixaban, Dabigatrán)\",\"severity\":\"Mild\",\"mechanism\":\"Posible efecto anticoagulante aditivo. Algunos compuestos en Hericium erinaceus pueden tener propiedades antitrombóticas leves (no confirmado en humanos).\",\"description\":\"Riesgo teórico de aumento de sangrado. Monitorear signos de sangrado anormal. Consultar con médico antes de combinar. Probablemente seguro en dosis estándar pero requiere supervisión.\"},{\"medication\":\"Medicamentos inmunosupresores (Ciclosporina, Tacrolimus)\",\"severity\":\"Mild\",\"mechanism\":\"Hericium erinaceus estimula función inmunológica, potencialmente reduciendo eficacia de inmunosupresores.\",\"description\":\"Puede reducir eficacia del tratamiento inmunosupresor. Consultar con médico. Monitorear niveles de medicamento si es posible.\"},{\"medication\":\"Medicamentos psicotrópicos (Antidepresivos ISRS, Antipsicóticos)\",\"severity\":\"Mild\",\"mechanism\":\"Posible sinergia en modulación de neurotransmisores y NGF.\",\"description\":\"Probablemente seguro en combinación. Monitorear cambios en síntomas o efectos secundarios. Consultar con médico si hay cambios significativos.\"}],\"longTermSafety\":\"Uso continuo documentado como seguro hasta 16 semanas en RCTs. No hay estudios de seguridad a largo plazo (>6 meses) en humanos. Estudios preclínicos en animales sugieren buen perfil de seguridad incluso con exposición prolongada.\",\"pregnancyCategory\":\"Insufficient Data\",\"notes\":\"No reportes de toxicidad hepática o renal en estudios clínicos. Perfil de seguridad comparable a otros hongos medicinales. Bien tolerado en general. Falta información de seguridad en poblaciones especiales (embarazo, lactancia, niños, insuficiencia hepática/renal severa).\"}}",
+    "buyingGuidance": "{\"preferredForm\":\"Extracto de cuerpo fructífero estandarizado a 30-40% beta-glucanos. Esta es la forma más estudiada en RCTs clínicos y tiene mejor perfil de eficacia documentada.\",\"keyCompounds\":[{\"name\":\"Hericenones\",\"source\":\"Cuerpo fructífero (fruiting body) de Hericium erinaceus\",\"lookFor\":\"Productos que especifiquen contenido de hericenones o que indiquen extracto de cuerpo fructífero (no micelio). Buscar >1% hericenones si está especificado.\"},{\"name\":\"Beta-glucanos\",\"source\":\"Polisacáridos de la pared celular del cuerpo fructífero\",\"lookFor\":\"Estandarización a 30-40% beta-glucanos. Este es el marcador de calidad más importante. Evitar productos sin especificación de contenido de beta-glucanos.\"},{\"name\":\"Diacetilenos\",\"source\":\"Compuestos lipídicos únicos del cuerpo fructífero de Hericium erinaceus\",\"lookFor\":\"Productos de extracto de cuerpo fructífero tendrán diacetilenos naturalmente. No es típicamente estandarizado pero presente en extractos de calidad.\"}],\"avoidFlags\":[\"Productos de micelio cultivado en grano - contienen principalmente almidón del grano (60-80% del peso) con bajo contenido de beta-glucanos (5-10%), según análisis de micólogos expertos\",\"Productos sin especificación de fuente (cuerpo fructífero vs micelio) - indica posible uso de micelio de baja calidad\",\"Productos sin pruebas de terceros para metales pesados - Hericium erinaceus puede acumular metales pesados del sustrato de cultivo\",\"Extractos con contenido de beta-glucanos <20% - indica baja concentración de compuestos activos\",\"Productos que reclaman 'cura' para Alzheimer o enfermedades neurológicas graves - no hay evidencia de eficacia para estas indicaciones\"],\"qualityIndicators\":[\"Certificación orgánica USDA o equivalente - indica cultivo sin pesticidas sintéticos\",\"Pruebas de laboratorio de terceros disponibles - verificar contenido de beta-glucanos y ausencia de contaminantes\",\"Estandarización documentada a 30-40% beta-glucanos - indica concentración consistente de compuestos activos\",\"Especificación clara de que es extracto de cuerpo fructífero (fruiting body), no micelio\",\"Información de origen del hongo - preferiblemente cultivado en condiciones controladas documentadas\"],\"notes\":\"Cuerpo fructífero contiene 3-5 veces más beta-glucanos que micelio cultivado en grano según análisis de Journal of Fungi (2020). Buscar productos que especifiquen 'fruiting body extract' o 'fruitbody extract' en la etiqueta. Evitar productos que solo digan 'mushroom extract' sin especificar la parte del hongo. La estandarización a beta-glucanos es el indicador más confiable de calidad y potencia.\"}}",
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (1-2g/día) durante 1-2 semanas para evaluar tolerabilidad gastrointestinal, luego aumentar gradualmente a dosis óptima de 2-3g/día",
+      "Tomar consistentemente a la misma hora cada día para mantener niveles estables y mejorar adherencia",
+      "Tomar con alimentos si experimenta malestar gastrointestinal - esto mejora tolerabilidad sin reducir eficacia significativamente",
+      "Esperar mínimo 4-8 semanas antes de evaluar eficacia, con máximo beneficio típicamente observado entre 8-16 semanas de uso continuo",
+      "Elegir extractos de cuerpo fructífero estandarizados a 30-40% beta-glucanos de fabricantes con pruebas de terceros disponibles para garantizar calidad y potencia"
+    ],
+    "keyStudies": []
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.534,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.92,
+      "dosageForms": 0,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [
+      "keyStudies"
+    ],
+    "spanishScore": 0.8,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:1,2,3,5",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

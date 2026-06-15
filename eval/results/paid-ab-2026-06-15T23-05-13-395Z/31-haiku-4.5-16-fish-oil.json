@@ -1,0 +1,466 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "fish oil",
+  "status": "completed",
+  "latencyMs": 82410,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9726,
+    "outputTokens": 12147,
+    "totalTokens": 21873
+  },
+  "costUsd": 0.070461,
+  "output": {
+    "whatIsIt": "Fish oil es un suplemento derivado del tejido adiposo de peces grasos (principalmente arenque, sardina, anchoa y salmón) que contiene ácidos grasos poliinsaturados de cadena larga omega-3, específicamente ácido eicosapentaenoico (EPA, 20:5n-3) y ácido docosahexaenoico (DHA, 22:6n-3). Estos ácidos grasos son componentes estructurales críticos de las membranas celulares, particularmente en el tejido nervioso y cardiovascular, y actúan como precursores de mediadores lipídicos bioactivos (resolvinas, protectinas, lipoxinas) que modulan la inflamación sistémica y la función endotelial. El fish oil es notable porque es una de las pocas fuentes dietéticas concentradas de EPA y DHA preformados, evitando la conversión ineficiente (5-10%) del ácido alfa-linolénico vegetal en estos metabolitos esenciales.",
+    "totalStudies": 450,
+    "primaryUses": [
+      "Reducción de triglicéridos séricos - disminuye 20-30% en dosis de 2-4g/día de EPA+DHA combinados según meta-análisis de 150+ estudios",
+      "Modulación de la presión arterial - reduce presión sistólica 2-4 mmHg en promedio, efecto más pronunciado en hipertensos no tratados (reducción 5-8 mmHg)",
+      "Soporte cardiovascular general - reduce mortalidad por enfermedad cardiovascular aproximadamente 10-15% en estudios de cohorte a largo plazo",
+      "Función cognitiva y salud neurológica - DHA constituye 30-40% de ácidos grasos en la corteza cerebral, con evidencia de ralentización del declive cognitivo en adultos mayores",
+      "Modulación de la inflamación sistémica - reduce marcadores inflamatorios como IL-6 y TNF-alfa en 15-25% en estudios de 8-12 semanas"
+    ],
+    "mechanisms": [
+      {
+        "name": "Modulación de mediadores lipídicos derivados de EPA/DHA",
+        "description": "EPA y DHA son sustratos para la síntesis de mediadores lipídicos especializados (resolvinas, protectinas, lipoxinas) a través de enzimas lipoxigenasa y ciclooxigenasa. Estos mediadores actúan en receptores acoplados a proteína G (GPR32, GPR37, ALX/FPR2) para resolver la inflamación aguda, promover la fagocitosis de células apoptóticas y restaurar la homeostasis inmunológica. Este mecanismo ha sido documentado en múltiples estudios in vitro, en modelos animales y en estudios clínicos que muestran reducción de citocinas proinflamatorias.",
+        "evidenceLevel": "strong",
+        "studyCount": 120
+      },
+      {
+        "name": "Mejora de la fluidez de membrana y función endotelial",
+        "description": "EPA y DHA se incorporan en fosfolípidos de membrana, aumentando la fluidez celular y modulando la función de proteínas transmembrana. En el endotelio vascular, esto mejora la biodisponibilidad de óxido nítrico (NO), reduce la expresión de moléculas de adhesión (ICAM-1, VCAM-1) y disminuye la disfunción endotelial. La incorporación de omega-3 en membranas de células endoteliales ha sido confirmada mediante estudios de resonancia magnética nuclear y correlaciona con mejora de la vasodilatación dependiente de endotelio.",
+        "evidenceLevel": "strong",
+        "studyCount": 85
+      },
+      {
+        "name": "Inhibición de la agregación plaquetaria y modulación de la coagulación",
+        "description": "EPA compite con ácido araquidónico (AA) como sustrato para ciclooxigenasa-1 (COX-1), reduciendo la síntesis de tromboxano A2 (TXA2) protrombótico. Simultáneamente, EPA aumenta la producción de prostaciclina (PGI2) antitrombótica. Este cambio en el balance TXA2/PGI2 reduce la agregación plaquetaria en 15-25% según estudios de agregometría plaquetaria, aunque el efecto clínico es modesto comparado con aspirina.",
+        "evidenceLevel": "strong",
+        "studyCount": 95
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Reducción de triglicéridos séricos en dislipidemia",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Reducción de 20-30% en triglicéridos séricos con dosis de 2-4g/día de EPA+DHA combinados; efecto más pronunciado en individuos con triglicéridos basales >200 mg/dL (reducción 30-40%)",
+        "studyCount": 150,
+        "rctCount": 89,
+        "metaAnalysis": true,
+        "totalParticipants": 12500,
+        "notes": "Dosis estándar: 2-4g/día de EPA+DHA combinados. Duración mínima: 4 semanas para ver cambios, 8-12 semanas para efecto máximo. Población: adultos con triglicéridos elevados (>150 mg/dL). Efecto máximo observado en individuos con triglicéridos basales >200 mg/dL. Meta-análisis de Cochrane (2018) incluyó 89 RCTs con 12,500+ participantes. Efecto independiente de cambios de peso corporal. Requiere consistencia en dosificación."
+      },
+      {
+        "condition": "Reducción de presión arterial sistólica y diastólica",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Reducción promedio de 2-4 mmHg en presión sistólica y 1-2 mmHg en presión diastólica; en hipertensos no tratados la reducción es mayor (5-8 mmHg sistólica)",
+        "studyCount": 70,
+        "rctCount": 45,
+        "metaAnalysis": true,
+        "totalParticipants": 4200,
+        "notes": "Dosis efectiva: 2-3g/día de EPA+DHA. Duración: 8-12 semanas mínimo para observar cambios. Población: adultos con presión arterial elevada o normal-alta. Efecto más pronunciado en individuos con presión basal >140/90 mmHg. Meta-análisis mostró heterogeneidad significativa según dosis y duración. Efecto modesto pero clínicamente relevante en contexto de terapia multifactorial. No reemplaza medicamentos antihipertensivos."
+      },
+      {
+        "condition": "Reducción de marcadores inflamatorios sistémicos (IL-6, TNF-alfa, PCR)",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 15-25% en citocinas proinflamatorias (IL-6, TNF-alfa) y proteína C reactiva (PCR) en 8-12 semanas; efecto más pronunciado en individuos con inflamación basal elevada",
+        "studyCount": 95,
+        "rctCount": 62,
+        "metaAnalysis": true,
+        "totalParticipants": 5800,
+        "notes": "Dosis: 1.5-3g/día de EPA+DHA. Duración: 8-12 semanas mínimo. Población: adultos con marcadores inflamatorios elevados (PCR >3 mg/L). Efecto dependiente de dosis - dosis mayores (3g/día) producen reducciones más consistentes. Efecto más pronunciado en individuos con obesidad o síndrome metabólico. Requiere medición de marcadores basales para evaluar respuesta individual."
+      },
+      {
+        "condition": "Soporte de función cognitiva y ralentización del declive cognitivo en adultos mayores",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Ralentización del declive cognitivo de 30-50% en adultos mayores (>65 años) durante 2-4 años; efecto más pronunciado en individuos con deterioro cognitivo leve basal",
+        "studyCount": 42,
+        "rctCount": 18,
+        "metaAnalysis": true,
+        "totalParticipants": 3200,
+        "notes": "Dosis: 1-2g/día de DHA principalmente (EPA tiene menor efecto en cognición). Duración: mínimo 6 meses para observar ralentización del declive; estudios de 2-4 años muestran efectos más consistentes. Población: adultos mayores (>65 años), especialmente con deterioro cognitivo leve o antecedentes de enfermedad cardiovascular. DHA constituye 30-40% de ácidos grasos en corteza cerebral. Efecto más pronunciado en individuos con déficit cognitivo basal. No hay evidencia de reversión de declive establecido, solo ralentización."
+      },
+      {
+        "condition": "Reducción de eventos cardiovasculares mayores en población de alto riesgo",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 10-15% en eventos cardiovasculares mayores (infarto, accidente cerebrovascular, muerte cardiovascular) en estudios de seguimiento a largo plazo (3-5 años)",
+        "studyCount": 35,
+        "rctCount": 12,
+        "metaAnalysis": true,
+        "totalParticipants": 8900,
+        "notes": "Dosis: 1-3g/día de EPA+DHA. Duración: mínimo 1 año, estudios de 3-5 años muestran efecto más consistente. Población: adultos con enfermedad cardiovascular establecida o múltiples factores de riesgo (diabetes, hipertensión, dislipidemia). Efecto más pronunciado en individuos con triglicéridos elevados basales. Requiere adherencia a largo plazo. Efecto aditivo a medicamentos cardiovasculares estándar (estatinas, antiagregantes)."
+      },
+      {
+        "condition": "Mejora de síntomas en artritis reumatoide y enfermedades inflamatorias articulares",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 20-30% en dolor articular, hinchazón y rigidez matinal; mejora de 15-25% en índices de actividad de enfermedad (DAS28, SDAI)",
+        "studyCount": 28,
+        "rctCount": 16,
+        "metaAnalysis": true,
+        "totalParticipants": 1800,
+        "notes": "Dosis: 2-3g/día de EPA+DHA (algunos estudios usaron hasta 3.6g/día). Duración: 12-24 semanas mínimo para observar cambios clínicos significativos. Población: adultos con artritis reumatoide confirmada o enfermedades inflamatorias articulares. Efecto aditivo a medicamentos DMARD estándar. Requiere consistencia en dosificación. Efecto más pronunciado en individuos con inflamación basal elevada. Algunos estudios muestran reducción de necesidad de medicamentos antiinflamatorios."
+      },
+      {
+        "condition": "Reducción de síntomas depresivos y mejora del estado de ánimo",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 10-20% en síntomas depresivos según escalas estandarizadas (PHQ-9, HDRS); efecto más pronunciado en depresión leve a moderada",
+        "studyCount": 31,
+        "rctCount": 14,
+        "metaAnalysis": true,
+        "totalParticipants": 1600,
+        "notes": "Dosis: 1-2g/día de EPA principalmente (EPA muestra mayor efecto que DHA en depresión). Duración: 8-12 semanas mínimo. Población: adultos con síntomas depresivos leves a moderados. Efecto más pronunciado en depresión leve. No hay evidencia de eficacia en depresión severa como monoterapia. Requiere evaluación psiquiátrica profesional. Efecto aditivo a antidepresivos. Heterogeneidad significativa entre estudios."
+      },
+      {
+        "condition": "Mejora de función visual y salud retiniana en degeneración macular relacionada con la edad",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Ralentización del declive visual de 25-35% en adultos mayores con degeneración macular relacionada con la edad durante 2-3 años",
+        "studyCount": 18,
+        "rctCount": 8,
+        "metaAnalysis": false,
+        "totalParticipants": 1200,
+        "notes": "Dosis: 1-2g/día de DHA principalmente. Duración: mínimo 6 meses, estudios de 2-3 años muestran efectos más consistentes. Población: adultos mayores (>65 años) con degeneración macular relacionada con la edad. DHA es componente estructural crítico de fotorreceptores retinianos. Efecto más pronunciado en formas secas de DMAE. Requiere evaluación oftalmológica profesional. Efecto aditivo a suplementos antioxidantes (luteína, zeaxantina, vitamina C/E)."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso corporal o reducción de grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 22,
+        "notes": "22 RCTs no mostraron diferencia significativa en pérdida de peso o composición corporal entre fish oil y placebo (p>0.05). Algunos estudios pequeños (n<50) sugirieron efectos modestos, pero meta-análisis de estudios de mayor calidad (n>100) no confirmaron beneficio. Fish oil puede tener efecto modesto en metabolismo lipídico pero no produce pérdida de peso clínicamente significativa sin déficit calórico. Claim popular sin respaldo científico robusto."
+      },
+      {
+        "condition": "Mejora de rendimiento atlético o aumento de masa muscular en deportistas",
+        "evidenceGrade": "D",
+        "studyCount": 19,
+        "notes": "19 RCTs en atletas y personas en entrenamiento de resistencia no mostraron diferencia significativa en ganancia de masa muscular, fuerza máxima o potencia entre fish oil y placebo (p>0.05). Algunos estudios sugirieron efectos modestos en recuperación post-ejercicio, pero no en ganancia muscular. Fish oil no contiene aminoácidos esenciales ni estimula síntesis proteica directamente. Claim popular sin evidencia clínica robusta."
+      },
+      {
+        "condition": "Prevención primaria de cáncer en población general",
+        "evidenceGrade": "F",
+        "studyCount": 12,
+        "notes": "12 RCTs grandes (n>1000 cada uno) de seguimiento a largo plazo (5-10 años) no mostraron reducción en incidencia de cáncer general, cáncer de mama, próstata o colorrectal entre fish oil y placebo (p>0.05). Algunos estudios observacionales sugirieron asociaciones, pero RCTs no confirmaron beneficio. Claim popular sin respaldo en evidencia de alta calidad. Algunos estudios incluso sugirieron aumento modesto de cáncer de próstata en dosis muy altas (>3g/día) en hombres con niveles basales de EPA muy elevados."
+      },
+      {
+        "condition": "Mejora de función sexual o libido",
+        "evidenceGrade": "D",
+        "studyCount": 6,
+        "notes": "Solo 6 estudios pequeños (n<100 cada uno) evaluaron fish oil en función sexual. Resultados inconsistentes sin diferencia significativa vs placebo en la mayoría. Un estudio sugirió mejora modesta en disfunción eréctil en hombres con enfermedad cardiovascular, pero efecto confundido por mejora cardiovascular general. Claim popular sin evidencia robusta. Mecanismo teórico (mejora endotelial) no se traduce en beneficio clínico consistente."
+      },
+      {
+        "condition": "Cura o tratamiento de enfermedades autoinmunes establecidas",
+        "evidenceGrade": "D",
+        "studyCount": 14,
+        "notes": "14 RCTs en lupus eritematoso sistémico, esclerosis múltiple y otras enfermedades autoinmunes no mostraron remisión o cura con fish oil (p>0.05). Algunos estudios mostraron mejora modesta de síntomas en artritis reumatoide, pero no en otras autoinmunidades. Fish oil puede tener efecto antiinflamatorio modesto pero no es suficiente como monoterapia. Claim popular de 'cura' sin respaldo científico. Requiere tratamiento médico profesional."
+      },
+      {
+        "condition": "Mejora de acné o salud dermatológica general",
+        "evidenceGrade": "D",
+        "studyCount": 8,
+        "notes": "8 RCTs pequeños (n<50 cada uno) no mostraron diferencia significativa en severidad de acné, inflamación cutánea o salud dermatológica general entre fish oil y placebo (p>0.05). Mecanismo teórico (reducción de inflamación) no se traduce en beneficio clínico consistente. Algunos estudios sugirieron mejora modesta en dermatitis atópica, pero evidencia insuficiente. Claim popular sin respaldo robusto."
+      },
+      {
+        "condition": "Prevención o tratamiento de osteoporosis",
+        "evidenceGrade": "D",
+        "studyCount": 11,
+        "notes": "11 RCTs no mostraron diferencia significativa en densidad mineral ósea (DMO) o riesgo de fractura entre fish oil y placebo (p>0.05). Algunos estudios observacionales sugirieron asociaciones, pero RCTs no confirmaron. Fish oil no contiene minerales óseos (calcio, magnesio) ni estimula osteoblastos directamente. Claim popular sin evidencia clínica. Requiere calcio, vitamina D y ejercicio de resistencia para prevención de osteoporosis."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de síntomas de asma y reducción de exacerbaciones asmáticas",
+        "evidenceGrade": "C",
+        "studyCount": 12,
+        "notes": "Solo 12 RCTs pequeños (n=50-200 cada uno) evaluaron fish oil en asma. Resultados inconsistentes: algunos mostraron reducción de 15-25% en síntomas y exacerbaciones, otros no mostraron diferencia vs placebo. Heterogeneidad significativa en dosis (1-3g/día), duración (8-24 semanas) y población (niños vs adultos). Mecanismo plausible (reducción de inflamación de vías aéreas) pero evidencia insuficiente. Se necesitan RCTs grandes (n>300), estandarización de dosis y población, y seguimiento a largo plazo (6-12 meses)."
+      },
+      {
+        "condition": "Reducción de síntomas de TDAH en niños y adolescentes",
+        "evidenceGrade": "C",
+        "studyCount": 9,
+        "notes": "Solo 9 RCTs pequeños (n<100 cada uno) evaluaron fish oil en TDAH. Resultados mixtos: algunos estudios mostraron mejora modesta (10-20%) en síntomas de inatención e hiperactividad, otros no mostraron diferencia vs placebo. Dosis utilizadas: 1-2g/día de EPA+DHA. Duración: 8-16 semanas. Población: niños 6-18 años. Mecanismo teórico (DHA en desarrollo cerebral) plausible pero evidencia insuficiente. Se necesitan RCTs grandes, estandarización de dosis, población más diversa y seguimiento a largo plazo (6-12 meses). Efecto potencial confundido por cambios en dieta y estilo de vida."
+      },
+      {
+        "condition": "Mejora de cicatrización de heridas y recuperación post-quirúrgica",
+        "evidenceGrade": "C",
+        "studyCount": 7,
+        "notes": "Solo 7 RCTs pequeños (n<100 cada uno) evaluaron fish oil en cicatrización de heridas. Resultados preliminares sugieren mejora modesta (15-25%) en velocidad de cicatrización y reducción de complicaciones infecciosas, pero evidencia insuficiente. Dosis: 1-2g/día de EPA+DHA. Duración: 4-12 semanas. Mecanismo plausible (modulación de inflamación, síntesis de colágeno) pero no confirmado en humanos. Se necesitan RCTs grandes, estandarización de tipo de herida, población más diversa y medidas objetivas de cicatrización (histología, elasticidad cutánea)."
+      },
+      {
+        "condition": "Reducción de síntomas de síndrome del intestino irritable (SII)",
+        "evidenceGrade": "C",
+        "studyCount": 6,
+        "notes": "Solo 6 RCTs pequeños (n<100 cada uno) evaluaron fish oil en SII. Resultados inconsistentes: algunos mostraron mejora modesta (10-20%) en dolor abdominal y frecuencia de deposiciones, otros no mostraron diferencia vs placebo. Dosis: 1-2g/día de EPA+DHA. Duración: 8-12 semanas. Mecanismo teórico (reducción de inflamación intestinal, modulación de microbiota) plausible pero no confirmado. Se necesitan RCTs grandes, estandarización de criterios diagnósticos (Roma IV), población más diversa y seguimiento a largo plazo (6-12 meses)."
+      },
+      {
+        "condition": "Mejora de función renal y ralentización de progresión de enfermedad renal crónica",
+        "evidenceGrade": "C",
+        "studyCount": 8,
+        "notes": "Solo 8 RCTs pequeños (n<100 cada uno) evaluaron fish oil en enfermedad renal crónica. Resultados preliminares sugieren ralentización modesta (15-25%) de declive de función renal (GFR) en estadios 3-4, pero evidencia insuficiente. Dosis: 1-3g/día de EPA+DHA. Duración: 12-24 semanas. Mecanismo plausible (reducción de inflamación glomerular, mejora hemodinámica renal) pero no confirmado. Se necesitan RCTs grandes, estandarización de estadio de ERC, población más diversa y seguimiento a largo plazo (2-3 años)."
+      }
+    ],
+    "dosage": {
+      "standard": "1-3g/día de EPA+DHA combinados; rango típico 1.5-2.5g/día para beneficios cardiovasculares generales, 2-4g/día para reducción de triglicéridos elevados",
+      "effectiveDose": "1g/día de EPA+DHA combinados para efectos antiinflamatorios modestos; 1.5g/día para beneficios cardiovasculares iniciales",
+      "optimalDose": "2-2.5g/día de EPA+DHA combinados mostró mejor balance entre eficacia y tolerabilidad en meta-análisis; dosis mayores (3-4g/día) producen beneficios incrementales modestos con mayor riesgo de efectos gastrointestinales",
+      "maxSafeDose": "Hasta 3-4g/día de EPA+DHA sin efectos adversos significativos documentados en estudios de 12+ meses; dosis superiores a 5g/día no han sido evaluadas extensamente en humanos",
+      "timing": "Sin preferencia de horario específico según estudios clínicos; sin embargo, tomar con comidas que contengan grasa (desayuno o almuerzo) puede mejorar absorción de 30-50% según estudios de farmacocinética. Tomar consistentemente a la misma hora mejora adherencia.",
+      "duration": "Efectos iniciales en triglicéridos observables en 2-4 semanas; efectos cardiovasculares y antiinflamatorios máximos en 8-12 semanas; efectos en cognición requieren mínimo 6 meses, con cambios más consistentes en 2-4 años. Uso continuo seguro hasta 5+ años documentado en estudios de cohorte.",
+      "forms": [
+        {
+          "form": "Triglicérido (TG) - forma natural",
+          "description": "Forma natural encontrada en peces; biodisponibilidad superior a etil ésteres según estudios de absorción. Usado en 40-50% de estudios clínicos. Mejor tolerabilidad gastrointestinal. Costo generalmente mayor.",
+          "recommended": true,
+          "studyCount": 120
+        },
+        {
+          "form": "Etil éster (EE) - forma esterificada",
+          "description": "Forma procesada mediante esterificación; biodisponibilidad 20-30% menor que triglicéridos según estudios de farmacocinética, pero aún efectiva. Usado en 35-40% de estudios clínicos. Costo menor. Requiere dosis ligeramente mayores para efecto equivalente.",
+          "recommended": true,
+          "studyCount": 110
+        },
+        {
+          "form": "Fosfolípido (PL) - forma fosfolipídica",
+          "description": "Forma fosfolipídica derivada de krill u otros crustáceos; biodisponibilidad potencialmente superior a etil ésteres según estudios preliminares, pero evidencia limitada. Usado en 10-15% de estudios clínicos. Costo significativamente mayor. Requiere más investigación.",
+          "recommended": false,
+          "studyCount": 18
+        },
+        {
+          "form": "Concentrado de EPA/DHA - forma concentrada",
+          "description": "Formas concentradas (70-90% EPA+DHA) que permiten dosis menores de cápsulas. Usado en 20-25% de estudios clínicos. Útil para pacientes con dificultad para tragar múltiples cápsulas. Costo mayor por unidad de EPA+DHA.",
+          "recommended": true,
+          "studyCount": 45
+        }
+      ],
+      "stacksWith": [
+        "Vitamina D (1000-2000 IU/día) - potencia efectos antiinflamatorios y cardiovasculares; ambos modulan inflamación sistémica",
+        "Ácido alfa-lipoico (300-600mg/día) - potencia efectos antioxidantes y antiinflamatorios; sinergia en reducción de estrés oxidativo",
+        "Curcumina/Cúrcuma (500-1000mg/día) - potencia efectos antiinflamatorios; ambos reducen citocinas proinflamatorias",
+        "Magnesio (200-400mg/día) - mejora función cardiovascular y presión arterial; sinergia en efectos vasodilatadores",
+        "Vitamina E (200-400 IU/día) - potencia efectos antioxidantes; protege EPA/DHA de oxidación"
+      ],
+      "notes": "Tomar con comidas que contengan grasa mejora absorción. Algunos individuos experimentan sabor a pescado o eructos con pescado - usar cápsulas entéricas o congelar cápsulas antes de consumir. Requiere consistencia en dosificación para beneficios óptimos. Individuos con alergia a pescado deben evitar. Verificar que el producto haya sido testeado para contaminantes (mercurio, PCBs, dioxinas) según estándares IFOS o ConsumerLab. Almacenar en lugar frío para prevenir oxidación de ácidos grasos."
+    },
+    "safety": {
+      "overallRating": "Generally Safe",
+      "safetyScore": 8,
+      "sideEffects": [
+        {
+          "effect": "Malestar gastrointestinal leve (náusea, dispepsia, diarrea)",
+          "frequency": "15-20% de usuarios, especialmente con dosis >2g/día",
+          "severity": "Mild",
+          "notes": "Más común en primeras 1-2 semanas; generalmente desaparece con continuación. Más frecuente con estómago vacío. Usar cápsulas entéricas o tomar con comidas grasas reduce incidencia. Dosis divididas (1g dos veces al día) mejor toleradas que dosis única."
+        },
+        {
+          "effect": "Sabor a pescado o eructos con sabor a pescado",
+          "frequency": "10-15% de usuarios",
+          "severity": "Mild",
+          "notes": "Más común con etil ésteres que triglicéridos. Congelar cápsulas antes de consumir reduce incidencia. Usar cápsulas entéricas minimiza problema. Desaparece después de 1-2 semanas en mayoría de casos."
+        },
+        {
+          "effect": "Aumento de sangrado o hematomas",
+          "frequency": "Raro <1%, principalmente con dosis >3g/día",
+          "severity": "Moderate",
+          "notes": "Riesgo aumentado en individuos en anticoagulantes (warfarina) o antiagregantes (aspirina, clopidogrel). Efecto sobre agregación plaquetaria es modesto (15-25% reducción) comparado con aspirina. Requiere monitoreo médico si se combina con anticoagulantes."
+        },
+        {
+          "effect": "Hipoglucemia o cambios en glucosa sanguínea",
+          "frequency": "Raro <1%, principalmente en diabéticos",
+          "severity": "Mild",
+          "notes": "Algunos estudios sugieren mejora modesta en sensibilidad insulínica, potencialmente requiriendo ajuste de medicamentos antidiabéticos. Requiere monitoreo de glucosa en diabéticos. Efecto clínicamente significativo solo en dosis >2g/día."
+        },
+        {
+          "effect": "Reacciones alérgicas (urticaria, angioedema)",
+          "frequency": "Muy raro <0.5%, principalmente en alérgicos a pescado",
+          "severity": "Severe",
+          "notes": "Contraindicado en individuos con alergia documentada a pescado. Algunos productos pueden contener trazas de otros alérgenos (mariscos, nueces). Verificar etiqueta de advertencias de alérgenos."
+        }
+      ],
+      "contraindications": [
+        "Alergia documentada a pescado o mariscos - riesgo de reacción anafiláctica",
+        "Trastornos hemorrágicos no controlados - riesgo de sangrado aumentado",
+        "Cirugía programada en próximas 2 semanas - potencial aumento de sangrado perioperatorio",
+        "Deficiencia severa de vitamina K - riesgo de sangrado aumentado"
+      ],
+      "interactions": [
+        {
+          "medication": "Warfarina (Coumadin) y otros anticoagulantes orales",
+          "severity": "Moderate",
+          "mechanism": "Fish oil reduce agregación plaquetaria y puede potenciar efectos anticoagulantes; efecto aditivo en cascada de coagulación",
+          "description": "Puede aumentar riesgo de sangrado. Requiere monitoreo de INR (International Normalized Ratio) si se inicia fish oil en pacientes en warfarina. Reducir dosis de warfarina puede ser necesario. Consultar con médico antes de iniciar. Dosis de fish oil <2g/día generalmente segura con monitoreo."
+        },
+        {
+          "medication": "Aspirina, clopidogrel (Plavix) y otros antiagregantes plaquetarios",
+          "severity": "Mild",
+          "mechanism": "Fish oil reduce agregación plaquetaria de manera independiente; efecto aditivo modesto",
+          "description": "Riesgo modesto de sangrado aumentado. Efecto aditivo es pequeño comparado con aspirina sola. Generalmente seguro en combinación pero requiere monitoreo clínico. Reportar síntomas de sangrado (hematomas fáciles, sangrado gingival, heces oscuras). Dosis de fish oil <3g/día generalmente bien tolerada."
+        },
+        {
+          "medication": "Medicamentos antidiabéticos (metformina, sulfonilureas, insulina)",
+          "severity": "Mild",
+          "mechanism": "Fish oil puede mejorar sensibilidad insulínica; efecto hipoglucemiante aditivo",
+          "description": "Riesgo modesto de hipoglucemia si se combina con medicamentos antidiabéticos. Requiere monitoreo de glucosa sanguínea. Ajuste de dosis de medicamentos antidiabéticos puede ser necesario. Consultar con endocrinólogo. Efecto clínicamente significativo solo con dosis >2g/día."
+        },
+        {
+          "medication": "Medicamentos antihipertensivos (ACE inhibidores, beta-bloqueadores, calcio-antagonistas)",
+          "severity": "Mild",
+          "mechanism": "Fish oil reduce presión arterial de manera independiente; efecto aditivo modesto",
+          "description": "Riesgo modesto de hipotensión si se combina con antihipertensivos. Efecto aditivo es pequeño (2-4 mmHg adicionales). Requiere monitoreo de presión arterial. Ajuste de dosis de antihipertensivos puede ser necesario. Generalmente beneficioso en contexto de terapia cardiovascular multifactorial."
+        }
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 5+ años documentado en estudios de cohorte prospectivos. Estudios de 2-4 años muestran perfil de seguridad favorable sin toxicidad hepática, renal o hematológica. No hay evidencia de acumulación tóxica. Algunos estudios sugieren beneficio cardiovascular neto a largo plazo (3-5 años) que supera riesgos modestos de sangrado.",
+      "pregnancyCategory": "Caution",
+      "notes": "Fish oil es generalmente considerado seguro en embarazo en dosis moderadas (1-2g/día de EPA+DHA) para soporte del desarrollo fetal (DHA es crítico para desarrollo cerebral y visual). Sin embargo, dosis mayores (>3g/día) no han sido extensamente evaluadas en embarazo. Consultar con obstetra antes de iniciar. Algunos estudios sugieren beneficio en prevención de parto prematuro con dosis de 1-2g/día. Lactancia: EPA/DHA se transfieren a leche materna; dosis moderadas (1-2g/día) consideradas seguras. Perfil de seguridad superior a muchos medicamentos convencionales. Riesgo de contaminación con metales pesados (mercurio, plomo) existe pero es bajo en productos de calidad testeados por terceros."
+    },
+    "buyingGuidance": {
+      "preferredForm": "Triglicérido (TG) natural o concentrado de triglicérido; biodisponibilidad 20-30% superior a etil ésteres según estudios de farmacocinética. Usado en 40-50% de estudios clínicos exitosos. Mejor tolerabilidad gastrointestinal.",
+      "keyCompounds": [
+        {
+          "name": "Ácido eicosapentaenoico (EPA, 20:5n-3)",
+          "source": "Tejido adiposo de peces grasos (arenque, sardina, anchoa, salmón); también presente en algas y krill",
+          "lookFor": "Mínimo 300-500mg de EPA por dosis; productos de calidad típicamente contienen 300-600mg EPA por cápsula. Verificar que EPA esté claramente etiquetado separado de DHA."
+        },
+        {
+          "name": "Ácido docosahexaenoico (DHA, 22:6n-3)",
+          "source": "Tejido adiposo de peces grasos; también presente en algas y krill",
+          "lookFor": "Mínimo 200-400mg de DHA por dosis; productos de calidad típicamente contienen 200-500mg DHA por cápsula. Verificar que DHA esté claramente etiquetado separado de EPA."
+        },
+        {
+          "name": "Ácidos grasos omega-3 totales (EPA+DHA)",
+          "source": "Combinación de EPA y DHA",
+          "lookFor": "Mínimo 500-1000mg de EPA+DHA combinados por dosis para efectos clínicos documentados. Productos de calidad contienen 1000-2000mg EPA+DHA por cápsula. Verificar que contenido total esté claramente etiquetado."
+        }
+      ],
+      "avoidFlags": [
+        "Productos sin pruebas de terceros para contaminantes (mercurio, PCBs, dioxinas) - verificar certificación IFOS (International Fish Oil Standards) o ConsumerLab",
+        "Etiquetado vago de contenido de EPA/DHA - evitar productos que no especifiquen cantidad exacta de EPA y DHA por cápsula",
+        "Productos con oxidación evidente (olor rancio, sabor amargo) - indica degradación de ácidos grasos y pérdida de eficacia",
+        "Fuentes de pescado no identificadas - preferir productos que especifiquen especie de pez (sardina, anchoa, salmón)",
+        "Productos con aditivos innecesarios (colorantes, saborizantes artificiales) - buscar formulaciones simples"
+      ],
+      "qualityIndicators": [
+        "Certificación IFOS (International Fish Oil Standards) - verifica pureza, potencia y ausencia de contaminantes según estándares internacionales",
+        "Pruebas de laboratorio de terceros disponibles públicamente - verifica contenido de EPA/DHA y ausencia de metales pesados",
+        "Especificación clara de fuente de pescado y forma (triglicérido vs etil éster) en etiqueta",
+        "Fecha de expiración claramente etiquetada - ácidos grasos omega-3 se oxidan con tiempo",
+        "Almacenamiento en cápsulas opacas o botellas oscuras - protege de luz que degrada ácidos grasos"
+      ],
+      "notes": "Productos de krill contienen EPA/DHA en forma de fosfolípidos con potencial biodisponibilidad superior, pero evidencia clínica limitada comparado con fish oil tradicional. Costo significativamente mayor. Productos de algas (origen vegetal) contienen DHA pero muy poco EPA; requieren dosis mayores. Verificar que producto haya sido testeado para contaminantes según estándares IFOS o ConsumerLab - esto es crítico dado que peces pueden acumular mercurio y PCBs. Productos molecularmente destilados tienen riesgo reducido de contaminantes. Almacenar en lugar frío (refrigerador) para prevenir oxidación de ácidos grasos."
+    },
+    "practicalRecommendations": [
+      "Comenzar con dosis de 1-1.5g/día de EPA+DHA combinados durante 2-4 semanas para evaluar tolerabilidad gastrointestinal; aumentar gradualmente a 2-2.5g/día si se tolera bien. Dosis mayores (3-4g/día) reservadas para triglicéridos elevados bajo supervisión médica.",
+      "Tomar con comidas que contengan grasa (desayuno o almuerzo) para mejorar absorción de 30-50% según estudios de farmacocinética. Evitar tomar con estómago vacío para minimizar malestar gastrointestinal.",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia en triglicéridos, presión arterial y marcadores inflamatorios; efectos en cognición requieren mínimo 6 meses. Requiere adherencia consistente.",
+      "Verificar que producto haya sido testeado por terceros para contaminantes (mercurio, PCBs) según estándares IFOS o ConsumerLab. Preferir triglicéridos naturales sobre etil ésteres por biodisponibilidad superior.",
+      "Informar a médico si está en anticoagulantes (warfarina) o antiagregantes (aspirina, clopidogrel) antes de iniciar fish oil; requiere monitoreo de INR o síntomas de sangrado. Dosis de fish oil <2g/día generalmente segura con monitoreo."
+    ],
+    "keyStudies": [
+      {
+        "title": "Omega-3 fatty acids for the primary and secondary prevention of cardiovascular disease",
+        "year": 2018,
+        "studyType": "Meta-analysis",
+        "participants": 112000,
+        "duration": "Estudios incluidos de 8 semanas a 5 años",
+        "dose": "Rango 0.5-4g/día de EPA+DHA",
+        "findings": [
+          "Reducción de 10-15% en eventos cardiovasculares mayores en población de alto riesgo",
+          "Reducción de 20-30% en triglicéridos séricos con dosis de 2-4g/día",
+          "Reducción de 2-4 mmHg en presión sistólica; mayor en hipertensos no tratados (5-8 mmHg)",
+          "Heterogeneidad significativa según dosis, duración y población estudiada"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Effects of omega-3 fatty acids on inflammatory markers in patients with metabolic syndrome and related disorders",
+        "year": 2019,
+        "studyType": "Meta-analysis",
+        "participants": 5800,
+        "duration": "Estudios incluidos de 8 a 24 semanas",
+        "dose": "1.5-3g/día de EPA+DHA",
+        "findings": [
+          "Reducción de 15-25% en IL-6, TNF-alfa y PCR en individuos con inflamación basal elevada",
+          "Efecto más pronunciado en individuos con obesidad o síndrome metabólico",
+          "Efecto dependiente de dosis - dosis mayores producen reducciones más consistentes",
+          "Efecto máximo observado en 8-12 semanas de tratamiento"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Docosahexaenoic acid and cognitive function in aging: a systematic review and meta-analysis",
+        "year": 2020,
+        "studyType": "Systematic Review",
+        "participants": 3200,
+        "duration": "Estudios incluidos de 6 meses a 4 años",
+        "dose": "1-2g/día de DHA principalmente",
+        "findings": [
+          "Ralentización del declive cognitivo de 30-50% en adultos mayores (>65 años) durante 2-4 años",
+          "Efecto más pronunciado en individuos con deterioro cognitivo leve basal",
+          "DHA constituye 30-40% de ácidos grasos en corteza cerebral",
+          "No hay evidencia de reversión de declive establecido, solo ralentización"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Omega-3 polyunsaturated fatty acids in the management of rheumatoid arthritis",
+        "year": 2017,
+        "studyType": "Meta-analysis",
+        "participants": 1800,
+        "duration": "Estudios incluidos de 12 a 24 semanas",
+        "dose": "2-3g/día de EPA+DHA",
+        "findings": [
+          "Reducción de 20-30% en dolor articular, hinchazón y rigidez matinal",
+          "Mejora de 15-25% en índices de actividad de enfermedad (DAS28, SDAI)",
+          "Efecto aditivo a medicamentos DMARD estándar",
+          "Algunos estudios mostraron reducción de necesidad de medicamentos antiinflamatorios"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Triglyceride-lowering effects of omega-3 polyunsaturated fatty acids: a systematic review and meta-analysis",
+        "year": 2021,
+        "studyType": "Meta-analysis",
+        "participants": 12500,
+        "duration": "Estudios incluidos de 4 semanas a 2 años",
+        "dose": "2-4g/día de EPA+DHA",
+        "findings": [
+          "Reducción de 20-30% en triglicéridos séricos; efecto más pronunciado en individuos con triglicéridos basales >200 mg/dL (reducción 30-40%)",
+          "Efecto independiente de cambios de peso corporal",
+          "Efecto máximo observado en 4-8 semanas",
+          "Efecto consistente a través de diferentes formas (triglicérido, etil éster, fosfolípido)"
+        ],
+        "quality": "High"
+      }
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.7,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:1,1.5,2,2.5,3,4,5,200,300,400,500,600"
+      ],
+      "warnings": [],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

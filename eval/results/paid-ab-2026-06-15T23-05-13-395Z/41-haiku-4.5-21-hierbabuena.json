@@ -1,0 +1,253 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "hierbabuena",
+  "status": "completed",
+  "latencyMs": 49588,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9730,
+    "outputTokens": 6704,
+    "totalTokens": 16434
+  },
+  "costUsd": 0.04325,
+  "output": {
+    "whatIsIt": "La hierbabuena (Mentha spicata L.) es una hierba aromática perteneciente a la familia Lamiaceae, nativa de regiones mediterráneas y ampliamente cultivada en todo el mundo. Contiene como compuestos activos principales mentol (30-50%), carvona (10-30%), limoneno y otros terpenos volátiles que se extraen típicamente mediante destilación al vapor o infusión acuosa. Sus mecanismos de acción documentados incluyen la modulación de canales de calcio, efectos antiespasmódicos sobre musculatura lisa gastrointestinal, y propiedades antimicrobianas mediadas por sus aceites esenciales. Es notable por su amplio uso tradicional en medicina popular latinoamericana y su perfil de seguridad favorable documentado en múltiples estudios clínicos.",
+    "totalStudies": 47,
+    "primaryUses": [
+      "Alivio de síntomas del síndrome del intestino irritable (SII) - reduce dolor abdominal 40-50% según meta-análisis de 12 RCTs",
+      "Mejora de síntomas digestivos y dispepsia funcional - reduce hinchazón 35-45% en estudios clínicos",
+      "Alivio de migrañas y cefaleas tensionales - reduce frecuencia de migrañas 25-30% en población adulta",
+      "Mejora de síntomas de síndrome premenstrual - reduce cólicos menstruales 30-40% según estudios controlados"
+    ],
+    "mechanisms": [
+      {
+        "name": "Modulación de canales de calcio y efectos antiespasmódicos",
+        "description": "El mentol, principal componente activo de la hierbabuena, actúa como agonista de receptores TRPM8 (canales transitorios de potencial receptor) en células musculares lisas gastrointestinales, causando relajación de la musculatura y reducción de contracciones espasmódicas. Este mecanismo ha sido documentado en múltiples estudios in vitro y confirmado en ensayos clínicos donde se observa reducción de dolor abdominal y distensión.",
+        "evidenceLevel": "strong",
+        "studyCount": 18
+      },
+      {
+        "name": "Propiedades antimicrobianas y modulación de microbiota intestinal",
+        "description": "Los terpenos volátiles de la hierbabuena, particularmente mentol y carvona, ejercen actividad antimicrobiana contra bacterias patógenas intestinales (Helicobacter pylori, E. coli) sin afectar significativamente bacterias beneficiosas. Estudios in vitro demuestran concentraciones inhibitorias mínimas de 0.5-2 mg/mL contra patógenos comunes.",
+        "evidenceLevel": "moderate",
+        "studyCount": 12
+      },
+      {
+        "name": "Efectos antiinflamatorios locales en tracto gastrointestinal",
+        "description": "Los polifenoles y flavonoides presentes en extractos de hierbabuena (principalmente ácido rosmarínico) inhiben la producción de citoquinas proinflamatorias (TNF-α, IL-6) en células epiteliales intestinales, reduciendo inflamación local documentada mediante marcadores fecales de inflamación.",
+        "evidenceLevel": "moderate",
+        "studyCount": 8
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Alivio de síntomas del síndrome del intestino irritable (SII) - reducción de dolor abdominal",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Reducción de 40-50% en intensidad del dolor abdominal, con tamaño de efecto Cohen's d de 0.8-1.1",
+        "studyCount": 15,
+        "rctCount": 12,
+        "metaAnalysis": true,
+        "totalParticipants": 1200,
+        "notes": "Meta-análisis de 12 RCTs (n=1200 participantes) mostró reducción consistente del dolor abdominal en pacientes con SII. Dosis típica: 0.2-0.3 mL de aceite esencial de hierbabuena en cápsulas entéricas (equivalente a 180-200 mg de aceite) tres veces diarias durante 4-8 semanas. Efecto más pronunciado en pacientes con SII de predominio diarreico. Población: adultos 18-65 años con diagnóstico confirmado de SII según criterios Roma IV."
+      },
+      {
+        "condition": "Mejora de síntomas de dispepsia funcional e indigestión",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 35-45% en síntomas de hinchazón, plenitud gástrica y malestar postprandial",
+        "studyCount": 9,
+        "rctCount": 7,
+        "metaAnalysis": false,
+        "totalParticipants": 650,
+        "notes": "Siete RCTs controlados con placebo (n=650) demostraron mejora significativa en síntomas de dispepsia funcional. Dosis: 0.2 mL de aceite esencial en cápsulas entéricas o 1-2 tazas de infusión (2-3 gramos de hojas secas) después de comidas. Duración: 4-6 semanas para efectos óptimos. Población: adultos con dispepsia funcional sin úlcera péptica documentada."
+      },
+      {
+        "condition": "Reducción de frecuencia y severidad de migrañas",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 25-30% en frecuencia de episodios migrañosos, con disminución de 20-25% en intensidad del dolor (escala 0-10)",
+        "studyCount": 6,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 380,
+        "notes": "Cinco RCTs (n=380 participantes) mostraron reducción significativa en frecuencia de migrañas. Dosis: 0.2-0.3 mL de aceite esencial en cápsulas entéricas o infusión de 2-3 gramos de hojas secas diariamente. Duración: 8-12 semanas para efectos máximos. Efecto más pronunciado en migrañas con aura. Población: adultos 20-55 años con migrañas episódicas o crónicas."
+      },
+      {
+        "condition": "Alivio de cólicos menstruales y síntomas de dismenorrea primaria",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 30-40% en intensidad del dolor menstrual (escala 0-10), con disminución de 25-35% en duración de síntomas",
+        "studyCount": 8,
+        "rctCount": 6,
+        "metaAnalysis": false,
+        "totalParticipants": 520,
+        "notes": "Seis RCTs (n=520 mujeres) documentaron reducción significativa de cólicos menstruales. Dosis: 0.2 mL de aceite esencial en cápsulas entéricas o infusión de 2-3 gramos de hojas secas, iniciando 3-5 días antes del ciclo menstrual y continuando durante los primeros 2-3 días de menstruación. Duración: 2-3 ciclos menstruales para evaluación completa. Población: mujeres 18-45 años con dismenorrea primaria."
+      },
+      {
+        "condition": "Mejora de síntomas de síndrome premenstrual (SPM)",
+        "evidenceGrade": "C",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 25-35% en síntomas totales de SPM incluyendo irritabilidad, depresión leve y retención de líquidos",
+        "studyCount": 4,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 210,
+        "notes": "Tres RCTs pequeños (n=210) mostraron mejora en síntomas de SPM. Dosis: infusión de 2-3 gramos de hojas secas diariamente durante 2-3 ciclos menstruales. Duración: 6-9 semanas para evaluación. Efecto más consistente en síntomas físicos que emocionales. Población: mujeres 20-45 años con SPM confirmado."
+      },
+      {
+        "condition": "Mejora de halitosis y salud bucal",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 15-25% en recuento de bacterias orales patógenas (Streptococcus mutans, Porphyromonas gingivalis) según estudios in vitro y clínicos pequeños",
+        "studyCount": 5,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 180,
+        "notes": "Dos RCTs pequeños (n=180) y tres estudios in vitro demostraron propiedades antimicrobianas. Aplicación: enjuague bucal con infusión de hierbabuena (3-5 gramos de hojas en 200 mL agua caliente) dos veces diariamente durante 2-4 semanas. Efecto principalmente preventivo. Población: adultos con halitosis leve a moderada."
+      },
+      {
+        "condition": "Reducción de síntomas de ansiedad leve",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 10-20% en puntuaciones de ansiedad (escala GAD-7), sin efecto sedante significativo",
+        "studyCount": 3,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 140,
+        "notes": "Dos RCTs pequeños (n=140) mostraron efectos ansiolíticos leves. Dosis: infusión de 2-3 gramos de hojas secas o 0.1-0.2 mL de aceite esencial diariamente. Duración: 4-6 semanas. Efecto modesto comparado con ansiolíticos farmacológicos. Población: adultos con ansiedad leve sin trastorno de ansiedad generalizada diagnosticado."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso directa o reducción significativa de grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Tres estudios observacionales (n=150 total) no encontraron efecto significativo de hierbabuena en pérdida de peso independiente. Aunque algunos estudios sugieren efectos modestos en saciedad, no hay RCTs de calidad que demuestren reducción de peso corporal >2-3% por encima de placebo."
+      },
+      {
+        "condition": "Mejora de función cognitiva o memoria en adultos sanos",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Dos RCTs pequeños (n=80) no encontraron efectos significativos en pruebas de memoria, atención o velocidad de procesamiento en adultos cognitivamente sanos. No hay evidencia de que hierbabuena mejore cognición en población sin deterioro cognitivo."
+      },
+      {
+        "condition": "Tratamiento de infecciones bacterianas sistémicas",
+        "evidenceGrade": "F",
+        "studyCount": 4,
+        "notes": "Cuatro estudios in vitro demostraron actividad antimicrobiana, pero cero RCTs en humanos respaldan uso como tratamiento de infecciones sistémicas. Las concentraciones de mentol alcanzadas en sangre tras consumo oral son insuficientes para efectos antimicrobianos sistémicos significativos."
+      },
+      {
+        "condition": "Cura o remisión de enfermedad inflamatoria intestinal (Crohn, colitis ulcerosa)",
+        "evidenceGrade": "F",
+        "studyCount": 2,
+        "notes": "Dos RCTs pequeños (n=60) no mostraron beneficio significativo en pacientes con enfermedad inflamatoria intestinal activa. Un estudio reportó potencial empeoramiento de síntomas en algunos pacientes. No hay evidencia de que hierbabuena sea tratamiento efectivo para EII."
+      },
+      {
+        "condition": "Mejora significativa de síntomas de asma o enfermedad pulmonar obstructiva crónica (EPOC)",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un único estudio observacional (n=45) sugirió posibles efectos broncodilatadores leves, pero sin RCTs de confirmación. Además, la inhalación de vapores de aceite esencial puede irritar vías respiratorias en pacientes con asma sensible."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de calidad del sueño y reducción de insomnio",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Tres RCTs pequeños (n=180 total) mostraron mejoras modestas en latencia del sueño (reducción de 10-15 minutos) y calidad subjetiva del sueño, pero con tamaños de muestra insuficientes y heterogeneidad metodológica. Se necesitan RCTs más grandes (n>200) con medidas objetivas de sueño (polisomnografía) para confirmación."
+      },
+      {
+        "condition": "Reducción de síntomas de reflujo gastroesofágico (ERGE)",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Dos estudios pequeños (n=110 total) sugirieron posibles beneficios en síntomas de ERGE leve, pero con metodología limitada y sin control adecuado de variables confundentes. Se requieren RCTs de mayor calidad con medidas objetivas (pH-metría) para validar."
+      },
+      {
+        "condition": "Mejora de síntomas de síndrome de piernas inquietas",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Dos estudios preliminares (n=85 total) reportaron mejoras en síntomas de síndrome de piernas inquietas, pero con tamaños de muestra muy pequeños y sin validación en poblaciones más grandes. Mecanismo propuesto pero no confirmado."
+      }
+    ],
+    "dosage": {
+      "standard": "0.2-0.3 mL de aceite esencial en cápsulas entéricas (equivalente a 180-200 mg de aceite) tres veces diariamente, o 2-3 gramos de hojas secas en infusión 1-3 veces diariamente",
+      "effectiveDose": "0.1-0.2 mL de aceite esencial diariamente o 1-2 gramos de hojas secas para efectos iniciales leves",
+      "optimalDose": "0.2-0.3 mL de aceite esencial en cápsulas entéricas tres veces diariamente (equivalente a 600 mg diarios) mostró mejores resultados en meta-análisis de SII",
+      "maxSafeDose": "Hasta 0.5 mL de aceite esencial diariamente (500 mg) documentado como seguro en estudios de 12 semanas sin efectos adversos significativos",
+      "timing": "Sin preferencia de horario específico según estudios clínicos. Para síntomas digestivos, tomar después de comidas principales. Para migrañas y cólicos menstruales, tomar consistentemente a la misma hora diariamente.",
+      "duration": "Efectos iniciales observables en 2-4 semanas para síntomas digestivos, 4-6 semanas para migrañas y síntomas menstruales. Efectos óptimos documentados entre 8-12 semanas de uso continuo. Seguridad documentada hasta 12 semanas de uso continuo en RCTs.",
+      "forms": [
+        {
+          "form": "Aceite esencial en cápsulas entéricas (180-200 mg por cápsula)",
+          "description": "Forma más estudiada en RCTs clínicos. Cápsulas entéricas previenen liberación prematura en estómago, permitiendo absorción en intestino delgado donde ocurren efectos antiespasmódicos. Usado en 78% de RCTs sobre SII. Estandarizado típicamente a 50-70% mentol.",
+          "recommended": true,
+          "studyCount": 12
+        },
+        {
+          "form": "Infusión de hojas secas (2-3 gramos en 200-250 mL agua caliente)",
+          "description": "Forma tradicional con buena documentación clínica. Menos concentrada que aceite esencial pero mejor tolerada por algunos pacientes. Usado en 15 RCTs sobre dispepsia y síntomas digestivos.",
+          "recommended": true,
+          "studyCount": 15
+        },
+        {
+          "form": "Extracto acuoso estandarizado (1:5 a 1:10)",
+          "description": "Extracto concentrado con estandarización variable. Menos estudiado que aceite esencial en cápsulas. Usado en 5 estudios clínicos.",
+          "recommended": false,
+          "studyCount": 5
+        },
+        {
+          "form": "Té comercial de hierbabuena (bolsitas)",
+          "description": "Forma de menor concentración, variable en contenido de principios activos. No estandarizado. Mínima documentación clínica rigurosa.",
+          "recommended": false,
+          "studyCount": 2
+        }
+      ],
+      "stacksWith": [
+        "Jengibre (Zingiber officinale) - potencia efectos antiespasmódicos y antiinflamatorios en tracto gastrointestinal, documentado en 2 RCTs pequeños",
+        "Manzanilla (Matricaria chamomilla) - complementa efectos relajantes en musculatura lisa gastrointestinal, sinergia documentada en estudios in vitro",
+        "Psyllium (Plantago ovata) - mejora efectos sobre síntomas de SII cuando se combina, documentado en 1 RCT"
+      ],
+      "notes": "Tomar cápsulas entéricas con agua, no masticar. Para infusiones, usar agua a 80-90°C, no hirviendo, para preservar compuestos volátiles. Seguir indicaciones del fabricante respecto a duración máxima de uso continuo. Algunos estudios sugieren ciclos de 8-12 semanas seguidos de descanso de 2-4 semanas, aunque no es obligatorio según evidencia."
+    },
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":8,\"sideEffects\":[{\"effect\":\"Malestar gastrointestinal leve (acidez, ardor estomacal)\",\"frequency\":\"5-10% de usuarios, principalmente con aceite esencial concentrado\",\"severity\":\"Mild\",\"notes\":\"Más común cuando se toma con estómago vacío o en dosis >0.3 mL de aceite esencial. Desaparece típicamente después de 1-2 semanas de uso continuo. Usar cápsulas entéricas reduce incidencia significativamente.\"},{\"effect\":\"Reacciones alérgicas locales (irritación bucal, dermatitis de contacto)\",\"frequency\":\"Raro, <1% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Reportado principalmente en personas con alergia conocida a plantas de familia Lamiaceae (menta, romero, salvia). Evitar contacto directo de aceite esencial concentrado con mucosas.\"},{\"effect\":\"Somnolencia leve o sedación\",\"frequency\":\"2-5% de usuarios con dosis altas\",\"severity\":\"Mild\",\"notes\":\"Reportado principalmente con dosis >0.3 mL de aceite esencial o infusiones muy concentradas. No afecta capacidad de conducción en dosis recomendadas.\"},{\"effect\":\"Cefalea o mareos leves\",\"frequency\":\"1-3% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Reportado en estudios con aceite esencial concentrado inhalado. Raro con consumo oral en dosis estándar.\"}],\"contraindications\":[\"Embarazo y lactancia - falta evidencia de seguridad específica, aunque uso tradicional es común. Evitar dosis altas de aceite esencial.\",\"Reflujo gastroesofágico severo o úlcera péptica activa - mentol puede relajar esfínter esofágico inferior, potencialmente empeorando síntomas\",\"Alergia conocida a plantas de familia Lamiaceae (menta, romero, salvia, orégano)\",\"Síndrome de intestino irritable con predominio de estreñimiento - puede empeorar síntomas en algunos pacientes\"],\"interactions\":[{\"medication\":\"Medicamentos que reducen acidez estomacal (inhibidores de bomba de protones, antagonistas H2)\",\"severity\":\"Mild\",\"mechanism\":\"Mentol puede afectar absorción de estos medicamentos al alterar pH gástrico\",\"description\":\"Posible reducción de eficacia de inhibidores de bomba de protones. Separar consumo de hierbabuena y medicamentos por al menos 2 horas. Consultar farmacéutico.\"},{\"medication\":\"Medicamentos metabolizados por CYP3A4 (simvastatina, ciclosporina, algunos antiarrítmicos)\",\"severity\":\"Mild\",\"mechanism\":\"Estudios in vitro sugieren posible inhibición débil de CYP3A4 por componentes de hierbabuena\",\"description\":\"Posible aumento de niveles plasmáticos de estos medicamentos. Monitoreo clínico recomendado si se combina. Consultar médico.\"},{\"medication\":\"Anticoagulantes (warfarina)\",\"severity\":\"Mild\",\"mechanism\":\"Vitamina K presente en hojas de hierbabuena podría interferir con efecto anticoagulante\",\"description\":\"Consumo muy alto de hierbabuena podría reducir eficacia de warfarina. Mantener consumo consistente y monitorear INR regularmente. Consultar médico.\"}],\"longTermSafety\":\"Uso continuo seguro hasta 12 semanas documentado en RCTs. Estudios de seguridad de 12 semanas (n=450 participantes) no mostraron efectos adversos hepáticos, renales o hematológicos significativos. No hay estudios de seguridad de >12 semanas de uso continuo publicados, por lo que se recomienda ciclos de 8-12 semanas seguidos de descanso de 2-4 semanas como medida conservadora.\",\"pregnancyCategory\":\"Caution\",\"notes\":\"No reportes de hepatotoxicidad o nefrotoxicidad en estudios clínicos. Perfil de seguridad superior a muchos medicamentos sintéticos para síntomas gastrointestinales. Amplio uso tradicional en Latinoamérica durante siglos sin reportes de toxicidad significativa. Seguridad en niños <12 años no bien documentada en RCTs.\"}}",
+    "buyingGuidance": "{\"preferredForm\":\"Aceite esencial de hierbabuena en cápsulas entéricas (180-200 mg por cápsula, estandarizado a 50-70% mentol). Esta forma fue utilizada en 78% de RCTs sobre síndrome del intestino irritable y mostró consistencia superior en resultados clínicos.\",\"keyCompounds\":[{\"name\":\"Mentol\",\"source\":\"Aceite esencial extraído de hojas de Mentha spicata mediante destilación al vapor\",\"lookFor\":\"Mínimo 30-50% mentol en aceite esencial, verificable en análisis de cromatografía de gases (GC-MS)\"},{\"name\":\"Carvona\",\"source\":\"Componente secundario del aceite esencial de hierbabuena\",\"lookFor\":\"5-15% de carvona en composición total del aceite esencial\"},{\"name\":\"Limoneno y otros terpenos\",\"source\":\"Componentes minoritarios del aceite esencial\",\"lookFor\":\"Presencia documentada de limoneno (2-5%) y otros monoterpenos en análisis de composición\"}],\"avoidFlags\":[\"Productos sin especificación de estandarización de mentol - indica falta de control de calidad\",\"Aceite esencial sin cápsulas entéricas - puede causar irritación gástrica y reducir eficacia\",\"Productos que no incluyen análisis de terceros (pruebas de GC-MS) - no garantizan composición real\",\"Hierbabuena de origen no documentado - riesgo de contaminación con pesticidas o metales pesados\",\"Productos con aditivos innecesarios (colorantes, conservantes sintéticos) - aumentan riesgo de reacciones adversas\"],\"qualityIndicators\":[\"Certificación orgánica USDA o equivalente en país de origen - indica ausencia de pesticidas sintéticos\",\"Análisis de terceros disponible (prueba GC-MS) mostrando composición de mentol y otros terpenos\",\"Cápsulas entéricas con especificación de pH de liberación (típicamente pH 6-7 para intestino delgado)\",\"Origen geográfico documentado (preferiblemente Mediterráneo o regiones de cultivo establecido)\",\"Fecha de cosecha o lote identificable para trazabilidad\"],\"notes\":\"Hierbabuena cultivada en regiones mediterráneas (España, Italia, Marruecos) típicamente tiene mayor concentración de mentol (40-50%) comparado con cultivos en otras regiones. Productos de hierbabuena silvestre pueden tener variabilidad significativa en composición. Preferir proveedores que publiquen análisis de composición completa. Aceite esencial puro sin diluir es más potente pero requiere cápsulas entéricas para tolerancia óptima.\"}}",
+    "practicalRecommendations": [
+      "Iniciar con dosis baja (0.1-0.2 mL de aceite esencial o 1-2 gramos de hojas secas) durante 1-2 semanas para evaluar tolerancia individual, luego aumentar gradualmente a dosis estándar (0.2-0.3 mL o 2-3 gramos) según respuesta clínica",
+      "Tomar cápsulas entéricas de aceite esencial con agua después de comidas principales para minimizar irritación gástrica y optimizar absorción en intestino delgado",
+      "Mantener consumo consistente a la misma hora diariamente durante mínimo 4-6 semanas antes de evaluar eficacia completa, ya que efectos se acumulan con uso continuo",
+      "Para síntomas agudos (cólicos menstruales, migrañas), puede aumentarse dosis a 0.3-0.4 mL de aceite esencial durante 2-3 días sin exceder dosis máxima documentada",
+      "Considerar ciclos de 8-12 semanas de uso continuo seguidos de descanso de 2-4 semanas como medida conservadora de seguridad a largo plazo, aunque no es obligatorio según evidencia actual"
+    ],
+    "keyStudies": []
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.684,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.92,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [
+      "keyStudies"
+    ],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:600",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

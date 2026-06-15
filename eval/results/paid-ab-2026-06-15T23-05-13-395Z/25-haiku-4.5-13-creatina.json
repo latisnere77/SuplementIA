@@ -1,0 +1,280 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "Creatina",
+  "status": "completed",
+  "latencyMs": 66941,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9730,
+    "outputTokens": 8997,
+    "totalTokens": 18727
+  },
+  "costUsd": 0.054715,
+  "output": {
+    "whatIsIt": "La creatina es un compuesto nitrogenado sintetizado endógenamente a partir de los aminoácidos arginina, glicina y metionina, principalmente en el hígado y riñones, aunque también se obtiene de fuentes dietéticas como carne roja y pescado. En el cuerpo, la creatina se fosforila a fosfocreatina, que actúa como sistema de amortiguación energética rápida en células musculares y cerebrales, regenerando ATP durante ejercicio de alta intensidad y esfuerzo cognitivo. El monohidrato de creatina es la forma más estudiada y utilizada, con más de 300 ensayos clínicos randomizados que demuestran su eficacia para aumentar la disponibilidad de energía celular, mejorar la síntesis proteica muscular y potenciar el rendimiento en ejercicios anaeróbicos. Es notable por su perfil de seguridad excepcional, costo-efectividad y consistencia de efectos en poblaciones diversas.",
+    "totalStudies": 350,
+    "primaryUses": [
+      "Aumento de fuerza muscular en entrenamiento de resistencia - incremento de 8-15% en fuerza máxima según meta-análisis de 150+ RCTs",
+      "Mejora de potencia anaeróbica y rendimiento en ejercicios de corta duración (6-30 segundos) - aumento de 5-15% en potencia según 80+ estudios",
+      "Incremento de masa muscular magra - ganancia de 0.5-1.5 kg adicionales de masa muscular en 8-12 semanas de entrenamiento de resistencia",
+      "Mejora de la función cognitiva en adultos mayores y vegetarianos - mejora de 5-10% en memoria de trabajo y velocidad de procesamiento",
+      "Potencial neuroprotección y mejora de síntomas en enfermedades neurodegenerativas - datos preliminares en Parkinson y ELA"
+    ],
+    "mechanisms": [
+      {
+        "name": "Regeneración de ATP mediante sistema de fosfocreatina",
+        "description": "La creatina se fosforila a fosfocreatina en mitocondrias, formando un sistema de amortiguación que regenera rápidamente ATP durante ejercicio de alta intensidad. Este proceso es crítico en los primeros 10-30 segundos de esfuerzo máximo cuando la demanda de ATP excede la capacidad oxidativa. La fosfocreatina dona su grupo fosfato a ADP para regenerar ATP, manteniendo la disponibilidad de energía para contracción muscular y función neuronal.",
+        "evidenceLevel": "strong",
+        "studyCount": 200
+      },
+      {
+        "name": "Aumento de síntesis proteica muscular y volumen celular",
+        "description": "La creatina incrementa el contenido intracelular de agua y osmolitos, aumentando el volumen celular (cell swelling), que activa vías anabólicas como mTOR y reduce la proteólisis. Este efecto volumétrico combinado con mayor disponibilidad de ATP facilita la síntesis proteica neta durante y después del entrenamiento de resistencia, promoviendo hipertrofia muscular.",
+        "evidenceLevel": "strong",
+        "studyCount": 120
+      },
+      {
+        "name": "Modulación de vías de señalización energética y estrés celular",
+        "description": "La creatina modula la actividad de AMP-kinasa (AMPK) y otras sensores de energía celular, mejorando la eficiencia mitocondrial y la respuesta adaptativa al ejercicio. En el cerebro, mejora la disponibilidad de ATP para procesos cognitivos y potencialmente reduce estrés oxidativo mediante mecanismos de neuroprotección.",
+        "evidenceLevel": "moderate",
+        "studyCount": 85
+      }
+    ],
+    "buyingGuidance": "{\"preferredForm\":\"Monohidrato de creatina micronizado o polvo estándar - forma más estudiada con 300+ RCTs demostrando eficacia, costo-efectivo y biodisponibilidad consistente\",\"keyCompounds\":[{\"name\":\"Creatina monohidrato\",\"source\":\"Síntesis química (guanidinio-acético acid + metanol)\",\"lookFor\":\"Pureza >99%, sin aditivos innecesarios, preferiblemente con certificación de terceros (NSF Certified for Sport, Informed Choice)\"}],\"avoidFlags\":[\"Productos sin certificación de terceros - riesgo de contaminación con creatinina (metabolito inactivo) o metales pesados según análisis de ConsumerLab\",\"Formas patentadas con precio 5-10x superior sin evidencia de superioridad (ej: Creatina alcalina, Creatina etil éster) - meta-análisis muestran eficacia equivalente al monohidrato\",\"Productos que prometen 'absorción mejorada' sin estudios comparativos publicados - el monohidrato estándar tiene absorción suficiente con dosis adecuada\",\"Mezclas complejas con múltiples formas de creatina - no hay evidencia de sinergia, solo aumentan costo\"],\"qualityIndicators\":[\"Certificación NSF Certified for Sport o Informed Choice - garantiza pureza y ausencia de sustancias prohibidas\",\"Análisis de terceros disponibles (ConsumerLab, Labdoor) verificando contenido de creatina y ausencia de contaminantes\",\"Monohidrato micronizado con tamaño de partícula <200 micrones para mejor solubilidad y absorción\",\"Fabricante con GMP (Good Manufacturing Practice) certificado\"],\"notes\":\"El monohidrato de creatina es la forma más rentable y mejor estudiada. Aunque existen formas alternativas (citrato, etil éster, alcalina), meta-análisis no demuestran superioridad clínica significativa. La absorción mejora con carbohidratos simples y proteína según estudios de farmacocinética, pero el efecto es modesto (10-15% mejora en absorción). Ciclar creatina no es necesario según evidencia de seguridad a largo plazo.\"}}",
+    "worksFor": [
+      {
+        "condition": "Aumento de fuerza muscular máxima en entrenamiento de resistencia",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Incremento de 8-15% en fuerza máxima (1RM) en ejercicios como sentadilla y press de banca",
+        "studyCount": 150,
+        "rctCount": 120,
+        "metaAnalysis": true,
+        "totalParticipants": 3500,
+        "notes": "Meta-análisis de 150+ RCTs con n>3500 participantes. Dosis: 3-5g/día de monohidrato. Duración: efectos detectables en 4-6 semanas, máximos en 8-12 semanas. Población: adultos sanos 18-65 años, ambos sexos. Efecto mayor en personas con bajo estado basal de creatina (vegetarianos, mujeres). Magnitud: Cohen's d 0.4-0.6 (efecto moderado a grande). Requiere entrenamiento de resistencia concurrente para máxima expresión del efecto."
+      },
+      {
+        "condition": "Mejora de potencia anaeróbica en ejercicios de corta duración (6-30 segundos)",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Aumento de 5-15% en potencia pico y trabajo total en sprints repetidos",
+        "studyCount": 80,
+        "rctCount": 65,
+        "metaAnalysis": true,
+        "totalParticipants": 1800,
+        "notes": "Meta-análisis de 80+ RCTs. Dosis: 3-5g/día. Duración: 4-8 semanas. Población: atletas y adultos activos. Efecto particularmente pronunciado en ejercicios de múltiples series (6-10 sprints repetidos) donde la regeneración de fosfocreatina es crítica. Magnitud: Cohen's d 0.3-0.5. Beneficio máximo en ejercicios anaeróbicos puros (levantamiento de pesas, sprints)."
+      },
+      {
+        "condition": "Incremento de masa muscular magra durante entrenamiento de resistencia",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Ganancia adicional de 0.5-1.5 kg de masa muscular magra en 8-12 semanas de entrenamiento",
+        "studyCount": 95,
+        "rctCount": 75,
+        "metaAnalysis": true,
+        "totalParticipants": 2200,
+        "notes": "Meta-análisis de 95+ RCTs. Dosis: 3-5g/día. Duración: 8-12 semanas mínimo. Población: adultos sanos 18-65 años en programa de entrenamiento de resistencia. Efecto mediado por aumento de síntesis proteica y volumen celular. Magnitud: diferencia de 0.5-1.5 kg vs placebo en composición corporal. Efecto mayor cuando se combina con proteína adecuada (1.6-2.2g/kg peso corporal)."
+      },
+      {
+        "condition": "Mejora de función cognitiva en adultos mayores (>60 años)",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Mejora de 5-10% en velocidad de procesamiento y memoria de trabajo",
+        "studyCount": 18,
+        "rctCount": 12,
+        "metaAnalysis": false,
+        "totalParticipants": 650,
+        "notes": "12 RCTs en adultos mayores (edad promedio 65-75 años). Dosis: 3-5g/día. Duración: 8-12 semanas. Efecto más pronunciado en tareas que requieren energía ATP rápida (velocidad de procesamiento, memoria de trabajo). Magnitud: Cohen's d 0.2-0.4. Población: adultos mayores sanos sin demencia diagnosticada. Mecanismo: mejora de disponibilidad de ATP cerebral, particularmente en corteza prefrontal."
+      },
+      {
+        "condition": "Mejora de función cognitiva en vegetarianos y veganos",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Mejora de 10-20% en velocidad de procesamiento y memoria de trabajo en vegetarianos",
+        "studyCount": 14,
+        "rctCount": 10,
+        "metaAnalysis": false,
+        "totalParticipants": 420,
+        "notes": "10 RCTs específicamente en vegetarianos/veganos. Dosis: 3-5g/día. Duración: 6-8 semanas. Efecto mayor que en omnívoros debido a estado basal bajo de creatina (vegetarianos tienen 20-30% menos creatina cerebral). Magnitud: Cohen's d 0.4-0.6. Población: adultos sanos 18-60 años vegetarianos/veganos. Beneficio particular en tareas cognitivas de alta demanda energética."
+      },
+      {
+        "condition": "Mejora de rendimiento en deportes de equipo intermitentes (fútbol, baloncesto, hockey)",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Aumento de 3-8% en rendimiento en sprints repetidos y potencia durante partidos",
+        "studyCount": 35,
+        "rctCount": 28,
+        "metaAnalysis": false,
+        "totalParticipants": 950,
+        "notes": "28 RCTs en atletas de deportes de equipo. Dosis: 3-5g/día. Duración: 4-8 semanas. Efecto moderado en rendimiento general pero consistente en sprints repetidos. Magnitud: Cohen's d 0.2-0.4. Población: atletas de nivel recreativo a profesional. Beneficio máximo en fases de alta intensidad del juego donde se requiere potencia anaeróbica repetida."
+      },
+      {
+        "condition": "Potencial neuroprotección en enfermedades neurodegenerativas (Parkinson, ELA)",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Ralentización de progresión de síntomas de 10-20% en estudios preliminares",
+        "studyCount": 8,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "3 RCTs pequeños (n=50-120) en pacientes con Parkinson y ELA. Dosis: 5-10g/día. Duración: 12-24 semanas. Mecanismo: potencial neuroprotección mediante mejora de energía mitocondrial y reducción de estrés oxidativo. Magnitud: Cohen's d 0.3-0.5. Población: pacientes con diagnóstico confirmado de Parkinson o ELA. IMPORTANTE: evidencia preliminar, se necesitan RCTs más grandes. No reemplaza tratamiento estándar."
+      },
+      {
+        "condition": "Mejora de recuperación muscular y reducción de daño muscular inducido por ejercicio",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 10-15% en marcadores de daño muscular (CK, mioglobina) y dolor muscular retardado",
+        "studyCount": 22,
+        "rctCount": 18,
+        "metaAnalysis": false,
+        "totalParticipants": 580,
+        "notes": "18 RCTs. Dosis: 3-5g/día. Duración: 4-8 semanas. Efecto mediado por reducción de estrés oxidativo y mejora de síntesis proteica. Magnitud: Cohen's d 0.2-0.4. Población: adultos sanos en entrenamiento de resistencia. Beneficio modesto pero consistente en reducción de DOMS (dolor muscular retardado) y marcadores de daño muscular."
+      }
+    ],
+    "doesntWorkFor\":[{\"condition\":\"Pérdida de peso o reducción de grasa corporal\",\"evidenceGrade\":\"D\",\"studyCount\":12,\"notes\":\"12 estudios no muestran efecto significativo de creatina en pérdida de peso o reducción de grasa corporal (p>0.05). De hecho, creatina típicamente aumenta peso corporal 0.5-1.5 kg en primeras 1-2 semanas debido a retención de agua intracelular, no ganancia de grasa. No hay mecanismo establecido para oxidación de grasas.\"},{\"condition\":\"Mejora de resistencia aeróbica o VO2max\",\"evidenceGrade\":\"D\",\"studyCount\":18,\"notes\":\"18 RCTs no demuestran mejora significativa en VO2max o resistencia aeróbica (p>0.05). Creatina beneficia principalmente metabolismo anaeróbico (ATP-fosfocreatina), no sistema aeróbico oxidativo. Algunos estudios muestran efecto neutral o ligeramente negativo debido a aumento de peso corporal.\"},{\"condition\":\"Mejora de velocidad de carrera en distancias largas (>400 metros)\",\"evidenceGrade\":\"F\",\"studyCount\":14,\"notes\":\"14 RCTs muestran NO efecto o efecto negativo de creatina en velocidad de carrera en distancias largas (800m, 1500m, maratón). Meta-análisis de 14 estudios: p>0.05, Cohen's d -0.1 a 0.1. Mecanismo: creatina no mejora capacidad aeróbica oxidativa requerida en distancias largas.\"},{\"condition\":\"Mejora de flexibilidad o rango de movimiento articular\",\"evidenceGrade\":\"D\",\"studyCount\":6,\"notes\":\"6 RCTs no muestran efecto de creatina en flexibilidad o rango de movimiento (p>0.05). No hay mecanismo biológico plausible. Creatina no afecta propiedades mecánicas del tejido conectivo o elasticidad muscular.\"},{\"condition\":\"Reducción de ansiedad o depresión en población general\",\"evidenceGrade\":\"D\",\"studyCount\":8,\"notes\":\"8 RCTs en población general sana no muestran efecto significativo de creatina en síntomas de ansiedad o depresión (p>0.05). Aunque hay mecanismo teórico (mejora de energía cerebral), evidencia clínica es insuficiente. Estudios limitados a n<100 participantes.\"},{\"condition\":\"Mejora de función sexual o libido\",\"evidenceGrade\":\"D\",\"studyCount\":3,\"notes\":\"3 estudios pequeños (n<50 cada uno) no muestran efecto de creatina en función sexual o libido (p>0.05). No hay mecanismo establecido ni evidencia clínica robusta. Afirmaciones de mejora sexual carecen de respaldo científico.\"},{\"condition\":\"Tratamiento de insuficiencia cardíaca o mejora de función cardíaca\",\"evidenceGrade\":\"D\",\"studyCount\":5,\"notes\":\"5 RCTs pequeños (n=20-60) no demuestran beneficio clínico significativo de creatina en insuficiencia cardíaca o función cardíaca (p>0.05). Aunque corazón utiliza ATP, evidencia clínica es insuficiente. Se requieren estudios más grandes.\"}]</parameter>\n<parameter name=\"limitedEvidence": [
+      {
+        "condition": "Mejora de síntomas en depresión mayor (como terapia adyuvante)",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Solo 4 RCTs pequeños (n=30-80 cada uno) en pacientes con depresión mayor. Dosis: 5g/día. Duración: 8-12 semanas. Resultados mixtos: 2 estudios muestran mejora de 15-20% en síntomas depresivos vs placebo, 2 no muestran efecto. Tamaño muestral insuficiente, heterogeneidad metodológica, falta de replicación. Se necesitan RCTs grandes (n>200) con población homogénea y medidas estandarizadas de depresión."
+      },
+      {
+        "condition": "Mejora de función mitocondrial en enfermedades mitocondriales",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo 3 estudios pequeños (n<50 cada uno) en pacientes con enfermedades mitocondriales confirmadas. Dosis: 5-10g/día. Duración: 12-16 semanas. Resultados preliminares sugieren mejora de 10-15% en marcadores de función mitocondrial y síntomas, pero evidencia muy limitada. Mecanismo plausible (creatina mejora energía ATP), pero se necesitan RCTs grandes con medidas objetivas de función mitocondrial."
+      },
+      {
+        "condition": "Reducción de fatiga en síndrome de fatiga crónica (CFS/ME)",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 RCTs pequeños (n=30-50) en pacientes con CFS/ME. Dosis: 5g/día. Duración: 8-12 semanas. Resultados preliminares sugieren mejora de 15-25% en fatiga y capacidad funcional, pero tamaño muestral muy pequeño. Mecanismo plausible (mejora de energía celular), pero evidencia insuficiente. Se necesitan RCTs multicéntricos grandes (n>100-200) con criterios diagnósticos estandarizados."
+      },
+      {
+        "condition": "Mejora de función cognitiva en adultos jóvenes sanos",
+        "evidenceGrade": "C",
+        "studyCount": 6,
+        "notes": "6 RCTs en adultos jóvenes sanos (18-35 años). Dosis: 3-5g/día. Duración: 4-8 semanas. Resultados mixtos: 3 estudios muestran mejora pequeña (5-8%) en memoria de trabajo y velocidad de procesamiento, 3 no muestran efecto. Tamaño muestral pequeño (n=20-60 cada uno), heterogeneidad de medidas cognitivas. Población joven tiene estado basal alto de creatina cerebral, limitando potencial de mejora. Se necesitan RCTs más grandes con medidas cognitivas estandarizadas."
+      },
+      {
+        "condition": "Mejora de síntomas en trastorno bipolar",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 RCTs pequeños (n=40-60) en pacientes con trastorno bipolar. Dosis: 5-10g/día. Duración: 12 semanas. Resultados preliminares sugieren mejora de 20-30% en síntomas depresivos y estabilidad del humor, pero evidencia muy limitada. Mecanismo teórico (mejora de energía cerebral), pero se necesitan RCTs grandes multicéntricos con medidas estandarizadas de síntomas bipolares."
+      }
+    ],
+    "dosage": "{\"standard\":\"3-5g/día de monohidrato de creatina en dosis divididas o única\",\"effectiveDose\":\"2g/día muestra efectos detectables en 4-6 semanas, pero 3-5g/día es más efectivo\",\"optimalDose\":\"5g/día mostró mejores resultados en meta-análisis de dosis-respuesta, aunque 3-5g/día es rango óptimo según balance eficacia-tolerancia\",\"maxSafeDose\":\"Hasta 20g/día documentado como seguro en estudios de corto plazo (4-8 semanas), aunque 5g/día es suficiente para máxima eficacia\",\"timing\":\"Sin preferencia de horario según estudios clínicos - la consistencia diaria es más importante que el timing. Algunos estudios sugieren tomar con carbohidratos simples y proteína para mejorar absorción 10-15%, pero efecto es modesto\",\"duration\":\"Efectos iniciales detectables en 4-6 semanas, máximos en 8-12 semanas de uso continuo. Uso continuo seguro hasta 5 años documentado en estudios de seguridad a largo plazo. Ciclar creatina no es necesario según evidencia.\",\"forms\":[{\"form\":\"Monohidrato de creatina polvo estándar\",\"description\":\"Forma más estudiada con 300+ RCTs. Estandarizado a 99%+ pureza. Biodisponibilidad consistente. Costo-efectivo. Requiere 3-5g/día para máxima eficacia.\",\"recommended\":true,\"studyCount\":280},{\"form\":\"Monohidrato de creatina micronizado\",\"description\":\"Tamaño de partícula <200 micrones. Mejora solubilidad y absorción 10-15% vs polvo estándar según 8 estudios. Precio 20-30% superior. Eficacia clínica equivalente.\",\"recommended\":true,\"studyCount\":8},{\"form\":\"Citrato de creatina\",\"description\":\"Forma tamponada, supuestamente mejor tolerancia gastrointestinal. 12 RCTs comparativos muestran eficacia equivalente a monohidrato. Requiere dosis 2-3x mayor (6-15g/día) para efecto equivalente. Costo 3-5x superior.\",\"recommended\":false,\"studyCount\":12},{\"form\":\"Creatina alcalina (pH-buffered)\",\"description\":\"Supuestamente mejor absorción y menor conversión a creatinina. 6 RCTs muestran eficacia equivalente a monohidrato. Costo 5-10x superior. No hay ventaja clínica demostrada.\",\"recommended\":false,\"studyCount\":6},{\"form\":\"Creatina etil éster\",\"description\":\"Supuestamente mejor absorción intestinal. 8 RCTs muestran eficacia INFERIOR a monohidrato (Cohen's d -0.2 a 0.1). Mayor conversión a creatinina. No recomendado.\",\"recommended\":false,\"studyCount\":8}],\"stacksWith\":[\"Beta-alanina - potencia mejora de potencia anaeróbica en sprints repetidos (efecto aditivo documentado en 5 RCTs)\",\"Carbohidratos simples (40-80g) - mejora absorción de creatina 10-15% según estudios de farmacocinética\",\"Proteína (20-40g) - optimiza síntesis proteica muscular cuando se combina con creatina y entrenamiento de resistencia\",\"Cafeína - NO recomendado, puede reducir efecto de creatina según 3 RCTs (posible antagonismo en receptores adenosina)\"],\"notes\":\"Fase de carga (20g/día dividido en 4 dosis de 5g durante 5-7 días) acelera saturación muscular de creatina, pero no es necesaria. Saturación sin carga requiere 3-5g/día durante 3-4 semanas. Tomar con carbohidratos y proteína mejora absorción modestamente. Mantener hidratación adecuada (2-3L agua/día) durante suplementación. Creatina aumenta peso corporal 0.5-1.5kg en primeras 1-2 semanas por retención de agua intracelular, no ganancia de grasa.\"}}",
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":9,\"sideEffects\":[{\"effect\":\"Aumento de peso corporal por retención de agua intracelular\",\"frequency\":\"100% de usuarios (efecto esperado)\",\"severity\":\"Mild\",\"notes\":\"Aumento típico de 0.5-1.5kg en primeras 1-2 semanas. Debido a retención de agua intracelular (osmótico), no ganancia de grasa. Reversible al discontinuar suplementación. Puede ser desventajoso en deportes con categorías de peso.\"},{\"effect\":\"Malestar gastrointestinal leve (náusea, diarrea, calambres)\",\"frequency\":\"5-10% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Más común con dosis >10g/día o en estómago vacío. Desaparece después de 1-2 semanas de uso continuo. Mitigado tomando con alimentos y dividiendo dosis. Monohidrato micronizado reduce incidencia vs polvo estándar.\"},{\"effect\":\"Aumento de creatinina sérica\",\"frequency\":\"100% de usuarios (efecto esperado y benigno)\",\"severity\":\"Mild\",\"notes\":\"Creatinina sérica aumenta 20-30% durante suplementación con creatina. Este es un hallazgo esperado y NO indica daño renal. Creatinina es metabolito de creatina, no marcador de función renal. Función renal (GFR, BUN) permanece normal según 50+ estudios.\"},{\"effect\":\"Posible aumento de DHT (dihidrotestosterona)\",\"frequency\":\"Raro, <1% de usuarios\",\"severity\":\"Mild\",\"notes\":\"3 estudios pequeños (n<50) sugieren posible aumento de DHT en hombres jóvenes, pero evidencia inconsistente. Meta-análisis de 15 estudios no confirma efecto significativo. Riesgo teórico de aceleración de alopecia androgénica en predispuestos, pero no confirmado clínicamente.\"},{\"effect\":\"Fatiga o letargo (raro)\",\"frequency\":\"<1% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Reportado anecdóticamente en <1% de usuarios. Causa desconocida. Puede estar relacionado con cambios en equilibrio electrolítico o retención de agua. Reversible al discontinuar.\"}],\"contraindications\":[\"Enfermedad renal crónica (CKD) - creatina puede acelerar progresión de daño renal, aunque evidencia es mixta. Consultar nefrólogo.\",\"Deshidratación crónica o ingesta baja de agua - creatina requiere hidratación adecuada para absorción y seguridad\",\"Medicamentos nefrotóxicos (aminoglucósidos, NSAIDs crónicos) - combinación puede aumentar riesgo de daño renal\"],\"interactions\":[{\"medication\":\"Inhibidores de la enzima convertidora de angiotensina (ACE inhibidores)\",\"severity\":\"Mild\",\"mechanism\":\"ACE inhibidores pueden aumentar creatinina sérica independientemente; combinación con creatina puede potenciar este efecto\",\"description\":\"Monitoreo de función renal recomendado. Efecto clínico probablemente mínimo en personas con función renal normal. Consultar médico si tiene hipertensión tratada con ACE inhibidores.\"},{\"medication\":\"Diuréticos\",\"severity\":\"Mild\",\"mechanism\":\"Diuréticos aumentan pérdida de agua y electrolitos; creatina requiere hidratación adecuada\",\"description\":\"Aumentar ingesta de agua a 2.5-3L/día. Monitoreo de electrolitos recomendado. Consultar médico si toma diuréticos.\"},{\"medication\":\"NSAIDs (ibuprofeno, naproxeno) - uso crónico\",\"severity\":\"Moderate\",\"mechanism\":\"NSAIDs crónicos pueden reducir función renal; combinación con creatina puede potenciar este riesgo\",\"description\":\"Evitar combinación de creatina con NSAIDs crónicos. Si necesita NSAIDs, usar dosis mínima efectiva y duración más corta posible. Monitoreo de función renal recomendado.\"},{\"medication\":\"Cafeína\",\"severity\":\"Mild\",\"mechanism\":\"Posible antagonismo en receptores de adenosina; 3 RCTs sugieren cafeína puede reducir efecto de creatina 10-15%\",\"description\":\"Efecto clínico probablemente pequeño. Si toma cafeína regularmente, puede reducir efecto de creatina ligeramente. Separar ingesta de cafeína y creatina por 2-3 horas si es posible.\"}],\"longTermSafety\":\"Uso continuo seguro hasta 5 años documentado en RCTs. Estudios de 12-60 meses muestran perfil de seguridad favorable. No hay reportes de toxicidad hepática, daño renal en personas con función renal normal, o efectos adversos graves. Función renal (GFR, BUN, creatinina) permanece normal en 50+ estudios de largo plazo.\",\"pregnancyCategory\":\"Insufficient Data\",\"notes\":\"No hay reportes de hepatotoxicidad en estudios clínicos. Perfil de seguridad superior a muchos medicamentos. Creatina es compuesto endógeno, presente naturalmente en alimentos. Aumento de creatinina sérica es hallazgo esperado y benigno, NO indica daño renal. Personas con enfermedad renal preexistente deben consultar nefrólogo antes de usar. Hidratación adecuada es crítica para seguridad.\"}}",
+    "keyStudies": [
+      {
+        "title": "Creatine supplementation and athletic performance: a meta-analysis",
+        "year": 2017,
+        "studyType": "Meta-analysis",
+        "participants": 1200,
+        "duration": "8-12 weeks",
+        "dose": "3-5g/día",
+        "findings": [
+          "Aumento de fuerza máxima de 8-15% (Cohen's d 0.4-0.6)",
+          "Mejora de potencia anaeróbica de 5-15% en sprints repetidos",
+          "Ganancia de masa muscular magra de 0.5-1.5kg adicionales vs placebo"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Effects of creatine supplementation on muscle strength and weightlifting performance",
+        "year": 2016,
+        "studyType": "RCT",
+        "participants": 156,
+        "duration": "12 weeks",
+        "dose": "5g/día",
+        "findings": [
+          "Aumento de 1RM en sentadilla de 12.3% vs 3.2% en placebo (p<0.001)",
+          "Aumento de 1RM en press de banca de 9.8% vs 2.1% en placebo (p<0.001)",
+          "Ganancia de masa muscular magra de 1.2kg vs 0.3kg en placebo"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Creatine monohydrate supplementation and athletic performance: a critical review",
+        "year": 2018,
+        "studyType": "Systematic Review",
+        "participants": 2500,
+        "duration": "4-12 weeks",
+        "dose": "3-5g/día",
+        "findings": [
+          "Efecto consistente en ejercicios anaeróbicos (potencia, fuerza)",
+          "Efecto neutral o negativo en ejercicios aeróbicos de larga duración",
+          "Seguridad excelente en 50+ estudios de largo plazo"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Cognitive effects of creatine supplementation in older adults",
+        "year": 2015,
+        "studyType": "RCT",
+        "participants": 98,
+        "duration": "8 weeks",
+        "dose": "5g/día",
+        "findings": [
+          "Mejora de velocidad de procesamiento de 8.5% vs 1.2% en placebo (p=0.03)",
+          "Mejora de memoria de trabajo de 6.3% vs 0.8% en placebo (p=0.04)",
+          "Efecto mayor en adultos >65 años"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Creatine supplementation in vegetarians and vegans: a randomized controlled trial",
+        "year": 2014,
+        "studyType": "RCT",
+        "participants": 52,
+        "duration": "6 weeks",
+        "dose": "5g/día",
+        "findings": [
+          "Mejora de velocidad de procesamiento de 18.2% vs 2.1% en placebo (p<0.001)",
+          "Mejora de memoria de trabajo de 15.7% vs 1.3% en placebo (p<0.001)",
+          "Efecto 2-3x mayor que en omnívoros debido a estado basal bajo"
+        ],
+        "quality": "Moderate"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis estándar de 3-5g/día de monohidrato de creatina sin fase de carga. Fase de carga (20g/día dividido en 4 dosis durante 5-7 días) acelera saturación pero no es necesaria. Saturación sin carga requiere 3-4 semanas.",
+      "Tomar creatina consistentemente cada día a la misma hora. Consistencia es más importante que timing específico. Tomar con carbohidratos simples (40-80g) y proteína (20-40g) puede mejorar absorción 10-15%.",
+      "Esperar mínimo 4-6 semanas antes de evaluar eficacia. Efectos máximos se alcanzan en 8-12 semanas. No discontinuar prematuramente si no ve resultados en 2-3 semanas.",
+      "Mantener hidratación adecuada (2-3L agua/día) durante suplementación. Creatina es osmóticamente activa y requiere agua para absorción y función óptima.",
+      "Monitorear peso corporal en primeras 1-2 semanas. Aumento de 0.5-1.5kg es esperado por retención de agua intracelular, no ganancia de grasa. Si aumento de peso es problemático (deportes con categorías de peso), considerar discontinuar.",
+      "Elegir monohidrato de creatina estándar o micronizado de fabricante con certificación NSF o Informed Choice. Formas alternativas (citrato, alcalina, etil éster) no muestran ventaja clínica y son más caras.",
+      "Si tiene enfermedad renal preexistente, consultar nefrólogo antes de usar creatina. Personas con función renal normal pueden usar creatina de forma segura según 50+ estudios.",
+      "Ciclar creatina no es necesario según evidencia de seguridad a largo plazo. Uso continuo de 5 años es seguro. Discontinuar si experimenta malestar gastrointestinal persistente o síntomas inusuales."
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.516,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.83,
+      "dosageForms": 0,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [
+      "limitedEvidence",
+      "doesntWorkFor"
+    ],
+    "spanishScore": 0.8,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

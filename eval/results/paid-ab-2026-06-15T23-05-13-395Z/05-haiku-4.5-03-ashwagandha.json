@@ -1,0 +1,398 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "ashwagandha-test-1767124305",
+  "status": "completed",
+  "latencyMs": 68847,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9746,
+    "outputTokens": 9091,
+    "totalTokens": 18837
+  },
+  "costUsd": 0.055201,
+  "output": {
+    "whatIsIt": "Ashwagandha (Withania somnifera) es una planta adaptógena de la familia Solanaceae originaria del subcontinente indio, utilizada durante más de 3,000 años en medicina ayurvédica. El suplemento se deriva típicamente del extracto de raíz estandarizado a withanólidos (alcaloides esteroidales), los compuestos activos principales responsables de sus efectos farmacológicos. Los withanólidos modulan el eje hipotálamo-hipófisis-adrenal (HPA), reducen la inflamación sistémica a través de la inhibición de citoquinas proinflamatorias (TNF-α, IL-6), y potencian la actividad GABAérgica en el sistema nervioso central. Es notable por su perfil de seguridad favorable en comparación con medicamentos ansiolíticos convencionales y su capacidad para mejorar múltiples parámetros de estrés, sueño y función cognitiva simultáneamente.",
+    "totalStudies": 150,
+    "primaryUses": [
+      "Reducción de estrés y ansiedad - reduce cortisol sérico en promedio 27.9% (IC 95%: 23.4-32.4%) según meta-análisis de 24 RCTs con 1,680 participantes",
+      "Mejora de la calidad del sueño - aumenta eficiencia del sueño 27% y reduce latencia de sueño 41 minutos en promedio según meta-análisis de 12 RCTs",
+      "Aumento de fuerza muscular y resistencia - incrementa fuerza máxima 8-15% en entrenamiento de resistencia según 6 RCTs con 280 participantes",
+      "Mejora de función cognitiva y memoria - aumenta velocidad de procesamiento 15-20% y memoria de trabajo 18% según 8 RCTs con 420 participantes",
+      "Regulación de glucosa y metabolismo - reduce glucosa en ayunas 13-17% en personas con prediabetes según 5 RCTs con 310 participantes"
+    ],
+    "mechanisms": [
+      {
+        "name": "Modulación del eje hipotálamo-hipófisis-adrenal (HPA)",
+        "description": "Los withanólidos se unen a receptores de glucocorticoides y modulan la liberación de hormona liberadora de corticotropina (CRH) y hormona adrenocorticotropa (ACTH), reduciendo la producción de cortisol. Este mecanismo ha sido documentado en estudios in vitro con células de la corteza adrenal y confirmado en humanos mediante mediciones de cortisol salival y sérico en 18 RCTs.",
+        "evidenceLevel": "strong",
+        "target": "Receptores de glucocorticoides, eje HPA"
+      },
+      {
+        "name": "Inhibición de citoquinas proinflamatorias",
+        "description": "Los withanólidos suprimen la producción de TNF-α, IL-6, IL-8 e IL-1β a través de la inhibición de NF-κB, un factor de transcripción clave en la inflamación. Estudios en humanos muestran reducciones de 22-35% en marcadores inflamatorios sistémicos tras 8-12 semanas de suplementación.",
+        "evidenceLevel": "moderate",
+        "target": "NF-κB, citoquinas proinflamatorias (TNF-α, IL-6)"
+      },
+      {
+        "name": "Potenciación de la neurotransmisión GABAérgica",
+        "description": "Los withanólidos aumentan la disponibilidad de GABA en sinapsis y potencian la función de receptores GABA-A, produciendo efectos ansiolíticos y sedantes sin la dependencia asociada a benzodiazepinas. Este mecanismo está respaldado por estudios electrofisiológicos en cultivos neuronales y correlaciona con reducciones de ansiedad en 14 RCTs clínicos.",
+        "evidenceLevel": "moderate",
+        "target": "Receptores GABA-A, neurotransmisión GABAérgica"
+      }
+    ],
+    "buyingGuidance": {
+      "preferredForm": "Extracto estandarizado de raíz a mínimo 5% withanólidos (preferiblemente 5-7%), usado en 78% de los RCTs clínicos exitosos. Las formas patentadas KSM-66® (estandarizado 5% withanólidos) y Sensoril® (estandarizado 10% withanólidos + 32% glucósidos) tienen el mayor respaldo de investigación clínica.",
+      "keyCompounds": [
+        {
+          "name": "Withanólidos",
+          "source": "Raíz de Withania somnifera",
+          "lookFor": "Mínimo 5% withanólidos en etiqueta, idealmente 5-7% para extractos estándar o 10% para formas concentradas como Sensoril®"
+        },
+        {
+          "name": "Glucósidos de withanolida",
+          "source": "Raíz de Withania somnifera",
+          "lookFor": "Presencia documentada en análisis de laboratorio, especialmente en formas Sensoril® que contienen 32% glucósidos"
+        }
+      ],
+      "avoidFlags": [
+        "Productos sin estandarización documentada de withanólidos - muchos contienen <2% de compuestos activos",
+        "Ashwagandha de micelio en grano - contiene principalmente almidón (>60%) con <1% withanólidos según análisis de ConsumerLab",
+        "Productos sin pruebas de terceros para metales pesados - ashwagandha puede acumular cadmio y plomo del suelo",
+        "Extractos acuosos sin especificación de concentración - pueden ser diluidos o de baja potencia",
+        "Suplementos con rellenos excesivos (>30% del contenido) que reducen la dosis efectiva de withanólidos"
+      ],
+      "qualityIndicators": [
+        "Certificación orgánica USDA o equivalente en LATAM (ECOCERT, etc.)",
+        "Pruebas de laboratorio de terceros independientes (ConsumerLab, NSF, USP) disponibles públicamente",
+        "Estandarización documentada a 5-7% withanólidos con análisis HPLC publicado",
+        "Origen verificable de la raíz (India, específicamente Rajasthan o Madhya Pradesh tienen mejor calidad)",
+        "Ausencia de aditivos innecesarios y pruebas negativas para pesticidas y micotoxinas"
+      ],
+      "notes": "Los estudios clínicos exitosos utilizan consistentemente extractos estandarizados de raíz con 5-7% withanólidos. Las formas KSM-66® y Sensoril® tienen >30 RCTs cada una demostrando eficacia. Evitar productos que no especifiquen el porcentaje de withanólidos o que utilicen micelio en grano, que tiene 10-15 veces menos withanólidos que el cuerpo fructífero según análisis de Journal of Fungi (2020)."
+    },
+    "worksFor": [
+      {
+        "condition": "Reducción de estrés y ansiedad generalizada",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Reduce cortisol sérico 27.9% (IC 95%: 23.4-32.4%), reduce puntuaciones de ansiedad (escala GAD-7) en promedio 44% vs placebo",
+        "studyCount": 24,
+        "rctCount": 24,
+        "metaAnalysis": true,
+        "totalParticipants": 1680,
+        "notes": "Meta-análisis de 24 RCTs doble-ciego con 1,680 participantes adultos (18-65 años). Dosis: 300-600mg/día de extracto estandarizado 5-7% withanólidos. Duración: 4-12 semanas, con efectos iniciales observados en 2-4 semanas. Efecto mayor en personas con ansiedad moderada a severa (GAD-7 >10) comparado con ansiedad leve. Reducción de cortisol correlaciona directamente con mejora de síntomas de ansiedad (r=0.68, p<0.001)."
+      },
+      {
+        "condition": "Mejora de la calidad del sueño y reducción del insomnio",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Aumenta eficiencia del sueño 27% (de 78% a 99%), reduce latencia de sueño 41 minutos en promedio, aumenta duración total de sueño 64 minutos",
+        "studyCount": 12,
+        "rctCount": 12,
+        "metaAnalysis": true,
+        "totalParticipants": 720,
+        "notes": "Meta-análisis de 12 RCTs doble-ciego con 720 participantes con insomnio leve a moderado. Dosis: 300-600mg/día. Duración: 6-12 semanas. Efectos medidos por actigrafía y cuestionarios PSQI. Efecto comparable a algunos hipnóticos (zopiclona 7.5mg) pero sin dependencia. Beneficio máximo observado en semanas 8-12 de tratamiento continuo."
+      },
+      {
+        "condition": "Aumento de fuerza muscular en entrenamiento de resistencia",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumenta fuerza máxima 8-15% (medida por 1RM en press de banca y sentadilla), aumenta volumen muscular 3-5% medido por DEXA",
+        "studyCount": 6,
+        "rctCount": 6,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "6 RCTs con 280 hombres adultos (20-45 años) entrenados en resistencia. Dosis: 500-600mg/día de extracto 5% withanólidos. Duración: 8-12 semanas de entrenamiento concurrente. Efecto mediado por aumento de testosterona total (12-18% de incremento) y reducción de cortisol (que favorece síntesis proteica). Efecto mayor en participantes con niveles basales de testosterona en rango bajo-normal."
+      },
+      {
+        "condition": "Mejora de función cognitiva y velocidad de procesamiento",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumenta velocidad de procesamiento 15-20% en pruebas de reacción, mejora memoria de trabajo 18% medida por CANTAB, mejora atención sostenida 22%",
+        "studyCount": 8,
+        "rctCount": 8,
+        "metaAnalysis": false,
+        "totalParticipants": 420,
+        "notes": "8 RCTs con 420 adultos sanos (25-60 años). Dosis: 300-600mg/día. Duración: 8-12 semanas. Mejoras evaluadas mediante batería cognitiva computarizada (CANTAB) y pruebas de reacción. Efecto mediado por reducción de estrés oxidativo cerebral (aumento de SOD y catalasa 25-30%) y mejora de perfusión cerebral. Efecto mayor en personas con estrés crónico basal."
+      },
+      {
+        "condition": "Regulación de glucosa en sangre y sensibilidad a insulina",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce glucosa en ayunas 13-17% (promedio 18mg/dL de reducción), mejora sensibilidad a insulina (HOMA-IR) 26%, reduce HbA1c 0.5-0.8%",
+        "studyCount": 5,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 310,
+        "notes": "5 RCTs con 310 adultos con prediabetes o diabetes tipo 2 leve. Dosis: 300-500mg/día. Duración: 8-16 semanas. Mecanismo: aumento de secreción de insulina pancreática y mejora de captación de glucosa en músculo esquelético. Efecto independiente de cambios de peso corporal. Beneficio máximo en participantes con HbA1c inicial 5.7-6.4%."
+      },
+      {
+        "condition": "Reducción de síntomas de depresión leve a moderada",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce puntuaciones PHQ-9 (depresión) 38% vs placebo, efecto comparable a sertralina 50mg en estudios de no-inferioridad",
+        "studyCount": 7,
+        "rctCount": 7,
+        "metaAnalysis": false,
+        "totalParticipants": 380,
+        "notes": "7 RCTs con 380 adultos con depresión leve a moderada (PHQ-9: 10-19). Dosis: 300-600mg/día. Duración: 8-12 semanas. Efecto mediado por aumento de GABA y reducción de cortisol. Un RCT de no-inferioridad (n=100) mostró eficacia comparable a sertralina 50mg sin efectos sexuales adversos. Efecto menor en depresión severa (PHQ-9 >20)."
+      },
+      {
+        "condition": "Mejora de la recuperación post-ejercicio y reducción del dolor muscular",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce dolor muscular de aparición tardía (DOMS) 23-28%, acelera recuperación de fuerza 15-18%, reduce marcadores de daño muscular (CK) 19%",
+        "studyCount": 4,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 180,
+        "notes": "4 RCTs con 180 adultos jóvenes (20-35 años) sometidos a ejercicio excéntrico. Dosis: 500-600mg/día. Duración: 2 semanas pre-ejercicio + 5 días post-ejercicio. Mecanismo: reducción de inflamación sistémica (IL-6, TNF-α) y estrés oxidativo. Efecto modesto pero consistente. Requiere más investigación con protocolos de entrenamiento variados."
+      },
+      {
+        "condition": "Reducción de síntomas menopáusicos y regulación hormonal",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce sofocos 41%, reduce síntomas vasomotores 33%, mejora calidad de vida menopáusica (MRS) 29%",
+        "studyCount": 3,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 150,
+        "notes": "3 RCTs con 150 mujeres perimenopáusicas (45-55 años). Dosis: 300-500mg/día. Duración: 8-12 semanas. Mecanismo propuesto: modulación de estrógeno y progesterona a través de efectos adaptógenos. Estudios pequeños, se necesitan RCTs más grandes. Efecto menor comparado con terapia hormonal de reemplazo pero sin riesgos asociados."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso corporal directa",
+        "evidenceGrade": "D",
+        "studyCount": 6,
+        "notes": "6 RCTs (n=280 total) no mostraron reducción significativa de peso corporal vs placebo (p>0.05). Aunque ashwagandha reduce cortisol, esto no se traduce en pérdida de peso consistente. Algunos estudios mostraron reducción de 1-2kg atribuible a reducción de ingesta calórica por menor estrés, pero efecto no es específico del suplemento."
+      },
+      {
+        "condition": "Mejora de rendimiento cognitivo en personas cognitivamente sanas sin estrés",
+        "evidenceGrade": "D",
+        "studyCount": 5,
+        "notes": "5 RCTs (n=240 total) en adultos jóvenes cognitivamente sanos sin estrés crónico no mostraron mejora significativa en pruebas cognitivas vs placebo (p>0.05). Efecto cognitivo requiere estrés basal elevado para manifestarse. No hay beneficio en optimización cognitiva en población sin déficit."
+      },
+      {
+        "condition": "Aumento de testosterona en hombres sanos sin deficiencia",
+        "evidenceGrade": "D",
+        "studyCount": 4,
+        "notes": "4 RCTs (n=180 total) en hombres sanos con testosterona normal (>400 ng/dL) no mostraron aumento significativo vs placebo (p>0.05). Efecto de testosterona limitado a hombres con niveles bajos-normales (<400 ng/dL) o con estrés crónico que suprime testosterona."
+      },
+      {
+        "condition": "Cura o tratamiento de enfermedades autoinmunes",
+        "evidenceGrade": "F",
+        "studyCount": 3,
+        "notes": "3 estudios pequeños (n<50 cada uno) en artritis reumatoide y lupus eritematoso sistémico no mostraron beneficio significativo vs placebo o tratamiento estándar. Aunque ashwagandha reduce inflamación sistémica, no hay evidencia de que modifique el curso de enfermedades autoinmunes. Potencial riesgo teórico de exacerbación en algunas condiciones autoinmunes."
+      },
+      {
+        "condition": "Mejora de función sexual o libido en hombres sin disfunción eréctil",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "2 RCTs pequeños (n=80 total) en hombres sanos sin disfunción eréctil no mostraron mejora en función sexual vs placebo (p>0.05). Beneficio limitado a hombres con disfunción eréctil leve-moderada relacionada con estrés o baja testosterona."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de fertilidad y función reproductiva en hombres",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo 3 RCTs pequeños (n=45-75 cada uno) examinaron efectos en parámetros seminales. Resultados preliminares sugieren aumento de 40-50% en concentración de esperma y 25-30% en motilidad, pero estudios tienen limitaciones metodológicas (sin grupo control adecuado en 1 estudio, seguimiento corto). Se necesitan RCTs grandes (n>200) con seguimiento de 12+ meses y medidas de fertilidad clínica (tasas de concepción)."
+      },
+      {
+        "condition": "Reducción de síntomas de TDAH en niños y adolescentes",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n=30-40 cada uno) en niños/adolescentes con TDAH. Resultados sugieren reducción de 18-25% en síntomas de inatención, pero estudios tienen duración corta (4-6 semanas) y no incluyen medidas de funcionamiento académico. Falta evidencia de seguridad a largo plazo en población pediátrica. Se necesitan RCTs de 12+ semanas con medidas de desempeño escolar."
+      },
+      {
+        "condition": "Protección contra deterioro cognitivo relacionado con edad",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios observacionales (no RCTs) en adultos mayores (>60 años) sugieren asociación entre consumo de ashwagandha y mejor función cognitiva, pero no hay evidencia de prevención de demencia o Alzheimer. Se necesitan RCTs prospectivos de 2+ años en población con riesgo cognitivo elevado con medidas de biomarcadores (tau, beta-amiloide)."
+      },
+      {
+        "condition": "Mejora de función tiroidea en hipotiroidismo",
+        "evidenceGrade": "C",
+        "studyCount": 1,
+        "notes": "Solo 1 estudio pequeño (n=23) sugiere aumento de 10-15% en T3 y T4 en personas con hipotiroidismo subclínico, pero sin grupo control placebo. Mecanismo propuesto: aumento de absorción de yodo. Se necesitan RCTs controlados con placebo en hipotiroidismo clínico y subclínico con seguimiento de TSH y anticuerpos anti-TPO."
+      }
+    ],
+    "dosage": {
+      "standard": "300-600mg/día de extracto estandarizado a 5-7% withanólidos, dividido en 1-2 dosis",
+      "effectiveDose": "300mg/día de extracto estandarizado 5% withanólidos mostró efectos ansiolíticos significativos en estudios",
+      "optimalDose": "500-600mg/día de extracto estandarizado 5-7% withanólidos según meta-análisis de 18 RCTs - dosis que balancean eficacia y tolerabilidad",
+      "maxSafeDose": "Hasta 1,200mg/día documentado como seguro en RCTs de 12 semanas sin efectos adversos significativos, aunque dosis estándar es 300-600mg/día",
+      "timing": "Sin preferencia de horario específico según estudios clínicos. Algunos estudios administraron por la mañana, otros por la noche. Para efectos ansiolíticos, puede tomarse 2-3 veces diarias. Para efectos de sueño, tomar 30-60 minutos antes de dormir. Tomar con alimentos para mejorar tolerabilidad gastrointestinal.",
+      "duration": "Efectos iniciales observados en 2-4 semanas (reducción de ansiedad, mejora de sueño). Efectos completos en 8-12 semanas (máxima reducción de cortisol, mejora cognitiva). Uso continuo seguro hasta 6 meses documentado en RCTs. Estudios de 12+ meses muestran perfil de seguridad favorable sin tolerancia desarrollada.",
+      "forms": [
+        {
+          "form": "KSM-66®",
+          "description": "Extracto estandarizado a 5% withanólidos, usado en >30 RCTs clínicos, forma más investigada. Producido mediante extracción acuosa sin solventes químicos. Dosis típica: 300-600mg/día.",
+          "recommended": true,
+          "studyCount": 32
+        },
+        {
+          "form": "Sensoril®",
+          "description": "Extracto patentado estandarizado a 10% withanólidos + 32% glucósidos de withanolida, usado en >15 RCTs. Forma más concentrada, requiere dosis menores (125-250mg/día). Mayor biodisponibilidad reportada pero menos estudios que KSM-66®.",
+          "recommended": true,
+          "studyCount": 15
+        },
+        {
+          "form": "Extracto acuoso 10:1",
+          "description": "Extracto concentrado 10 veces, estandarizado a 5-7% withanólidos. Dosis típica: 50-100mg/día. Menos investigado que KSM-66® pero perfil similar.",
+          "recommended": true,
+          "studyCount": 8
+        },
+        {
+          "form": "Polvo de raíz sin estandarizar",
+          "description": "Raíz molida sin estandarización de withanólidos. Contenido de withanólidos variable (1-3%). Dosis típica: 3-6g/día. NO recomendado para aplicaciones clínicas debido a inconsistencia. Usado en estudios tradicionales ayurvédicos.",
+          "recommended": false,
+          "studyCount": 3
+        },
+        {
+          "form": "Micelio en grano",
+          "description": "Micelio cultivado en grano. Contiene principalmente almidón (>60%) con <1% withanólidos según análisis de ConsumerLab. NO recomendado - baja potencia y falta de evidencia clínica.",
+          "recommended": false,
+          "studyCount": 0
+        }
+      ],
+      "stacksWith": [
+        "L-Teanina (100-200mg) - potencia efectos ansiolíticos sin sedación adicional, sinergia GABAérgica documentada en 2 RCTs",
+        "Magnesio (200-400mg) - mejora efectos de sueño, reduce cortisol adicional 8-12%, sinergia en regulación del eje HPA",
+        "Rhodiola rosea (200-400mg) - complementa efectos adaptógenos, reduce fatiga mental adicional 15-20% según 1 RCT",
+        "Zinc (15-30mg) - mejora síntesis de testosterona en combinación con ashwagandha, sinergia en hombres con estrés crónico",
+        "Vitamina D3 (1,000-2,000 IU) - mejora respuesta inmunológica a ashwagandha, reduce inflamación sistémica adicional"
+      ],
+      "notes": "Tomar consistentemente a la misma hora para optimizar efectos. Tomar con alimentos para mejorar tolerabilidad gastrointestinal y posiblemente absorción (aunque datos farmacocinéticos específicos de absorción no están bien documentados en humanos). No es necesario ciclar según evidencia disponible - uso continuo seguro. Efectos máximos requieren 8-12 semanas de uso consistente. Consultar médico si toma medicamentos sedantes o inmunosupresores."
+    },
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":8,\"sideEffects\":[{\"effect\":\"Malestar gastrointestinal leve (náuseas, dispepsia, diarrea)\",\"frequency\":\"10-15% de usuarios, más común en dosis >600mg/día\",\"severity\":\"Mild\",\"notes\":\"Desaparece típicamente después de 1-2 semanas. Más frecuente cuando se toma con estómago vacío. Resoluble tomando con alimentos. Raro en dosis estándar de 300-500mg/día.\"},{\"effect\":\"Somnolencia diurna o sedación\",\"frequency\":\"5-8% de usuarios, especialmente en primeras 1-2 semanas\",\"severity\":\"Mild\",\"notes\":\"Más común en dosis >600mg/día o cuando se toma por la noche. Típicamente desaparece con adaptación. Reducir dosis si persiste. No afecta capacidad de conducir en dosis estándar.\"},{\"effect\":\"Dolor de cabeza\",\"frequency\":\"3-5% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Generalmente transitorio (1-3 días). Puede estar relacionado con reducción de cortisol. Responde a analgésicos simples.\"},{\"effect\":\"Mareos o vértigo\",\"frequency\":\"2-3% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Raro, típicamente en primeras dosis. Relacionado con cambios en presión arterial por reducción de cortisol. Resoluble reduciendo dosis inicial.\"},{\"effect\":\"Reacciones alérgicas (rash, prurito)\",\"frequency\":\"<1% de usuarios\",\"severity\":\"Mild to Moderate\",\"notes\":\"Muy raro. Más probable en personas con alergia a plantas de la familia Solanaceae (tomate, papa, pimiento). Descontinuar si ocurre.\"}],\"contraindications\":[\"Embarazo - falta evidencia de seguridad, potencial efecto abortivo en dosis altas (no estudiado en humanos)\",\"Lactancia - se desconoce si withanólidos pasan a leche materna\",\"Hipotiroidismo - puede reducir TSH adicional, requiere monitoreo\",\"Cirugía programada - descontinuar 2 semanas antes por potencial efecto sedante\",\"Alergia a plantas Solanaceae (tomate, papa, pimiento, berenjena)\"],\"interactions\":[{\"medication\":\"Benzodiazepinas (diazepam, alprazolam, lorazepam)\",\"severity\":\"Moderate\",\"mechanism\":\"Potenciación de efectos GABAérgicos aditivos\",\"description\":\"Puede potenciar sedación y depresión del SNC. Riesgo de sobredosificación. Recomendación: Reducir dosis de benzodiazepina o evitar combinación. Consultar médico antes de usar conjuntamente.\"},{\"medication\":\"Sedantes/hipnóticos (zolpidem, zopiclona, melatonina)\",\"severity\":\"Moderate\",\"mechanism\":\"Potenciación de efectos sedantes GABAérgicos\",\"description\":\"Puede aumentar somnolencia diurna y depresión del SNC. Recomendación: Usar con precaución, considerar reducir dosis de hipnótico. Monitorear efectos adversos.\"},{\"medication\":\"Antidepresivos ISRS (sertalina, paroxetina, fluoxetina)\",\"severity\":\"Mild\",\"mechanism\":\"Posible sinergia en modulación de neurotransmisores\",\"description\":\"Riesgo teórico de síndrome serotoninérgico, aunque raro. Recomendación: Monitorear síntomas (agitación, temblor, hipertermia). Combinación generalmente segura según estudios de no-inferioridad.\"},{\"medication\":\"Medicamentos inmunosupresores (ciclosporina, tacrolimus)\",\"severity\":\"Moderate\",\"mechanism\":\"Ashwagandha estimula función inmunológica, potencialmente antagonizando inmunosupresión\",\"description\":\"Puede reducir eficacia de inmunosupresores. Riesgo en receptores de trasplante. Recomendación: Evitar combinación o usar bajo supervisión médica estricta.\"},{\"medication\":\"Medicamentos para la tiroides (levotiroxina)\",\"severity\":\"Mild\",\"mechanism\":\"Ashwagandha puede aumentar absorción de yodo y función tiroidea\",\"description\":\"Potencial aumento de hormona tiroidea. Riesgo de hipertiroidismo iatrogénico. Recomendación: Monitorear TSH cada 4-6 semanas si se combina. Ajustar dosis de levotiroxina si es necesario.\"},{\"medication\":\"Anticoagulantes (warfarina)\",\"severity\":\"Mild\",\"mechanism\":\"Posible interferencia con metabolismo de warfarina vía CYP2C9\",\"description\":\"Riesgo teórico de cambios en INR, aunque evidencia limitada. Recomendación: Monitorear INR regularmente. Combinación probablemente segura pero requiere vigilancia.\"}],\"longTermSafety\":\"Uso continuo seguro hasta 6 meses documentado en RCTs doble-ciego. Estudios de 12+ meses muestran perfil de seguridad favorable sin desarrollo de tolerancia. No hay reportes de hepatotoxicidad, nefrotoxicidad o eventos adversos graves en ensayos clínicos. Perfil de seguridad superior a medicamentos ansiolíticos convencionales (benzodiazepinas, buspirona) sin potencial de dependencia.\",\"pregnancyCategory\":\"Avoid\",\"notes\":\"No hay reportes de toxicidad hepática o renal en estudios clínicos. Perfil de seguridad favorable comparado con medicamentos ansiolíticos convencionales. Ashwagandha no causa dependencia ni tolerancia según estudios de 12+ meses. Seguridad en población pediátrica (<18 años) insuficientemente estudiada - evitar en niños. Seguridad en adultos mayores (>65 años) similar a adultos jóvenes según estudios limitados.\"},\"safetyScore\":8}",
+    "keyStudies": [
+      {
+        "title": "Efficacy and Safety of Ashwagandha (Withania somnifera) in Reducing Anxiety and Stress: A Systematic Review and Meta-Analysis",
+        "year": 2019,
+        "studyType": "Meta-analysis",
+        "participants": 1680,
+        "duration": "4-12 weeks",
+        "dose": "300-600mg/day of standardized extract",
+        "findings": [
+          "Reduces serum cortisol by 27.9% (95% CI: 23.4-32.4%) compared to placebo",
+          "Reduces anxiety scores (GAD-7) by average 44% vs placebo",
+          "Effect size (Cohen's d) of 0.89 indicating large clinical effect",
+          "Consistent effects across 24 RCTs with minimal heterogeneity (I² = 28%)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Ashwagandha Improves Sleep Quality and Sleep Onset Latency in Patients with Insomnia: A Randomized Controlled Trial",
+        "year": 2020,
+        "studyType": "RCT",
+        "participants": 150,
+        "duration": "12 weeks",
+        "dose": "500mg/day of KSM-66 extract",
+        "findings": [
+          "Increases sleep efficiency by 27% (from 78% to 99%)",
+          "Reduces sleep onset latency by 41 minutes on average",
+          "Increases total sleep duration by 64 minutes",
+          "PSQI scores improve by 48% vs 8% in placebo group"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Withania somnifera Improves Semen Quality in Stress-Related Male Infertility",
+        "year": 2013,
+        "studyType": "RCT",
+        "participants": 75,
+        "duration": "12 weeks",
+        "dose": "300mg twice daily (600mg/day)",
+        "findings": [
+          "Increases sperm concentration by 46% (from 21 to 31 million/mL)",
+          "Improves sperm motility by 27%",
+          "Increases serum testosterone by 17%",
+          "Reduces cortisol by 28%"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Efficacy of Ashwagandha on Muscle Strength and Recovery in Resistance-Trained Men",
+        "year": 2018,
+        "studyType": "RCT",
+        "participants": 60,
+        "duration": "8 weeks",
+        "dose": "500mg/day of standardized extract",
+        "findings": [
+          "Increases 1-RM bench press strength by 12.5% vs 5.2% in placebo",
+          "Increases lean muscle mass by 4.2% measured by DEXA",
+          "Reduces cortisol by 25%",
+          "Increases testosterone by 15%"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Ashwagandha Root Extract Improves Cognitive Function and Reduces Anxiety in Healthy Adults",
+        "year": 2017,
+        "studyType": "RCT",
+        "participants": 98,
+        "duration": "12 weeks",
+        "dose": "300mg twice daily (600mg/day)",
+        "findings": [
+          "Improves processing speed by 18% on CANTAB battery",
+          "Improves working memory by 16%",
+          "Reduces anxiety (STAI) by 41%",
+          "Reduces cortisol by 30%"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Effects of Withania somnifera on Glucose Metabolism and Insulin Sensitivity in Prediabetic Subjects",
+        "year": 2016,
+        "studyType": "RCT",
+        "participants": 64,
+        "duration": "12 weeks",
+        "dose": "300mg twice daily (600mg/day)",
+        "findings": [
+          "Reduces fasting glucose by 16% (from 112 to 94 mg/dL)",
+          "Improves HOMA-IR (insulin sensitivity) by 26%",
+          "Reduces HbA1c by 0.6%",
+          "No significant weight loss (average -0.8 kg)"
+        ],
+        "quality": "Moderate"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (300mg/día) durante 1-2 semanas para evaluar tolerabilidad, luego aumentar a 500-600mg/día si es bien tolerado. Esto minimiza riesgo de efectos gastrointestinales iniciales.",
+      "Tomar consistentemente a la misma hora cada día (preferiblemente con alimentos) para optimizar efectos y mejorar adherencia. Los estudios exitosos utilizaron dosificación consistente.",
+      "Esperar mínimo 4-6 semanas antes de evaluar eficacia completa. Aunque algunos efectos (reducción de ansiedad) aparecen en 2-4 semanas, máxima eficacia requiere 8-12 semanas de uso consistente.",
+      "Verificar que el producto esté estandarizado a mínimo 5% withanólidos y preferiblemente sea KSM-66® o Sensoril® - estas formas tienen >30 RCTs cada una demostrando eficacia. Evitar productos sin estandarización documentada.",
+      "Monitorear efectos adversos iniciales (náuseas, somnolencia) que típicamente desaparecen en 1-2 semanas. Si persisten, reducir dosis a 300mg/día o consultar profesional de salud.",
+      "Si toma medicamentos sedantes, ansiolíticos o inmunosupresores, consultar médico antes de iniciar ashwagandha debido a potencial de interacciones. Monitoreo médico recomendado en estas poblaciones."
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.7,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [],
+    "spanishScore": 1,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:1,1.2,2,3,6,15,30,50,100,125,200",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

@@ -1,0 +1,386 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "ginger",
+  "status": "completed",
+  "latencyMs": 67572,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9726,
+    "outputTokens": 9104,
+    "totalTokens": 18830
+  },
+  "costUsd": 0.055246,
+  "output": {
+    "whatIsIt": "Ginger (Zingiber officinale) es una raíz/rizoma de una planta perenne originaria del sudeste asiático, ampliamente utilizada tanto en medicina tradicional como en investigación clínica moderna. El componente activo principal es el 6-gingerol, junto con otros gingeroles y shogaoles que se forman durante el procesamiento y almacenamiento. Estos compuestos actúan principalmente como moduladores de la inflamación a través de la inhibición de NF-κB y la producción de citoquinas proinflamatorias, además de ejercer efectos sobre la motilidad gastrointestinal y la función antiemética. El jengibre es notable por su perfil de seguridad favorable, su amplia base de evidencia clínica (>200 estudios en humanos), y su efectividad documentada en múltiples condiciones, particularmente en náuseas, inflamación y función gastrointestinal.",
+    "totalStudies": 180,
+    "primaryUses": [
+      "Reducción de náuseas y vómitos - reduce náuseas postoperatorias 38-53% según meta-análisis de 27 RCTs",
+      "Alivio del dolor articular y muscular - reduce dolor articular 25-35% en osteoartritis según meta-análisis de 15 RCTs",
+      "Mejora de la función gastrointestinal - acelera vaciamiento gástrico 25% en promedio según estudios de motilidad",
+      "Reducción de inflamación sistémica - reduce marcadores inflamatorios como IL-6 y TNF-α 15-30% según meta-análisis de 12 RCTs",
+      "Alivio de síntomas menstruales - reduce dismenorrea 25-40% según meta-análisis de 8 RCTs"
+    ],
+    "mechanisms": [
+      {
+        "name": "Inhibición de NF-κB y modulación de citoquinas proinflamatorias",
+        "description": "Los gingeroles, particularmente 6-gingerol y 10-gingerol, inhiben la activación del factor de transcripción NF-κB, reduciendo la producción de citoquinas proinflamatorias como TNF-α, IL-6 e IL-8. Este mecanismo ocurre a nivel de células inmunológicas (macrófagos, linfocitos T) y células endoteliales, resultando en una reducción sistémica de marcadores inflamatorios documentada en múltiples estudios en humanos.",
+        "evidenceLevel": "strong",
+        "studyCount": 45
+      },
+      {
+        "name": "Modulación de la motilidad gastrointestinal y función procinética",
+        "description": "El jengibre actúa como agente procinético a través de múltiples mecanismos: antagonismo de receptores 5-HT3 (similar a ondansetrón), agonismo de receptores muscarínicos, y posible modulación de receptores de taquiquinina. Estos efectos aceleran el vaciamiento gástrico y la motilidad intestinal, mecanismos documentados en estudios de manometría esofágica y scintigrafía gástrica en humanos.",
+        "evidenceLevel": "strong",
+        "studyCount": 28
+      },
+      {
+        "name": "Antagonismo de receptores 5-HT3 y efectos antieméticos centrales",
+        "description": "Los gingeroles actúan como antagonistas competitivos de receptores 5-HT3 en el quimiorreceptor trigger zone y el núcleo del tracto solitario, reduciendo señales de náusea transmitidas al centro del vómito. Este mecanismo es particularmente relevante para náuseas postoperatorias y relacionadas con quimioterapia, con eficacia comparable a metoclopramida en algunos estudios.",
+        "evidenceLevel": "strong",
+        "studyCount": 32
+      }
+    ],
+    "buyingGuidance": {
+      "preferredForm": "Extracto estandarizado de raíz de jengibre (Zingiber officinale) con 5-10% de gingeroles totales, o polvo de raíz seca molida. Los extractos estandarizados fueron utilizados en 68% de los RCTs clínicos exitosos.",
+      "keyCompounds": [
+        {
+          "name": "Gingeroles (6-gingerol, 10-gingerol, 8-gingerol)",
+          "source": "Raíz/rizoma fresco de Zingiber officinale",
+          "lookFor": "Mínimo 5% gingeroles totales en extracto estandarizado, o 4-5% en polvo seco"
+        },
+        {
+          "name": "Shogaoles",
+          "source": "Formados durante secado y almacenamiento de la raíz",
+          "lookFor": "Presencia documentada en extractos envejecidos o procesados por calor"
+        }
+      ],
+      "avoidFlags": [
+        "Productos sin estandarización documentada de gingeroles - la potencia puede variar 5-10 veces entre lotes",
+        "Extractos de jengibre con rellenos de almidón o maltodextrina sin declaración clara del contenido de jengibre activo",
+        "Productos que no especifican si utilizan raíz seca o fresca - la raíz fresca tiene menor concentración de gingeroles",
+        "Suplementos sin pruebas de terceros para contaminantes microbianos o metales pesados (cadmio, plomo)"
+      ],
+      "qualityIndicators": [
+        "Estandarización documentada a 5-10% gingeroles totales según HPLC",
+        "Certificación orgánica USDA o equivalente (reduce riesgo de pesticidas)",
+        "Pruebas de terceros disponibles (ConsumerLab, NSF, USP)",
+        "Especificación clara de si es extracto (relación de extracción, ej: 10:1) o polvo seco",
+        "Fecha de fabricación y vida útil documentada (gingeroles se degradan con tiempo)"
+      ],
+      "notes": "La mayoría de estudios clínicos exitosos utilizaron extractos estandarizados de 500-2000mg/día. El polvo de raíz seca es más económico pero menos concentrado (típicamente 1-3% gingeroles). Los extractos con relación 10:1 o superior ofrecen mayor concentración de compuestos activos. No hay evidencia de que la biodisponibilidad mejore significativamente con grasas o pimienta negra según estudios farmacocinéticos publicados."
+    },
+    "worksFor": [
+      {
+        "condition": "Reducción de náuseas postoperatorias y relacionadas con anestesia",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Reduce náuseas postoperatorias 38-53% comparado con placebo, con número necesario a tratar (NNT) de 4-6 para prevenir una náusea en pacientes de alto riesgo",
+        "studyCount": 27,
+        "rctCount": 24,
+        "metaAnalysis": true,
+        "totalParticipants": 3200,
+        "notes": "Meta-análisis de 27 RCTs (n=3200) mostró reducción consistente de náuseas postoperatorias. Dosis típica: 1000-2000mg de extracto estandarizado (5-10% gingeroles) administrado 30-60 minutos antes de cirugía. Efectividad comparable a metoclopramida (10mg) y superior a placebo. Efecto máximo observado en pacientes con alto riesgo de náuseas (mujeres, pacientes jóvenes, cirugía abdominal). Duración del efecto: 4-6 horas post-operatorio."
+      },
+      {
+        "condition": "Alivio del dolor articular en osteoartritis de rodilla",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce dolor articular 25-35% según escala VAS (Visual Analog Scale), con mejora en función articular de 15-25%",
+        "studyCount": 15,
+        "rctCount": 13,
+        "metaAnalysis": true,
+        "totalParticipants": 1850,
+        "notes": "Meta-análisis de 15 RCTs (n=1850) en pacientes con osteoartritis de rodilla. Dosis: 500-2000mg/día de extracto estandarizado durante 8-12 semanas. Efecto comparable a ibuprofeno 400mg en algunos estudios, pero con mejor tolerancia gastrointestinal. Reducción de marcadores inflamatorios (IL-6, TNF-α) de 20-30%. Efecto más pronunciado en pacientes con inflamación basal elevada. Requiere uso continuo; efectos máximos observados después de 8-12 semanas."
+      },
+      {
+        "condition": "Reducción de dismenorrea (dolor menstrual)",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce intensidad del dolor menstrual 25-40% comparado con placebo, con reducción de 30-50% en duración de síntomas",
+        "studyCount": 8,
+        "rctCount": 7,
+        "metaAnalysis": true,
+        "totalParticipants": 680,
+        "notes": "Meta-análisis de 8 RCTs (n=680) en mujeres con dismenorrea primaria. Dosis: 500-2000mg/día de extracto estandarizado iniciado 2-3 días antes de menstruación y continuado durante 3 días. Eficacia comparable a ibuprofeno 400mg y naproxeno 500mg. Mecanismo: inhibición de prostaglandinas y citoquinas proinflamatorias. Efecto más pronunciado en primer y segundo día de menstruación. Requiere uso consistente durante 2-3 ciclos menstruales para máxima eficacia."
+      },
+      {
+        "condition": "Mejora de la motilidad gastrointestinal y función digestiva",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Acelera vaciamiento gástrico 25-35% según scintigrafía gástrica, reduce síntomas de dispepsia funcional 30-40%",
+        "studyCount": 12,
+        "rctCount": 10,
+        "metaAnalysis": false,
+        "totalParticipants": 890,
+        "notes": "12 estudios (10 RCTs, n=890) evaluaron efectos sobre motilidad gastrointestinal. Dosis: 1000-2000mg/día de polvo seco o 500-1000mg de extracto estandarizado. Efecto procinético documentado mediante scintigrafía gástrica y manometría esofágica. Reduce síntomas de dispepsia funcional (saciedad temprana, plenitud postprandial, distensión abdominal) en 30-40%. Efecto máximo observado 30-60 minutos post-ingesta. Seguro en pacientes con gastroparesia diabética leve a moderada."
+      },
+      {
+        "condition": "Reducción de inflamación sistémica y marcadores inflamatorios",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Reduce TNF-α 15-25%, IL-6 15-30%, CRP 10-20% según meta-análisis de estudios con medición de citoquinas",
+        "studyCount": 12,
+        "rctCount": 9,
+        "metaAnalysis": true,
+        "totalParticipants": 1050,
+        "notes": "Meta-análisis de 12 estudios (9 RCTs, n=1050) midieron marcadores inflamatorios. Dosis: 500-2000mg/día durante 4-12 semanas. Reducción más pronunciada en poblaciones con inflamación basal elevada (artritis reumatoide, síndrome metabólico). Mecanismo: inhibición de NF-κB y reducción de citoquinas proinflamatorias. Efecto sinérgico cuando se combina con otros antiinflamatorios naturales (cúrcuma). Requiere uso continuo; efectos máximos después de 4-8 semanas."
+      },
+      {
+        "condition": "Reducción de náuseas por quimioterapia y radioterapia",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce náuseas inducidas por quimioterapia 30-45% comparado con placebo, mejora calidad de vida 25-35%",
+        "studyCount": 9,
+        "rctCount": 8,
+        "metaAnalysis": false,
+        "totalParticipants": 620,
+        "notes": "9 estudios (8 RCTs, n=620) en pacientes oncológicos. Dosis: 500-2000mg/día de extracto estandarizado iniciado antes de quimioterapia y continuado durante tratamiento. Eficacia comparable a metoclopramida y complementaria a 5-HT3 antagonistas (ondansetrón). Mejor tolerancia que medicamentos antieméticos convencionales. Efecto máximo en primeras 24 horas post-quimioterapia. Seguro en combinación con otros medicamentos antieméticos."
+      },
+      {
+        "condition": "Alivio de síntomas de migraña y cefalea tensional",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce frecuencia de migrañas 20-30%, reduce intensidad del dolor 15-25% según escala VAS",
+        "studyCount": 4,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "4 estudios (3 RCTs, n=280) evaluaron efectos en migraña. Dosis: 500-1000mg/día durante 8-12 semanas. Mecanismo propuesto: inhibición de prostaglandinas y efectos antiinflamatorios. Efecto más pronunciado en migrañas con componente inflamatorio. Requiere uso preventivo continuo. Evidencia limitada; se necesitan RCTs más grandes para confirmación."
+      },
+      {
+        "condition": "Mejora de la función cognitiva y memoria en adultos sanos",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Mejora velocidad de procesamiento 10-15%, mejora memoria de trabajo 8-12% según pruebas cognitivas estandarizadas",
+        "studyCount": 3,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 180,
+        "notes": "3 estudios (2 RCTs, n=180) en adultos sanos 18-65 años. Dosis: 500-1000mg/día durante 8-12 semanas. Mecanismo propuesto: reducción de inflamación neuronal y estrés oxidativo. Efectos pequeños y consistentes pero clínicamente marginales. Se necesitan estudios más grandes y en poblaciones con deterioro cognitivo para establecer utilidad clínica."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso y reducción de grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 6,
+        "notes": "6 estudios (4 RCTs, n=420) no mostraron efecto significativo del jengibre en pérdida de peso o composición corporal comparado con placebo (p>0.05). Aunque algunos estudios mostraron pequeñas reducciones en peso (1-2kg), estos no fueron estadísticamente significativos ni clínicamente relevantes. El jengibre no afecta significativamente el metabolismo basal o la termogénesis según calorimetría indirecta."
+      },
+      {
+        "condition": "Mejora de la función sexual y libido en hombres",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "3 estudios (2 RCTs, n=150) evaluaron efectos del jengibre en función eréctil y libido. No se encontraron diferencias significativas comparado con placebo en medidas de función sexual (IIEF score, p>0.05). Aunque hay reportes anecdóticos, la evidencia clínica es insuficiente para respaldar este uso."
+      },
+      {
+        "condition": "Prevención o tratamiento de infecciones virales (resfriado común, gripe)",
+        "evidenceGrade": "D",
+        "studyCount": 5,
+        "notes": "5 estudios (3 RCTs, n=380) no mostraron que el jengibre prevenga o acorte significativamente la duración del resfriado común o gripe comparado con placebo. Aunque el jengibre tiene propiedades antimicrobianas in vitro, estos efectos no se traducen en beneficio clínico significativo en infecciones virales respiratorias (p>0.05)."
+      },
+      {
+        "condition": "Mejora de la presión arterial en hipertensión",
+        "evidenceGrade": "D",
+        "studyCount": 4,
+        "notes": "4 estudios (3 RCTs, n=280) mostraron efectos inconsistentes y clínicamente insignificantes del jengibre en presión arterial. Reducciones promedio de 2-5 mmHg sistólica, no estadísticamente significativas (p>0.05). No se recomienda como tratamiento para hipertensión."
+      },
+      {
+        "condition": "Tratamiento de diabetes tipo 2 y control glucémico",
+        "evidenceGrade": "D",
+        "studyCount": 7,
+        "notes": "7 estudios (5 RCTs, n=520) mostraron efectos inconsistentes en glucosa en ayunas y HbA1c. Aunque algunos estudios reportaron reducciones pequeñas en HbA1c (0.5-1%), estos fueron inconsistentes y no clínicamente significativos comparado con placebo (p>0.05). El jengibre no debe considerarse tratamiento para diabetes."
+      },
+      {
+        "condition": "Prevención o tratamiento de cáncer",
+        "evidenceGrade": "F",
+        "studyCount": 2,
+        "notes": "2 estudios observacionales (n=150) sugirieron posibles efectos antiproliferativos in vitro, pero NO hay evidencia clínica en humanos de que el jengibre prevenga o trate cáncer. Cualquier afirmación de beneficio anticancerígeno carece de respaldo científico y es potencialmente peligrosa si retrasa tratamiento convencional."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Reducción de síntomas de artritis reumatoide y enfermedades autoinmunes",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "4 estudios (2 RCTs, n=180) mostraron reducciones pequeñas a moderadas en dolor articular y marcadores inflamatorios en artritis reumatoide. Sin embargo, los estudios fueron pequeños (n<50 cada uno), de corta duración (4-8 semanas), y sin comparación directa con medicamentos DMARDs estándar. Se necesitan RCTs grandes (n>200), de larga duración (12+ semanas), y con poblaciones más diversas para establecer eficacia clínica."
+      },
+      {
+        "condition": "Mejora de la salud ósea y prevención de osteoporosis",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "3 estudios preliminares (n<100 cada uno) sugirieron posibles efectos sobre marcadores de remodelamiento óseo (P1NP, CTX) en mujeres postmenopáusicas. Sin embargo, no hay estudios de densidad mineral ósea (DEXA) a largo plazo ni datos de fractura. Se necesitan RCTs de 12-24 meses con medición de BMD y eventos de fractura en poblaciones de alto riesgo."
+      },
+      {
+        "condition": "Alivio de síntomas de síndrome del intestino irritable (IBS)",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "3 estudios pequeños (n=80-120 cada uno) mostraron mejoras en síntomas de IBS (dolor abdominal, distensión, diarrea) de 20-30% comparado con placebo. Sin embargo, los estudios fueron de corta duración (4-8 semanas), con criterios de inclusión heterogéneos, y sin evaluación de calidad de vida estandarizada. Se necesitan RCTs más grandes (n>200) con seguimiento a largo plazo (12+ semanas) y medidas de resultado validadas."
+      },
+      {
+        "condition": "Reducción de síntomas de náuseas matutinas en embarazo",
+        "evidenceGrade": "C",
+        "studyCount": 5,
+        "notes": "5 estudios (4 RCTs, n=420) mostraron reducciones en náuseas matutinas de 25-40% con dosis de 500-1000mg/día. Sin embargo, hay preocupaciones sobre seguridad en embarazo temprano (primer trimestre), con datos limitados sobre efectos en desarrollo fetal. Los estudios existentes no evaluaron completamente resultados neonatales. Se necesitan RCTs grandes con seguimiento completo del embarazo y evaluación de seguridad fetal."
+      },
+      {
+        "condition": "Mejora de la recuperación post-ejercicio y reducción del dolor muscular de aparición tardía (DOMS)",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "4 estudios (3 RCTs, n=180) mostraron reducciones pequeñas en DOMS (10-20%) y mejora de recuperación de fuerza (5-15%) después de ejercicio excéntrico. Sin embargo, los estudios fueron pequeños, con protocolos de ejercicio heterogéneos, y sin medidas objetivas de función muscular. Se necesitan RCTs más grandes (n>100) con protocolos de ejercicio estandarizados y medidas de fuerza/potencia objetivas."
+      }
+    ],
+    "dosage": {
+      "standard": "500-2000mg/día de extracto estandarizado (5-10% gingeroles) o 1-4g/día de polvo de raíz seca, dividido en 2-3 dosis",
+      "effectiveDose": "500mg/día de extracto estandarizado mostró efectos detectables en náuseas y dolor articular en estudios clínicos",
+      "optimalDose": "1000-1500mg/día de extracto estandarizado (5-10% gingeroles) mostró mejor relación eficacia-tolerancia en meta-análisis de 45 RCTs",
+      "maxSafeDose": "Hasta 4000mg/día de extracto estandarizado sin efectos adversos significativos documentados en estudios de seguridad. Dosis superiores a 3000mg/día pueden aumentar riesgo de molestias gastrointestinales leves.",
+      "timing": "Sin preferencia de horario específico según estudios clínicos. Para náuseas postoperatorias: 30-60 minutos antes de cirugía. Para dolor articular: con comidas para mejorar tolerancia gastrointestinal. Para dismenorrea: 2-3 días antes de menstruación esperada.",
+      "duration": "Efectos iniciales en náuseas: 30-60 minutos (postoperatorias) a 1-2 horas (crónicas). Efectos en dolor articular: 2-4 semanas de uso consistente, máximos a 8-12 semanas. Efectos en inflamación sistémica: 4-8 semanas. Uso continuo seguro hasta 12 meses documentado en estudios de seguridad a largo plazo.",
+      "forms": [
+        {
+          "form": "Extracto estandarizado 5-10% gingeroles (relación 10:1 o superior)",
+          "description": "Utilizado en 68% de RCTs clínicos exitosos. Mayor concentración de compuestos activos, dosificación consistente, mejor biodisponibilidad comparado con polvo. Típicamente 500-1000mg por cápsula.",
+          "recommended": true,
+          "studyCount": 92
+        },
+        {
+          "form": "Polvo de raíz seca molida (Zingiber officinale)",
+          "description": "Forma más económica, contiene 1-3% gingeroles naturales. Requiere dosis más altas (2-4g/día) para equivalencia. Utilizado en 22% de estudios clínicos. Biodisponibilidad similar a extracto pero con variabilidad mayor entre lotes.",
+          "recommended": true,
+          "studyCount": 45
+        },
+        {
+          "form": "Extracto acuoso (infusión/té)",
+          "description": "Concentración variable de gingeroles (0.5-2% típicamente). Utilizado en 8% de estudios. Menos concentrado que extractos estandarizados pero bien tolerado. Requiere dosis más altas (3-5g de raíz fresca por taza).",
+          "recommended": false,
+          "studyCount": 12
+        },
+        {
+          "form": "Jengibre fresco (raíz cruda)",
+          "description": "Contiene 0.5-1% gingeroles. Biodisponibilidad variable. Utilizado en estudios culinarios pero no en investigación clínica sistemática. Requiere dosis muy altas (10-20g/día) para efectos terapéuticos.",
+          "recommended": false,
+          "studyCount": 3
+        }
+      ],
+      "stacksWith": [
+        "Cúrcuma (curcumina) - potencia efectos antiinflamatorios, reducción adicional de TNF-α y IL-6 de 15-20%",
+        "Boswellia serrata - sinergia en reducción de dolor articular, efecto aditivo en osteoartritis",
+        "Bromelina (de piña) - mejora absorción de gingeroles, potencia efectos antiinflamatorios",
+        "Vitamina D - sinergia en salud ósea y función inmunológica, efecto complementario"
+      ],
+      "notes": "Seguir indicaciones del fabricante para extractos estandarizados específicos. La absorción de gingeroles no mejora significativamente con grasas o pimienta negra según estudios farmacocinéticos publicados. Tomar con comida si hay sensibilidad gastrointestinal. No es necesario ciclar el jengibre; uso continuo es seguro según estudios de 12+ meses."
+    },
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":8,\"sideEffects\":[{\"effect\":\"Molestia gastrointestinal leve (acidez, dispepsia, dolor abdominal)\",\"frequency\":\"5-10% de usuarios, más común en dosis >2000mg/día\",\"severity\":\"Mild\",\"notes\":\"Típicamente desaparece después de 1-2 semanas de uso continuo. Más frecuente en estómago vacío. Reducir dosis o tomar con comida resuelve síntoma en mayoría de casos.\"},{\"effect\":\"Eructos y sabor residual de jengibre\",\"frequency\":\"10-15% de usuarios con extracto\",\"severity\":\"Mild\",\"notes\":\"Efecto cosmético sin significancia clínica. Más común con extractos concentrados. Desaparece naturalmente después de 30-60 minutos.\"},{\"effect\":\"Reacciones alérgicas (rash, prurito, angioedema)\",\"frequency\":\"Raro <1% de usuarios\",\"severity\":\"Mild to Moderate\",\"notes\":\"Reportes aislados en personas con alergia a plantas de la familia Zingiberaceae. Descontinuar si ocurre. Riesgo aumentado en personas con alergia a cardamomo o cúrcuma.\"},{\"effect\":\"Sangrado aumentado (equimosis, epistaxis)\",\"frequency\":\"Muy raro <0.5%, principalmente en dosis >3000mg/día\",\"severity\":\"Mild\",\"notes\":\"Mecanismo: inhibición leve de agregación plaquetaria. Clínicamente insignificante en dosis estándar. Riesgo teórico en combinación con anticoagulantes.\"}],\"contraindications\":[\"Embarazo (especialmente primer trimestre) - aunque estudios en segundo/tercer trimestre muestran seguridad, datos limitados en primer trimestre\",\"Lactancia - pequeñas cantidades pasan a leche materna, seguridad a largo plazo no completamente establecida\",\"Trastornos hemorrágicos o anticoagulación activa - riesgo teórico de sangrado aumentado\",\"Cirugía programada en próximas 2 semanas - descontinuar por riesgo teórico de sangrado aumentado\",\"Úlcera péptica activa - puede irritar mucosa gástrica en algunos pacientes\"],\"interactions\":[{\"medication\":\"Warfarina (Coumadin) y otros anticoagulantes orales\",\"severity\":\"Moderate\",\"mechanism\":\"Inhibición leve de agregación plaquetaria y posible potenciación de efectos anticoagulantes\",\"description\":\"Riesgo teórico de sangrado aumentado. Monitorear INR regularmente. Dosis de jengibre >2000mg/día pueden potenciar efectos anticoagulantes. Consultar con médico antes de combinar. Generalmente seguro en dosis estándar (<1500mg/día).\"},{\"medication\":\"Antiagregantes plaquetarios (aspirina, clopidogrel)\",\"severity\":\"Mild\",\"mechanism\":\"Efectos aditivos en inhibición de agregación plaquetaria\",\"description\":\"Riesgo teórico de sangrado aumentado. Monitorear signos de sangrado. Combinación generalmente segura en dosis estándar. Consultar médico si dosis de jengibre >2000mg/día.\"},{\"medication\":\"Medicamentos antidiabéticos (metformina, sulfonilureas, insulina)\",\"severity\":\"Mild\",\"mechanism\":\"Posible potenciación de efectos hipoglucemiantes (evidencia limitada)\",\"description\":\"Riesgo teórico de hipoglucemia. Monitorear glucosa en sangre regularmente. Efecto pequeño y clínicamente insignificante en dosis estándar. Consultar médico si hay cambios en glucosa.\"},{\"medication\":\"Medicamentos antihipertensivos (ACE inhibidores, beta-bloqueadores)\",\"severity\":\"Mild\",\"mechanism\":\"Posible efecto aditivo hipotensor (evidencia limitada)\",\"description\":\"Riesgo teórico de hipotensión. Monitorear presión arterial. Efecto pequeño y clínicamente insignificante. Consultar médico si hay síntomas de hipotensión (mareos, debilidad).\"},{\"medication\":\"Inhibidores de la bomba de protones (omeprazol, lansoprazol)\",\"severity\":\"Mild\",\"mechanism\":\"Posible reducción de absorción de jengibre por aumento de pH gástrico\",\"description\":\"Efecto teórico sin confirmación clínica. Puede reducir eficacia de jengibre. Separar dosis por 2 horas si es posible. Consultar farmacéutico.\"}],\"longTermSafety\":\"Uso continuo seguro hasta 12 meses documentado en RCTs de seguridad. Estudios de 6-12 meses muestran perfil de seguridad favorable sin efectos adversos serios. No hay reportes de toxicidad hepática o renal en estudios clínicos. Perfil de seguridad superior a medicamentos antiinflamatorios no esteroideos (AINEs) en términos de tolerancia gastrointestinal.\",\"pregnancyCategory\":\"Caution\",\"notes\":\"No hay reportes de teratogenicidad en estudios en animales o humanos. Estudios en segundo y tercer trimestre muestran seguridad para náuseas matutinas. Sin embargo, datos limitados en primer trimestre. Dosis recomendada en embarazo: máximo 1000mg/día, preferiblemente bajo supervisión médica. Cantidad mínima pasa a leche materna; generalmente considerado seguro en lactancia en dosis estándar.\"}}",
+    "keyStudies": [
+      {
+        "title": "Ginger for nausea and vomiting: a systematic review and meta-analysis of randomized controlled trials",
+        "year": 2015,
+        "studyType": "Meta-analysis",
+        "participants": 3200,
+        "duration": "Estudios de 1-8 semanas",
+        "dose": "500-2000mg extracto estandarizado",
+        "findings": [
+          "Reducción de náuseas postoperatorias 38-53% comparado con placebo (RR 0.52, IC 95%: 0.45-0.60)",
+          "Número necesario a tratar (NNT) de 4-6 para prevenir una náusea",
+          "Eficacia comparable a metoclopramida 10mg y superior a placebo",
+          "Efecto máximo en primeras 4-6 horas post-operatorio"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Efficacy and safety of ginger for osteoarthritis: a meta-analysis of randomized controlled trials",
+        "year": 2013,
+        "studyType": "Meta-analysis",
+        "participants": 1850,
+        "duration": "Estudios de 8-12 semanas",
+        "dose": "500-2000mg/día extracto estandarizado",
+        "findings": [
+          "Reducción de dolor articular 25-35% en escala VAS (MD -1.5, IC 95%: -2.1 a -0.9)",
+          "Mejora de función articular 15-25%",
+          "Reducción de TNF-α 20-30% y IL-6 15-25%",
+          "Eficacia comparable a ibuprofeno 400mg con mejor tolerancia gastrointestinal"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Ginger for primary dysmenorrhea: a systematic review and meta-analysis",
+        "year": 2016,
+        "studyType": "Meta-analysis",
+        "participants": 680,
+        "duration": "Estudios de 2-3 ciclos menstruales",
+        "dose": "500-2000mg/día iniciado 2-3 días antes de menstruación",
+        "findings": [
+          "Reducción de intensidad de dolor 25-40% comparado con placebo (MD -0.85, IC 95%: -1.2 a -0.5)",
+          "Reducción de duración de síntomas 30-50%",
+          "Eficacia comparable a ibuprofeno 400mg y naproxeno 500mg",
+          "Efecto máximo en primer y segundo día de menstruación"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Effect of ginger on gastric emptying and motility: a systematic review and meta-analysis",
+        "year": 2014,
+        "studyType": "Systematic Review",
+        "participants": 890,
+        "duration": "Estudios de 2-8 semanas",
+        "dose": "1000-2000mg/día polvo o 500-1000mg extracto",
+        "findings": [
+          "Aceleración de vaciamiento gástrico 25-35% según scintigrafía gástrica",
+          "Reducción de síntomas de dispepsia funcional 30-40%",
+          "Efecto procinético documentado mediante manometría esofágica",
+          "Seguro en gastroparesia diabética leve a moderada"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Ginger supplementation and inflammatory markers: a systematic review and meta-analysis",
+        "year": 2017,
+        "studyType": "Meta-analysis",
+        "participants": 1050,
+        "duration": "Estudios de 4-12 semanas",
+        "dose": "500-2000mg/día extracto estandarizado",
+        "findings": [
+          "Reducción de TNF-α 15-25% (MD -2.3 pg/mL, IC 95%: -3.5 a -1.1)",
+          "Reducción de IL-6 15-30% (MD -1.8 pg/mL, IC 95%: -2.9 a -0.7)",
+          "Reducción de CRP 10-20% en poblaciones con inflamación basal elevada",
+          "Efecto sinérgico con cúrcuma (curcumina)"
+        ],
+        "quality": "High"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (500mg/día de extracto estandarizado) durante 3-5 días para evaluar tolerancia gastrointestinal, luego aumentar gradualmente a dosis terapéutica (1000-1500mg/día) según necesidad y tolerancia",
+      "Tomar extracto estandarizado con comida para mejorar tolerancia gastrointestinal y posiblemente mejorar absorción; el polvo seco puede tomarse con o sin comida",
+      "Para náuseas postoperatorias: administrar 1000-2000mg de extracto estandarizado 30-60 minutos antes de cirugía; para náuseas crónicas: uso consistente durante 4-8 semanas para máxima eficacia",
+      "Esperar mínimo 4-8 semanas de uso consistente antes de evaluar eficacia en dolor articular, inflamación o síntomas menstruales; algunos efectos (náuseas) son más rápidos (30-60 minutos)",
+      "Verificar que el producto esté estandarizado a 5-10% gingeroles totales y tenga pruebas de terceros disponibles (ConsumerLab, NSF, USP); evitar productos sin estandarización documentada o sin información clara sobre concentración de compuestos activos"
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.7,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [],
+    "spanishScore": 0.8,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:1,2,3,4,5,10,20,3000,4000",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

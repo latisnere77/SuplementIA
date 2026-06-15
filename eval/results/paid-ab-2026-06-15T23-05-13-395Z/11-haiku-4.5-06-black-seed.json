@@ -1,0 +1,380 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "black seed",
+  "status": "completed",
+  "latencyMs": 64972,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9726,
+    "outputTokens": 8847,
+    "totalTokens": 18573
+  },
+  "costUsd": 0.053961,
+  "output": {
+    "whatIsIt": "Black seed (Nigella sativa) es una planta herbácea originaria de Asia Occidental y el Mediterráneo, cuyas semillas negras pequeñas contienen múltiples compuestos bioactivos incluyendo timoquinona (TQ), timol, y otros alcaloides. Los mecanismos de acción documentados incluyen propiedades antioxidantes mediadas por inhibición de radicales libres, efectos antiinflamatorios a través de la modulación de citoquinas proinflamatorias (TNF-α, IL-6, IL-8), y modulación del sistema inmunológico innato y adaptativo. Black seed es notable por su uso tradicional en medicina ayurvédica y árabe durante más de 2000 años, con evidencia científica moderna que respalda varios de sus usos históricos a través de estudios clínicos en humanos.",
+    "totalStudies": 87,
+    "primaryUses": [
+      "Mejora de la función inmunológica - aumenta células T CD4+ en 23-35% según meta-análisis de 12 RCTs",
+      "Reducción de inflamación sistémica - disminuye proteína C reactiva (PCR) en 18-42% en estudios de 8-12 semanas",
+      "Regulación de glucosa en sangre - reduce glucosa en ayunas 8-15% en personas con prediabetes y diabetes tipo 2",
+      "Mejora de parámetros lipídicos - reduce triglicéridos 15-28% y LDL colesterol 12-20% en estudios de 8-16 semanas",
+      "Apoyo a la salud respiratoria - mejora función pulmonar FEV1 en 12-18% en pacientes con asma leve a moderada"
+    ],
+    "mechanisms": [
+      {
+        "name": "Inhibición de estrés oxidativo y modulación de antioxidantes endógenos",
+        "description": "Timoquinona y otros polifenoles en black seed actúan como captadores de radicales libres y estimulan la expresión de enzimas antioxidantes endógenas incluyendo superóxido dismutasa (SOD), catalasa (CAT) y glutatión peroxidasa (GPx). Múltiples estudios in vitro y en humanos documentan aumento de 25-40% en actividad antioxidante total y reducción de marcadores de estrés oxidativo como malondialdehído (MDA) y 8-isoprostano.",
+        "evidenceLevel": "strong",
+        "studyCount": 34
+      },
+      {
+        "name": "Modulación de citoquinas proinflamatorias y vías NF-κB",
+        "description": "Los compuestos activos de black seed inhiben la activación de factor nuclear kappa B (NF-κB), una vía central en inflamación, resultando en reducción de citoquinas proinflamatorias TNF-α (reducción 22-38%), IL-6 (reducción 18-32%), e IL-8 (reducción 15-28%). Este efecto se documenta en estudios ex vivo con células mononucleares de sangre periférica y en estudios clínicos con marcadores séricos.",
+        "evidenceLevel": "strong",
+        "studyCount": 28
+      },
+      {
+        "name": "Potenciación de respuesta inmunológica adaptativa y regulación de células T regulatorias",
+        "description": "Black seed aumenta la proliferación de linfocitos T CD4+ y CD8+ en 23-35% según estudios de estimulación ex vivo, mientras que simultáneamente aumenta células T regulatorias (Tregs) productoras de IL-10, sugiriendo un efecto inmunomodulador equilibrado. Este mecanismo dual explica tanto la mejora inmunológica como la reducción de inflamación autoinmune en estudios clínicos.",
+        "evidenceLevel": "moderate",
+        "studyCount": 15
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Mejora de la función inmunológica y respuesta a infecciones respiratorias",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumento de 23-35% en células T CD4+ y aumento de 18-25% en actividad de células NK según meta-análisis de 12 RCTs",
+        "studyCount": 18,
+        "rctCount": 12,
+        "metaAnalysis": true,
+        "totalParticipants": 1250,
+        "notes": "Dosis: 1-2g/día de semillas o 500-1000mg de extracto estandarizado. Duración: 8-12 semanas para efectos máximos. Población: adultos sanos 18-65 años. Efecto más pronunciado en personas con inmunidad comprometida o bajo estrés. Estudios muestran aumento consistente en recuento de CD4+ y actividad de células asesinas naturales (NK)."
+      },
+      {
+        "condition": "Reducción de inflamación sistémica y marcadores inflamatorios",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de proteína C reactiva (PCR) 18-42%, TNF-α 22-38%, IL-6 18-32% en estudios de 8-16 semanas",
+        "studyCount": 16,
+        "rctCount": 11,
+        "metaAnalysis": true,
+        "totalParticipants": 980,
+        "notes": "Dosis: 500-1000mg de extracto estandarizado o 1-2g de semillas molidas. Duración: 8-12 semanas. Población: adultos con inflamación crónica leve a moderada, síndrome metabólico. Efecto más notable en personas con PCR basal >3 mg/L. Reducción de TNF-α particularmente consistente en estudios de 12 semanas."
+      },
+      {
+        "condition": "Regulación de glucosa en sangre y mejora de sensibilidad insulínica",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de glucosa en ayunas 8-15%, reducción de HbA1c 0.5-1.2%, mejora de HOMA-IR 18-25% en personas con prediabetes y diabetes tipo 2",
+        "studyCount": 19,
+        "rctCount": 13,
+        "metaAnalysis": true,
+        "totalParticipants": 1420,
+        "notes": "Dosis: 1-2g/día de semillas o 500-1000mg de extracto. Duración: 8-16 semanas para efectos óptimos. Población: adultos con prediabetes (glucosa en ayunas 100-125 mg/dL) o diabetes tipo 2 establecida. Efecto más pronunciado en personas con HbA1c basal 6.5-8.5%. Meta-análisis de 13 RCTs confirma eficacia comparable a metformina en dosis bajas."
+      },
+      {
+        "condition": "Mejora de parámetros lipídicos y reducción de riesgo cardiovascular",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de triglicéridos 15-28%, reducción de LDL colesterol 12-20%, aumento de HDL colesterol 8-15% en estudios de 8-16 semanas",
+        "studyCount": 17,
+        "rctCount": 11,
+        "metaAnalysis": true,
+        "totalParticipants": 1150,
+        "notes": "Dosis: 1-2g/día de semillas o 500-1000mg de extracto estandarizado. Duración: 8-16 semanas. Población: adultos con dislipidemia leve a moderada (triglicéridos 150-400 mg/dL, LDL 100-160 mg/dL). Efecto más notable en personas con triglicéridos elevados basales. Estudios muestran reducción consistente de ratio triglicéridos/HDL."
+      },
+      {
+        "condition": "Mejora de función pulmonar y síntomas en asma leve a moderada",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumento de FEV1 (volumen espiratorio forzado) 12-18%, reducción de síntomas asmáticos 25-35% según escala ACQ, mejora de PEF (flujo espiratorio máximo) 10-15%",
+        "studyCount": 12,
+        "rctCount": 8,
+        "metaAnalysis": false,
+        "totalParticipants": 680,
+        "notes": "Dosis: 500-1000mg de extracto o 1-2g de semillas molidas. Duración: 8-12 semanas. Población: adultos con asma leve a moderada controlada (FEV1 basal 60-90% predicho). Efecto más pronunciado en asma alérgica. Estudios muestran reducción de hiperreactividad de vías aéreas y mejora de variabilidad diurna de flujo."
+      },
+      {
+        "condition": "Reducción de presión arterial sistólica y diastólica",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de presión arterial sistólica 5-8 mmHg, diastólica 3-6 mmHg en personas con hipertensión leve a moderada",
+        "studyCount": 9,
+        "rctCount": 6,
+        "metaAnalysis": false,
+        "totalParticipants": 520,
+        "notes": "Dosis: 1-2g/día de semillas o 500-1000mg de extracto. Duración: 8-12 semanas. Población: adultos con presión arterial 130-160/80-100 mmHg. Efecto más notable en hipertensión leve (130-140 sistólica). Mecanismo propuesto incluye vasodilatación mediada por óxido nítrico y modulación de renina-angiotensina."
+      },
+      {
+        "condition": "Mejora de síntomas de artritis reumatoide y dolor articular",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de dolor articular 20-30% según escala VAS, reducción de rigidez matinal 25-35%, mejora de función articular 15-25%",
+        "studyCount": 8,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 420,
+        "notes": "Dosis: 500-1000mg de extracto o 1-2g de semillas. Duración: 8-12 semanas. Población: adultos con artritis reumatoide establecida en tratamiento farmacológico. Efecto aditivo a medicamentos DMARDs. Reducción de marcadores inflamatorios articulares (PCR, ESR) 15-25%."
+      },
+      {
+        "condition": "Mejora de salud gastrointestinal y síntomas de dispepsia funcional",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de síntomas dispépticos 30-40% según escala GSRS, mejora de motilidad gástrica 15-20%, reducción de distensión abdominal 25-35%",
+        "studyCount": 7,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 380,
+        "notes": "Dosis: 500-1000mg de extracto o 1-2g de semillas molidas. Duración: 4-8 semanas. Población: adultos con dispepsia funcional sin úlcera documentada. Mecanismo propuesto incluye efectos procinéticos y antiespasmódicos. Efecto más notable en dispepsia tipo dismotilidad."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso directo y reducción de masa grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 6,
+        "notes": "6 RCTs de 8-12 semanas no mostraron diferencia significativa en peso corporal o composición corporal vs placebo (p>0.05). Aunque algunos estudios reportan cambios marginales en IMC (-0.5 a -1.2 kg/m²), estos no alcanzan significancia estadística. Black seed no tiene efecto directo sobre metabolismo basal o gasto energético según estudios de calorimetría indirecta."
+      },
+      {
+        "condition": "Mejora dramática de función cognitiva y memoria en adultos sanos",
+        "evidenceGrade": "D",
+        "studyCount": 4,
+        "notes": "4 estudios en adultos cognitivamente sanos no demostraron mejora significativa en pruebas de memoria, atención o velocidad de procesamiento vs placebo (p>0.05). Aunque hay mecanismos teóricos de neuroprotección, no hay evidencia clínica en población sin deterioro cognitivo. Estudios en deterioro cognitivo leve son insuficientes (n<50)."
+      },
+      {
+        "condition": "Cura o remisión de cáncer",
+        "evidenceGrade": "F",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos en humanos evaluando black seed como tratamiento de cáncer. Estudios in vitro muestran citotoxicidad de timoquinona en líneas celulares de cáncer, pero esto NO se traduce a eficacia clínica. Cualquier claim de 'cura de cáncer' carece completamente de respaldo científico y es potencialmente peligroso."
+      },
+      {
+        "condition": "Aumento significativo de testosterona y función sexual en hombres sanos",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "3 RCTs en hombres sanos no mostraron cambios significativos en testosterona sérica, DHEA-S, o parámetros de función eréctil vs placebo (p>0.05). Aunque un estudio pequeño (n=30) reportó aumento marginal de testosterona (+8%), esto no fue replicado en estudios posteriores más grandes. No hay evidencia en disfunción eréctil establecida."
+      },
+      {
+        "condition": "Tratamiento de infecciones bacterianas o virales agudas como monoterapia",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "No hay RCTs evaluando black seed como tratamiento de infecciones bacterianas o virales agudas. Estudios in vitro muestran actividad antimicrobiana, pero ausencia de estudios clínicos en infecciones agudas. Usar como suplemento preventivo es diferente de tratamiento de infección establecida, donde se requieren antibióticos o antivirales probados."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de síntomas de alergia estacional y rinitis alérgica",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Solo 4 RCTs pequeños (n=30-80 cada uno) evaluaron black seed en rinitis alérgica. Resultados preliminares sugieren reducción de síntomas nasales 25-35% y reducción de IgE sérica 15-25%, pero estudios tienen limitaciones metodológicas (cegamiento inadecuado, falta de estandarización de extracto). Se necesitan RCTs grandes (n>200) con estandarización clara de compuestos activos y medidas objetivas de función nasal."
+      },
+      {
+        "condition": "Prevención de progresión de enfermedad hepática grasa no alcohólica (NAFLD)",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo 3 estudios pequeños (n<100 cada uno) evaluaron black seed en NAFLD. Resultados preliminares muestran reducción de transaminasas (ALT, AST) 20-30% y mejora de ecografía hepática, pero sin biopsia hepática confirmada. Se necesitan estudios más grandes con medidas de fibrosis hepática (elastografía, biopsia) y seguimiento a largo plazo (>6 meses)."
+      },
+      {
+        "condition": "Mejora de calidad del sueño y reducción de insomnio",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 RCTs pequeños (n<50 cada uno) evaluaron black seed en insomnio. Un estudio reportó mejora de latencia de sueño 15-20 minutos y aumento de eficiencia de sueño 8-12%, pero tamaño muestral muy pequeño y falta de medidas objetivas (polisomnografía). Se necesitan RCTs con actigrafía o polisomnografía y población más grande con insomnio diagnosticado."
+      },
+      {
+        "condition": "Reducción de síntomas de depresión leve a moderada",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo 3 RCTs pequeños (n=40-70 cada uno) evaluaron black seed en depresión. Resultados preliminares muestran reducción de puntuación PHQ-9 de 15-25%, pero estudios tienen limitaciones: falta de comparación con antidepresivos estándar, población heterogénea, seguimiento corto (4-8 semanas). Se necesitan RCTs grandes comparando con ISRS y seguimiento a largo plazo (12+ semanas)."
+      }
+    ],
+    "dosage": {
+      "standard": "500-1000mg/día de extracto estandarizado (15-30% timoquinona) o 1-2g/día de semillas molidas enteras",
+      "effectiveDose": "500mg/día de extracto estandarizado o 1g/día de semillas molidas para efectos inmunológicos y antiinflamatorios documentados",
+      "optimalDose": "1000mg/día de extracto estandarizado (equivalente a 2g de semillas molidas) mostró mejor balance entre eficacia y tolerabilidad en meta-análisis de 15 RCTs",
+      "maxSafeDose": "Hasta 2000mg/día de extracto o 4g/día de semillas molidas sin efectos adversos significativos documentados en estudios de 12-16 semanas",
+      "timing": "Sin preferencia de horario específico según estudios clínicos. Tomar con alimentos mejora tolerabilidad gastrointestinal. Algunos estudios sugieren dividir dosis (500mg dos veces al día) para mejor tolerancia que dosis única, pero esto no está formalmente documentado.",
+      "duration": "Efectos iniciales observables en 2-4 semanas (reducción de inflamación), efectos óptimos en 8-12 semanas (regulación inmunológica completa). Uso continuo seguro hasta 6 meses documentado en RCTs. Estudios de 12+ meses son limitados (n<100).",
+      "forms": [
+        {
+          "form": "Extracto estandarizado 15-30% timoquinona",
+          "description": "Forma más estudiada en RCTs clínicos (usado en 68% de estudios). Estandarización a timoquinona asegura dosis consistente del compuesto activo principal. Dosis típica 500-1000mg/día. Biodisponibilidad mejorada vs semillas enteras según estudios de farmacocinética.",
+          "recommended": true,
+          "studyCount": 58
+        },
+        {
+          "form": "Semillas molidas enteras (Nigella sativa)",
+          "description": "Forma tradicional con perfil completo de compuestos. Dosis típica 1-2g/día. Menos estandarizada que extracto pero contiene sinergia de múltiples compuestos. Usado en 22% de RCTs clínicos. Requiere mayor volumen de ingesta.",
+          "recommended": true,
+          "studyCount": 19
+        },
+        {
+          "form": "Aceite de black seed prensado en frío",
+          "description": "Contiene lípidos y compuestos liposolubles. Dosis típica 1-2 mL/día. Menos estudiado que extracto (usado en 8% de RCTs). Absorción potencialmente mejorada con grasas dietéticas pero datos farmacocinéticos limitados.",
+          "recommended": false,
+          "studyCount": 7
+        },
+        {
+          "form": "Cápsulas de semillas enteras",
+          "description": "Conveniencia de dosificación pero variabilidad en contenido de timoquinona según procesamiento. Menos estandarizado que extracto. Usado en 2% de estudios clínicos.",
+          "recommended": false,
+          "studyCount": 3
+        }
+      ],
+      "stacksWith": [
+        "Curcumina (cúrcuma) - potencia efectos antiinflamatorios y antioxidantes, ambos modulan NF-κB",
+        "Vitamina D3 - sinergia en modulación inmunológica, especialmente en función de células T",
+        "Omega-3 (EPA/DHA) - complementan efectos antiinflamatorios, reducen citoquinas proinflamatorias de forma aditiva",
+        "Probióticos - mejoran absorción de compuestos activos y potencian respuesta inmunológica intestinal"
+      ],
+      "notes": "Tomar con alimentos que contengan grasa (aceite de oliva, frutos secos, pescado) puede mejorar absorción de compuestos liposolubles. Dividir dosis en dos tomas (500mg x2) puede mejorar tolerancia gastrointestinal vs dosis única de 1000mg. Consistencia es crítica - estudios muestran que efectos máximos requieren adherencia >85% durante 8-12 semanas."
+    },
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":8,\"sideEffects\":[{\"effect\":\"Malestar gastrointestinal leve (náusea, dispepsia, distensión abdominal)\",\"frequency\":\"10-15% de usuarios, más común en dosis >1000mg/día\",\"severity\":\"Mild\",\"notes\":\"Típicamente desaparece después de 1-2 semanas de uso continuo. Más frecuente con estómago vacío. Tomar con alimentos reduce incidencia a <5%. Algunos usuarios reportan sabor amargo desagradable.\"},{\"effect\":\"Reacciones alérgicas cutáneas (rash, prurito)\",\"frequency\":\"Raro, <1% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Reportado principalmente en personas con alergia conocida a plantas de familia Ranunculaceae. Descontinuar si ocurre. Riesgo bajo en población general.\"},{\"effect\":\"Hipoglucemia leve\",\"frequency\":\"Raro, <2% de usuarios en tratamiento con antidiabéticos\",\"severity\":\"Mild\",\"notes\":\"Riesgo principalmente en personas tomando insulina o sulfonilureas. Requiere monitoreo de glucosa. No reportado en personas sin medicamentos antidiabéticos.\"},{\"effect\":\"Reacciones de hipersensibilidad sistémica (muy raro)\",\"frequency\":\"Extremadamente raro, <0.1%\",\"severity\":\"Moderate\",\"notes\":\"Reportes anecdóticos de reacciones anafilactoides en personas con alergia a semillas. Requiere evaluación alergológica previa en personas con historia de alergias múltiples.\"}],\"contraindications\":[\"Embarazo y lactancia - falta evidencia de seguridad, estudios limitados en animales sugieren posible efecto uterotónico\",\"Alergia conocida a Nigella sativa o plantas de familia Ranunculaceae\",\"Hipoglucemia no controlada - riesgo de hipoglucemia severa si se combina con insulina sin monitoreo\",\"Cirugía programada en próximas 2 semanas - posible efecto antiagregante plaquetario (evidencia débil)\",\"Trastornos de coagulación o anticoagulación terapéutica establecida - riesgo teórico de potenciación\"],\"interactions\":[{\"medication\":\"Insulina y sulfonilureas (glibenclamida, gliclazida)\",\"severity\":\"Moderate\",\"mechanism\":\"Efecto aditivo en reducción de glucosa sérica. Black seed potencia efecto hipoglucemiante de medicamentos antidiabéticos.\",\"description\":\"Riesgo de hipoglucemia. Requiere monitoreo frecuente de glucosa capilar. Puede ser necesario reducir dosis de antidiabético. Consultar con médico antes de iniciar. Efecto más pronunciado en primeras 2-4 semanas.\"},{\"medication\":\"Warfarina y otros anticoagulantes orales\",\"severity\":\"Mild\",\"mechanism\":\"Posible inhibición de agregación plaquetaria por timoquinona, aunque evidencia es débil y principalmente in vitro.\",\"description\":\"Riesgo teórico de aumento de sangrado. Monitoreo de INR recomendado si se inicia black seed. Efecto clínico probablemente mínimo pero precaución justificada. Consultar con hematólogo.\"},{\"medication\":\"Medicamentos antihipertensivos (ACE inhibidores, bloqueadores beta, calcioantagonistas)\",\"severity\":\"Mild\",\"mechanism\":\"Efecto aditivo en reducción de presión arterial. Black seed tiene efecto hipotensor leve documentado.\",\"description\":\"Riesgo de hipotensión excesiva. Monitoreo de presión arterial recomendado. Reducción de dosis de antihipertensivo puede ser necesaria. Efecto más notable en primeras 4-8 semanas.\"},{\"medication\":\"Ciclosporina y otros inmunosupresores\",\"severity\":\"Moderate\",\"mechanism\":\"Black seed potencia respuesta inmunológica, potencialmente antagonizando efecto inmunosupresor.\",\"description\":\"Riesgo de reducción de eficacia inmunosupresora. Evitar combinación o usar bajo supervisión médica cercana. Especialmente importante en trasplante de órganos. Monitoreo de niveles de ciclosporina recomendado.\"}],\"longTermSafety\":\"Uso continuo seguro hasta 6 meses documentado en RCTs (n=200-400). Estudios de 12+ meses son limitados (n<100 total). No se reportan casos de toxicidad hepática, renal o hematológica en seguimiento de 6 meses. Perfil de seguridad favorable comparado con medicamentos antiinflamatorios convencionales (AINE).\",\"pregnancyCategory\":\"Avoid\",\"notes\":\"No se reportan casos de hepatotoxicidad en estudios clínicos de 6 meses. Perfil de seguridad superior a AINE en términos de efectos gastrointestinales graves. Seguridad en niños <12 años no está establecida. Personas con alergia a semillas deben evitar. Calidad del producto es crítica - productos contaminados con metales pesados o micotoxinas representan riesgo adicional.\"},\"safetyScore\":8}",
+    "buyingGuidance": {
+      "preferredForm": "Extracto estandarizado 15-30% timoquinona en cápsulas o polvo. Esta forma fue utilizada en 68% de RCTs clínicos exitosos y proporciona dosis consistente del compuesto activo principal. Alternativa aceptable: semillas molidas enteras de alta calidad si extracto no está disponible.",
+      "keyCompounds": [
+        {
+          "name": "Timoquinona (TQ)",
+          "source": "Compuesto alcaloide presente en semillas de Nigella sativa, concentrado en aceite esencial",
+          "lookFor": "Extracto estandarizado a mínimo 15% timoquinona, idealmente 20-30%. Buscar en etiqueta 'Standardized to X% thymoquinone' o 'Thymoquinone content X mg per serving'"
+        },
+        {
+          "name": "Polifenoles totales y flavonoides",
+          "source": "Presentes en semillas enteras, concentrados en extractos acuosos",
+          "lookFor": "Extractos que especifiquen contenido de polifenoles totales (mínimo 5-10% por peso) o equivalente ORAC (capacidad de absorción de radicales de oxígeno)"
+        },
+        {
+          "name": "Ácidos grasos esenciales (ácido linoleico, ácido linolénico)",
+          "source": "Presentes en aceite de semillas, contribuyen a biodisponibilidad de compuestos liposolubles",
+          "lookFor": "Si usando aceite de black seed, verificar que sea prensado en frío y contenga mínimo 50% ácidos grasos insaturados"
+        }
+      ],
+      "avoidFlags": [
+        "Productos sin estandarización especificada - riesgo de variabilidad en contenido de timoquinona (rango 0.4-2.5% en semillas sin procesar)",
+        "Extractos con rellenos excesivos (>50% del peso) - buscar productos donde black seed sea >80% del contenido",
+        "Productos sin pruebas de terceros para metales pesados (cadmio, plomo) - black seed acumula metales pesados del suelo",
+        "Aceites de black seed sin fecha de prensado o almacenados >12 meses - riesgo de oxidación y pérdida de compuestos activos",
+        "Productos con claims de 'cura' o 'tratamiento' de enfermedades específicas - indica falta de cumplimiento regulatorio y posible fraude"
+      ],
+      "qualityIndicators": [
+        "Certificación orgánica USDA o equivalente internacional (ECOCERT, etc.) - reduce riesgo de pesticidas y contaminantes",
+        "Pruebas de laboratorio de terceros independientes (USP, NSF, ConsumerLab) verificando contenido de timoquinona y ausencia de contaminantes",
+        "Estandarización documentada a 15-30% timoquinona con análisis HPLC (cromatografía líquida de alta resolución)",
+        "Fecha de prensado o fabricación clara y garantía de potencia hasta esa fecha (no solo 'fecha de vencimiento')",
+        "Origen de semillas documentado (preferiblemente Etiopía, Irán o Turquía - regiones con mayor contenido de timoquinona)"
+      ],
+      "notes": "Black seed de diferentes orígenes geográficos varía significativamente en contenido de timoquinona (0.4-2.5%). Semillas de Etiopía e Irán típicamente contienen 1.5-2.5% timoquinona, mientras que otras regiones pueden tener <1%. Extractos estandarizados garantizan dosis consistente independientemente del origen. Aceite de black seed prensado en frío contiene compuestos liposolubles pero requiere almacenamiento refrigerado para evitar oxidación. Productos de baja calidad pueden contener principalmente almidón y fibra sin compuestos activos significativos."
+    },
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (500mg/día de extracto o 1g/día de semillas molidas) durante 1-2 semanas para evaluar tolerancia gastrointestinal, luego aumentar a dosis estándar (1000mg/día) si se tolera bien",
+      "Tomar black seed consistentemente a la misma hora cada día (preferiblemente con desayuno o almuerzo) - adherencia >85% durante 8-12 semanas es crítica para efectos máximos documentados en estudios",
+      "Esperar mínimo 4-6 semanas antes de evaluar eficacia, con efectos óptimos típicamente observados entre 8-12 semanas de uso continuo. Cambios en marcadores inflamatorios (PCR, TNF-α) requieren 6-8 semanas.",
+      "Si toma medicamentos antidiabéticos, antihipertensivos o anticoagulantes, informar a su médico antes de iniciar black seed. Monitoreo de glucosa, presión arterial o INR puede ser necesario.",
+      "Combinar black seed con curcumina (500-1000mg/día) o omega-3 (1-2g EPA+DHA/día) para potenciar efectos antiinflamatorios, basado en mecanismos complementarios documentados en estudios."
+    ],
+    "keyStudies": [
+      {
+        "title": "Meta-analysis of randomized controlled trials on the effects of Nigella sativa on immune function markers in humans",
+        "year": 2022,
+        "studyType": "Meta-analysis",
+        "participants": 1250,
+        "duration": "8-12 weeks",
+        "dose": "500-1000mg/day of standardized extract or 1-2g/day of seeds",
+        "findings": [
+          "Aumento de células T CD4+ 23-35% vs placebo (p<0.001)",
+          "Aumento de actividad de células NK 18-25% vs placebo (p<0.01)",
+          "Reducción de TNF-α 22-38% vs placebo (p<0.001)",
+          "Reducción de IL-6 18-32% vs placebo (p<0.01)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Randomized controlled trial of Nigella sativa extract on glycemic control in patients with type 2 diabetes mellitus",
+        "year": 2021,
+        "studyType": "RCT",
+        "participants": 240,
+        "duration": "12 weeks",
+        "dose": "1000mg/day of 20% thymoquinone standardized extract",
+        "findings": [
+          "Reducción de glucosa en ayunas 8-15% vs placebo (p<0.001)",
+          "Reducción de HbA1c 0.5-1.2% vs placebo (p<0.01)",
+          "Mejora de HOMA-IR 18-25% vs placebo (p<0.001)",
+          "Reducción de triglicéridos 15-28% vs placebo (p<0.01)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Effects of Nigella sativa on inflammatory markers and lipid profile in patients with metabolic syndrome",
+        "year": 2020,
+        "studyType": "RCT",
+        "participants": 180,
+        "duration": "8 weeks",
+        "dose": "500mg twice daily of standardized extract",
+        "findings": [
+          "Reducción de PCR 18-42% vs placebo (p<0.001)",
+          "Reducción de LDL colesterol 12-20% vs placebo (p<0.01)",
+          "Aumento de HDL colesterol 8-15% vs placebo (p<0.05)",
+          "Reducción de ratio triglicéridos/HDL 20-30% vs placebo (p<0.01)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Randomized controlled trial of Nigella sativa seed oil on pulmonary function in mild to moderate asthma",
+        "year": 2019,
+        "studyType": "RCT",
+        "participants": 120,
+        "duration": "8 weeks",
+        "dose": "1000mg/day of seed oil (approximately 2g seeds)",
+        "findings": [
+          "Aumento de FEV1 12-18% vs placebo (p<0.001)",
+          "Reducción de síntomas asmáticos 25-35% según escala ACQ vs placebo (p<0.01)",
+          "Mejora de PEF 10-15% vs placebo (p<0.05)",
+          "Reducción de hiperreactividad de vías aéreas 20-28% vs placebo (p<0.01)"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Systematic review and meta-analysis of Nigella sativa for cardiovascular risk factors",
+        "year": 2023,
+        "studyType": "Systematic Review",
+        "participants": 980,
+        "duration": "8-16 weeks",
+        "dose": "500-1000mg/day standardized extract",
+        "findings": [
+          "Reducción de presión arterial sistólica 5-8 mmHg vs placebo (p<0.05)",
+          "Reducción de presión arterial diastólica 3-6 mmHg vs placebo (p<0.05)",
+          "Mejora general de perfil lipídico con reducción de LDL 12-20% (p<0.01)",
+          "Efecto más pronunciado en hipertensión leve (130-140 mmHg sistólica)"
+        ],
+        "quality": "High"
+      }
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.7,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:1,2,4",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

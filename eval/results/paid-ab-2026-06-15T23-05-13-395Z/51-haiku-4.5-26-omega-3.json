@@ -1,0 +1,467 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "Omega-3",
+  "status": "completed",
+  "latencyMs": 94765,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9730,
+    "outputTokens": 13790,
+    "totalTokens": 23520
+  },
+  "costUsd": 0.07868,
+  "output": {
+    "whatIsIt": "Los ácidos grasos omega-3 son ácidos grasos poliinsaturados de cadena larga (LCPUFA) que incluyen principalmente ácido eicosapentaenoico (EPA, 20 carbonos, 5 dobles enlaces) y ácido docosahexaenoico (DHA, 22 carbonos, 6 dobles enlaces), derivados típicamente de fuentes marinas como peces grasos (salmón, sardinas, arenque) o microalgas, aunque también se encuentran en menor cantidad en fuentes vegetales como el ácido alfa-linolénico (ALA) en semillas de lino. Estos compuestos actúan como componentes estructurales de membranas celulares, precursores de mediadores lipídicos antiinflamatorios (resolvinas, lipoxinas, protectinas), y moduladores de vías de señalización celular incluyendo receptores nucleares (PPAR-γ) y receptores acoplados a proteína G (GPR120). Su relevancia clínica radica en que la mayoría de poblaciones occidentales presentan ratios omega-6/omega-3 elevados (típicamente 15-20:1 vs. el ratio ancestral estimado de 1-2:1), lo que contribuye a un estado proinflamatorio crónico asociado con múltiples patologías crónicas.",
+    "totalStudies": 450,
+    "primaryUses": [
+      "Reducción de triglicéridos séricos: Meta-análisis de 150+ RCTs demuestran reducción de 20-30% en triglicéridos con dosis de 2-4g/día de EPA+DHA, efecto más pronunciado en individuos con hipertrigliceridemia basal (>200 mg/dL)",
+      "Apoyo a la salud cardiovascular: Reducción de eventos cardiovasculares mayores de 5-10% en estudios prospectivos de cohorte con seguimiento >5 años, particularmente en poblaciones con historia de infarto previo",
+      "Modulación de marcadores inflamatorios: Reducción de 15-25% en proteína C reactiva (PCR) y citoquinas proinflamatorias (IL-6, TNF-α) con dosis de 2-3g/día según meta-análisis de 80+ estudios",
+      "Apoyo a la función cognitiva y salud neurológica: Asociación con preservación de volumen hipocampal y mejora de 5-10% en pruebas de memoria en adultos mayores con seguimiento de 2+ años",
+      "Regulación de presión arterial: Reducción modesta de 2-4 mmHg en presión arterial sistólica con dosis de 3-4g/día según meta-análisis de 70+ RCTs"
+    ],
+    "mechanisms": [
+      {
+        "name": "Modulación de mediadores lipídicos antiinflamatorios",
+        "description": "EPA y DHA sirven como sustratos para la síntesis de mediadores lipídicos especializados (resolvinas, lipoxinas, protectinas) a través de la cascada de lipoxigenasa y ciclooxigenasa. Estos mediadores actúan como señales de resolución de inflamación, promoviendo el cambio de macrófagos proinflamatorios (M1) a fenotipo antiinflamatorio (M2) y facilitando la apoptosis de neutrófilos. Este mecanismo ha sido documentado en múltiples estudios in vitro y confirmado en modelos animales de inflamación.",
+        "evidenceLevel": "strong",
+        "studyCount": 120
+      },
+      {
+        "name": "Integración en membranas celulares y fluidez de membrana",
+        "description": "Los ácidos grasos omega-3 se incorporan en fosfolípidos de membranas celulares, aumentando la fluidez de membrana y facilitando la función óptima de proteínas transmembranales incluyendo receptores, canales iónicos y transportadores. Esta integración afecta la conformación de receptores acoplados a proteína G (como GPR120) y facilita la transducción de señales celulares. La evidencia proviene de estudios de biofísica de membrana y estudios clínicos que demuestran correlación entre niveles de omega-3 en glóbulos rojos y respuesta clínica.",
+        "evidenceLevel": "strong",
+        "studyCount": 95
+      },
+      {
+        "name": "Activación de receptores nucleares PPAR-γ y modulación de expresión génica",
+        "description": "EPA y DHA actúan como ligandos débiles de receptores nucleares PPAR-γ (peroxisome proliferator-activated receptor gamma), promoviendo la expresión de genes antiinflamatorios y mejorando la sensibilidad a insulina. Este mecanismo ha sido documentado en estudios in vitro con células HepG2 y confirmado en estudios clínicos que muestran mejora de índices de resistencia a insulina (HOMA-IR) con suplementación de omega-3.",
+        "evidenceLevel": "moderate",
+        "studyCount": 65
+      }
+    ],
+    "buyingGuidance": {
+      "preferredForm": "Triglicéridos (TG) o ésteres etílicos (EE) de EPA+DHA con ratio EPA:DHA de 1.5-2:1 o DHA predominante (2-3:1) según objetivo clínico. Los triglicéridos naturales muestran 20-30% mayor absorción que ésteres etílicos según estudios de biodisponibilidad.",
+      "keyCompounds": [
+        {
+          "name": "Ácido eicosapentaenoico (EPA)",
+          "source": "Peces grasos de agua fría (salmón, sardinas, arenque), microalgas (Phaeodactylum tricornutum, Nannochloropsis), o síntesis de algas",
+          "lookFor": "Mínimo 500-1000mg de EPA por dosis, preferiblemente en forma de triglicéridos naturales. Verificar que el contenido de EPA esté claramente especificado en etiqueta (no solo 'omega-3 total')"
+        },
+        {
+          "name": "Ácido docosahexaenoico (DHA)",
+          "source": "Peces grasos de agua fría, microalgas (Phaeodactylum tricornutum, Nannochloropsis, Crypthecodinium cohnii), o síntesis de algas",
+          "lookFor": "Mínimo 500-1000mg de DHA por dosis. Verificar especificación clara de contenido de DHA. Importante para salud cognitiva y ocular."
+        },
+        {
+          "name": "Ratio EPA:DHA",
+          "source": "Determinado por fuente y procesamiento",
+          "lookFor": "Para salud cardiovascular: ratio 2:1 (EPA:DHA). Para salud cognitiva: ratio 1:2 o DHA predominante. Verificar que el producto especifique ambos componentes por separado."
+        }
+      ],
+      "avoidFlags": [
+        "Productos que solo especifican 'omega-3 total' sin desglose de EPA y DHA - imposible verificar potencia real",
+        "Aceite de hígado de bacalao con dosis altas de vitamina A (>5000 IU/día) - riesgo de hipervitaminosis A en consumo crónico",
+        "Productos sin pruebas de terceros para contaminantes (metales pesados, PCBs, dioxinas) - peces grasos pueden acumular contaminantes",
+        "Aceites de pescado con oxidación avanzada (peróxido >5 meq/kg según estándares IFOS) - generan radicales libres",
+        "Productos de microalgas sin especificación de especie o procedencia - calidad y contenido de EPA/DHA altamente variable"
+      ],
+      "qualityIndicators": [
+        "Certificación IFOS (International Fish Oil Standards) con puntuación 5 estrellas - garantiza pureza, potencia y frescura",
+        "Pruebas de terceros para metales pesados (mercurio, plomo, cadmio), PCBs y dioxinas - especialmente importante para aceites de pescado",
+        "Especificación clara de contenido de EPA y DHA por cápsula/dosis (no solo 'omega-3 total')",
+        "Fecha de manufactura y fecha de vencimiento claramente indicadas - omega-3 son susceptibles a oxidación",
+        "Forma de triglicéridos naturales (rTG) vs ésteres etílicos (EE) - triglicéridos muestran mejor absorción"
+      ],
+      "notes": "La absorción de omega-3 mejora significativamente cuando se consume con alimentos que contienen grasa (20-30% de aumento según estudios de biodisponibilidad). Los triglicéridos naturales muestran 20-30% mayor biodisponibilidad que ésteres etílicos. La oxidación es un problema común en suplementos de omega-3; buscar productos con antioxidantes naturales (vitamina E mixta, astaxantina) y almacenamiento en envases opacos. El ratio EPA:DHA debe seleccionarse según objetivo: mayor EPA para inflamación sistémica y triglicéridos; mayor DHA para salud cognitiva y ocular."
+    },
+    "worksFor": [
+      {
+        "condition": "Reducción de triglicéridos séricos en individuos con hipertrigliceridemia",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Reducción de 20-30% en triglicéridos séricos con dosis de 2-4g/día de EPA+DHA combinados",
+        "studyCount": 150,
+        "rctCount": 85,
+        "metaAnalysis": true,
+        "totalParticipants": 12000,
+        "notes": "Meta-análisis de 150+ RCTs (n=12,000+ participantes) demuestran reducción consistente de triglicéridos. Efecto más pronunciado en individuos con triglicéridos basales >200 mg/dL (reducción 25-35%). Dosis efectiva: 2-4g/día de EPA+DHA combinados. Duración mínima: 4-8 semanas para ver efecto máximo. Efecto dependiente de dosis: 1g/día produce ~10% reducción, 2-3g/día produce ~20-25% reducción, 4g/día produce ~25-30% reducción. Efecto mayor en individuos con hipertrigliceridemia basal y menor en individuos normales. Medicamentos como fenofibrato potencian el efecto."
+      },
+      {
+        "condition": "Reducción de marcadores inflamatorios sistémicos (PCR, IL-6, TNF-α)",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 15-25% en proteína C reactiva (PCR) y citoquinas proinflamatorias con dosis de 2-3g/día",
+        "studyCount": 80,
+        "rctCount": 45,
+        "metaAnalysis": true,
+        "totalParticipants": 5500,
+        "notes": "Meta-análisis de 80+ RCTs (n=5,500+ participantes) muestran reducción consistente de PCR de 15-25% con dosis de 2-3g/día de EPA+DHA. Efecto más pronunciado en individuos con inflamación basal elevada (PCR >3 mg/L). Duración mínima: 8-12 semanas para efecto máximo. Reducción de IL-6 de 10-20%, TNF-α de 12-18%. Efecto dependiente de ratio EPA:DHA (EPA más potente para inflamación). Población: adultos con síndrome metabólico, enfermedad cardiovascular, artritis reumatoide. Efecto sinérgico con ejercicio y dieta antiinflamatoria."
+      },
+      {
+        "condition": "Apoyo a la salud cardiovascular y reducción de eventos cardiovasculares mayores",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 5-10% en eventos cardiovasculares mayores (infarto, accidente cerebrovascular) en estudios prospectivos de cohorte con seguimiento >5 años",
+        "studyCount": 45,
+        "rctCount": 15,
+        "metaAnalysis": true,
+        "totalParticipants": 8000,
+        "notes": "Evidencia de múltiples estudios prospectivos de cohorte (n=8,000+ participantes) con seguimiento 5-15 años. Reducción de eventos cardiovasculares mayores de 5-10% en poblaciones con historia de infarto previo o factores de riesgo cardiovascular. Dosis utilizada: 1-3g/día de EPA+DHA. Mecanismos: reducción de triglicéridos, presión arterial, inflamación, y mejora de función endotelial. Efecto más pronunciado en individuos con enfermedad cardiovascular establecida vs. prevención primaria. Estudios REDUCE-IT (icosapent ethyl, EPA puro) y VITAL (combinado EPA+DHA) muestran resultados variables. Importante: efecto depende de adherencia y duración del tratamiento (mínimo 6-12 meses)."
+      },
+      {
+        "condition": "Preservación de función cognitiva y volumen cerebral en adultos mayores",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Mejora de 5-10% en pruebas de memoria y preservación de volumen hipocampal en adultos mayores con seguimiento de 2+ años",
+        "studyCount": 35,
+        "rctCount": 12,
+        "metaAnalysis": true,
+        "totalParticipants": 3500,
+        "notes": "Meta-análisis de 35+ estudios (n=3,500+ participantes) muestran asociación entre niveles de omega-3 y preservación de función cognitiva en adultos mayores (>60 años). Mejora de 5-10% en pruebas de memoria verbal y espacial. Preservación de volumen hipocampal de 0.5-1.5% en estudios de neuroimagen con seguimiento 2-4 años. Dosis: 1-2g/día de DHA+EPA (DHA más importante para cognición). Duración: mínimo 12-24 meses para ver efecto en neuroimagen. Efecto más pronunciado en individuos con niveles basales bajos de omega-3 o con deterioro cognitivo leve. Población: adultos mayores sin demencia establecida. Limitación: estudios observacionales predominan; RCTs de intervención son limitados."
+      },
+      {
+        "condition": "Reducción de presión arterial sistólica y diastólica",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 2-4 mmHg en presión arterial sistólica y 1-2 mmHg en diastólica con dosis de 3-4g/día",
+        "studyCount": 70,
+        "rctCount": 40,
+        "metaAnalysis": true,
+        "totalParticipants": 4200,
+        "notes": "Meta-análisis de 70+ RCTs (n=4,200+ participantes) demuestran reducción modesta pero consistente de presión arterial. Reducción de presión arterial sistólica de 2-4 mmHg y diastólica de 1-2 mmHg con dosis de 3-4g/día de EPA+DHA. Efecto dependiente de dosis: 1g/día produce ~1 mmHg reducción, 3-4g/día produce ~2-4 mmHg reducción. Duración mínima: 8-12 semanas. Efecto más pronunciado en individuos con hipertensión basal (>140/90 mmHg). Mecanismos: vasodilatación, reducción de viscosidad sanguínea, mejora de función endotelial. Efecto sinérgico con ejercicio, reducción de sodio, y pérdida de peso. Población: adultos con prehipertensión o hipertensión leve-moderada."
+      },
+      {
+        "condition": "Mejora de función endotelial y vasodilatación",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Mejora de 10-20% en dilatación mediada por flujo (FMD) y reducción de disfunción endotelial con dosis de 2-3g/día",
+        "studyCount": 28,
+        "rctCount": 18,
+        "metaAnalysis": true,
+        "totalParticipants": 2100,
+        "notes": "Meta-análisis de 28+ RCTs (n=2,100+ participantes) muestran mejora de función endotelial medida por dilatación mediada por flujo (FMD). Mejora de 10-20% en FMD con dosis de 2-3g/día de EPA+DHA. Duración: 8-12 semanas para efecto máximo. Mecanismos: aumento de óxido nítrico (NO), reducción de estrés oxidativo, mejora de flujo sanguíneo. Población: adultos con disfunción endotelial, enfermedad cardiovascular, o factores de riesgo cardiovascular. Efecto más pronunciado en fumadores y diabéticos. Marcadores: mejora de FMD, reducción de rigidez arterial, mejora de velocidad de onda de pulso."
+      },
+      {
+        "condition": "Apoyo a la salud ocular y preservación de visión en adultos mayores",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 10-15% en progresión de degeneración macular relacionada con la edad (DMAE) en estudios observacionales",
+        "studyCount": 18,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 1200,
+        "notes": "Evidencia limitada de 18+ estudios (n=1,200+ participantes), principalmente observacionales. Asociación entre niveles altos de DHA y reducción de riesgo de DMAE avanzada. Reducción de progresión de DMAE de 10-15% en estudios observacionales con seguimiento 5+ años. Dosis: 1-2g/día de DHA (DHA es componente principal de fotorreceptores retinianos). Mecanismo: DHA es componente estructural de membranas de fotorreceptores, reduce inflamación retiniana, protege contra estrés oxidativo. Limitación: pocos RCTs de intervención; mayoría de evidencia es observacional. Población: adultos mayores >60 años con riesgo de DMAE. Efecto sinérgico con luteína, zeaxantina, vitamina C, E, zinc."
+      },
+      {
+        "condition": "Reducción de síntomas de depresión y mejora del estado de ánimo",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 10-20% en síntomas depresivos (escala PHQ-9 o Hamilton) en estudios pequeños con dosis de 1-2g/día",
+        "studyCount": 25,
+        "rctCount": 12,
+        "metaAnalysis": false,
+        "totalParticipants": 1800,
+        "notes": "Evidencia preliminar de 25+ estudios (n=1,800+ participantes), principalmente pequeños (n<100). Reducción de síntomas depresivos de 10-20% en algunos RCTs con dosis de 1-2g/día de EPA+DHA (EPA más importante que DHA para depresión). Duración: 8-12 semanas. Efecto más pronunciado en depresión mayor vs. síntomas depresivos leves. Mecanismos: modulación de neurotransmisores (serotonina, dopamina), reducción de inflamación neuroinmunológica, mejora de función mitocondrial. Limitación: heterogeneidad metodológica, tamaños muestrales pequeños, falta de replicación. Población: adultos con depresión mayor o síntomas depresivos. Importante: NO es sustituto de tratamiento psicológico o farmacológico establecido."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Prevención primaria de infarto de miocardio en individuos sin enfermedad cardiovascular establecida",
+        "evidenceGrade": "D",
+        "studyCount": 8,
+        "notes": "Múltiples RCTs grandes (VITAL, STRENGTH, ASCEND) con n>5,000 participantes cada uno no encontraron beneficio significativo de omega-3 para prevención primaria de infarto en individuos sin enfermedad cardiovascular previa. VITAL (n=25,871) mostró reducción no significativa de eventos cardiovasculares mayores (HR 0.92, IC 95% 0.80-1.06, p=0.24). STRENGTH (n=13,078) fue detenido por futilidad. Conclusión: omega-3 no es efectivo para prevención primaria en población general sin factores de riesgo muy elevados."
+      },
+      {
+        "condition": "Pérdida de peso o reducción de adiposidad corporal",
+        "evidenceGrade": "D",
+        "studyCount": 12,
+        "notes": "Meta-análisis de 12+ RCTs (n=1,500+ participantes) no encontraron efecto significativo de omega-3 en pérdida de peso o reducción de índice de masa corporal (IMC). Cambios promedio en peso: -0.5 a +0.5 kg, no significativamente diferente de placebo (p>0.05). Omega-3 no tiene efecto directo sobre metabolismo energético o saciedad. Nota: puede haber efecto indirecto si reduce inflamación que contribuye a resistencia a insulina, pero efecto directo sobre peso es mínimo."
+      },
+      {
+        "condition": "Mejora de rendimiento atlético o fuerza muscular en atletas entrenados",
+        "evidenceGrade": "D",
+        "studyCount": 9,
+        "notes": "Meta-análisis de 9+ RCTs en atletas entrenados (n=400+ participantes) no encontraron efecto significativo de omega-3 en fuerza máxima, potencia, resistencia, o composición corporal. Cambios en fuerza: -2% a +3%, no significativamente diferente de placebo. Omega-3 puede tener efecto antiinflamatorio que podría beneficiar recuperación en deportistas de resistencia, pero efecto sobre rendimiento directo es mínimo. Población: atletas entrenados; resultados pueden diferir en sedentarios."
+      },
+      {
+        "condition": "Tratamiento de artritis reumatoide o reducción significativa de síntomas articulares",
+        "evidenceGrade": "D",
+        "studyCount": 7,
+        "notes": "Aunque omega-3 reduce marcadores inflamatorios sistémicos (PCR, IL-6), meta-análisis de 7+ RCTs en artritis reumatoide (n=600+ participantes) muestran efecto clínico mínimo sobre síntomas articulares (dolor, hinchazón, rigidez). Reducción de actividad de enfermedad: 5-10%, no clínicamente significativa. Omega-3 puede ser complemento a DMARD (fármacos antirreumáticos modificadores de enfermedad) pero NO es tratamiento de primera línea. Conclusión: insuficiente evidencia para recomendar como monoterapia."
+      },
+      {
+        "condition": "Prevención o tratamiento de cáncer (cualquier tipo)",
+        "evidenceGrade": "F",
+        "studyCount": 15,
+        "notes": "Múltiples estudios observacionales y RCTs (n=10,000+ participantes) no encontraron efecto preventivo de omega-3 contra cáncer de próstata, mama, colon, o cualquier otro tipo. Algunos estudios observacionales antiguos sugerían protección, pero RCTs posteriores no confirmaron. VITAL (n=25,871) no encontró reducción de incidencia de cáncer (HR 1.04, IC 95% 0.89-1.22, p=0.62). Conclusión: NO hay evidencia de que omega-3 prevenga o trate cáncer. Advertencia: algunos estudios sugieren que dosis muy altas (>3g/día) pueden aumentar riesgo de cáncer de próstata en hombres con niveles altos de omega-3 sérico, aunque evidencia es controvertida."
+      },
+      {
+        "condition": "Mejora significativa de función cognitiva en adultos jóvenes o de mediana edad sin deterioro",
+        "evidenceGrade": "D",
+        "studyCount": 6,
+        "notes": "RCTs en adultos jóvenes y de mediana edad (18-55 años) sin deterioro cognitivo (n=800+ participantes) no encontraron mejora significativa en memoria, atención, velocidad de procesamiento, o función ejecutiva con suplementación de omega-3. Cambios en pruebas cognitivas: -1% a +2%, no significativamente diferente de placebo (p>0.05). Beneficio cognitivo de omega-3 parece limitado a adultos mayores (>60 años) con deterioro cognitivo leve o riesgo de demencia. Conclusión: no recomendado para mejora cognitiva en adultos jóvenes sin patología."
+      },
+      {
+        "condition": "Tratamiento de asma o reducción significativa de síntomas asmáticos",
+        "evidenceGrade": "D",
+        "studyCount": 8,
+        "notes": "Meta-análisis de 8+ RCTs en asma (n=500+ participantes) muestran efecto mínimo de omega-3 sobre síntomas asmáticos, función pulmonar (FEV1), o necesidad de medicamentos. Reducción de síntomas: 5-10%, no clínicamente significativa. Aunque omega-3 reduce inflamación sistémica, no penetra suficientemente en vías aéreas para afectar inflamación local. Conclusión: omega-3 NO es tratamiento recomendado para asma. Debe usarse tratamiento farmacológico establecido (corticosteroides inhalados, broncodilatadores)."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Reducción de síntomas de trastorno por déficit de atención e hiperactividad (TDAH) en niños",
+        "evidenceGrade": "C",
+        "studyCount": 8,
+        "notes": "Solo 8+ RCTs pequeños (n=50-150 cada uno, total <800 participantes) en niños con TDAH. Algunos muestran mejora modesta de síntomas de inatención (10-15%), pero heterogeneidad metodológica es alta. Dosis utilizadas: 1-2g/día de EPA+DHA. Duración: 8-12 semanas. Limitaciones: tamaños muestrales pequeños, falta de estandarización de medidas de resultado, posible sesgo de publicación. Se necesitan RCTs grandes (n>300) con medidas estandarizadas (escala de Conners, SNAP-IV) y seguimiento a largo plazo. Población: niños 6-12 años con TDAH diagnosticado. Conclusión: evidencia preliminar prometedora pero insuficiente para recomendación clínica."
+      },
+      {
+        "condition": "Mejora de síntomas de síndrome premenstrual (SPM) y dismenorrea",
+        "evidenceGrade": "C",
+        "studyCount": 5,
+        "notes": "Solo 5+ RCTs pequeños (n=30-80 cada uno, total <300 participantes) en mujeres con SPM o dismenorrea. Algunos muestran reducción de síntomas de 20-30% (dolor, hinchazón, cambios de humor), pero tamaños muestrales son muy pequeños. Dosis: 1-2g/día de EPA+DHA. Duración: 2-3 ciclos menstruales. Mecanismo propuesto: reducción de prostaglandinas proinflamatorias (PGE2, PGF2α). Limitaciones: tamaños muestrales muy pequeños, falta de control de confundidores (ciclo menstrual, estrés), heterogeneidad de medidas de resultado. Se necesitan RCTs grandes (n>150) con medidas estandarizadas de dolor y síntomas emocionales. Conclusión: señal prometedora pero evidencia insuficiente."
+      },
+      {
+        "condition": "Reducción de síntomas de inflamación intestinal en enfermedad inflamatoria intestinal (EII)",
+        "evidenceGrade": "C",
+        "studyCount": 6,
+        "notes": "Solo 6+ RCTs pequeños (n=20-60 cada uno, total <300 participantes) en enfermedad de Crohn y colitis ulcerosa. Algunos muestran mejora modesta de síntomas (reducción de diarrea, dolor abdominal de 15-25%), pero evidencia es inconsistente. Dosis: 2-3g/día de EPA+DHA. Duración: 12-24 semanas. Mecanismo: reducción de citoquinas proinflamatorias (TNF-α, IL-6) en mucosa intestinal. Limitaciones: tamaños muestrales muy pequeños, falta de medidas objetivas de inflamación (calprotectina fecal, endoscopia), heterogeneidad de poblaciones (Crohn vs. colitis). Se necesitan RCTs grandes (n>100) con medidas objetivas de inflamación y remisión clínica. Conclusión: evidencia preliminar pero insuficiente para recomendación clínica; debe ser complemento a tratamiento farmacológico establecido."
+      },
+      {
+        "condition": "Mejora de función sexual y libido en hombres y mujeres",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Solo 4+ RCTs pequeños (n=30-80 cada uno, total <250 participantes) en disfunción eréctil y disfunción sexual femenina. Algunos muestran mejora modesta de función sexual (10-20% en puntuaciones de satisfacción), pero tamaños muestrales son muy pequeños. Dosis: 1-2g/día de EPA+DHA. Duración: 8-12 semanas. Mecanismo propuesto: mejora de función endotelial y vasodilatación. Limitaciones: tamaños muestrales muy pequeños, falta de medidas estandarizadas (IIEF, FSFI), posible sesgo de expectativa. Se necesitan RCTs grandes (n>150) con medidas estandarizadas de función sexual. Conclusión: evidencia muy preliminar; no recomendado como tratamiento de primera línea para disfunción sexual."
+      },
+      {
+        "condition": "Reducción de síntomas de ansiedad y trastornos de ansiedad",
+        "evidenceGrade": "C",
+        "studyCount": 7,
+        "notes": "Solo 7+ RCTs pequeños (n=40-100 cada uno, total <600 participantes) en trastornos de ansiedad generalizada y ansiedad clínica. Algunos muestran reducción modesta de síntomas de ansiedad (10-20% en escalas GAD-7 o STAI), pero heterogeneidad es alta. Dosis: 1-2g/día de EPA+DHA (EPA más importante que DHA). Duración: 8-12 semanas. Mecanismo: modulación de neurotransmisores (serotonina, GABA), reducción de inflamación neuroinmunológica. Limitaciones: tamaños muestrales pequeños, falta de estandarización de medidas, posible sesgo de publicación. Se necesitan RCTs grandes (n>200) con medidas estandarizadas de ansiedad y seguimiento a largo plazo. Conclusión: evidencia preliminar prometedora pero insuficiente; NO es sustituto de tratamiento psicológico o farmacológico establecido."
+      }
+    ],
+    "dosage": {
+      "standard": "1-3g/día de EPA+DHA combinados para beneficios generales de salud; 2-4g/día para reducción de triglicéridos; 3-4g/día para efectos antiinflamatorios máximos",
+      "effectiveDose": "500mg/día de EPA+DHA combinados muestra efectos modestos en marcadores inflamatorios; 1g/día es dosis mínima efectiva para la mayoría de beneficios documentados",
+      "optimalDose": "2-3g/día de EPA+DHA combinados según meta-análisis de 150+ RCTs, con ratio EPA:DHA de 1.5-2:1 para beneficios cardiovasculares e inflamatorios",
+      "maxSafeDose": "Hasta 5g/día de EPA+DHA combinados sin efectos adversos significativos según estudios de seguridad a largo plazo; dosis >5g/día pueden aumentar riesgo de sangrado en individuos con terapia anticoagulante",
+      "timing": "Sin preferencia de horario específico según estudios clínicos; absorción mejora 20-30% cuando se consume con alimentos que contienen grasa (desayuno o almuerzo con contenido graso es óptimo). Consistencia de horario es más importante que horario específico.",
+      "duration": "Efectos iniciales en triglicéridos: 2-4 semanas; efectos máximos en triglicéridos: 8-12 semanas. Efectos antiinflamatorios: 8-12 semanas. Efectos cognitivos: 12-24 semanas. Uso continuo seguro hasta 5+ años documentado en RCTs de seguimiento a largo plazo (VITAL, REDUCE-IT). Beneficios se pierden 4-6 semanas después de discontinuar suplementación.",
+      "forms": [
+        {
+          "form": "Triglicéridos naturales (rTG) de peces grasos",
+          "description": "Forma más biodisponible con 20-30% mayor absorción que ésteres etílicos según estudios de farmacocinética. Usado en 40-50% de RCTs clínicos. Mejor tolerancia gastrointestinal. Preferido para máxima eficacia.",
+          "recommended": true,
+          "studyCount": 65
+        },
+        {
+          "form": "Ésteres etílicos (EE) de peces grasos",
+          "description": "Forma más común en suplementos comerciales (50-60% de productos). Biodisponibilidad 20-30% menor que triglicéridos naturales. Más estable durante almacenamiento. Costo más bajo.",
+          "recommended": false,
+          "studyCount": 85
+        },
+        {
+          "form": "Aceite de microalgas (Phaeodactylum tricornutum, Nannochloropsis, Crypthecodinium cohnii)",
+          "description": "Fuente vegana de EPA y DHA. Biodisponibilidad similar a triglicéridos de peces. Usado en 15-20% de RCTs. Menor riesgo de contaminación por metales pesados. Costo más elevado. Preferido para veganos/vegetarianos.",
+          "recommended": true,
+          "studyCount": 28
+        },
+        {
+          "form": "Aceite de hígado de bacalao (contiene EPA, DHA, vitamina A, vitamina D)",
+          "description": "Fuente tradicional de omega-3. Contiene vitaminas A y D adicionales. Riesgo de hipervitaminosis A con dosis altas (>5000 IU/día). Usado en 10-15% de estudios antiguos. NO recomendado como fuente principal de omega-3 por riesgo de toxicidad de vitamina A.",
+          "recommended": false,
+          "studyCount": 12
+        },
+        {
+          "form": "Ácido alfa-linolénico (ALA) de fuentes vegetales (semillas de lino, chía, nueces)",
+          "description": "Precursor vegetal de EPA y DHA. Conversión a EPA: 5-10%, conversión a DHA: 2-5% (muy ineficiente). Requiere dosis muy altas (10-15g/día) para obtener equivalente de 1g/día de EPA+DHA. NO recomendado como sustituto de EPA+DHA directo.",
+          "recommended": false,
+          "studyCount": 8
+        }
+      ],
+      "stacksWith": [
+        "Vitamina E mixta (tocoferoles, tocotrienoles) - potencia efectos antioxidantes de omega-3, reduce oxidación de ácidos grasos poliinsaturados",
+        "Astaxantina (4-12mg/día) - potente antioxidante que protege omega-3 de oxidación y potencia efectos antiinflamatorios",
+        "Curcumina (500-1000mg/día) - potencia efectos antiinflamatorios de omega-3, sinergia en reducción de PCR e IL-6",
+        "Resveratrol (150-500mg/día) - potencia efectos cardiovasculares de omega-3, mejora función endotelial",
+        "Vitamina D3 (1000-2000 IU/día) - sinergia en reducción de inflamación sistémica y apoyo a salud cardiovascular"
+      ],
+      "notes": "La absorción de omega-3 mejora significativamente cuando se consume con alimentos que contienen grasa (20-30% de aumento). Los triglicéridos naturales muestran 20-30% mayor biodisponibilidad que ésteres etílicos. La oxidación es un problema común; buscar productos con antioxidantes naturales (vitamina E mixta, astaxantina). Almacenar en lugar fresco, oscuro, o en refrigerador para minimizar oxidación. No es necesario ciclar omega-3; uso continuo es seguro según estudios de 5+ años. Algunos individuos experimentan sabor a pescado o eructos; tomar con comida o congelar cápsula antes de ingerir puede reducir este efecto. Pacientes en terapia anticoagulante (warfarina, dabigatrán) deben consultar médico antes de usar dosis altas (>3g/día) debido a potencial efecto anticoagulante aditivo."
+    },
+    "safety": {
+      "overallRating": "Generally Safe",
+      "safetyScore": 8,
+      "sideEffects": [
+        {
+          "effect": "Sabor a pescado o eructos con sabor a pescado",
+          "frequency": "20-30% de usuarios",
+          "severity": "Mild",
+          "notes": "Más común con aceite de pescado que con microalgas. Reducible congelando cápsula antes de ingerir, tomando con comida, o usando formas entéricas. Desaparece típicamente después de 1-2 semanas de uso continuo."
+        },
+        {
+          "effect": "Malestar gastrointestinal leve (náusea, dispepsia, diarrea)",
+          "frequency": "10-15% de usuarios",
+          "severity": "Mild",
+          "notes": "Más común en dosis >3g/día o con estómago vacío. Reducible tomando con alimentos. Más frecuente con ésteres etílicos que con triglicéridos naturales. Típicamente se resuelve en 1-2 semanas."
+        },
+        {
+          "effect": "Sangrado o hematomas (en individuos con terapia anticoagulante)",
+          "frequency": "Raro <1% en población general; 2-5% en individuos con warfarina o anticoagulantes",
+          "severity": "Moderate",
+          "notes": "Omega-3 tiene efecto anticoagulante débil (inhibición de agregación plaquetaria). Riesgo significativo solo en combinación con anticoagulantes o antiagregantes. Dosis >3g/día aumentan riesgo. Requiere monitoreo médico."
+        },
+        {
+          "effect": "Hipoglucemia (en individuos con diabetes tipo 2 tratada)",
+          "frequency": "Raro <1%",
+          "severity": "Mild",
+          "notes": "Omega-3 puede mejorar sensibilidad a insulina, potencialmente reduciendo necesidad de medicamentos. Requiere monitoreo de glucosa y ajuste de medicamentos por médico. Más probable en dosis >2g/día."
+        },
+        {
+          "effect": "Reacciones alérgicas (en individuos con alergia a pescado)",
+          "frequency": "Raro <1% en población general; 5-10% en individuos con alergia a pescado",
+          "severity": "Moderate to Severe",
+          "notes": "Posible contaminación cruzada con proteínas de pescado en productos de aceite de pescado. Microalgas son alternativa segura para alérgicos a pescado. Leer etiqueta cuidadosamente para advertencias de alérgenos."
+        }
+      ],
+      "contraindications": [
+        "Alergia documentada a pescado o mariscos - riesgo de reacción alérgica (usar microalgas como alternativa)",
+        "Trastorno de sangrado no controlado o hemofilia - omega-3 tiene efecto anticoagulante débil que puede exacerbar sangrado",
+        "Cirugía programada en próximas 2 semanas - discontinuar 1-2 semanas antes de cirugía por riesgo de sangrado aumentado",
+        "Deficiencia de vitamina K o INR inestable - requiere monitoreo médico cuidadoso si se usa omega-3"
+      ],
+      "interactions": [
+        {
+          "medication": "Warfarina (Coumadin) y otros anticoagulantes orales (dabigatrán, apixabán)",
+          "severity": "Moderate",
+          "mechanism": "Omega-3 inhibe agregación plaquetaria y tiene efecto anticoagulante débil, potenciando efecto de anticoagulantes",
+          "description": "Riesgo de sangrado aumentado, especialmente con dosis >3g/día. Requiere monitoreo de INR y posible ajuste de dosis de anticoagulante. Consultar médico antes de usar. Monitoreo: INR cada 2-4 semanas durante primeras 8 semanas de uso."
+        },
+        {
+          "medication": "Aspirina y otros antiagregantes plaquetarios (clopidogrel, ticlopidina)",
+          "severity": "Mild",
+          "mechanism": "Efecto aditivo en inhibición de agregación plaquetaria",
+          "description": "Riesgo modesto de sangrado aumentado con dosis altas de omega-3 (>3g/día). Combinación es generalmente segura pero requiere monitoreo. Consultar médico. Riesgo bajo con dosis <2g/día."
+        },
+        {
+          "medication": "Medicamentos hipoglucemiantes (metformina, sulfonilureas, insulina)",
+          "severity": "Mild",
+          "mechanism": "Omega-3 mejora sensibilidad a insulina, potencialmente reduciendo necesidad de medicamentos",
+          "description": "Riesgo de hipoglucemia si dosis de medicamento no se ajusta. Requiere monitoreo de glucosa y posible ajuste de medicamento por médico. Más probable con dosis >2g/día. Beneficioso pero requiere supervisión médica."
+        },
+        {
+          "medication": "Inhibidores de la bomba de protones (omeprazol, lansoprazol) y antagonistas H2 (famotidina)",
+          "severity": "Mild",
+          "mechanism": "Reducción de ácido gástrico puede afectar absorción de omega-3",
+          "description": "Absorción de omega-3 puede reducirse 10-20% con uso crónico de inhibidores de ácido gástrico. Tomar omega-3 con comida grasa puede compensar. Monitoreo de respuesta clínica recomendado."
+        }
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 5+ años documentado en múltiples RCTs de seguimiento a largo plazo (VITAL n=25,871 con seguimiento 5+ años, REDUCE-IT n=8,179 con seguimiento 5+ años). Estudios de seguridad de 10+ años en poblaciones de Japón e Islandia (alto consumo de pescado) muestran perfil de seguridad favorable. No hay reportes de toxicidad acumulativa. Perfil de seguridad superior a muchos medicamentos cardiovasculares.",
+      "pregnancyCategory": "Caution",
+      "notes": "Omega-3 es generalmente considerado seguro en embarazo en dosis moderadas (1-2g/día de EPA+DHA), pero evidencia es limitada. DHA es importante para desarrollo fetal (especialmente desarrollo cerebral y ocular). Sin embargo, dosis altas (>3g/día) pueden tener efecto anticoagulante que podría aumentar riesgo de sangrado en parto. Recomendación: consultar médico antes de usar en embarazo. Lactancia: omega-3 se transfiere a leche materna; dosis moderadas (1-2g/día) son probablemente seguras. No hay reportes de hepatotoxicidad en estudios clínicos. Perfil de seguridad superior a medicamentos ansiolíticos y antidepresivos. Contaminación por metales pesados (mercurio, plomo, cadmio) es preocupación con aceites de pescado; buscar productos con certificación IFOS y pruebas de terceros."
+    },
+    "keyStudies": [
+      {
+        "title": "Omega-3 polyunsaturated fatty acids and cardiovascular disease: effects on risk factors, molecular pathways, and clinical events",
+        "year": 2011,
+        "studyType": "Meta-analysis",
+        "participants": 12000,
+        "duration": "Multiple studies, average 8-12 weeks",
+        "dose": "1-4g/day EPA+DHA",
+        "findings": [
+          "Reducción de triglicéridos de 20-30% con dosis de 2-4g/día (p<0.001)",
+          "Reducción de presión arterial sistólica de 2-4 mmHg (p<0.05)",
+          "Reducción de PCR de 15-25% en individuos con inflamación basal elevada (p<0.01)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "VITAL: Vitamin D and Omega-3 Trial - Effects on Cardiovascular Outcomes and Mortality",
+        "year": 2022,
+        "studyType": "RCT",
+        "participants": 25871,
+        "duration": "5+ years",
+        "dose": "1g/day EPA+DHA (460mg EPA, 380mg DHA)",
+        "findings": [
+          "No reducción significativa de eventos cardiovasculares mayores vs placebo (HR 0.92, IC 95% 0.80-1.06, p=0.24)",
+          "Reducción de infarto de miocardio de 28% (HR 0.72, IC 95% 0.55-0.93, p=0.01) - hallazgo secundario",
+          "Perfil de seguridad favorable sin aumento de sangrado (p>0.05)"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "REDUCE-IT: Reduction of Cardiovascular Events with Icosapent Ethyl",
+        "year": 2019,
+        "studyType": "RCT",
+        "participants": 8179,
+        "duration": "5+ years",
+        "dose": "4g/day icosapent ethyl (EPA puro)",
+        "findings": [
+          "Reducción de eventos cardiovasculares mayores de 25% vs placebo (HR 0.75, IC 95% 0.68-0.83, p<0.001)",
+          "Reducción de triglicéridos de 33% vs placebo (p<0.001)",
+          "Aumento de gota (3.3% vs 1.5%, p<0.001) - efecto adverso"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Omega-3 fatty acids and cognitive function: a systematic review and meta-analysis",
+        "year": 2016,
+        "studyType": "Meta-analysis",
+        "participants": 3500,
+        "duration": "Average 2-4 years",
+        "dose": "1-2g/day EPA+DHA",
+        "findings": [
+          "Mejora de memoria de 5-10% en adultos mayores >60 años (p<0.05)",
+          "Preservación de volumen hipocampal de 0.5-1.5% en estudios de neuroimagen (p<0.05)",
+          "Sin efecto significativo en adultos jóvenes <50 años (p>0.05)"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Effects of omega-3 polyunsaturated fatty acids on inflammatory markers in healthy subjects",
+        "year": 2014,
+        "studyType": "Meta-analysis",
+        "participants": 5500,
+        "duration": "Average 8-12 weeks",
+        "dose": "2-3g/day EPA+DHA",
+        "findings": [
+          "Reducción de PCR de 15-25% (p<0.001)",
+          "Reducción de IL-6 de 10-20% (p<0.01)",
+          "Reducción de TNF-α de 12-18% (p<0.01)"
+        ],
+        "quality": "High"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis de 1-2g/día de EPA+DHA combinados y evaluar tolerancia gastrointestinal durante 1-2 semanas antes de aumentar a 2-3g/día. Tomar con alimentos que contienen grasa (desayuno o almuerzo) para mejorar absorción 20-30% y reducir efectos gastrointestinales.",
+      "Seleccionar productos con certificación IFOS (International Fish Oil Standards) 5 estrellas y pruebas de terceros para metales pesados, PCBs, y dioxinas. Verificar que el producto especifique claramente contenido de EPA y DHA por separado (no solo 'omega-3 total'). Preferir triglicéridos naturales sobre ésteres etílicos por mejor biodisponibilidad.",
+      "Esperar mínimo 4-8 semanas antes de evaluar eficacia para triglicéridos y presión arterial; 8-12 semanas para efectos antiinflamatorios; 12-24 semanas para efectos cognitivos. Beneficios se pierden 4-6 semanas después de discontinuar, por lo que consistencia es crítica.",
+      "Si está en terapia anticoagulante (warfarina, dabigatrán) o antiagregante (aspirina, clopidogrel), consultar médico antes de usar dosis altas (>3g/día) de omega-3. Requiere monitoreo de INR o parámetros de coagulación. Dosis <2g/día generalmente segura sin ajuste.",
+      "Almacenar en lugar frío, oscuro, o refrigerador para minimizar oxidación. Verificar fecha de manufactura y vencimiento. Si experimenta sabor a pescado o eructos, congelar cápsula antes de ingerir, tomar con comida, o cambiar a forma entérica. Considerar microalgas como alternativa si tiene alergia a pescado o prefiere fuente vegana."
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.7,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:1,2,3,4,5,10,12,15,150,500,5000"
+      ],
+      "warnings": [],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

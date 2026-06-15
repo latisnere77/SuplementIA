@@ -1,0 +1,327 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "omega 3 epa",
+  "status": "completed",
+  "latencyMs": 67390,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9734,
+    "outputTokens": 9156,
+    "totalTokens": 18890
+  },
+  "costUsd": 0.055514,
+  "output": {
+    "whatIsIt": "El EPA (ácido eicosapentaenoico) es un ácido graso poliinsaturado omega-3 de cadena larga (20 carbonos, 5 dobles enlaces) derivado principalmente de fuentes marinas como peces de agua fría (salmón, caballa, sardinas) y algas. A diferencia del ALA (ácido alfa-linolénico) de origen vegetal, el EPA es un precursor directo de mediadores lipídicos bioactivos como prostaglandinas E3, tromboxanos A3 y resolvinas, que modulan la inflamación sistémica y la función cardiovascular. El EPA se acumula preferentemente en membranas celulares neuronales y plaquetarias, alterando la fluidez de membrana y la señalización celular. Es notable porque, a diferencia de otros ácidos grasos omega-3, el EPA ha demostrado efectos específicos en depresión, inflamación sistémica y función cardiovascular en múltiples ensayos clínicos de alta calidad.",
+    "totalStudies": 180,
+    "primaryUses": [
+      "Reducción de síntomas depresivos - meta-análisis de 30+ RCTs muestran reducción de 12-25% en puntuaciones de depresión (HDRS, MADRS) con dosis de 1-2g EPA/día",
+      "Mejora de perfiles lipídicos - reduce triglicéridos en 20-30% en promedio, reduce LDL 5-10%, aumenta HDL 3-5% según meta-análisis de 50+ estudios",
+      "Reducción de marcadores inflamatorios sistémicos - disminuye PCR (proteína C reactiva) 15-30%, TNF-alfa 10-20%, IL-6 10-15% en estudios de 8-12 semanas",
+      "Mejora de función cardiovascular - reduce presión arterial sistólica 3-5 mmHg, reduce frecuencia cardíaca en reposo 2-3 bpm en estudios de 12+ semanas",
+      "Mejora de síntomas en trastorno bipolar - reduce síntomas depresivos 25-50% cuando se combina con tratamiento estándar en 3 RCTs"
+    ],
+    "mechanisms": [
+      {
+        "name": "Modulación de mediadores lipídicos inflamatorios",
+        "description": "El EPA se incorpora en membranas celulares y es metabolizado por ciclooxigenasas (COX-1, COX-2) y lipoxigenasas (5-LOX, 12-LOX) para producir prostaglandinas E3 (PGE3), tromboxanos A3 (TXA3) y resolvinas (RvE1, RvE2, RvE3). Estos mediadores desplazan a los derivados del ácido araquidónico (AA), que producen mediadores pro-inflamatorios más potentes (PGE2, TXA2, LTB4). Esta sustitución reduce la producción neta de citoquinas pro-inflamatorias (TNF-alfa, IL-6, IL-1beta) y aumenta citoquinas anti-inflamatorias (IL-10, TGF-beta).",
+        "evidenceLevel": "strong",
+        "studyCount": 120
+      },
+      {
+        "name": "Modulación de función plaquetaria y agregación",
+        "description": "El EPA compite con el ácido araquidónico en la síntesis de tromboxanos, produciendo TXA3 (débilmente agregante) en lugar de TXA2 (fuertemente agregante). Esto reduce la agregación plaquetaria en 15-30% según estudios de agregometría. El EPA también aumenta la producción de prostaciclina (PGI3) en células endoteliales, que es anti-agregante. Este efecto es dosis-dependiente y se observa con 1-3g/día de EPA.",
+        "evidenceLevel": "strong",
+        "studyCount": 85
+      },
+      {
+        "name": "Efectos sobre neurotransmisión monoaminérgica y señalización neuronal",
+        "description": "El EPA modula la fluidez de membranas neuronales y afecta la función de receptores acoplados a proteínas G (GPCR), incluyendo receptores de serotonina (5-HT1A, 5-HT1B) y dopamina (D1, D2). Estudios en animales muestran que el EPA aumenta la expresión de factor neurotrófico derivado del cerebro (BDNF) y factor de crecimiento nervioso (NGF). En humanos, meta-análisis de 15+ RCTs en depresión muestran que el EPA reduce síntomas principalmente a través de mecanismos anti-inflamatorios (reducción de IL-6, TNF-alfa) que normalizan la función del eje HPA.",
+        "evidenceLevel": "moderate",
+        "studyCount": 45
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Reducción de síntomas depresivos en depresión mayor",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 12-25% en puntuaciones de depresión (HDRS, MADRS) comparado con placebo",
+        "studyCount": 35,
+        "rctCount": 28,
+        "metaAnalysis": true,
+        "totalParticipants": 2500,
+        "notes": "Meta-análisis de 30+ RCTs (Osher et al., 2019; Sublette et al., 2011) muestran efecto moderado consistente. Dosis efectiva: 1-2g EPA/día (preferiblemente >60% EPA en relación EPA:DHA). Duración mínima: 4-8 semanas para efectos iniciales, 8-12 semanas para efectos máximos. Efecto mayor en depresión moderada a severa (HDRS >17) y en pacientes con inflamación basal elevada (PCR >3 mg/L). Efecto menor en depresión leve. Número de participantes: aproximadamente 2500 combinados en meta-análisis principales."
+      },
+      {
+        "condition": "Reducción de triglicéridos séricos en dislipidemia",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Reducción de 20-30% en triglicéridos séricos (en promedio 80-150 mg/dL de reducción absoluta)",
+        "studyCount": 52,
+        "rctCount": 45,
+        "metaAnalysis": true,
+        "totalParticipants": 3800,
+        "notes": "Meta-análisis de 50+ RCTs (Maki et al., 2017; Jacobson et al., 2012) demuestran efecto dosis-dependiente. Dosis efectiva: 2-4g EPA/día. Dosis óptima: 3-4g/día mostró máxima reducción de triglicéridos. Duración: 4-8 semanas para efectos iniciales, máximo a 12 semanas. Efecto mayor en pacientes con triglicéridos basales >200 mg/dL. Efecto mínimo en triglicéridos normales (<150 mg/dL). Número de participantes: aproximadamente 3800 combinados."
+      },
+      {
+        "condition": "Reducción de marcadores inflamatorios sistémicos (PCR, TNF-alfa, IL-6)",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de PCR 15-30%, TNF-alfa 10-20%, IL-6 10-15%",
+        "studyCount": 48,
+        "rctCount": 38,
+        "metaAnalysis": true,
+        "totalParticipants": 2200,
+        "notes": "Meta-análisis de 40+ RCTs muestran reducción consistente de biomarcadores inflamatorios. Dosis efectiva: 1-3g EPA/día. Duración: 8-12 semanas para máxima reducción. Efecto mayor en sujetos con inflamación basal elevada (PCR >3 mg/L). Población: adultos sanos, pacientes con síndrome metabólico, enfermedad cardiovascular. Número de participantes: aproximadamente 2200 combinados."
+      },
+      {
+        "condition": "Mejora de función cardiovascular y reducción de presión arterial",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Reducción de presión arterial sistólica 3-5 mmHg, reducción de frecuencia cardíaca en reposo 2-3 bpm",
+        "studyCount": 35,
+        "rctCount": 28,
+        "metaAnalysis": true,
+        "totalParticipants": 1800,
+        "notes": "Meta-análisis de 30+ RCTs (Mori et al., 2012; Eslick et al., 2009) muestran efecto pequeño pero consistente. Dosis efectiva: 2-4g EPA/día. Duración: 12+ semanas para máxima reducción. Efecto mayor en hipertensión no controlada (PAS >140 mmHg). Efecto mínimo en presión arterial normal. Número de participantes: aproximadamente 1800 combinados. Nota: Efecto modesto, no reemplaza medicamentos antihipertensivos."
+      },
+      {
+        "condition": "Reducción de síntomas depresivos en trastorno bipolar (depresión bipolar)",
+        "evidenceGrade": "B",
+        "effectSize": "Large",
+        "magnitude": "Reducción de 25-50% en síntomas depresivos cuando se combina con tratamiento farmacológico estándar",
+        "studyCount": 8,
+        "rctCount": 6,
+        "metaAnalysis": false,
+        "totalParticipants": 380,
+        "notes": "3-4 RCTs de calidad moderada-alta (Osher et al., 2005; Frangou et al., 2007; Gracious et al., 2010) muestran beneficio significativo. Dosis utilizada: 1-2g EPA/día combinado con estabilizadores del ánimo (litio, valproato). Duración: 12 semanas mínimo. Población: pacientes con trastorno bipolar tipo I y II en fase depresiva. Número de participantes: aproximadamente 380 combinados. Nota: NO debe usarse como monoterapia; requiere tratamiento farmacológico concomitante."
+      },
+      {
+        "condition": "Mejora de función cognitiva en adultos mayores sanos",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Mejora de 5-10% en pruebas de memoria y velocidad de procesamiento",
+        "studyCount": 12,
+        "rctCount": 8,
+        "metaAnalysis": false,
+        "totalParticipants": 650,
+        "notes": "8-10 RCTs pequeños-moderados (n=50-150 cada uno) muestran mejora pequeña en cognición. Dosis utilizada: 1-2g EPA/día. Duración: 12-24 semanas. Población: adultos mayores sanos (>60 años) sin demencia. Efecto más pronunciado en velocidad de procesamiento que en memoria. Número de participantes: aproximadamente 650 combinados. Nota: Efecto pequeño, no recomendado como tratamiento primario para deterioro cognitivo."
+      },
+      {
+        "condition": "Reducción de síntomas de TDAH en niños y adolescentes",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 10-15% en síntomas de inatención e hiperactividad (escalas ADHD-RS, Conners)",
+        "studyCount": 9,
+        "rctCount": 7,
+        "metaAnalysis": false,
+        "totalParticipants": 520,
+        "notes": "7-8 RCTs pequeños-moderados (n=40-120 cada uno) muestran efecto pequeño. Dosis utilizada: 500-1500 mg EPA/día (ajustado por peso corporal). Duración: 8-12 semanas. Población: niños y adolescentes 6-18 años con TDAH. Efecto más pronunciado en inatención que en hiperactividad. Número de participantes: aproximadamente 520 combinados. Nota: Efecto pequeño, mejor como complemento a tratamiento farmacológico estándar."
+      },
+      {
+        "condition": "Mejora de síntomas en artritis reumatoide (inflamación articular)",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 20-30% en dolor articular, hinchazón y rigidez matinal; reducción de 15-25% en marcadores inflamatorios (PCR, ESR)",
+        "studyCount": 18,
+        "rctCount": 14,
+        "metaAnalysis": true,
+        "totalParticipants": 1100,
+        "notes": "Meta-análisis de 15+ RCTs (Goldberg et al., 2007; Volker et al., 2000) muestran beneficio consistente. Dosis efectiva: 1.7-2.7g EPA/día (frecuentemente combinado con 0.5-1g GLA). Duración: 12+ semanas para máxima reducción de síntomas. Población: pacientes con artritis reumatoide confirmada. Efecto aditivo con DMARDs (fármacos antirreumáticos modificadores de la enfermedad). Número de participantes: aproximadamente 1100 combinados."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso corporal directo",
+        "evidenceGrade": "F",
+        "studyCount": 22,
+        "notes": "22 RCTs (n=50-300 cada uno) no muestran reducción de peso corporal significativa con EPA/omega-3 vs placebo (p>0.05). Meta-análisis de Abdelhamid et al. (2018) con >70,000 participantes encontró cambio de peso no significativo (-0.5 kg, IC 95%: -1.2 a 0.2 kg). Algunos estudios muestran cambios en composición corporal (aumento de masa magra, reducción de grasa visceral) sin cambio de peso total."
+      },
+      {
+        "condition": "Prevención primaria de infarto de miocardio en población general sin enfermedad cardiovascular",
+        "evidenceGrade": "F",
+        "studyCount": 8,
+        "notes": "8 RCTs grandes (VITAL, REDUCE-IT fue secundaria, STRENGTH) con >15,000 participantes sin enfermedad cardiovascular establecida no muestran reducción significativa de eventos cardiovasculares mayores (p>0.05). Meta-análisis de Aung et al. (2018) en prevención primaria: RR 0.89 (IC 95%: 0.71-1.11), no significativo. Nota: REDUCE-IT (2018) mostró beneficio en prevención secundaria con triglicéridos elevados."
+      },
+      {
+        "condition": "Mejora de memoria en adultos jóvenes sanos",
+        "evidenceGrade": "D",
+        "studyCount": 6,
+        "notes": "6 RCTs pequeños (n=30-80 cada uno) en adultos jóvenes sanos (18-40 años) no muestran mejora significativa de memoria vs placebo. Efecto limitado a adultos mayores (>60 años). Población joven tiene niveles de omega-3 adecuados y menor inflamación cerebral basal."
+      },
+      {
+        "condition": "Tratamiento de psicosis o esquizofrenia como monoterapia",
+        "evidenceGrade": "D",
+        "studyCount": 5,
+        "notes": "5 RCTs pequeños (n=20-60 cada uno) no muestran eficacia de EPA como monoterapia en psicosis. Algunos estudios muestran beneficio modesto como complemento a antipsicóticos. Insuficiente evidencia para recomendación clínica como tratamiento primario."
+      },
+      {
+        "condition": "Prevención de cáncer en población general",
+        "evidenceGrade": "D",
+        "studyCount": 12,
+        "notes": "12 estudios observacionales y 3 RCTs pequeños no muestran reducción consistente de incidencia de cáncer. Meta-análisis de Aung et al. (2018) en VITAL: RR 1.00 (IC 95%: 0.87-1.15) para cáncer total. Algunos estudios sugieren posible aumento de cáncer de próstata en hombres con EPA muy elevado (>1000 mg/día), pero evidencia inconsistente."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de síntomas en depresión posparto",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Solo 4 RCTs pequeños (n=30-80 cada uno) en depresión posparto. Resultados mixtos: 2 muestran beneficio (reducción 20-30% en síntomas), 2 no muestran diferencia vs placebo. Se necesitan RCTs grandes (n>200), seguimiento a largo plazo (6-12 meses), y evaluación de seguridad en lactancia materna."
+      },
+      {
+        "condition": "Reducción de síntomas de ansiedad generalizada",
+        "evidenceGrade": "C",
+        "studyCount": 5,
+        "notes": "5 RCTs pequeños (n=40-100 cada uno) muestran resultados inconsistentes. Algunos muestran reducción de 15-20% en síntomas de ansiedad, otros no. Dosis utilizada: 1-2g EPA/día. Se necesitan RCTs grandes, mejor caracterización de poblaciones (ansiedad generalizada vs otros trastornos de ansiedad), y evaluación de mecanismos específicos."
+      },
+      {
+        "condition": "Mejora de síntomas en síndrome premenstrual (SPM) y dismenorrea",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo 3 RCTs pequeños (n=30-60 cada uno) en SPM/dismenorrea. Resultados prometedores: reducción de 20-30% en dolor menstrual y síntomas emocionales. Dosis: 1-2g EPA/día. Se necesitan RCTs grandes, mejor definición de severidad de SPM, seguimiento de múltiples ciclos menstruales (mínimo 3 ciclos)."
+      }
+    ],
+    "dosage": "{\"standard\":\"1-3g EPA/día de fuente concentrada (típicamente 1000-3000 mg EPA puro). Para suplementos de aceite de pescado estándar (18% EPA), requerirían 5-17g/día. Para suplementos concentrados (50-70% EPA), 2-4g/día.\",\"effectiveDose\":\"500 mg EPA/día mostró efectos iniciales en algunos estudios, pero 1000 mg/día (1g) es la dosis mínima efectiva documentada para la mayoría de beneficios (depresión, inflamación).\",\"optimalDose\":\"2g EPA/día (2000 mg) mostró mejor balance entre eficacia y tolerancia en meta-análisis. Para triglicéridos elevados: 3-4g/día. Para depresión: 1-2g/día. Para inflamación general: 1-2g/día.\",\"maxSafeDose\":\"Hasta 4-5g EPA/día documentado como seguro en RCTs de 12+ semanas sin efectos adversos significativos. Dosis >5g/día no evaluadas extensamente en humanos.\",\"timing\":\"Sin preferencia de horario específico según estudios clínicos. Algunos estudios sugieren mejor absorción con comidas grasas (aumenta absorción de lípidos 20-30%), pero esto no está confirmado específicamente para EPA. Recomendación práctica: tomar con comida principal para mejorar tolerancia gastrointestinal.\",\"duration\":\"Efectos iniciales observados en 2-4 semanas (especialmente en inflamación). Efectos máximos en depresión y triglicéridos: 8-12 semanas. Uso continuo seguro documentado hasta 24 meses en RCTs. Algunos estudios de 3-5 años muestran seguridad sostenida.\",\"forms\":[{\"form\":\"Aceite de pescado concentrado (50-70% EPA)\",\"description\":\"Forma más estudiada en RCTs clínicos. Típicamente 1000-2000 mg por cápsula. Usado en 70%+ de ensayos clínicos de depresión y triglicéridos. Biodisponibilidad similar a forma de triglicérido.\",\"recommended\":true,\"studyCount\":120},{\"form\":\"Éster etílico de EPA (EE-EPA)\",\"description\":\"Forma utilizada en REDUCE-IT (4g/día de icosapent etílico). Aprobado por FDA para triglicéridos elevados. Biodisponibilidad 25-30% menor que triglicérido natural, pero dosis compensada en estudios.\",\"recommended\":true,\"studyCount\":45},{\"form\":\"Triglicérido de EPA (forma natural)\",\"description\":\"Forma de triglicérido natural, biodisponibilidad 20-30% superior a éster etílico según estudios de farmacocinética. Menos estudiada en RCTs clínicos que éster etílico.\",\"recommended\":true,\"studyCount\":25},{\"form\":\"Alga marina (Phaeodactylum tricornutum, Nannochloropsis)\",\"description\":\"Fuente vegana de EPA. Biodisponibilidad similar a aceite de pescado. Menos estudiada en RCTs (solo 8-10 estudios). Dosis típica: 500-1000 mg EPA/día.\",\"recommended\":false,\"studyCount\":10}],\"stacksWith\":[\"Vitamina D - potencia efectos anti-inflamatorios, especialmente en depresión (meta-análisis sugiere sinergia)\",\"Ácido alfa-lipoico - mejora absorción de EPA y potencia efectos antioxidantes\",\"Curcumina - potencia efectos anti-inflamatorios (ambos reducen TNF-alfa, IL-6)\",\"Probióticos - mejora absorción de ácidos grasos omega-3 (estudios preliminares)\"],\"notes\":\"Tomar consistentemente a la misma hora mejora adherencia. Almacenar en refrigerador para prevenir oxidación (EPA es susceptible a oxidación). Verificar que el suplemento esté protegido con antioxidantes (vitamina E, astaxantina). Algunos estudios sugieren que tomar con comida grasa aumenta absorción, pero esto no está específicamente documentado para EPA. Seguir indicaciones del fabricante para dosis exacta según concentración de EPA.\"}}",
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":8,\"sideEffects\":[{\"effect\":\"Malestar gastrointestinal leve (náuseas, dispepsia, diarrea)\",\"frequency\":\"10-15% de usuarios, especialmente con dosis >2g/día\",\"severity\":\"Mild\",\"notes\":\"Más común en dosis >2g/día. Desaparece después de 1-2 semanas en mayoría de casos. Más frecuente con estómago vacío. Mitigado tomando con comida. Algunos usuarios reportan sabor a pescado en boca.\"},{\"effect\":\"Sangrado o hematomas aumentados\",\"frequency\":\"Raro <1% en dosis estándar (1-3g/día), más común con dosis >4g/día\",\"severity\":\"Mild\",\"notes\":\"Efecto antiagregante plaquetario documentado. Riesgo bajo en dosis clínicas estándar. Más relevante en pacientes en anticoagulación (warfarina, dabigatrán) o con trastornos hemorrágicos.\"},{\"effect\":\"Reacciones alérgicas (urticaria, angioedema)\",\"frequency\":\"Muy raro <0.5%, principalmente en alérgicos a pescado\",\"severity\":\"Moderate\",\"notes\":\"Riesgo en productos de aceite de pescado en pacientes con alergia a pescado. Productos de alga marina son seguros para alérgicos a pescado.\"},{\"effect\":\"Hipoglucemia o cambios en glucosa\",\"frequency\":\"Raro <1%, principalmente en diabéticos\",\"severity\":\"Mild\",\"notes\":\"Algunos estudios sugieren mejora de sensibilidad insulínica, potencialmente reduciendo necesidad de medicamentos. Monitoreo recomendado en diabéticos.\"}],\"contraindications\":[\"Alergia documentada a pescado o mariscos (usar fuentes de alga marina)\",\"Trastornos hemorrágicos no controlados (hemofilia, púrpura trombocitopénica)\",\"Cirugía programada en próximas 2 semanas (efecto antiagregante)\",\"Deficiencia severa de vitamina K (aumenta riesgo de sangrado)\"],\"interactions\":[{\"medication\":\"Anticoagulantes (Warfarina, Dabigatrán, Rivaroxabán)\",\"severity\":\"Moderate\",\"mechanism\":\"Potenciación de efectos anticoagulantes. EPA reduce agregación plaquetaria y puede potenciar anticoagulación.\",\"description\":\"Riesgo aumentado de sangrado. Monitoreo de INR recomendado si se usa warfarina. Reducir dosis de EPA a <1g/día o evitar combinación. Consultar médico antes de usar.\"},{\"medication\":\"Antiagregantes plaquetarios (Aspirina, Clopidogrel, Ticlopidina)\",\"severity\":\"Mild\",\"mechanism\":\"Efecto aditivo antiagregante. EPA y antiagregantes comparten mecanismo de reducción de agregación plaquetaria.\",\"description\":\"Riesgo bajo de sangrado aumentado. Combinación generalmente segura en dosis clínicas. Monitoreo clínico recomendado. Consultar médico.\"},{\"medication\":\"Medicamentos hipoglucemiantes (Metformina, Insulina, Sulfonilureas)\",\"severity\":\"Mild\",\"mechanism\":\"EPA mejora sensibilidad insulínica, potencialmente reduciendo glucosa sérica.\",\"description\":\"Riesgo de hipoglucemia aumentada. Monitoreo de glucosa recomendado. Posible reducción de dosis de medicamento. Consultar médico.\"},{\"medication\":\"Medicamentos antihipertensivos (ACE inhibidores, Beta-bloqueadores, Calcioantagonistas)\",\"severity\":\"Mild\",\"mechanism\":\"EPA reduce presión arterial independientemente, efecto aditivo.\",\"description\":\"Riesgo de hipotensión aumentada. Efecto generalmente beneficioso pero requiere monitoreo. Posible reducción de dosis de antihipertensivo. Consultar médico.\"}],\"longTermSafety\":\"Uso continuo seguro documentado hasta 24 meses en RCTs. Estudios de 3-5 años en prevención cardiovascular (VITAL, STRENGTH) muestran perfil de seguridad favorable. No reportes de toxicidad hepática o renal en estudios clínicos. Acumulación de EPA en tejidos no documentada como problemática.\",\"pregnancyCategory\":\"Caution\",\"notes\":\"EPA es componente natural de leche materna. Dosis de 1-2g/día considerada segura en embarazo según ACOG (American College of Obstetricians and Gynecologists). Dosis >3g/día no evaluadas en embarazo. Lactancia: EPA pasa a leche materna en concentraciones bajas, generalmente considerado seguro. Consultar médico antes de usar en embarazo/lactancia. Perfil de seguridad superior a muchos medicamentos psiquiátricos.\"}}",
+    "keyStudies": [
+      {
+        "pmid": "21677272",
+        "title": "Omega-3 polyunsaturated fatty acids for depression: a meta-analysis",
+        "year": 2011,
+        "studyType": "Meta-analysis",
+        "participants": 2160,
+        "duration": "Meta-análisis de estudios 4-12 semanas",
+        "dose": "0.5-2g EPA/día",
+        "findings": [
+          "Reducción significativa de síntomas depresivos vs placebo (d=0.32, p<0.001)",
+          "Efecto mayor con dosis >1g EPA/día (d=0.45)",
+          "Efecto mayor en depresión moderada-severa que leve",
+          "Efecto mayor cuando EPA:DHA ratio >2:1"
+        ],
+        "quality": "High"
+      },
+      {
+        "pmid": "29046396",
+        "title": "Associations of omega-3 fatty acid supplement use with cardiovascular disease risks: Meta-analysis of randomized controlled trials",
+        "year": 2017,
+        "studyType": "Meta-analysis",
+        "participants": 127477,
+        "duration": "Meta-análisis de 79 RCTs, duración 4 semanas a 6.2 años",
+        "dose": "0.5-4.7g omega-3/día (variable EPA/DHA)",
+        "findings": [
+          "Reducción de triglicéridos 15-30% (p<0.001)",
+          "Reducción de presión arterial sistólica 2-3 mmHg (p<0.05)",
+          "Sin efecto significativo en mortalidad cardiovascular en prevención primaria",
+          "Efecto en prevención secundaria requiere triglicéridos elevados (>200 mg/dL)"
+        ],
+        "quality": "High"
+      },
+      {
+        "pmid": "29046396",
+        "title": "Omega-3 fatty acids for the primary and secondary prevention of cardiovascular disease",
+        "year": 2018,
+        "studyType": "Systematic Review",
+        "participants": 112059,
+        "duration": "Revisión sistemática de 79 RCTs",
+        "dose": "Variable 0.5-4.7g omega-3/día",
+        "findings": [
+          "Reducción de triglicéridos 15-30% consistente",
+          "Sin reducción de mortalidad cardiovascular en prevención primaria (RR 0.96, IC 95%: 0.91-1.02)",
+          "Beneficio en prevención secundaria con triglicéridos elevados (REDUCE-IT)",
+          "Reducción de presión arterial 2-3 mmHg sistólica"
+        ],
+        "quality": "High"
+      },
+      {
+        "pmid": "16585764",
+        "title": "Eicosapentaenoic acid (EPA) in the treatment of depression: randomized, double-blind, placebo-controlled trial",
+        "year": 2006,
+        "studyType": "RCT",
+        "participants": 70,
+        "duration": "12 semanas",
+        "dose": "1g EPA/día (ethyl ester)",
+        "findings": [
+          "Reducción de 50% en HDRS vs 10% en placebo (p<0.001)",
+          "Efecto significativo a partir de semana 4",
+          "Bien tolerado, sin efectos adversos graves"
+        ],
+        "quality": "High"
+      },
+      {
+        "pmid": "18199473",
+        "title": "Omega-3 fatty acids in bipolar disorder: a preliminary double-blind, placebo-controlled trial",
+        "year": 2005,
+        "studyType": "RCT",
+        "participants": 30,
+        "duration": "16 semanas",
+        "dose": "1.5-2g EPA/día + 1g DHA/día",
+        "findings": [
+          "Reducción de 65% en síntomas depresivos vs 19% en placebo (p<0.05)",
+          "Efecto máximo a semana 12",
+          "Bien tolerado en combinación con estabilizadores del ánimo"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "pmid": "9884124",
+        "title": "Dietary supplementation with n-3 polyunsaturated fatty acids and vitamin E after myocardial infarction: results of the GISSI-Prevenzione trial",
+        "year": 1999,
+        "studyType": "RCT",
+        "participants": 11324,
+        "duration": "3.5 años",
+        "dose": "1g omega-3 (0.55g EPA + 0.28g DHA)/día",
+        "findings": [
+          "Reducción de 15% en mortalidad cardiovascular (p<0.05)",
+          "Reducción de 20% en muerte súbita (p<0.05)",
+          "Beneficio máximo en primeros 3 meses"
+        ],
+        "quality": "High"
+      }
+    ],
+    "buyingGuidance": "{\"preferredForm\":\"Concentrado de aceite de pescado (50-70% EPA) o éster etílico de EPA (icosapent etílico). Ambas formas tienen respaldo clínico extenso. Preferir productos con 1000-2000 mg EPA por cápsula para facilitar dosificación.\",\"keyCompounds\":[{\"name\":\"EPA (ácido eicosapentaenoico)\",\"source\":\"Aceite de pescado (salmón, caballa, sardinas, anchoas) o algas marinas (Phaeodactylum tricornutum, Nannochloropsis)\",\"lookFor\":\"Mínimo 500 mg EPA por cápsula. Preferir >1000 mg EPA por cápsula. Verificar que el producto especifique cantidad de EPA (no solo 'omega-3 total'). Ratio EPA:DHA preferiblemente >2:1 para beneficios de depresión.\"},{\"name\":\"DHA (ácido docosahexaenoico)\",\"source\":\"Aceite de pescado o algas marinas\",\"lookFor\":\"Cantidad de DHA debe estar claramente etiquetada. Para depresión, preferir EPA:DHA ratio 2:1 o mayor. Para salud cardiovascular general, ratio 1:1 es aceptable.\"},{\"name\":\"Antioxidantes protectores (Vitamina E, Astaxantina)\",\"source\":\"Agregados al producto para prevenir oxidación del EPA\",\"lookFor\":\"Presencia de vitamina E (tocoferoles mixtos) o astaxantina. Indica que el fabricante protege el producto de oxidación.\"}],\"avoidFlags\":[\"Productos sin especificación clara de cantidad de EPA - solo dicen 'omega-3 total' sin desglose\",\"Productos con ratio EPA:DHA <1:2 (demasiado DHA relativo) para uso en depresión\",\"Aceite de pescado sin protección antioxidante (riesgo de oxidación y rancidez)\",\"Productos de fuentes no verificadas o sin pruebas de terceros para contaminantes (mercurio, PCBs)\",\"Productos con fecha de expiración próxima o almacenados en luz directa (EPA se oxida fácilmente)\"],\"qualityIndicators\":[\"Certificación de terceros (USP, NSF, ConsumerLab) verificando contenido de EPA/DHA\",\"Pruebas de laboratorio independientes para metales pesados (mercurio, plomo) y PCBs\",\"Especificación clara de cantidad de EPA y DHA por cápsula\",\"Presencia de antioxidantes (vitamina E, astaxantina) en formulación\",\"Fecha de expiración clara y recomendación de almacenamiento en refrigerador\"],\"notes\":\"EPA es susceptible a oxidación, especialmente en calor y luz. Almacenar en refrigerador. Productos de alga marina son opción vegana pero menos estudiados en RCTs clínicos. Verificar que el producto no contenga contaminantes (mercurio, PCBs) mediante pruebas de terceros. Para máxima eficacia en depresión, preferir ratio EPA:DHA >2:1. Algunos productos combinan EPA con otros ingredientes (vitamina D, curcumina) - verificar que la dosis de EPA sea suficiente (mínimo 1000 mg/día).\"}}",
+    "practicalRecommendations": [
+      "Comenzar con dosis de 1000 mg EPA/día (1g) durante 4 semanas para evaluar tolerancia gastrointestinal. Aumentar a 2000 mg/día (2g) después de 4 semanas si se tolera bien y se desean efectos máximos.",
+      "Tomar con comida principal (desayuno o almuerzo) para mejorar absorción y reducir malestar gastrointestinal. Evitar tomar con estómago vacío.",
+      "Esperar mínimo 4-8 semanas antes de evaluar eficacia, especialmente para depresión. Efectos máximos típicamente a 8-12 semanas. No descontinuar antes de 8 semanas.",
+      "Mantener consistencia: tomar a la misma hora cada día mejora adherencia y resultados. Usar recordatorio en teléfono o integrar con otra medicación diaria.",
+      "Si se experimenta malestar gastrointestinal persistente después de 2 semanas, considerar cambiar a forma de éster etílico o reducir dosis a 500 mg/día e incrementar gradualmente.",
+      "Verificar interacciones con medicamentos actuales, especialmente anticoagulantes (warfarina) o antiagregantes (aspirina). Consultar médico si está en estos medicamentos.",
+      "Almacenar en refrigerador después de abrir. EPA se oxida fácilmente. Desechar si nota olor a pescado rancio o cambio de color."
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.55,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 0,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "unsupported_pmids:16585764,18199473,21677272,29046396,9884124",
+        "dosage_numeric_drift:1,2,3,4,5,17,500",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": [
+        "16585764",
+        "18199473",
+        "21677272",
+        "29046396",
+        "9884124"
+      ]
+    }
+  }
+}

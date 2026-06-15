@@ -1,0 +1,26 @@
+{
+  "mode": "paid-ab",
+  "runId": "2026-06-15T23-05-13-395Z",
+  "goldenCount": 30,
+  "candidates": [
+    {
+      "id": "haiku-4.5",
+      "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+      "maxTokens": 16000,
+      "inputPer1M": 1,
+      "outputPer1M": 5,
+      "priceSource": "manual fallback: AWS Pricing API/eval pricing did not expose Haiku 4.5 SKU; matches public Anthropic/Bedrock listed rate used for budget cap"
+    },
+    {
+      "id": "nova-lite",
+      "modelId": "amazon.nova-lite-v1:0",
+      "maxTokens": 5000,
+      "inputPer1M": 0.06,
+      "outputPer1M": 0.24,
+      "priceSource": "eval/pricing.json AWS Pricing API confirmed SKU"
+    }
+  ],
+  "projectedInputTokensPerCandidate": 218719,
+  "projectedWorstCaseUsd": 2.667842,
+  "maxBudgetUsd": 9
+}
