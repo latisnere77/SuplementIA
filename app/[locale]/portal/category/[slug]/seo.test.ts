@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const mensHealthUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for mens health', () => {
+    const mensCopyEs = buildCategorySeoCopy({
+      slug: 'mens-health',
+      categoryName: 'Salud Masculina',
+      categoryDescription: 'Suplementos enfocados en la vitalidad, salud prostática y equilibrio hormonal masculino.',
+      locale: 'es',
+    });
+    const mensCopyEn = buildCategorySeoCopy({
+      slug: 'mens-health',
+      categoryName: 'Men’s Health',
+      categoryDescription: 'Supplements focused on vitality, prostate health, and male hormone balance.',
+      locale: 'en',
+    });
+    const mensContentEs = buildCategorySeoContent('mens-health', 'es');
+    const mensContentEn = buildCategorySeoContent('mens-health', 'en');
+
+    expect(mensCopyEs.title).toBe('Suplementos para salud masculina: próstata, zinc y vitalidad');
+    expect(mensCopyEs.description).toContain('evaluación profesional');
+    expect(mensCopyEs.title).not.toContain('evidencia científica');
+    expect(mensCopyEn.title).toBe('Men’s health supplements: prostate context, zinc, and vitality');
+    expect(mensCopyEn.description).toContain('professional review');
+    expect(mensCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(mensContentEs).not.toBeNull();
+    expect(mensContentEn).not.toBeNull();
+    expect(mensContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'saw-palmetto',
+      'zinc',
+      'vitamin-d',
+    ]);
+    expect(mensContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'saw-palmetto',
+      'zinc',
+      'vitamin-d',
+    ]);
+    expect(mensContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/heart-health',
+      '/portal/supplement/saw-palmetto?benefit=mens-health',
+      '/portal/supplement/zinc?benefit=mens-health',
+    ]);
+    expect(mensContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/heart-health',
+      '/portal/supplement/saw-palmetto?benefit=mens-health',
+      '/portal/supplement/zinc?benefit=mens-health',
+    ]);
+    expect(mensContentEs?.faqs).toHaveLength(4);
+    expect(mensContentEn?.faqs).toHaveLength(4);
+    expect(mensContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué revisar antes de usar saw palmetto?'
+    );
+    expect(mensContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'What should I review before using saw palmetto?'
+    );
+
+    const serialized = JSON.stringify([mensCopyEs, mensCopyEn, mensContentEs, mensContentEn]);
+    expect(serialized).not.toMatch(mensHealthUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('mens-health', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);

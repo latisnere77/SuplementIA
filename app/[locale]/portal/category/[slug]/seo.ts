@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'mens-health': {
+      es: {
+        title: 'Suplementos para salud masculina: próstata, zinc y vitalidad',
+        description:
+          'Compara saw palmetto, zinc y vitamina D por próstata, dieta, deficiencias, medicamentos, edad y señales que requieren evaluación profesional.',
+      },
+      en: {
+        title: 'Men’s health supplements: prostate context, zinc, and vitality',
+        description:
+          'Compare saw palmetto, zinc, and vitamin D by prostate context, diet, deficiencies, medications, age, and signs that need professional review.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'mens-health': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para salud masculina, próstata, vitalidad y estado nutricional. La lectura prudente separa síntomas urinarios, edad, medicamentos, dieta, laboratorios y señales que requieren revisión profesional.',
+        highlights: [
+          'Saw palmetto se revisa mejor con síntomas urinarios, diagnóstico prostático, medicamentos y expectativas acotadas.',
+          'Zinc depende de dieta, deficiencia probable, dosis y duración; usar dosis altas por largo tiempo puede afectar cobre y tolerancia.',
+          'Vitamina D y otros nutrientes tienen más sentido cuando hay baja exposición solar, dieta limitada o laboratorios que orientan la decisión.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Saw palmetto y próstata',
+            description:
+              'Revisar síntomas urinarios, edad, antígeno prostático, medicamentos y seguimiento profesional antes de usarlo.',
+            supplementSlug: 'saw-palmetto',
+            searchLabel: 'Abrir la guía de saw palmetto',
+          },
+          {
+            title: 'Zinc y estado nutricional',
+            description:
+              'Comparar dieta, laboratorios, dosis, duración, náusea y cobre antes de suplementar de forma sostenida.',
+            supplementSlug: 'zinc',
+            searchLabel: 'Abrir la guía de zinc',
+          },
+          {
+            title: 'Vitamina D y contexto general',
+            description:
+              'Útil para revisar exposición solar, dieta, análisis y salud ósea como parte del panorama general.',
+            supplementSlug: 'vitamin-d',
+            searchLabel: 'Abrir la guía de vitamina D',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'Zinc, vitamina D, B12 e hierro se interpretan mejor con dieta, etapa de vida y análisis cuando aplica.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Salud cardiovascular',
+            description:
+              'Presión, lípidos, edad y medicamentos pueden cambiar cómo se priorizan los suplementos.',
+            href: '/portal/category/heart-health',
+            label: 'Revisar salud cardíaca',
+          },
+          {
+            title: 'Saw palmetto',
+            description:
+              'Guía específica para revisar próstata, síntomas urinarios y límites de la evidencia.',
+            href: '/portal/supplement/saw-palmetto?benefit=mens-health',
+            label: 'Comparar saw palmetto',
+          },
+          {
+            title: 'Zinc',
+            description:
+              'Útil para revisar dieta, dosis, duración, cobre, náusea y tolerancia.',
+            href: '/portal/supplement/zinc?benefit=mens-health',
+            label: 'Comparar zinc',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos y salud masculina',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de usar saw palmetto?',
+            answer:
+              'Síntomas urinarios, edad, evaluación prostática, antígeno prostático cuando corresponda, medicamentos y señales como sangre en orina o retención urinaria. Esas señales requieren atención profesional.',
+          },
+          {
+            question: '¿Zinc aumenta testosterona?',
+            answer:
+              'La relación depende sobre todo del estado nutricional. Si ya hay ingesta suficiente, más zinc no implica necesariamente mejor función hormonal y puede causar náusea o alterar cobre.',
+          },
+          {
+            question: '¿Tiene sentido combinar varios suplementos?',
+            answer:
+              'Conviene empezar por objetivo, dieta, sueño, ejercicio, medicamentos y análisis disponibles. Combinar productos sin revisar dosis aumenta el riesgo de duplicar minerales.',
+          },
+          {
+            question: '¿Cuándo consultar a un profesional?',
+            answer:
+              'Dolor, fiebre, sangre en orina, pérdida de peso, síntomas urinarios nuevos, infertilidad, uso de anticoagulantes o enfermedades crónicas ameritan orientación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para salud masculina',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for men’s health, prostate context, vitality, and nutrition status. A prudent review separates urinary symptoms, age, medications, diet, labs, and signs that need professional review.',
+        highlights: [
+          'Saw palmetto is best reviewed through urinary symptoms, prostate evaluation, medications, and scoped expectations.',
+          'Zinc depends on diet, plausible deficiency, dose, and duration; long-term high dosing can affect copper and tolerance.',
+          'Vitamin D and other nutrients make more sense when sun exposure is low, diet is limited, or labs guide the decision.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Saw palmetto and prostate context',
+            description:
+              'Review urinary symptoms, age, prostate-specific antigen context, medications, and professional follow-up before use.',
+            supplementSlug: 'saw-palmetto',
+            searchLabel: 'Open the saw palmetto guide',
+          },
+          {
+            title: 'Zinc and nutrition status',
+            description:
+              'Compare diet, labs, dose, duration, nausea, and copper before sustained supplementation.',
+            supplementSlug: 'zinc',
+            searchLabel: 'Open the zinc guide',
+          },
+          {
+            title: 'Vitamin D and general context',
+            description:
+              'Useful for reviewing sun exposure, diet, labs, and bone health as part of the broader picture.',
+            supplementSlug: 'vitamin-d',
+            searchLabel: 'Open the vitamin D guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Common deficiencies',
+            description:
+              'Zinc, vitamin D, B12, and iron are interpreted better with diet, life stage, and labs when relevant.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Heart health',
+            description:
+              'Blood pressure, lipids, age, and medications can change how supplements are prioritized.',
+            href: '/portal/category/heart-health',
+            label: 'Review heart health',
+          },
+          {
+            title: 'Saw palmetto',
+            description:
+              'A specific guide for reviewing prostate context, urinary symptoms, and evidence limits.',
+            href: '/portal/supplement/saw-palmetto?benefit=mens-health',
+            label: 'Compare saw palmetto',
+          },
+          {
+            title: 'Zinc',
+            description:
+              'Useful for reviewing diet, dose, duration, copper, and tolerance.',
+            href: '/portal/supplement/zinc?benefit=mens-health',
+            label: 'Compare zinc',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about supplements and men’s health',
+        faqs: [
+          {
+            question: 'What should I review before using saw palmetto?',
+            answer:
+              'Urinary symptoms, age, prostate evaluation, prostate-specific antigen when relevant, medications, and signs such as blood in urine or urinary retention. Those signs need professional care.',
+          },
+          {
+            question: 'Does zinc increase testosterone?',
+            answer:
+              'The relationship depends mostly on nutrition status. If intake is already sufficient, more zinc does not necessarily mean better hormone function and may cause nausea or affect copper.',
+          },
+          {
+            question: 'Does it make sense to combine several supplements?',
+            answer:
+              'Start with the goal, diet, sleep, exercise, medications, and available labs. Combining products without reviewing doses increases the risk of duplicating minerals.',
+          },
+          {
+            question: 'When should I talk to a professional?',
+            answer:
+              'Pain, fever, blood in urine, weight loss, new urinary symptoms, fertility concerns, anticoagulant use, or chronic disease warrant professional guidance.',
+          },
+        ],
+        supplementLinksHeading: 'Men’s health supplement guides',
       },
     },
     'common-deficiencies': {
