@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const immunityUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for immunity', () => {
+    const immunityCopyEs = buildCategorySeoCopy({
+      slug: 'immunity',
+      categoryName: 'Inmunidad',
+      categoryDescription: 'Suplementos estudiados para apoyo inmunitario.',
+      locale: 'es',
+    });
+    const immunityCopyEn = buildCategorySeoCopy({
+      slug: 'immunity',
+      categoryName: 'Immunity',
+      categoryDescription: 'Supplements studied for immune support.',
+      locale: 'en',
+    });
+    const immunityContentEs = buildCategorySeoContent('immunity', 'es');
+    const immunityContentEn = buildCategorySeoContent('immunity', 'en');
+
+    expect(immunityCopyEs.title).toBe('Suplementos para inmunidad: vitamina C, zinc y equinácea');
+    expect(immunityCopyEs.description).toContain('uso responsable');
+    expect(immunityCopyEs.title).not.toContain('evidencia científica');
+    expect(immunityCopyEn.title).toBe('Immune support supplements: vitamin C, zinc, and echinacea');
+    expect(immunityCopyEn.description).toContain('responsible use');
+    expect(immunityCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(immunityContentEs).not.toBeNull();
+    expect(immunityContentEn).not.toBeNull();
+    expect(immunityContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'vitamin-c',
+      'zinc',
+      'echinacea',
+    ]);
+    expect(immunityContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'vitamin-c',
+      'zinc',
+      'echinacea',
+    ]);
+    expect(immunityContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/sleep',
+      '/portal/supplement/vitamin-c?benefit=immunity',
+      '/portal/supplement/zinc?benefit=immunity',
+    ]);
+    expect(immunityContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/sleep',
+      '/portal/supplement/vitamin-c?benefit=immunity',
+      '/portal/supplement/zinc?benefit=immunity',
+    ]);
+    expect(immunityContentEs?.faqs).toHaveLength(4);
+    expect(immunityContentEn?.faqs).toHaveLength(4);
+    expect(immunityContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Equinácea es adecuada para todos?'
+    );
+    expect(immunityContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'Is echinacea appropriate for everyone?'
+    );
+
+    const serialized = JSON.stringify([immunityCopyEs, immunityCopyEn, immunityContentEs, immunityContentEn]);
+    expect(serialized).not.toMatch(immunityUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('immunity', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);

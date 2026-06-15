@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    immunity: {
+      es: {
+        title: 'Suplementos para inmunidad: vitamina C, zinc y equinácea',
+        description:
+          'Compara vitamina C, zinc y equinácea por dieta, deficiencias, temporada, medicamentos, tolerancia y uso responsable.',
+      },
+      en: {
+        title: 'Immune support supplements: vitamin C, zinc, and echinacea',
+        description:
+          'Compare vitamin C, zinc, and echinacea by diet, deficiencies, seasonal context, medications, tolerance, and responsible use.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    immunity: {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para apoyo inmunitario y temporada de resfriados. La lectura prudente separa dieta, deficiencias, sueño, vacunas, medicamentos y señales que requieren evaluación profesional.',
+        highlights: [
+          'Vitamina C se revisa mejor desde ingesta dietaria, tolerancia gastrointestinal y contexto de uso, no como promesa aislada.',
+          'Zinc puede ser relevante cuando la dieta es baja o hay riesgo de deficiencia; dosis altas sostenidas pueden afectar cobre y tolerancia.',
+          'Equinácea es una opción herbal con evidencia variable y precauciones en alergias, autoinmunidad, embarazo y medicamentos.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Vitamina C y dieta',
+            description:
+              'Comparar ingesta de frutas y verduras, dosis, tolerancia digestiva y expectativas antes de suplementar.',
+            supplementSlug: 'vitamin-c',
+            searchLabel: 'Abrir la guía de vitamina C',
+          },
+          {
+            title: 'Zinc y deficiencia',
+            description:
+              'Revisar dieta, dosis, duración, náusea, cobre e interacciones antes de usar dosis altas.',
+            supplementSlug: 'zinc',
+            searchLabel: 'Abrir la guía de zinc',
+          },
+          {
+            title: 'Equinácea herbal',
+            description:
+              'Opción herbal con resultados variables; revisar alergias a Asteraceae, autoinmunidad y medicamentos.',
+            supplementSlug: 'echinacea',
+            searchLabel: 'Abrir la guía de equinácea',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'Vitamina D, zinc, hierro y B12 se interpretan mejor con dieta, laboratorios y etapa de vida.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Sueño y descanso',
+            description:
+              'Dormir mal puede influir en cómo se percibe el bienestar general; revisa el cluster de sueño si aplica.',
+            href: '/portal/category/sleep',
+            label: 'Revisar sueño',
+          },
+          {
+            title: 'Vitamina C',
+            description:
+              'Guía específica para separar dieta, dosis, tolerancia y contexto estacional.',
+            href: '/portal/supplement/vitamin-c?benefit=immunity',
+            label: 'Comparar vitamina C',
+          },
+          {
+            title: 'Zinc',
+            description:
+              'Útil para revisar dosis, duración, cobre, náusea y dieta.',
+            href: '/portal/supplement/zinc?benefit=immunity',
+            label: 'Comparar zinc',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos e inmunidad',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de elegir un suplemento para inmunidad?',
+            answer:
+              'Dieta, sueño, estrés, vacunas, medicamentos, enfermedades autoinmunes, embarazo y deficiencias posibles. Los suplementos no sustituyen atención médica cuando hay síntomas importantes.',
+          },
+          {
+            question: '¿Vitamina C y zinc se usan igual?',
+            answer:
+              'No. Vitamina C depende mucho de dieta y tolerancia; zinc requiere más cuidado con dosis, duración, náusea y cobre. Conviene revisar cada caso por separado.',
+          },
+          {
+            question: '¿Equinácea es adecuada para todos?',
+            answer:
+              'No siempre. Hay que revisar alergias a plantas relacionadas, autoinmunidad, embarazo, lactancia y medicamentos antes de usarla.',
+          },
+          {
+            question: '¿Cuándo buscar atención profesional?',
+            answer:
+              'Fiebre alta, dificultad para respirar, dolor intenso, síntomas persistentes, inmunosupresión, embarazo o enfermedades crónicas requieren orientación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para inmunidad',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for immune support and cold-season context. A prudent review separates diet, deficiencies, sleep, vaccines, medications, and signs that need professional evaluation.',
+        highlights: [
+          'Vitamin C is best reviewed through dietary intake, gastrointestinal tolerance, and use context, not as an isolated promise.',
+          'Zinc may be relevant when diet is low or deficiency risk is present; sustained high doses can affect copper and tolerance.',
+          'Echinacea is a herbal option with variable evidence and precautions around allergies, autoimmunity, pregnancy, and medications.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Vitamin C and diet',
+            description:
+              'Compare fruit and vegetable intake, dose, digestive tolerance, and expectations before supplementing.',
+            supplementSlug: 'vitamin-c',
+            searchLabel: 'Open the vitamin C guide',
+          },
+          {
+            title: 'Zinc and deficiency',
+            description:
+              'Review diet, dose, duration, nausea, copper, and interactions before using high doses.',
+            supplementSlug: 'zinc',
+            searchLabel: 'Open the zinc guide',
+          },
+          {
+            title: 'Echinacea herbal option',
+            description:
+              'A herbal option with variable results; review Asteraceae allergies, autoimmunity, and medications.',
+            supplementSlug: 'echinacea',
+            searchLabel: 'Open the echinacea guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Common deficiencies',
+            description:
+              'Vitamin D, zinc, iron, and B12 are interpreted better with diet, labs, and life-stage context.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Sleep and rest',
+            description:
+              'Poor sleep can shape perceived well-being; review the sleep cluster when relevant.',
+            href: '/portal/category/sleep',
+            label: 'Review sleep',
+          },
+          {
+            title: 'Vitamin C',
+            description:
+              'A specific guide for separating diet, dose, tolerance, and seasonal context.',
+            href: '/portal/supplement/vitamin-c?benefit=immunity',
+            label: 'Compare vitamin C',
+          },
+          {
+            title: 'Zinc',
+            description:
+              'Useful for reviewing dose, duration, copper, nausea, and diet.',
+            href: '/portal/supplement/zinc?benefit=immunity',
+            label: 'Compare zinc',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about supplements and immunity',
+        faqs: [
+          {
+            question: 'What should I review before choosing an immune supplement?',
+            answer:
+              'Diet, sleep, stress, vaccines, medications, autoimmune disease, pregnancy, and possible deficiencies. Supplements do not replace medical care when symptoms are important.',
+          },
+          {
+            question: 'Are vitamin C and zinc used the same way?',
+            answer:
+              'No. Vitamin C depends heavily on diet and tolerance; zinc needs more care around dose, duration, nausea, and copper. Review each case separately.',
+          },
+          {
+            question: 'Is echinacea appropriate for everyone?',
+            answer:
+              'Not always. Related plant allergies, autoimmunity, pregnancy, breastfeeding, and medications should be reviewed before use.',
+          },
+          {
+            question: 'When should I seek professional care?',
+            answer:
+              'High fever, breathing difficulty, intense pain, persistent symptoms, immunosuppression, pregnancy, or chronic disease require professional guidance.',
+          },
+        ],
+        supplementLinksHeading: 'Immune support supplement guides',
       },
     },
     'common-deficiencies': {
