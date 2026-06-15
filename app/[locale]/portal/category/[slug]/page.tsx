@@ -235,7 +235,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <h2 className="text-2xl font-semibold text-gray-900 mb-4">
         {seoLocale === 'es' ? 'Suplementos comparados' : 'Compared supplements'}
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6"
+        data-testid="category-supplement-results"
+      >
         {sortedSupplements.map(supplement => (
           <SupplementEvidenceCard 
             key={supplement.slug} 

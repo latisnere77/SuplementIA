@@ -272,7 +272,12 @@ test.describe('portal browser flows', () => {
       const backLink = page.getByRole('link', { name: 'Volver a Búsqueda' });
       await expect(backLink).toHaveAttribute('href', '/es/portal');
 
-      await page.locator('a').filter({ hasText: category.supplement }).first().click();
+      await page
+        .getByTestId('category-supplement-results')
+        .locator('a')
+        .filter({ hasText: category.supplement })
+        .first()
+        .click();
       await expect(page).toHaveURL(/\/es\/portal\/results\?/);
 
       const resultUrl = new URL(page.url());
