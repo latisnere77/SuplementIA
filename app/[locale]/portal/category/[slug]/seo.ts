@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'hormonal-health': {
+      es: {
+        title: 'Suplementos para salud hormonal: inositol, vitamina D y zinc',
+        description:
+          'Compara inositol, vitamina D, zinc y magnesio por ciclo, SOP, dieta, laboratorios, síntomas y seguridad.',
+      },
+      en: {
+        title: 'Hormonal health supplements: inositol, vitamin D, and zinc',
+        description:
+          'Compare inositol, vitamin D, zinc, and magnesium by cycle context, PCOS, diet, labs, symptoms, and safety.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'hormonal-health': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para salud hormonal, ciclo menstrual, SOP, metabolismo y síntomas premenstruales. La lectura prudente separa diagnóstico, laboratorios, medicamentos, dieta, sueño y etapa de vida.',
+        highlights: [
+          'Inositol se revisa sobre todo en contexto de SOP, sensibilidad a la insulina y seguimiento profesional.',
+          'Vitamina D pertenece al contexto de deficiencia, salud ósea e inmunidad; conviene interpretarla con análisis.',
+          'Zinc y magnesio dependen de dieta, ingesta baja, tolerancia y uso combinado con otros minerales.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Inositol y contexto SOP',
+            description:
+              'Revisar diagnóstico, ciclo, metabolismo, medicamentos, embarazo posible y seguimiento profesional.',
+            supplementSlug: 'inositol',
+            searchLabel: 'Abrir la guía de inositol',
+          },
+          {
+            title: 'Vitamina D y deficiencia',
+            description:
+              'Comparar exposición solar, dieta, análisis 25-OH vitamina D, salud ósea y etapa de vida.',
+            supplementSlug: 'vitamin-d',
+            searchLabel: 'Abrir la guía de vitamina D',
+          },
+          {
+            title: 'Zinc y magnesio',
+            description:
+              'Revisar dieta, dosis, tolerancia, cobre, sueño y uso de varios minerales al mismo tiempo.',
+            supplementSlug: 'zinc',
+            searchLabel: 'Abrir la guía de zinc',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Salud femenina',
+            description:
+              'Folato, hierro, calcio y etapa reproductiva pueden ayudar a ordenar preguntas de ciclo o embarazo.',
+            href: '/portal/category/womens-health',
+            label: 'Revisar salud femenina',
+          },
+          {
+            title: 'Glucosa y metabolismo',
+            description:
+              'Cuando SOP o sensibilidad a la insulina son parte del contexto, revisa el cluster metabólico.',
+            href: '/portal/category/blood-sugar',
+            label: 'Revisar glucosa',
+          },
+          {
+            title: 'Inositol',
+            description:
+              'Guía específica para revisar SOP, ciclo, metabolismo, dosis y seguimiento.',
+            href: '/portal/supplement/inositol?benefit=hormonal-health',
+            label: 'Comparar inositol',
+          },
+          {
+            title: 'Vitamina D',
+            description:
+              'Útil para revisar deficiencia, análisis, dosis y salud ósea.',
+            href: '/portal/supplement/vitamin-d?benefit=hormonal-health',
+            label: 'Comparar vitamina D',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos y salud hormonal',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de usar inositol?',
+            answer:
+              'Diagnóstico, ciclo menstrual, SOP, glucosa, embarazo posible, medicamentos y seguimiento profesional. La decisión no debería basarse solo en síntomas generales.',
+          },
+          {
+            question: '¿Vitamina D cambia hormonas?',
+            answer:
+              'Vitamina D se interpreta mejor como nutriente ligado a deficiencia, huesos e inmunidad. Si hay síntomas hormonales, conviene revisar causa y análisis antes de elegir suplementos.',
+          },
+          {
+            question: '¿Zinc y magnesio se pueden combinar?',
+            answer:
+              'Depende de dosis, dieta, tolerancia y otros productos. Combinar minerales puede duplicar dosis o afectar absorción de otros nutrientes.',
+          },
+          {
+            question: '¿Cuándo buscar orientación profesional?',
+            answer:
+              'Ciclos muy irregulares, sangrado abundante, embarazo, infertilidad, dolor intenso, acné severo, síntomas nuevos o uso de hormonas ameritan orientación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para salud hormonal',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for hormonal health, menstrual cycle context, PCOS, metabolism, and premenstrual symptoms. Prudent review separates diagnosis, labs, medications, diet, sleep, and life stage.',
+        highlights: [
+          'Inositol is reviewed mostly in PCOS context, insulin sensitivity, and professional follow-up.',
+          'Vitamin D belongs in deficiency, bone health, and immune context; labs make interpretation stronger.',
+          'Zinc and magnesium depend on diet, low intake, tolerance, and combined mineral use.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Inositol and PCOS context',
+            description:
+              'Review diagnosis, cycle, metabolism, medications, possible pregnancy, and professional follow-up.',
+            supplementSlug: 'inositol',
+            searchLabel: 'Open the inositol guide',
+          },
+          {
+            title: 'Vitamin D and deficiency',
+            description:
+              'Compare sun exposure, diet, 25-OH vitamin D labs, bone health, and life stage.',
+            supplementSlug: 'vitamin-d',
+            searchLabel: 'Open the vitamin D guide',
+          },
+          {
+            title: 'Zinc and magnesium',
+            description:
+              'Review diet, dose, tolerance, copper, sleep, and using several minerals at the same time.',
+            supplementSlug: 'zinc',
+            searchLabel: 'Open the zinc guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Women’s health',
+            description:
+              'Folate, iron, calcium, and reproductive stage can help organize cycle or pregnancy questions.',
+            href: '/portal/category/womens-health',
+            label: 'Review women’s health',
+          },
+          {
+            title: 'Blood sugar and metabolism',
+            description:
+              'When PCOS or insulin sensitivity is part of the context, review the metabolic cluster.',
+            href: '/portal/category/blood-sugar',
+            label: 'Review glucose',
+          },
+          {
+            title: 'Inositol',
+            description:
+              'A specific guide for reviewing PCOS, cycle context, metabolism, dose, and follow-up.',
+            href: '/portal/supplement/inositol?benefit=hormonal-health',
+            label: 'Compare inositol',
+          },
+          {
+            title: 'Vitamin D',
+            description:
+              'Useful for reviewing deficiency, labs, dose, and bone health.',
+            href: '/portal/supplement/vitamin-d?benefit=hormonal-health',
+            label: 'Compare vitamin D',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about supplements and hormonal health',
+        faqs: [
+          {
+            question: 'What should I review before using inositol?',
+            answer:
+              'Diagnosis, menstrual cycle, PCOS, glucose, possible pregnancy, medications, and professional follow-up. The decision should not be based only on general symptoms.',
+          },
+          {
+            question: 'Does vitamin D change hormones?',
+            answer:
+              'Vitamin D is interpreted better as a nutrient tied to deficiency, bones, and immune context. If hormonal symptoms are present, review cause and labs before choosing supplements.',
+          },
+          {
+            question: 'Can zinc and magnesium be combined?',
+            answer:
+              'It depends on dose, diet, tolerance, and other products. Combining minerals can duplicate doses or affect absorption of other nutrients.',
+          },
+          {
+            question: 'When should I seek professional guidance?',
+            answer:
+              'Very irregular cycles, heavy bleeding, pregnancy, fertility concerns, intense pain, severe acne, new symptoms, or hormone use warrant professional guidance.',
+          },
+        ],
+        supplementLinksHeading: 'Hormonal health supplement guides',
       },
     },
     'common-deficiencies': {

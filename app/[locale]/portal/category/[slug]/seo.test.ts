@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const hormonalHealthUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,74 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for hormonal health', () => {
+    const hormonalCopyEs = buildCategorySeoCopy({
+      slug: 'hormonal-health',
+      categoryName: 'Salud Hormonal',
+      categoryDescription:
+        'Nutrientes y compuestos relacionados con equilibrio hormonal, ciclo menstrual, metabolismo y bienestar general.',
+      locale: 'es',
+    });
+    const hormonalCopyEn = buildCategorySeoCopy({
+      slug: 'hormonal-health',
+      categoryName: 'Hormonal Health',
+      categoryDescription:
+        'Nutrients and compounds related to hormone balance, menstrual cycle, metabolism, and general well-being.',
+      locale: 'en',
+    });
+    const hormonalContentEs = buildCategorySeoContent('hormonal-health', 'es');
+    const hormonalContentEn = buildCategorySeoContent('hormonal-health', 'en');
+
+    expect(hormonalCopyEs.title).toBe('Suplementos para salud hormonal: inositol, vitamina D y zinc');
+    expect(hormonalCopyEs.description).toContain('laboratorios');
+    expect(hormonalCopyEs.title).not.toContain('evidencia científica');
+    expect(hormonalCopyEn.title).toBe('Hormonal health supplements: inositol, vitamin D, and zinc');
+    expect(hormonalCopyEn.description).toContain('labs');
+    expect(hormonalCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(hormonalContentEs).not.toBeNull();
+    expect(hormonalContentEn).not.toBeNull();
+    expect(hormonalContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'inositol',
+      'vitamin-d',
+      'zinc',
+    ]);
+    expect(hormonalContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'inositol',
+      'vitamin-d',
+      'zinc',
+    ]);
+    expect(hormonalContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/womens-health',
+      '/portal/category/blood-sugar',
+      '/portal/supplement/inositol?benefit=hormonal-health',
+      '/portal/supplement/vitamin-d?benefit=hormonal-health',
+    ]);
+    expect(hormonalContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/womens-health',
+      '/portal/category/blood-sugar',
+      '/portal/supplement/inositol?benefit=hormonal-health',
+      '/portal/supplement/vitamin-d?benefit=hormonal-health',
+    ]);
+    expect(hormonalContentEs?.faqs).toHaveLength(4);
+    expect(hormonalContentEn?.faqs).toHaveLength(4);
+    expect(hormonalContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué revisar antes de usar inositol?'
+    );
+    expect(hormonalContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'What should I review before using inositol?'
+    );
+
+    const serialized = JSON.stringify([
+      hormonalCopyEs,
+      hormonalCopyEn,
+      hormonalContentEs,
+      hormonalContentEn,
+    ]);
+    expect(serialized).not.toMatch(hormonalHealthUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +327,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('hormonal-health', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);
