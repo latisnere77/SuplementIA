@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    inflammation: {
+      es: {
+        title: 'Suplementos para inflamación: curcumina, omega-3 y boswellia',
+        description:
+          'Compara curcumina, omega-3, jengibre y boswellia por dolor, recuperación, marcadores, medicamentos, cirugía y seguridad.',
+      },
+      en: {
+        title: 'Inflammation supplements: curcumin, omega-3, and boswellia',
+        description:
+          'Compare curcumin, omega-3, ginger, and boswellia by pain context, recovery, markers, medications, surgery, and safety.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    inflammation: {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados por inflamación, dolor articular, recuperación y marcadores inflamatorios. La lectura responsable separa causa, diagnóstico, medicamentos, cirugía, dosis y seguridad.',
+        highlights: [
+          'Curcumina depende mucho de formulación, absorción, dosis y uso con anticoagulantes o medicamentos.',
+          'Omega-3 se interpreta mejor por EPA/DHA, dosis, lípidos, salud cardiovascular y riesgo de sangrado.',
+          'Boswellia y jengibre son opciones herbales donde importan extracto, tolerancia digestiva y contexto articular.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Curcumina y formulación',
+            description:
+              'Comparar extracto, biodisponibilidad, dosis, tolerancia digestiva y medicamentos antes de elegir producto.',
+            supplementSlug: 'curcumin',
+            searchLabel: 'Abrir la guía de curcumina',
+          },
+          {
+            title: 'Omega-3 y contexto cardiovascular',
+            description:
+              'Revisar EPA/DHA, dosis, lípidos, anticoagulantes, cirugía y objetivo principal antes de suplementar.',
+            supplementSlug: 'omega-3',
+            searchLabel: 'Abrir la guía de omega-3',
+          },
+          {
+            title: 'Boswellia y articulaciones',
+            description:
+              'Opción herbal a revisar por extracto, tolerancia digestiva, medicamentos y tipo de molestia articular.',
+            supplementSlug: 'boswellia-serrata',
+            searchLabel: 'Abrir la guía de boswellia',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Salud articular y ósea',
+            description:
+              'Si la intención principal es articulación, compara vitamina D, glucosamina, colágeno y contexto óseo.',
+            href: '/portal/category/joint-bone-health',
+            label: 'Revisar articulaciones',
+          },
+          {
+            title: 'Salud cardiovascular',
+            description:
+              'Omega-3, lípidos, presión arterial y medicamentos se revisan mejor dentro del contexto cardiovascular.',
+            href: '/portal/category/heart-health',
+            label: 'Revisar salud cardíaca',
+          },
+          {
+            title: 'Curcumina',
+            description:
+              'Guía específica para revisar formulación, absorción, dosis y seguridad.',
+            href: '/portal/supplement/curcumin?benefit=inflammation',
+            label: 'Comparar curcumina',
+          },
+          {
+            title: 'Omega-3',
+            description:
+              'Útil para revisar EPA/DHA, dosis, lípidos, anticoagulantes y cirugía.',
+            href: '/portal/supplement/omega-3?benefit=inflammation',
+            label: 'Comparar omega-3',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos e inflamación',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de usar curcumina?',
+            answer:
+              'Formulación, absorción, dosis, tolerancia digestiva, anticoagulantes, cirugía programada, embarazo y medicamentos. La causa del dolor o inflamación debe estar clara.',
+          },
+          {
+            question: '¿Omega-3 y curcumina se comparan igual?',
+            answer:
+              'No. Omega-3 suele revisarse por EPA/DHA, lípidos y salud cardiovascular; curcumina depende más de formulación y absorción. Ambos requieren revisar seguridad.',
+          },
+          {
+            question: '¿Boswellia aplica para cualquier molestia?',
+            answer:
+              'No conviene generalizar. La utilidad depende del tipo de molestia, extracto, dosis, tolerancia y medicamentos.',
+          },
+          {
+            question: '¿Cuándo buscar atención profesional?',
+            answer:
+              'Dolor intenso, fiebre, hinchazón marcada, pérdida de peso, lesión, enfermedad autoinmune, cirugía próxima o uso de anticoagulantes requieren orientación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para inflamación',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for inflammation, joint discomfort, recovery, and inflammatory markers. Responsible review separates cause, diagnosis, medications, surgery, dose, and safety.',
+        highlights: [
+          'Curcumin depends heavily on formulation, absorption, dose, and use with anticoagulants or medications.',
+          'Omega-3 is interpreted better by EPA/DHA, dose, lipids, heart-health context, and bleeding risk.',
+          'Boswellia and ginger are herbal options where extract, digestive tolerance, and joint context matter.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Curcumin and formulation',
+            description:
+              'Compare extract, bioavailability, dose, digestive tolerance, and medications before choosing a product.',
+            supplementSlug: 'curcumin',
+            searchLabel: 'Open the curcumin guide',
+          },
+          {
+            title: 'Omega-3 and heart context',
+            description:
+              'Review EPA/DHA, dose, lipids, anticoagulants, surgery, and main goal before supplementing.',
+            supplementSlug: 'omega-3',
+            searchLabel: 'Open the omega-3 guide',
+          },
+          {
+            title: 'Boswellia and joints',
+            description:
+              'A herbal option to review by extract, digestive tolerance, medications, and type of joint discomfort.',
+            supplementSlug: 'boswellia-serrata',
+            searchLabel: 'Open the boswellia guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Joint and bone health',
+            description:
+              'If the main intent is joint context, compare vitamin D, glucosamine, collagen, and bone context.',
+            href: '/portal/category/joint-bone-health',
+            label: 'Review joints',
+          },
+          {
+            title: 'Heart health',
+            description:
+              'Omega-3, lipids, blood pressure, and medications are reviewed better inside cardiovascular context.',
+            href: '/portal/category/heart-health',
+            label: 'Review heart health',
+          },
+          {
+            title: 'Curcumin',
+            description:
+              'A specific guide for reviewing formulation, absorption, dose, and safety.',
+            href: '/portal/supplement/curcumin?benefit=inflammation',
+            label: 'Compare curcumin',
+          },
+          {
+            title: 'Omega-3',
+            description:
+              'Useful for reviewing EPA/DHA, dose, lipids, anticoagulants, and surgery.',
+            href: '/portal/supplement/omega-3?benefit=inflammation',
+            label: 'Compare omega-3',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about supplements and inflammation',
+        faqs: [
+          {
+            question: 'What should I review before using curcumin?',
+            answer:
+              'Formulation, absorption, dose, digestive tolerance, anticoagulants, planned surgery, pregnancy, and medications. The cause of pain or inflammation should be clear.',
+          },
+          {
+            question: 'Are omega-3 and curcumin compared the same way?',
+            answer:
+              'No. Omega-3 is usually reviewed by EPA/DHA, lipids, and heart-health context; curcumin depends more on formulation and absorption. Both require safety review.',
+          },
+          {
+            question: 'Is boswellia appropriate for any discomfort?',
+            answer:
+              'Avoid generalizing. Usefulness depends on discomfort type, extract, dose, tolerance, and medications.',
+          },
+          {
+            question: 'When should I seek professional care?',
+            answer:
+              'Intense pain, fever, marked swelling, weight loss, injury, autoimmune disease, upcoming surgery, or anticoagulant use warrant professional guidance.',
+          },
+        ],
+        supplementLinksHeading: 'Inflammation supplement guides',
       },
     },
     'common-deficiencies': {

@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const inflammationUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,74 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for inflammation', () => {
+    const inflammationCopyEs = buildCategorySeoCopy({
+      slug: 'inflammation',
+      categoryName: 'Inflamación',
+      categoryDescription:
+        'Suplementos con investigación sobre marcadores inflamatorios, dolor y recuperación, sin sustituir diagnóstico o tratamiento médico.',
+      locale: 'es',
+    });
+    const inflammationCopyEn = buildCategorySeoCopy({
+      slug: 'inflammation',
+      categoryName: 'Inflammation',
+      categoryDescription:
+        'Supplements researched for inflammatory markers, pain, and recovery without replacing medical diagnosis or care.',
+      locale: 'en',
+    });
+    const inflammationContentEs = buildCategorySeoContent('inflammation', 'es');
+    const inflammationContentEn = buildCategorySeoContent('inflammation', 'en');
+
+    expect(inflammationCopyEs.title).toBe('Suplementos para inflamación: curcumina, omega-3 y boswellia');
+    expect(inflammationCopyEs.description).toContain('medicamentos');
+    expect(inflammationCopyEs.title).not.toContain('evidencia científica');
+    expect(inflammationCopyEn.title).toBe('Inflammation supplements: curcumin, omega-3, and boswellia');
+    expect(inflammationCopyEn.description).toContain('medications');
+    expect(inflammationCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(inflammationContentEs).not.toBeNull();
+    expect(inflammationContentEn).not.toBeNull();
+    expect(inflammationContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'curcumin',
+      'omega-3',
+      'boswellia-serrata',
+    ]);
+    expect(inflammationContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'curcumin',
+      'omega-3',
+      'boswellia-serrata',
+    ]);
+    expect(inflammationContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/joint-bone-health',
+      '/portal/category/heart-health',
+      '/portal/supplement/curcumin?benefit=inflammation',
+      '/portal/supplement/omega-3?benefit=inflammation',
+    ]);
+    expect(inflammationContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/joint-bone-health',
+      '/portal/category/heart-health',
+      '/portal/supplement/curcumin?benefit=inflammation',
+      '/portal/supplement/omega-3?benefit=inflammation',
+    ]);
+    expect(inflammationContentEs?.faqs).toHaveLength(4);
+    expect(inflammationContentEn?.faqs).toHaveLength(4);
+    expect(inflammationContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué revisar antes de usar curcumina?'
+    );
+    expect(inflammationContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'What should I review before using curcumin?'
+    );
+
+    const serialized = JSON.stringify([
+      inflammationCopyEs,
+      inflammationCopyEn,
+      inflammationContentEs,
+      inflammationContentEn,
+    ]);
+    expect(serialized).not.toMatch(inflammationUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +327,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('inflammation', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);
