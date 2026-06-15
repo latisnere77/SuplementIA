@@ -41,6 +41,38 @@ npx tsx eval/run.ts --fixtures eval/fixtures --pricing eval/pricing.json
 Expected behavior: the command scores committed fixtures and prints projected
 costs for candidates with confirmed pricing. It must not call Bedrock.
 
+## Run dry A/B request construction
+
+```bash
+npx tsx eval/run.ts --dry-run-ab --golden eval/golden --pricing eval/pricing.json
+```
+
+Expected behavior:
+
+- Imports the real vendored `buildEnrichmentPrompt` and `ENRICHMENT_PROMPT_TEMPLATE`
+  from `eval/fixtures/enricher-live-dist/prompts.js`.
+- Imports the real vendored `ENRICHED_CONTENT_TOOL_CONFIG` from
+  `eval/fixtures/enricher-live-dist/toolSchema.js`.
+- Builds one dry Converse request per golden item and candidate model.
+- Prints deterministic local input-token estimates from the real prompt + tool
+  schema payload.
+- Does not call Bedrock, CountTokens, or any paid inference endpoint.
+
+Default dry-run candidates:
+
+- Baseline: `us.anthropic.claude-sonnet-4-5-20250929-v1:0`, `maxTokens=16000`,
+  `temperature=0.3`, `USE_TOOL_API=true`.
+- Candidate: `us.anthropic.claude-haiku-4-5-20251001-v1:0`, `maxTokens=16000`,
+  `temperature=0.3`, `USE_TOOL_API=true`.
+- Candidate: `amazon.nova-lite-v1:0`, `maxTokens=5000`, `temperature=0.3`,
+  `USE_TOOL_API=true`.
+- Candidate: `amazon.nova-2-lite-v1:0`, `maxTokens=16000`, `temperature=0.3`,
+  `USE_TOOL_API=true`.
+
+Use `--model-id <candidate-id-or-model-id>` and `--max-tokens <n>` to construct
+a focused dry run for one model or a different token cap. Live mode remains
+blocked separately.
+
 ## Live mode guard
 
 `--live` is intentionally blocked unless all explicit approvals and source files
