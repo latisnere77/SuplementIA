@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'joint-bone-health': {
+      es: {
+        title: 'Suplementos para articulaciones y huesos: vitamina D, glucosamina y colágeno',
+        description:
+          'Compara vitamina D, glucosamina y colágeno hidrolizado por movilidad, salud ósea, entrenamiento, edad, seguridad y seguimiento.',
+      },
+      en: {
+        title: 'Joint and bone supplements: vitamin D, glucosamine, collagen',
+        description:
+          'Compare vitamin D, glucosamine, and hydrolyzed collagen by mobility, bone health, training, age, safety, and follow-up.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'joint-bone-health': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para articulaciones, movilidad y salud ósea. La elección depende de edad, entrenamiento, dieta, dolor persistente, análisis, medicamentos y evaluación profesional cuando hay señales de alarma.',
+        highlights: [
+          'Vitamina D se revisa mejor con análisis de 25-OH vitamina D, ingesta de calcio, exposición solar y riesgo óseo.',
+          'Glucosamina se compara más por molestias articulares y movilidad, con evidencia variable y atención a alergias o anticoagulantes.',
+          'Colágeno hidrolizado se revisa por tendones, piel o articulaciones, pero conviene separar proteína total, entrenamiento y expectativas.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Vitamina D y hueso',
+            description:
+              'Relevante cuando hay baja exposición solar, riesgo de deficiencia o seguimiento óseo; la dosis prudente depende de análisis.',
+            supplementSlug: 'vitamin-d',
+            searchLabel: 'Abrir la guía de vitamina D',
+          },
+          {
+            title: 'Glucosamina y movilidad',
+            description:
+              'Opción comparada para articulaciones con respuesta variable; revisar alergias a mariscos, anticoagulantes y tiempo de prueba.',
+            supplementSlug: 'glucosamine',
+            searchLabel: 'Abrir la guía de glucosamina',
+          },
+          {
+            title: 'Colágeno hidrolizado',
+            description:
+              'Se revisa para articulaciones, tendones y piel; el contexto incluye proteína total, vitamina C, entrenamiento y constancia.',
+            supplementSlug: 'hydrolyzed-collagen',
+            searchLabel: 'Abrir la guía de colágeno',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'Vitamina D y calcio se interpretan mejor con laboratorios, dieta y etapa de vida.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Rendimiento deportivo',
+            description:
+              'Si el objetivo es entrenamiento, potencia o recuperación, compara creatina, cafeína, beta-alanina y citrulina.',
+            href: '/portal/category/sports-performance',
+            label: 'Revisar rendimiento',
+          },
+          {
+            title: 'Vitamina D',
+            description:
+              'Guía específica para revisar laboratorio, dosis, calcio, salud ósea e interacciones.',
+            href: '/portal/supplement/vitamin-d?benefit=joint-bone-health',
+            label: 'Comparar vitamina D',
+          },
+          {
+            title: 'Glucosamina',
+            description:
+              'Útil para comparar preparación, duración de uso, seguridad y expectativas realistas.',
+            href: '/portal/supplement/glucosamine?benefit=joint-bone-health',
+            label: 'Comparar glucosamina',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre articulaciones y huesos',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de elegir un suplemento articular?',
+            answer:
+              'Ubicación del dolor, duración, lesión previa, entrenamiento, peso, medicamentos, edad y señales de alarma. Dolor persistente o limitación funcional merece evaluación profesional.',
+          },
+          {
+            question: '¿Vitamina D se decide por síntomas?',
+            answer:
+              'Lo prudente es revisarla con análisis de 25-OH vitamina D y contexto de calcio, sol, dieta y salud ósea. Los síntomas por sí solos no confirman deficiencia.',
+          },
+          {
+            question: '¿Glucosamina y colágeno son intercambiables?',
+            answer:
+              'No. Glucosamina se compara más por articulaciones; colágeno hidrolizado por tejido conectivo, tendones o piel. El encaje depende del objetivo y tolerancia.',
+          },
+          {
+            question: '¿Cuándo buscar atención profesional?',
+            answer:
+              'Dolor intenso, inflamación marcada, fiebre, pérdida de fuerza, trauma, dolor nocturno, deformidad o dificultad para caminar requieren evaluación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para articulaciones',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for joints, mobility, and bone health. Choice depends on age, training, diet, persistent pain, labs, medications, and professional evaluation when warning signs are present.',
+        highlights: [
+          'Vitamin D is best reviewed with a 25-OH vitamin D test, calcium intake, sun exposure, and bone-risk context.',
+          'Glucosamine is compared more for joint discomfort and mobility, with variable evidence and attention to allergies or anticoagulants.',
+          'Hydrolyzed collagen is reviewed for tendons, skin, or joints, but total protein, training, and expectations should be separated.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Vitamin D and bone context',
+            description:
+              'Relevant when sun exposure is low, deficiency risk is present, or bone follow-up matters; prudent dosing depends on labs.',
+            supplementSlug: 'vitamin-d',
+            searchLabel: 'Open the vitamin D guide',
+          },
+          {
+            title: 'Glucosamine and mobility',
+            description:
+              'A joint option with variable response; review shellfish allergy, anticoagulants, and trial duration.',
+            supplementSlug: 'glucosamine',
+            searchLabel: 'Open the glucosamine guide',
+          },
+          {
+            title: 'Hydrolyzed collagen',
+            description:
+              'Reviewed for joints, tendons, and skin; context includes total protein, vitamin C, training, and consistency.',
+            supplementSlug: 'hydrolyzed-collagen',
+            searchLabel: 'Open the collagen guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Common deficiencies',
+            description:
+              'Vitamin D and calcium are interpreted better with labs, diet, and life-stage context.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Sports performance',
+            description:
+              'If the goal is training, power, or recovery, compare creatine, caffeine, beta-alanine, and citrulline.',
+            href: '/portal/category/sports-performance',
+            label: 'Review performance',
+          },
+          {
+            title: 'Vitamin D',
+            description:
+              'A specific guide for labs, dose, calcium, bone health, and interactions.',
+            href: '/portal/supplement/vitamin-d?benefit=joint-bone-health',
+            label: 'Compare vitamin D',
+          },
+          {
+            title: 'Glucosamine',
+            description:
+              'Useful for comparing preparation, duration of use, safety, and realistic expectations.',
+            href: '/portal/supplement/glucosamine?benefit=joint-bone-health',
+            label: 'Compare glucosamine',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about joints and bones',
+        faqs: [
+          {
+            question: 'What should I review before choosing a joint supplement?',
+            answer:
+              'Pain location, duration, previous injury, training, weight, medications, age, and warning signs. Persistent pain or functional limitation deserves professional evaluation.',
+          },
+          {
+            question: 'Is vitamin D decided by symptoms?',
+            answer:
+              'A 25-OH vitamin D lab test plus calcium, sun, diet, and bone context is the prudent route. Symptoms alone do not confirm deficiency.',
+          },
+          {
+            question: 'Are glucosamine and collagen interchangeable?',
+            answer:
+              'No. Glucosamine is compared more for joints; hydrolyzed collagen for connective tissue, tendons, or skin. Fit depends on the goal and tolerance.',
+          },
+          {
+            question: 'When should I seek professional care?',
+            answer:
+              'Intense pain, marked swelling, fever, loss of strength, trauma, night pain, deformity, or difficulty walking require professional evaluation.',
+          },
+        ],
+        supplementLinksHeading: 'Joint supplement guides',
       },
     },
     'common-deficiencies': {

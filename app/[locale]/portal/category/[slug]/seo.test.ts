@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const jointBoneUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for joint and bone health', () => {
+    const jointCopyEs = buildCategorySeoCopy({
+      slug: 'joint-bone-health',
+      categoryName: 'Salud Articular y Ósea',
+      categoryDescription: 'Suplementos estudiados para articulaciones y huesos.',
+      locale: 'es',
+    });
+    const jointCopyEn = buildCategorySeoCopy({
+      slug: 'joint-bone-health',
+      categoryName: 'Joint and Bone Health',
+      categoryDescription: 'Supplements studied for joints and bones.',
+      locale: 'en',
+    });
+    const jointContentEs = buildCategorySeoContent('joint-bone-health', 'es');
+    const jointContentEn = buildCategorySeoContent('joint-bone-health', 'en');
+
+    expect(jointCopyEs.title).toBe('Suplementos para articulaciones y huesos: vitamina D, glucosamina y colágeno');
+    expect(jointCopyEs.description).toContain('salud ósea');
+    expect(jointCopyEs.title).not.toContain('evidencia científica');
+    expect(jointCopyEn.title).toBe('Joint and bone supplements: vitamin D, glucosamine, collagen');
+    expect(jointCopyEn.description).toContain('bone health');
+    expect(jointCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(jointContentEs).not.toBeNull();
+    expect(jointContentEn).not.toBeNull();
+    expect(jointContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'vitamin-d',
+      'glucosamine',
+      'hydrolyzed-collagen',
+    ]);
+    expect(jointContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'vitamin-d',
+      'glucosamine',
+      'hydrolyzed-collagen',
+    ]);
+    expect(jointContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/sports-performance',
+      '/portal/supplement/vitamin-d?benefit=joint-bone-health',
+      '/portal/supplement/glucosamine?benefit=joint-bone-health',
+    ]);
+    expect(jointContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/sports-performance',
+      '/portal/supplement/vitamin-d?benefit=joint-bone-health',
+      '/portal/supplement/glucosamine?benefit=joint-bone-health',
+    ]);
+    expect(jointContentEs?.faqs).toHaveLength(4);
+    expect(jointContentEn?.faqs).toHaveLength(4);
+    expect(jointContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Glucosamina y colágeno son intercambiables?'
+    );
+    expect(jointContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'Are glucosamine and collagen interchangeable?'
+    );
+
+    const serialized = JSON.stringify([jointCopyEs, jointCopyEn, jointContentEs, jointContentEn]);
+    expect(serialized).not.toMatch(jointBoneUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('joint-bone-health', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);
