@@ -142,6 +142,22 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         },
       ],
     },
+    ...(seoContent?.faqs.length
+      ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: seoContent.faqs.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: faq.answer,
+            },
+          })),
+        },
+      ]
+      : []),
   ];
 
   // Sort supplements by evidence grade (A -> F)
