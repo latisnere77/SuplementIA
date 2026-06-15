@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const skinHairUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for skin and hair health', () => {
+    const skinCopyEs = buildCategorySeoCopy({
+      slug: 'skin-hair-health',
+      categoryName: 'Salud de la Piel y Cabello',
+      categoryDescription: 'Suplementos estudiados para piel y cabello.',
+      locale: 'es',
+    });
+    const skinCopyEn = buildCategorySeoCopy({
+      slug: 'skin-hair-health',
+      categoryName: 'Skin and Hair Health',
+      categoryDescription: 'Supplements studied for skin and hair.',
+      locale: 'en',
+    });
+    const skinContentEs = buildCategorySeoContent('skin-hair-health', 'es');
+    const skinContentEn = buildCategorySeoContent('skin-hair-health', 'en');
+
+    expect(skinCopyEs.title).toBe('Suplementos para piel y cabello: colágeno, biotina y vitamina C');
+    expect(skinCopyEs.description).toContain('expectativas realistas');
+    expect(skinCopyEs.title).not.toContain('evidencia científica');
+    expect(skinCopyEn.title).toBe('Skin and hair supplements: collagen, biotin, and vitamin C');
+    expect(skinCopyEn.description).toContain('realistic expectations');
+    expect(skinCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(skinContentEs).not.toBeNull();
+    expect(skinContentEn).not.toBeNull();
+    expect(skinContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'collagen',
+      'biotin',
+      'vitamin-c',
+    ]);
+    expect(skinContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'collagen',
+      'biotin',
+      'vitamin-c',
+    ]);
+    expect(skinContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/joint-bone-health',
+      '/portal/supplement/collagen?benefit=skin-hair-health',
+      '/portal/supplement/biotin?benefit=skin-hair-health',
+    ]);
+    expect(skinContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/joint-bone-health',
+      '/portal/supplement/collagen?benefit=skin-hair-health',
+      '/portal/supplement/biotin?benefit=skin-hair-health',
+    ]);
+    expect(skinContentEs?.faqs).toHaveLength(4);
+    expect(skinContentEn?.faqs).toHaveLength(4);
+    expect(skinContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Biotina es necesaria si no hay deficiencia?'
+    );
+    expect(skinContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'Is biotin necessary without a deficiency?'
+    );
+
+    const serialized = JSON.stringify([skinCopyEs, skinCopyEn, skinContentEs, skinContentEn]);
+    expect(serialized).not.toMatch(skinHairUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('skin-hair-health', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);

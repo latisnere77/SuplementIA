@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'skin-hair-health': {
+      es: {
+        title: 'Suplementos para piel y cabello: colágeno, biotina y vitamina C',
+        description:
+          'Compara colágeno, biotina y vitamina C según dieta, deficiencias, piel, cabello, uñas, seguridad y expectativas realistas.',
+      },
+      en: {
+        title: 'Skin and hair supplements: collagen, biotin, and vitamin C',
+        description:
+          'Compare collagen, biotin, and vitamin C by diet, deficiencies, skin, hair, nails, safety, and realistic expectations.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'skin-hair-health': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para piel, cabello y uñas. La lectura prudente separa deficiencias reales, proteína total, edad, dieta, medicamentos, caída de cabello persistente y expectativas cosméticas.',
+        highlights: [
+          'Colágeno se revisa por piel, articulaciones o tendones, pero conviene considerar proteína total, vitamina C y constancia.',
+          'Biotina tiene más sentido cuando hay riesgo de deficiencia; dosis altas pueden interferir con algunos análisis de laboratorio.',
+          'Vitamina C participa en síntesis de colágeno, pero su utilidad depende de dieta, ingesta total y contexto de deficiencia.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Colágeno y proteína total',
+            description:
+              'Se compara para piel y tejido conectivo; revisar ingesta de proteína, vitamina C, expectativas y tolerancia digestiva.',
+            supplementSlug: 'collagen',
+            searchLabel: 'Abrir la guía de colágeno',
+          },
+          {
+            title: 'Biotina y laboratorios',
+            description:
+              'Relevante cuando hay deficiencia plausible; dosis altas pueden alterar pruebas de tiroides, hormonas o corazón.',
+            supplementSlug: 'biotin',
+            searchLabel: 'Abrir la guía de biotina',
+          },
+          {
+            title: 'Vitamina C y colágeno',
+            description:
+              'Cofactor nutricional para síntesis de colágeno; revisar dieta, frutas, verduras y tolerancia gastrointestinal.',
+            supplementSlug: 'vitamin-c',
+            searchLabel: 'Abrir la guía de vitamina C',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'Hierro, zinc, B12 y folato pueden importar cuando hay caída de cabello, fatiga o dietas restrictivas.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Articulaciones y huesos',
+            description:
+              'Si el interés por colágeno también incluye articulaciones o tendones, revisa el cluster musculoesquelético.',
+            href: '/portal/category/joint-bone-health',
+            label: 'Revisar articulaciones',
+          },
+          {
+            title: 'Colágeno',
+            description:
+              'Guía específica para revisar péptidos, dosis, proteína total, vitamina C y expectativas.',
+            href: '/portal/supplement/collagen?benefit=skin-hair-health',
+            label: 'Comparar colágeno',
+          },
+          {
+            title: 'Biotina',
+            description:
+              'Útil para separar deficiencia, dosis altas, interferencia con laboratorios y expectativas.',
+            href: '/portal/supplement/biotin?benefit=skin-hair-health',
+            label: 'Comparar biotina',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre piel, cabello y uñas',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de elegir un suplemento para cabello?',
+            answer:
+              'Dieta, hierro, zinc, B12, folato, tiroides, estrés, medicamentos y duración de la caída. Si la caída es marcada o persistente, conviene evaluación profesional.',
+          },
+          {
+            question: '¿Biotina es necesaria si no hay deficiencia?',
+            answer:
+              'No siempre. La biotina puede ser relevante si hay deficiencia plausible, pero dosis altas pueden interferir con análisis. Conviene avisar al laboratorio y al profesional.',
+          },
+          {
+            question: '¿Colágeno y vitamina C se revisan juntos?',
+            answer:
+              'Vitamina C participa en síntesis de colágeno, pero eso no implica que todos necesiten suplemento. Dieta, proteína total y objetivo concreto importan más.',
+          },
+          {
+            question: '¿Cuándo buscar evaluación profesional?',
+            answer:
+              'Caída en parches, pérdida rápida, lesiones en piel, uñas muy frágiles, fatiga intensa, embarazo, posparto o cambios hormonales merecen revisión profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para piel y cabello',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for skin, hair, and nails. A prudent review separates real deficiencies, total protein, age, diet, medications, persistent hair loss, and cosmetic expectations.',
+        highlights: [
+          'Collagen is reviewed for skin, joints, or tendons, but total protein, vitamin C, and consistency should be considered.',
+          'Biotin makes more sense when deficiency risk is plausible; high doses can interfere with some lab tests.',
+          'Vitamin C participates in collagen synthesis, but usefulness depends on diet, total intake, and deficiency context.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Collagen and total protein',
+            description:
+              'Compared for skin and connective tissue; review protein intake, vitamin C, expectations, and digestive tolerance.',
+            supplementSlug: 'collagen',
+            searchLabel: 'Open the collagen guide',
+          },
+          {
+            title: 'Biotin and lab tests',
+            description:
+              'Relevant when deficiency is plausible; high doses can alter thyroid, hormone, or heart-related lab tests.',
+            supplementSlug: 'biotin',
+            searchLabel: 'Open the biotin guide',
+          },
+          {
+            title: 'Vitamin C and collagen',
+            description:
+              'A nutritional cofactor for collagen synthesis; review diet, fruits, vegetables, and gastrointestinal tolerance.',
+            supplementSlug: 'vitamin-c',
+            searchLabel: 'Open the vitamin C guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Common deficiencies',
+            description:
+              'Iron, zinc, B12, and folate may matter when hair shedding, fatigue, or restrictive diets are relevant.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Joints and bones',
+            description:
+              'If collagen interest also includes joints or tendons, review the musculoskeletal cluster.',
+            href: '/portal/category/joint-bone-health',
+            label: 'Review joints',
+          },
+          {
+            title: 'Collagen',
+            description:
+              'A specific guide for peptides, dose, total protein, vitamin C, and expectations.',
+            href: '/portal/supplement/collagen?benefit=skin-hair-health',
+            label: 'Compare collagen',
+          },
+          {
+            title: 'Biotin',
+            description:
+              'Useful for separating deficiency, high doses, lab interference, and expectations.',
+            href: '/portal/supplement/biotin?benefit=skin-hair-health',
+            label: 'Compare biotin',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about skin, hair, and nails',
+        faqs: [
+          {
+            question: 'What should I review before choosing a hair supplement?',
+            answer:
+              'Diet, iron, zinc, B12, folate, thyroid, stress, medications, and duration of shedding. Marked or persistent hair loss deserves professional evaluation.',
+          },
+          {
+            question: 'Is biotin necessary without a deficiency?',
+            answer:
+              'Not always. Biotin may be relevant if deficiency is plausible, but high doses can interfere with lab tests. Tell the lab and your professional.',
+          },
+          {
+            question: 'Are collagen and vitamin C reviewed together?',
+            answer:
+              'Vitamin C participates in collagen synthesis, but that does not mean everyone needs a supplement. Diet, total protein, and the specific goal matter more.',
+          },
+          {
+            question: 'When should I seek professional evaluation?',
+            answer:
+              'Patchy hair loss, rapid shedding, skin lesions, very brittle nails, intense fatigue, pregnancy, postpartum changes, or hormonal changes deserve professional review.',
+          },
+        ],
+        supplementLinksHeading: 'Skin and hair supplement guides',
       },
     },
     'common-deficiencies': {
