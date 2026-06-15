@@ -67,6 +67,11 @@ mergeas ni habilitas auto-merge. AWS solo LECTURA y solo con identidad confirmad
 
 ## 6. BUCLE DE COLA (cómo trabajas sin parar)
 - Lee `TASK_QUEUE.md`. Toma la primera tarea con estado PENDING (orden de arriba a abajo).
+- Tareas que editan un archivo compartido (p. ej. `seo.ts`) NO se ejecutan en ramas paralelas:
+  se encadenan en UNA sola rama stacked (cada tarea rebasea sobre la anterior) o se consolidan
+  al cierre en una PR de integración. Nunca una-rama-por-tarea cuando colisionan en el mismo
+  archivo/anclaje. Detecta esto en el Spec-Gate: si dos tareas PENDING declaran el mismo archivo
+  IN SCOPE, márcalas como un serial-group y trabájalas en cadena.
 - Ejecútala con §5. Al terminar: DONE (con PR) o BLOCKED (con razón). NUNCA dejes una tarea
   en in_progress al cerrar una sesión.
 - Una tarea BLOCKED no detiene la cola: documéntala y sigue con la siguiente PENDING.

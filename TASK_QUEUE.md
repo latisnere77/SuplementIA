@@ -6,6 +6,9 @@ contra `main`. **El agente nunca mergea**: un humano revisa y mergea cada PR (ú
 
 Estados: `PENDING` · `IN_PROGRESS` (transitorio, nunca al cerrar sesión) · `DONE (PR #n)` · `BLOCKED (razón)`
 
+Nota de serialización: las tareas que comparten archivo IN SCOPE llevan etiqueta
+`[serial-group: <archivo>]` y se ejecutan encadenadas, no en paralelo.
+
 ---
 
 ## T1 — Discovery: enumerar categorías sin contenido SEO curado  ·  DONE (PR #155)
