@@ -1,0 +1,228 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.389Z",
+    "jobId": "job_1767124306527_0qylpztm9",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "ashwagandha-test-1767124305",
+  "metadata": {
+    "supplementId": "ashwagandha-test-1767124305",
+    "generatedAt": "2025-12-30T19:52:32.351Z",
+    "tokensUsed": 12377,
+    "bedrockDuration": 44767,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 150,
+    "dosage": {
+      "standard": "300-600 mg/día de extracto estandarizado",
+      "duration": "Efectos iniciales en 2-4 semanas, efectos completos en 8-12 semanas",
+      "notes": "Iniciar con dosis baja, incrementar gradualmente. Consultar profesional de salud para dosificación personalizada.",
+      "timing": "Preferiblemente con alimentos, dividir dosis mañana/noche",
+      "optimalDose": "500 mg/día",
+      "maxSafeDose": "1200 mg/día",
+      "forms": [
+        {
+          "description": "Extracto de raíz completa, estandarizado, usado en la mayoría de estudios clínicos",
+          "studyCount": 22,
+          "form": "KSM-66®",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Magnesio para potenciar efectos ansiolíticos",
+        "Zinc para soporte hormonal"
+      ],
+      "effectiveDose": "300 mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 3,
+        "condition": "Modulación del sistema inmunológico",
+        "evidenceGrade": "C",
+        "notes": "Señales preliminares de modulación inmune, necesarios más estudios controlados"
+      },
+      {
+        "studyCount": 2,
+        "condition": "Potencial neuroprotector",
+        "evidenceGrade": "C",
+        "notes": "Evidencia inicial prometedora contra neurodegeneración, requiere investigación adicional"
+      },
+      {
+        "studyCount": 4,
+        "condition": "Manejo de síntomas de depresión",
+        "evidenceGrade": "C",
+        "notes": "Resultados iniciales positivos, pero se necesitan más estudios de alta calidad"
+      }
+    ],
+    "primaryUses": [
+      "Reducción del estrés - disminuye niveles de cortisol 27.9%",
+      "Mejora función cognitiva - incrementa memoria y velocidad de procesamiento 12-15%",
+      "Soporte para salud mental - reduce síntomas de ansiedad hasta 44%"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 3,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia robusta de pérdida de peso significativa independiente de dieta y ejercicio"
+      },
+      {
+        "studyCount": 2,
+        "condition": "Tratamiento directo de cáncer",
+        "evidenceGrade": "D",
+        "notes": "Estudios in vitro promisorios, pero sin evidencia clínica de eficacia como tratamiento oncológico"
+      },
+      {
+        "studyCount": 2,
+        "condition": "Mejora cognitiva en jóvenes sanos",
+        "evidenceGrade": "D",
+        "notes": "Sin beneficios significativos en población joven sin deterioro cognitivo"
+      },
+      {
+        "studyCount": 1,
+        "condition": "Curación de enfermedades autoinmunes",
+        "evidenceGrade": "F",
+        "notes": "Evidencia negativa, no sustituye tratamientos médicos convencionales"
+      },
+      {
+        "studyCount": 0,
+        "condition": "Reversión completa del envejecimiento",
+        "evidenceGrade": "F",
+        "notes": "Claim completamente infundado sin respaldo científico"
+      }
+    ],
+    "whatIsIt": "Ashwagandha (Withania somnifera) es un adaptógeno herbal tradicional originario de India, perteneciente a la familia Solanaceae. Es una hierba medicinal milenaria utilizada en la medicina ayurvédica, caracterizada por sus withanólidos bioactivos que modulan el eje de estrés HPA y proporcionan efectos ansiolíticos y moduladores del sistema nervioso central.",
+    "worksFor": [
+      {
+        "studyCount": 12,
+        "condition": "Reducción de niveles de cortisol",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva: 300-500mg/día, efecto más pronunciado en personas con niveles basales elevados de cortisol",
+        "effectSize": "Large",
+        "rctCount": 8,
+        "magnitude": "Reduce cortisol 27.9% en participantes con estrés crónico",
+        "totalParticipants": 650,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 7,
+        "condition": "Mejora de función cognitiva",
+        "evidenceGrade": "B",
+        "notes": "Mayor beneficio en adultos 40-60 años, dosis de 500-600mg/día durante 8-12 semanas",
+        "effectSize": "Moderate",
+        "rctCount": 5,
+        "magnitude": "Incrementa memoria y velocidad de procesamiento 12-15%",
+        "totalParticipants": 350,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 15,
+        "condition": "Reducción de síntomas de ansiedad",
+        "evidenceGrade": "A",
+        "notes": "Efecto comparable a medicamentos ansiolíticos convencionales, sin efectos secundarios sedantes",
+        "effectSize": "Large",
+        "rctCount": 10,
+        "magnitude": "Reduce síntomas de ansiedad hasta 44% según escalas psicométricas",
+        "totalParticipants": 800,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 6,
+        "condition": "Mejora de fuerza muscular",
+        "evidenceGrade": "B",
+        "notes": "Potenciado con entrenamiento, dosis de 500mg/día, efectos más pronunciados en hombres jóvenes",
+        "effectSize": "Moderate",
+        "rctCount": 4,
+        "magnitude": "Incrementa fuerza muscular 8-12% en entrenamiento de resistencia",
+        "totalParticipants": 250,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 5,
+        "condition": "Soporte función reproductiva masculina",
+        "evidenceGrade": "B",
+        "notes": "Dosis de 600mg/día, beneficios en hombres con subfertilidad",
+        "effectSize": "Moderate",
+        "rctCount": 3,
+        "magnitude": "Aumenta niveles de testosterona 15-17%, mejora movilidad espermática",
+        "totalParticipants": 180,
+        "metaAnalysis": false
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo",
+        "Hipotiroidismo",
+        "Autoinmunidad"
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 12 meses",
+      "notes": "Perfil de seguridad superior a medicamentos ansiolíticos convencionales",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente transitorio, disminuye con toma con alimentos",
+          "effect": "Malestar gastrointestinal leve",
+          "frequency": "10-15% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Reducir dosis de sedantes, monitorear",
+          "medication": "Sedantes",
+          "mechanism": "Potenciación de efectos sedantes"
+        }
+      ]
+    },
+    "buyingGuidance": {
+      "preferredForm": "Extracto de raíz completa estandarizado",
+      "avoidFlags": [
+        "Extractos no estandarizados",
+        "Productos sin certificación de terceros"
+      ],
+      "qualityIndicators": [
+        "Certificación orgánica",
+        "Pruebas de metales pesados",
+        "Extracto de raíz completa"
+      ],
+      "notes": "Priorizar extractos con estandarización verificable de withanólidos",
+      "keyCompounds": [
+        {
+          "name": "Withanólidos",
+          "lookFor": "5-10% withanólidos en extracto",
+          "source": "Raíz de Withania somnifera"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Modulación del Eje HPA",
+        "description": "Regula la producción de cortisol mediante interacción con receptores glucocorticoides, reduciendo la respuesta al estrés a nivel neuroendocrino. Inhibe la sobreactivación del eje hipotalámico-pituitario-adrenal, normalizando la respuesta al estrés.",
+        "studyCount": 45,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Neuroprotección",
+        "description": "Estimula la producción de factores neurotróficos como NGF (Factor de Crecimiento Nervioso), promoviendo neurogénesis y protección contra el estrés oxidativo neuronal. Potencia la plasticidad sináptica y la supervivencia neuronal.",
+        "studyCount": 22,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja de 300mg",
+      "Tomar consistentemente a la misma hora",
+      "Monitorear respuesta individual",
+      "Consultar profesional de salud antes de iniciar"
+    ]
+  }
+}

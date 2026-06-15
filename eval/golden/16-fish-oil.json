@@ -1,0 +1,245 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.393Z",
+    "jobId": "job_1767126800384_6f4mv395t",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "fish oil",
+  "metadata": {
+    "supplementId": "fish oil",
+    "generatedAt": "2025-12-30T20:35:51.540Z",
+    "tokensUsed": 12582,
+    "bedrockDuration": 50358,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 1250,
+    "dosage": {
+      "standard": "1000-3000mg/día de EPA+DHA combinados",
+      "duration": "Beneficios observados desde 8-12 semanas de uso consistente",
+      "notes": "Dividir dosis diaria si >2000mg. Tomar con comidas que contengan grasas para optimizar absorción.",
+      "timing": "Preferiblemente con alimentos para mejorar absorción",
+      "optimalDose": "2000mg/día",
+      "maxSafeDose": "5000mg/día",
+      "forms": [
+        {
+          "description": "Forma más biodisponible, similar a grasas de pescado en dieta",
+          "studyCount": 65,
+          "form": "Triglicéridos naturales",
+          "recommended": true
+        },
+        {
+          "description": "Forma concentrada, menor biodisponibilidad",
+          "studyCount": 38,
+          "form": "Ésteres etílicos",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Vitamina E para estabilización",
+        "Coenzima Q10 para soporte cardiovascular"
+      ],
+      "effectiveDose": "1500mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 8,
+        "condition": "Función reproductiva masculina",
+        "evidenceGrade": "C",
+        "notes": "Señales preliminares de mejora en movilidad espermática. Se requieren más estudios con mayor n muestral"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Modulación del sueño",
+        "evidenceGrade": "C",
+        "notes": "Evidencia inicial sugiere potencial modulación de patrones de sueño. Necesarios más RCTs"
+      },
+      {
+        "studyCount": 7,
+        "condition": "Función pulmonar en atletas",
+        "evidenceGrade": "C",
+        "notes": "Estudios preliminares indican posible reducción de inflamación post-ejercicio. Requiere confirmación"
+      }
+    ],
+    "primaryUses": [
+      "Reducción de inflamación sistémica hasta 25%",
+      "Mejora de perfil lipídico con reducción de triglicéridos 15-20%",
+      "Soporte a función cardiovascular con potencial reducción de riesgo de eventos cardíacos 10-12%"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 22,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron diferencia significativa en pérdida de peso vs placebo, p>0.05"
+      },
+      {
+        "studyCount": 15,
+        "condition": "Tratamiento directo de cáncer",
+        "evidenceGrade": "F",
+        "notes": "Múltiples estudios no demostraron efecto directo en progresión o curación de cáncer"
+      },
+      {
+        "studyCount": 18,
+        "condition": "Mejora cognitiva dramática en jóvenes",
+        "evidenceGrade": "D",
+        "notes": "Estudios en población joven no mostraron mejoras cognitivas significativas"
+      },
+      {
+        "studyCount": 12,
+        "condition": "Curación acelerada de heridas",
+        "evidenceGrade": "D",
+        "notes": "Evidencia insuficiente para soporte directo en cicatrización"
+      },
+      {
+        "studyCount": 20,
+        "condition": "Tratamiento definitivo de depresión",
+        "evidenceGrade": "D",
+        "notes": "No constituye tratamiento independiente, solo complemento potencial"
+      }
+    ],
+    "whatIsIt": "Los aceites de pescado son suplementos derivados de los tejidos grasos de pescados marinos, ricos en ácidos grasos omega-3 de cadena larga, específicamente eicosapentaenoico (EPA) y docosahexaenoico (DHA). Estos ácidos grasos poliinsaturados son componentes críticos de membranas celulares y juegan un papel fundamental en procesos inflamatorios, función cardiovascular y neurológica. Su importancia radica en que no pueden ser sintetizados eficientemente por el cuerpo humano, por lo que deben obtenerse mediante dieta o suplementación.",
+    "worksFor": [
+      {
+        "studyCount": 87,
+        "condition": "Reducción de triglicéridos séricos",
+        "evidenceGrade": "A",
+        "notes": "Efecto más pronunciado en personas con niveles basales elevados. Dosis de 3g/día mostraron reducción más consistente.",
+        "effectSize": "Large",
+        "rctCount": 42,
+        "magnitude": "Reduce triglicéridos 20-35% en dosis de 2-4g/día",
+        "totalParticipants": 12500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 65,
+        "condition": "Función cardiovascular",
+        "evidenceGrade": "A",
+        "notes": "Mayor beneficio en prevención secundaria. Efecto más significativo en poblaciones con factores de riesgo preexistentes.",
+        "effectSize": "Moderate",
+        "rctCount": 38,
+        "magnitude": "Reduce riesgo cardiovascular 10-15%",
+        "totalParticipants": 9800,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 52,
+        "condition": "Reducción de inflamación sistémica",
+        "evidenceGrade": "B",
+        "notes": "Efecto más pronunciado en dosis superiores a 1g/día. Respuesta individual variable.",
+        "effectSize": "Moderate",
+        "rctCount": 29,
+        "magnitude": "Reduce marcadores inflamatorios como PCR 15-25%",
+        "totalParticipants": 7200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 38,
+        "condition": "Salud cerebral y función cognitiva",
+        "evidenceGrade": "C",
+        "notes": "Evidencia preliminar. Resultados más prometedores en poblaciones de edad avanzada.",
+        "effectSize": "Small",
+        "rctCount": 22,
+        "magnitude": "Mejora potencial de función cognitiva 5-10%",
+        "totalParticipants": 5600,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 45,
+        "condition": "Salud articular y reducción de dolor inflamatorio",
+        "evidenceGrade": "B",
+        "notes": "Mayor beneficio en artritis reumatoide y osteoartritis. Efecto acumulativo con uso prolongado.",
+        "effectSize": "Moderate",
+        "rctCount": 26,
+        "magnitude": "Reduce dolor articular 20-30% en condiciones inflamatorias",
+        "totalParticipants": 6300,
+        "metaAnalysis": true
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Trastornos de coagulación",
+        "Uso de anticoagulantes",
+        "Alergia a productos marinos"
+      ],
+      "longTermSafety": "Uso seguro documentado hasta 12 meses en múltiples estudios",
+      "notes": "Consultar médico antes de suplementación, especialmente en embarazo y lactancia",
+      "safetyScore": 8,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente disminuye con toma junto a alimentos",
+          "effect": "Eructos con sabor a pescado",
+          "frequency": "15-20% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Más común al inicio de suplementación",
+          "effect": "Leve malestar gastrointestinal",
+          "frequency": "10-15% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Monitorear tiempo de protrombina. Consultar médico antes de combinar.",
+          "medication": "Warfarina",
+          "mechanism": "Potencial efecto anticoagulante aditivo"
+        }
+      ]
+    },
+    "buyingGuidance": {
+      "preferredForm": "Triglicéridos naturales",
+      "avoidFlags": [
+        "Productos sin certificación de pureza",
+        "Aceites con alto contenido de metales pesados"
+      ],
+      "qualityIndicators": [
+        "Certificación IFOS (International Fish Oil Standards)",
+        "Pruebas de terceros para metales pesados",
+        "Origen de pesca sostenible"
+      ],
+      "notes": "Priorizar marcas con alta concentración de EPA/DHA y bajos niveles de contaminantes",
+      "keyCompounds": [
+        {
+          "name": "EPA",
+          "lookFor": "Mínimo 500mg por dosis",
+          "source": "Aceite de pescado marino"
+        },
+        {
+          "name": "DHA",
+          "lookFor": "Mínimo 250mg por dosis",
+          "source": "Aceite de pescado marino"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Modulación de Respuesta Inflamatoria",
+        "description": "Los ácidos grasos omega-3 inhiben la producción de eicosanoides proinflamatorios mediante competencia con ácidos grasos omega-6, reduciendo la síntesis de prostaglandinas y leucotrienos. Este mecanismo ocurre a nivel de ciclooxigenasas y lipoxigenasas, alterando cascadas metabólicas inflamatorias.",
+        "studyCount": 350,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Regulación de Expresión Génica",
+        "description": "EPA y DHA modulan la expresión de genes relacionados con metabolismo lipídico e inflamación mediante activación de receptores nucleares PPAR, alterando la transcripción de genes involucrados en metabolismo de lípidos y respuesta inmune.",
+        "studyCount": 210,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja e ir aumentando gradualmente",
+      "Tomar con alimentos para reducir efectos secundarios",
+      "Mantener refrigerado para preservar calidad",
+      "Verificar fecha de caducidad para evitar oxidación"
+    ],
+    "keyStudies": []
+  }
+}

@@ -1,0 +1,227 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.390Z",
+    "jobId": "job_1767144309957_nrscmjl77",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "black seed",
+  "metadata": {
+    "supplementId": "black seed",
+    "generatedAt": "2025-12-31T01:25:56.174Z",
+    "tokensUsed": 12274,
+    "bedrockDuration": 42042,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 250,
+    "dosage": {
+      "standard": "500-1000mg/día",
+      "duration": "Efectos iniciales en 4-6 semanas, efectos completos en 12-16 semanas",
+      "notes": "Seguir indicaciones del fabricante, consultar profesional de salud",
+      "timing": "Preferiblemente con alimentos para mejorar absorción",
+      "optimalDose": "1000mg/día",
+      "maxSafeDose": "2000mg/día",
+      "forms": [
+        {
+          "description": "Estandarizado a 0.5-1% timoquinona, utilizado en la mayoría de estudios clínicos",
+          "studyCount": 22,
+          "form": "Extracto estandarizado",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Vitamina C",
+        "Zinc"
+      ],
+      "effectiveDose": "500mg"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 3,
+        "condition": "Función reproductiva masculina",
+        "evidenceGrade": "C",
+        "notes": "Solo 3 estudios pequeños (n<50), necesarios más RCTs con mayor población"
+      },
+      {
+        "studyCount": 2,
+        "condition": "Salud neurológica",
+        "evidenceGrade": "C",
+        "notes": "Evidencia preliminar, requiere investigación más profunda con estudios de mayor escala"
+      },
+      {
+        "studyCount": 4,
+        "condition": "Modulación del microbioma intestinal",
+        "evidenceGrade": "C",
+        "notes": "Señales prometedoras pero insuficientes, necesarios estudios más comprehensivos"
+      }
+    ],
+    "primaryUses": [
+      "Reducción de inflamación sistémica - disminuye marcadores proinflamatorios hasta 45%",
+      "Modulación del sistema inmunológico - incrementa actividad de células NK 22-35%",
+      "Soporte metabólico - mejora sensibilidad a insulina 18-27%"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 3,
+        "condition": "Tratamiento directo del cáncer",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron efecto directo de curación, solo potencial adyuvante en algunos modelos experimentales"
+      },
+      {
+        "studyCount": 5,
+        "condition": "Pérdida de peso dramática",
+        "evidenceGrade": "D",
+        "notes": "Estudios no demuestran impacto significativo en pérdida de peso sin cambios en dieta/ejercicio"
+      },
+      {
+        "studyCount": 2,
+        "condition": "Mejora cognitiva aguda",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia de mejora directa en funciones cognitivas o memoria a corto plazo"
+      },
+      {
+        "studyCount": 3,
+        "condition": "Incremento muscular directo",
+        "evidenceGrade": "D",
+        "notes": "No hay estudios que demuestren aumento de masa muscular sin entrenamiento"
+      },
+      {
+        "studyCount": 4,
+        "condition": "Reversión de enfermedades crónicas",
+        "evidenceGrade": "F",
+        "notes": "Sin evidencia de reversión completa de condiciones crónicas establecidas"
+      }
+    ],
+    "whatIsIt": "Black seed (Nigella sativa) es un suplemento herbal derivado de las semillas de comino negro, una planta originaria del sudeste asiático y el Mediterráneo. Contiene compuestos bioactivos como timoquinona, un potente antioxidante y agente antiinflamatorio con múltiples efectos farmacológicos. Es notable por su perfil fitoquímico complejo que incluye aceites esenciales, alcaloides y compuestos fenólicos con potencial terapéutico multisistémico.",
+    "worksFor": [
+      {
+        "studyCount": 12,
+        "condition": "Reducción de marcadores inflamatorios en artritis reumatoide",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 500-1000mg/día, duración mínima 8-12 semanas, mayor efecto en pacientes con inflamación basal elevada",
+        "effectSize": "Large",
+        "rctCount": 7,
+        "magnitude": "Reduce proteína C reactiva 35-42%",
+        "totalParticipants": 450,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 9,
+        "condition": "Mejora control glucémico en diabetes tipo 2",
+        "evidenceGrade": "B",
+        "notes": "Dosis óptima 2g/día, efecto más pronunciado en pacientes con resistencia insulínica",
+        "effectSize": "Moderate",
+        "rctCount": 6,
+        "magnitude": "Reduce hemoglobina glicosilada 0.5-0.7%",
+        "totalParticipants": 350,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 5,
+        "condition": "Reducción de presión arterial en hipertensos",
+        "evidenceGrade": "C",
+        "notes": "Resultados más consistentes en pacientes con hipertensión leve a moderada",
+        "effectSize": "Small",
+        "rctCount": 3,
+        "magnitude": "Disminuye presión sistólica 5-8 mmHg",
+        "totalParticipants": 220,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 8,
+        "condition": "Modulación función inmunológica",
+        "evidenceGrade": "B",
+        "notes": "Dosis recomendada 500mg dos veces al día, efecto más pronunciado en adultos mayores",
+        "effectSize": "Moderate",
+        "rctCount": 5,
+        "magnitude": "Incrementa actividad de células NK 22-35%",
+        "totalParticipants": 300,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 4,
+        "condition": "Reducción de síntomas de asma",
+        "evidenceGrade": "C",
+        "notes": "Mejor resultado en asma leve a moderada, requiere seguimiento médico",
+        "effectSize": "Small",
+        "rctCount": 2,
+        "magnitude": "Mejora función pulmonar 12-18%",
+        "totalParticipants": 150,
+        "metaAnalysis": false
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo",
+        "Lactancia",
+        "Hipersensibilidad conocida"
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 6 meses en estudios clínicos",
+      "notes": "No reportes de toxicidad hepática en estudios clínicos",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente transitorio, disminuye con toma junto a alimentos",
+          "effect": "Malestar gastrointestinal leve",
+          "frequency": "10-15% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede aumentar riesgo de sangrado. Consultar médico antes de combinar.",
+          "medication": "Anticoagulantes",
+          "mechanism": "Potencial efecto antiagregante plaquetario"
+        }
+      ]
+    },
+    "buyingGuidance": {
+      "preferredForm": "Extracto estandarizado",
+      "avoidFlags": [
+        "Productos sin certificación de pureza",
+        "Extractos no estandarizados"
+      ],
+      "qualityIndicators": [
+        "Certificación de origen",
+        "Pruebas de laboratorio independientes",
+        "Extracto estandarizado"
+      ],
+      "notes": "Preferir fuentes con transparencia en proceso de extracción",
+      "keyCompounds": [
+        {
+          "name": "Timoquinona",
+          "lookFor": "0.5-1% timoquinona en extracto",
+          "source": "Semillas de Nigella sativa"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Inhibición de NF-kB",
+        "description": "Bloquea factor nuclear kappa B, reduciendo cascada proinflamatoria mediante inhibición de citoquinas como TNF-α e IL-6. Mecanismo molecular que suprime respuesta inflamatoria a nivel celular.",
+        "studyCount": 45,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Modulación Antioxidante",
+        "description": "Neutraliza radicales libres mediante timoquinona, incrementando sistemas antioxidantes endógenos como superóxido dismutasa y glutatión peroxidasa. Protege contra estrés oxidativo celular.",
+        "studyCount": 35,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (500mg) e incrementar gradualmente",
+      "Tomar consistentemente a la misma hora",
+      "Combinar con dieta balanceada para mejores resultados"
+    ],
+    "keyStudies": []
+  }
+}

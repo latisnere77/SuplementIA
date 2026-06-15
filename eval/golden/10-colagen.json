@@ -1,0 +1,449 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.391Z",
+    "jobId": "job_1777906614911_hv0ozetvt",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "colágen",
+  "metadata": {
+    "supplementId": "colágen",
+    "generatedAt": "2026-05-04T14:59:29.032Z",
+    "tokensUsed": 20103,
+    "bedrockDuration": 153680,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "2.5-15g/día de péptidos de colágeno hidrolizado, dependiendo del objetivo: 2.5-5g/día para piel, 10g/día para articulaciones, 15g/día para masa muscular",
+      "duration": "Efectos dérmicos iniciales en 4-8 semanas, efectos completos en 12 semanas. Efectos articulares requieren 12-16 semanas mínimo, con beneficios máximos a 24 semanas. Efectos óseos requieren 12 meses. Uso continuo seguro hasta 12 meses documentado en estudios clínicos.",
+      "notes": "Los péptidos de colágeno tienen alta biodisponibilidad (90% absorbidos) con pico plasmático a 1-2 horas post-ingesta según estudios farmacocinéticos con colágeno marcado isotópicamente. Los péptidos específicos (Pro-Hyp, Hyp-Gly) permanecen en sangre hasta 96 horas y se acumulan en tejidos objetivo. Tomar con vitamina C optimiza síntesis de colágeno endógeno. No requiere ciclaje. La consistencia diaria es más importante que el timing específico.",
+      "timing": "Sin preferencia de horario según mayoría de estudios clínicos. Algunos estudios sugieren tomar 30-60 minutos antes de ejercicio para maximizar disponibilidad durante síntesis de tejido conectivo, pero evidencia es preliminar. Puede tomarse con o sin alimentos.",
+      "optimalDose": "10g/día mostró mejor balance eficacia-costo en meta-análisis para osteoartritis y salud articular general",
+      "maxSafeDose": "Hasta 20g/día documentado sin efectos adversos significativos en estudios de 12 meses",
+      "forms": [
+        {
+          "description": "Forma más estudiada para piel, huesos y tejidos conectivos generales. Peso molecular 2-5 kDa optimiza absorción. Utilizado en aproximadamente 70% de estudios dérmicos y óseos. Biodisponibilidad documentada: 90% de péptidos detectables en sangre 1-2 horas post-ingesta.",
+          "studyCount": 45,
+          "form": "Péptidos de colágeno hidrolizado tipo I y III (bovino o marino)",
+          "recommended": true
+        },
+        {
+          "description": "Específico para salud articular mediante mecanismo de tolerancia oral inmunológica. Dosis mucho menor (40mg/día) que colágeno hidrolizado. Utilizado en 8 RCTs para osteoartritis con resultados positivos. Actúa mediante modulación inmune en placas de Peyer intestinales, no como fuente de aminoácidos.",
+          "studyCount": 8,
+          "form": "Colágeno tipo II no desnaturalizado (UC-II)",
+          "recommended": true
+        },
+        {
+          "description": "Derivado de piel y escamas de pescado, principalmente tipo I. Perfil de aminoácidos similar al bovino pero con mayor contenido de hidroxiprolina. Preferido en estudios dérmicos por biodisponibilidad ligeramente superior (5-10% más que bovino según estudios farmacocinéticos). Opción para quienes evitan productos bovinos o porcinos.",
+          "studyCount": 18,
+          "form": "Colágeno marino hidrolizado",
+          "recommended": true
+        },
+        {
+          "description": "La vitamina C es cofactor esencial para hidroxilación de prolina y lisina en síntesis de colágeno. Varios estudios usan 50-100mg de vitamina C junto con péptidos de colágeno. Aunque no hay estudios comparativos directos, la combinación es biológicamente racional y utilizada en 40% de estudios clínicos.",
+          "studyCount": 22,
+          "form": "Colágeno con vitamina C añadida",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Vitamina C (50-100mg) - cofactor esencial para síntesis de colágeno endógeno, aumenta hidroxilación de prolina",
+        "Ácido hialurónico (100-200mg) - sinergia documentada para hidratación dérmica, aumento adicional de 15% en hidratación cutánea",
+        "Calcio (500-1000mg) y Vitamina D (800-1000 UI) - para efectos óseos, combinación mostró efectos aditivos en DMO",
+        "Condroitina y Glucosamina - para salud articular, algunos estudios muestran efectos aditivos aunque evidencia es mixta"
+      ],
+      "effectiveDose": "2.5g/día para mejoras dérmicas mínimas, 10g/día para efectos articulares"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 4,
+        "condition": "Salud intestinal y síndrome de intestino permeable",
+        "evidenceGrade": "C",
+        "notes": "Cuatro estudios pequeños (n=30-60) sugieren que péptidos de colágeno podrían mejorar integridad de barrera intestinal al proporcionar glicina y prolina para síntesis de mucosa. Un estudio piloto mostró reducción de zonulina (marcador de permeabilidad intestinal) en 15%. Sin embargo, todos los estudios son pequeños, sin replicación independiente. Se necesitan RCTs más grandes con mediciones validadas de permeabilidad intestinal y microbioma antes de conclusiones definitivas."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Salud cardiovascular mediante reducción de homocisteína",
+        "evidenceGrade": "C",
+        "notes": "Tres estudios preliminares (total n=180) sugieren que la glicina del colágeno podría ayudar a metabolizar homocisteína, reduciendo niveles en 10-15%. Un estudio de 6 meses mostró reducción de 12% en homocisteína plasmática (p=0.048). Sin embargo, no se ha demostrado que esto se traduzca en mejoras en marcadores de riesgo cardiovascular o eventos clínicos. Se requieren estudios de outcomes cardiovasculares duros, no solo marcadores intermedios."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Calidad del sueño mediante aporte de glicina",
+        "evidenceGrade": "C",
+        "notes": "Cinco estudios pequeños (n=20-40) sobre glicina (principal aminoácido del colágeno, 33% de su composición) muestran mejoras en calidad subjetiva del sueño y reducción de latencia de sueño. Sin embargo, estos estudios usaron glicina pura (3g antes de dormir), no colágeno completo. No está claro si las dosis de glicina del colágeno (aproximadamente 3-4g en 10g de colágeno) son suficientes para efectos sobre sueño. Se necesitan estudios específicos con colágeno hidrolizado evaluando parámetros de sueño objetivos (polisomnografía)."
+      }
+    ],
+    "primaryUses": [
+      "Reducción del dolor articular en osteoartritis - disminución de 26-33% en escalas de dolor según meta-análisis",
+      "Mejora de la elasticidad y hidratación de la piel - aumento de 7-15% en elasticidad cutánea después de 8-12 semanas",
+      "Aumento de densidad mineral ósea - incremento de 3-7% en columna lumbar en mujeres posmenopáusicas",
+      "Reducción de dolor articular relacionado con actividad física - disminución de 50% en atletas con dolor articular funcional"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 3,
+        "condition": "Pérdida de peso o reducción de grasa corporal directa",
+        "evidenceGrade": "D",
+        "notes": "Tres estudios observacionales pequeños (n<60) no mostraron efectos significativos del colágeno sobre composición corporal o tasa metabólica basal en ausencia de restricción calórica o ejercicio. Aunque el colágeno puede aumentar saciedad modestamente debido a su contenido proteico, no hay evidencia de efectos termogénicos o lipolíticos específicos. Los claims de pérdida de peso son marketing sin respaldo científico."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Mejora cognitiva, memoria o función cerebral",
+        "evidenceGrade": "D",
+        "notes": "No existen estudios clínicos que evalúen efectos del colágeno suplementario sobre función cognitiva, memoria o neuroprotección. Aunque el colágeno tipo IV es componente de la barrera hematoencefálica, no hay evidencia de que péptidos de colágeno oral atraviesen esta barrera o afecten procesos cognitivos. Claims sobre salud cerebral carecen completamente de respaldo científico."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Crecimiento o fortalecimiento de cabello",
+        "evidenceGrade": "D",
+        "notes": "Solo dos estudios pequeños (n=30 y n=44) patrocinados por fabricantes reportaron mejoras subjetivas en grosor de cabello, sin mediciones objetivas validadas. No hay estudios independientes ni mecanismo biológico plausible, ya que el cabello está compuesto principalmente de queratina, no colágeno. La prolina del colágeno podría teóricamente contribuir a síntesis de queratina, pero esto no está demostrado clínicamente."
+      },
+      {
+        "studyCount": 1,
+        "condition": "Fortalecimiento de uñas o prevención de uñas quebradizas",
+        "evidenceGrade": "D",
+        "notes": "Un único estudio pequeño (n=25) sin grupo control mostró mejoras subjetivas en crecimiento de uñas después de 24 semanas. Sin embargo, sin grupo placebo y con alto riesgo de sesgo, estos resultados no son concluyentes. Las uñas, como el cabello, están compuestas de queratina, no colágeno. Se necesitan RCTs controlados con mediciones objetivas antes de hacer claims sobre salud ungueal."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Salud cardiovascular o reducción de presión arterial",
+        "evidenceGrade": "D",
+        "notes": "Dos estudios observacionales pequeños sugirieron posibles efectos sobre rigidez arterial, pero sin significancia estadística (p>0.05) y con alto riesgo de confusión. Aunque el colágeno es componente estructural de vasos sanguíneos, no hay evidencia de que suplementación oral afecte función endotelial, presión arterial o marcadores de riesgo cardiovascular. Claims cardiovasculares son especulativos."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Cicatrización de heridas o recuperación post-quirúrgica",
+        "evidenceGrade": "F",
+        "notes": "Cuatro RCTs (total n=340) evaluando colágeno oral en cicatrización de heridas post-quirúrgicas o úlceras no mostraron diferencias significativas vs placebo en tiempo de cicatrización, calidad de cicatriz o complicaciones (p>0.05 en todos). Aunque colágeno tópico puede tener efectos locales, la suplementación oral no ha demostrado acelerar cicatrización de heridas en humanos. La aplicación tópica directa es diferente de la suplementación sistémica."
+      }
+    ],
+    "whatIsIt": "El colágeno es la proteína estructural más abundante en el cuerpo humano, representando aproximadamente el 30% de la proteína total del organismo. Como suplemento, se obtiene principalmente de fuentes bovinas, porcinas, marinas o avícolas mediante hidrólisis enzimática que fragmenta las moléculas grandes en péptidos bioactivos de menor peso molecular (2-5 kDa), conocidos como péptidos de colágeno hidrolizado. Estos péptidos contienen secuencias específicas de aminoácidos (glicina, prolina, hidroxiprolina) que actúan como señales biológicas para estimular la síntesis de matriz extracelular en tejidos conectivos. El colágeno hidrolizado ha ganado popularidad por su potencial para mejorar la salud articular, ósea y dérmica, con creciente evidencia científica que respalda efectos específicos en condiciones musculoesqueléticas y dermatológicas.",
+    "worksFor": [
+      {
+        "studyCount": 18,
+        "condition": "Dolor y función articular en osteoartritis de rodilla y cadera",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva: 10g/día de colágeno hidrolizado tipo II o 40mg/día de colágeno no desnaturalizado tipo II (UC-II). Duración mínima: 12-16 semanas para efectos significativos, con efectos máximos a 24 semanas. Meta-análisis de 2019 (García-Coronado et al.) incluyendo 15 RCTs mostró reducción significativa en dolor (SMD: -0.48, IC 95%: -0.72 a -0.24, p<0.001). Efectos más pronunciados en osteoartritis leve a moderada. Población estudiada: adultos 40-75 años con osteoartritis diagnosticada radiológicamente.",
+        "effectSize": "Moderate",
+        "rctCount": 15,
+        "magnitude": "Reducción de 26-33% en puntuaciones de dolor (escala VAS), mejora de 20-25% en función articular (índice WOMAC)",
+        "totalParticipants": 1850,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 26,
+        "condition": "Elasticidad, hidratación y apariencia de la piel (anti-envejecimiento dérmico)",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva: 2.5-10g/día de péptidos de colágeno hidrolizado (principalmente tipo I). Duración mínima: 8 semanas para hidratación, 12 semanas para elasticidad y arrugas. Meta-análisis de 2021 (de Miranda et al.) con 19 RCTs demostró mejoras significativas en elasticidad (p<0.001) e hidratación (p<0.001). Estudios utilizaron principalmente colágeno marino o bovino hidrolizado. Efectos más notables en mujeres 35-65 años con signos de fotoenvejecimiento. Mediciones objetivas mediante cutometría, corneometría y análisis de imagen 3D.",
+        "effectSize": "Moderate",
+        "rctCount": 19,
+        "magnitude": "Aumento de 7-15% en elasticidad cutánea, incremento de 12-28% en hidratación dérmica, reducción de 13-20% en profundidad de arrugas",
+        "totalParticipants": 2100,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 8,
+        "condition": "Densidad mineral ósea en mujeres posmenopáusicas con osteopenia",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 5-10g/día de péptidos de colágeno combinados con calcio (500-1000mg) y vitamina D (400-800 UI). Duración mínima: 12 meses para cambios significativos en DMO medida por DEXA. Estudio pivotal de König et al. (2018) con 131 mujeres posmenopáusicas mostró aumento significativo de 4.2% en DMO de columna lumbar vs placebo (p=0.036) después de 12 meses con 5g/día. Efectos potenciados cuando se combina con ejercicio de resistencia. Población: mujeres posmenopáusicas 50-70 años con T-score entre -1.0 y -2.5.",
+        "effectSize": "Small",
+        "rctCount": 6,
+        "magnitude": "Aumento de 3-7% en densidad mineral ósea de columna lumbar, incremento de 2-4% en cuello femoral",
+        "totalParticipants": 820,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 9,
+        "condition": "Dolor articular relacionado con actividad física en atletas",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 10g/día de colágeno hidrolizado tipo I/III. Duración mínima: 12-24 semanas. Estudio de Clark et al. (2008) con 147 atletas universitarios mostró reducción significativa en dolor articular durante actividad (p=0.046) y en reposo (p=0.024) después de 24 semanas con 10g/día. Efectos observados en rodilla, hombro, codo y tobillo. Población: atletas 18-35 años con dolor articular funcional sin diagnóstico de osteoartritis. Mecanismo propuesto: acumulación de péptidos en cartílago articular estimulando síntesis de matriz.",
+        "effectSize": "Large",
+        "rctCount": 7,
+        "magnitude": "Reducción de 50% en dolor articular funcional, disminución de 20-30% en dolor en reposo",
+        "totalParticipants": 520,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 7,
+        "condition": "Masa muscular y fuerza en sarcopenia relacionada con edad",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 15g/día de péptidos de colágeno combinados con entrenamiento de resistencia 3 veces por semana. Duración mínima: 12 semanas. Estudio de Zdzieblik et al. (2015) con 53 hombres sarcopénicos (60-80 años) mostró aumento significativo de 4.2kg en masa libre de grasa (p<0.001) y mejora de 13% en fuerza de prensa de piernas vs placebo después de 12 semanas. El colágeno proporciona prolina y glicina para síntesis de creatina endógena y matriz conectiva muscular. Efectos sinérgicos con ejercicio de resistencia son esenciales.",
+        "effectSize": "Moderate",
+        "rctCount": 5,
+        "magnitude": "Aumento de 4-7% en masa libre de grasa, incremento de 10-15% en fuerza muscular cuando se combina con entrenamiento de resistencia",
+        "totalParticipants": 450,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 6,
+        "condition": "Recuperación de lesiones de tejidos blandos y tendones",
+        "evidenceGrade": "C",
+        "notes": "Dosis efectiva: 15-20g/día de colágeno hidrolizado enriquecido con vitamina C (50mg). Duración: 3-6 meses dependiendo de severidad de lesión. Estudios preliminares en tendinopatía de Aquiles y lesiones de ligamentos muestran mejoras en síntesis de colágeno tipo I en tendones medida por ultrasonido. Población: atletas y personas activas 20-50 años con lesiones agudas o crónicas de tendones. Timing óptimo: 30-60 minutos antes de ejercicio de rehabilitación para maximizar síntesis de colágeno en tejido objetivo. Evidencia aún limitada, se requieren RCTs más grandes.",
+        "effectSize": "Moderate",
+        "rctCount": 4,
+        "magnitude": "Reducción de 20-30% en tiempo de recuperación, mejora de 15-25% en función tendinosa",
+        "totalParticipants": 280,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamina C (50-100mg) - cofactor esencial para síntesis de colágeno endógeno, aumenta hidroxilación de prolina",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Ácido hialurónico (100-200mg) - sinergia documentada para hidratación dérmica, aumento adicional de 15% en hidratación cutánea",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Calcio (500-1000mg) y Vitamina D (800-1000 UI) - para efectos óseos, combinación mostró efectos aditivos en DMO",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Condroitina y Glucosamina - para salud articular, algunos estudios muestran efectos aditivos aunque evidencia es mixta",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis moderada (5g/día) y aumentar gradualmente a 10-15g según objetivo específico para minimizar molestias gastrointestinales iniciales",
+      "Tomar consistentemente a la misma hora cada día para optimizar adherencia - la consistencia es más importante que el timing específico según estudios",
+      "Combinar con vitamina C (50-100mg) para maximizar síntesis de colágeno endógeno - puede ser jugo de naranja natural o suplemento",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia para efectos dérmicos, 12-16 semanas para efectos articulares - el colágeno no es suplemento de efecto inmediato",
+      "Para salud articular, considerar colágeno tipo II no desnaturalizado (UC-II 40mg/día) como alternativa más económica que 10g de colágeno hidrolizado",
+      "Mezclar con líquidos fríos o calientes, batidos proteicos o yogurt para mejorar palatabilidad - el colágeno hidrolizado de calidad debe disolverse fácilmente",
+      "Personas con restricciones dietéticas deben verificar fuente animal - colágeno marino para quienes evitan productos bovinos/porcinos",
+      "Combinar con ejercicio de resistencia para maximizar efectos sobre masa muscular y fuerza - el colágeno solo tiene efectos limitados sin estímulo mecánico"
+    ],
+    "totalStudies": 180,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Alergia conocida a la fuente del colágeno (bovino, porcino, marino, aviar) - riesgo de reacciones alérgicas",
+        "Fenilcetonuria - algunos productos contienen fenilalanina, verificar etiqueta",
+        "Insuficiencia renal severa - alta carga proteica puede ser problemática, consultar nefrólogo antes de uso",
+        "Embarazo y lactancia - aunque probablemente seguro, faltan estudios específicos de seguridad en estas poblaciones"
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 12 meses documentado en múltiples RCTs sin efectos adversos significativos. Estudio de König et al. (2018) con 12 meses de seguimiento mostró perfil de seguridad excelente. No hay reportes de toxicidad hepática, renal o efectos adversos graves en literatura científica. Estudios en animales con dosis hasta 10x la dosis humana por 90 días no mostraron toxicidad. El colágeno es proteína alimentaria natural con larga historia de consumo seguro.",
+      "notes": "El colágeno tiene uno de los mejores perfiles de seguridad entre suplementos proteicos. No hay reportes de toxicidad significativa en literatura científica. La tasa de efectos adversos en RCTs es similar a placebo (8-10% vs 7-9%). Personas con restricciones dietéticas religiosas o éticas deben verificar fuente animal. Productos de terceros certificados (NSF, Informed Choice) garantizan ausencia de contaminantes y metales pesados.",
+      "safetyScore": 9,
+      "pregnancyCategory": "Insufficient Data",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente transitorio, desaparece después de 1-2 semanas de uso continuo. Más común cuando se toma con estómago vacío. Reducir dosis temporalmente o tomar con alimentos minimiza este efecto.",
+          "effect": "Sensación de plenitud o pesadez estomacal leve",
+          "frequency": "8-12% de usuarios en estudios clínicos, más común con dosis >15g/día"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Relacionado con calidad del producto y procesamiento. Productos de mayor calidad con mejor hidrólisis tienen menos problemas organolépticos. Tomar con jugo o batido enmascara sabor. No indica problema de seguridad.",
+          "effect": "Sabor residual desagradable o eructos",
+          "frequency": "5-10% de usuarios, más común con colágeno marino"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Principalmente en personas con alergia conocida a fuente animal (bovino, porcino, pescado). Colágeno altamente purificado tiene bajo potencial alergénico. Personas con alergias alimentarias deben verificar fuente del colágeno. Reacciones severas (anafilaxia) no reportadas en literatura.",
+          "effect": "Reacciones alérgicas leves (prurito, urticaria)",
+          "frequency": "Raro, <1% en estudios clínicos"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Observado en 2 estudios con dosis de 15g/día de colágeno + 1200mg de calcio. Elevación fue leve (0.2-0.3 mg/dL) y dentro de rango normal. Monitorear en personas con historial de hipercalcemia o cálculos renales. No reportado con colágeno solo.",
+          "effect": "Elevación leve de calcio sérico",
+          "frequency": "Raro, <2%, principalmente cuando se combina con suplementos de calcio en dosis altas"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Mild",
+          "description": "Interacción teórica no confirmada en estudios clínicos. Sin embargo, por precaución, pacientes en anticoagulantes deben monitorear INR más frecuentemente al iniciar colágeno. Consultar con médico antes de uso.",
+          "medication": "Anticoagulantes (warfarina, heparina)",
+          "mechanism": "Teórico: el colágeno contiene vitamina K en trazas en algunas preparaciones, podría afectar INR"
+        },
+        {
+          "severity": "Mild",
+          "description": "Dos estudios reportaron elevaciones leves de calcio sérico con combinación de colágeno + calcio en dosis altas. Mantener ingesta total de calcio <2000mg/día. Monitorear calcio sérico si se usan ambos suplementos en dosis altas por períodos prolongados.",
+          "medication": "Suplementos de calcio en dosis altas (>1200mg/día)",
+          "mechanism": "Posible efecto aditivo en absorción de calcio, riesgo teórico de hipercalcemia"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Péptidos de colágeno hidrolizado tipo I y III con peso molecular 2-5 kDa, de fuente bovina o marina. Para salud articular específica, considerar colágeno tipo II no desnaturalizado (UC-II)",
+      "avoidFlags": [
+        "Productos que no especifican fuente animal o tipo de colágeno - indica baja calidad o falta de transparencia",
+        "Claims de 'colágeno vegano' o 'colágeno plant-based' - el colágeno es exclusivamente de origen animal, estos productos son precursores de aminoácidos, no colágeno real",
+        "Dosis extremadamente bajas (<1g por porción) con claims exagerados - dosis efectivas son 2.5-10g según estudios",
+        "Productos sin certificación de terceros para metales pesados - especialmente importante para colágeno marino debido a contaminación potencial",
+        "Mezclas propietarias que no revelan cantidad exacta de colágeno - imposible verificar dosis efectiva"
+      ],
+      "qualityIndicators": [
+        "Certificación de terceros (NSF International, Informed Choice, USP) para pureza y ausencia de contaminantes",
+        "Especificación de peso molecular (2-5 kDa óptimo) y grado de hidrólisis",
+        "Pruebas de laboratorio disponibles mostrando contenido de hidroxiprolina >10% (confirma colágeno genuino)",
+        "Fuente animal claramente identificada (grass-fed bovino, wild-caught marino) con trazabilidad",
+        "Productos que incluyen vitamina C (50-100mg) para optimizar síntesis de colágeno endógeno"
+      ],
+      "notes": "El colágeno hidrolizado de calidad debe disolverse fácilmente en líquidos fríos o calientes sin grumos. El color debe ser blanco a ligeramente amarillento, sin olor fuerte (especialmente marino). Estudios farmacocinéticos confirman que el peso molecular 2-5 kDa optimiza absorción intestinal. Para colágeno marino, verificar certificación de pesca sostenible (MSC) y pruebas de metales pesados. Marcas respaldadas por estudios clínicos incluyen Verisol (para piel), Fortigel (para articulaciones), y UC-II (para cartílago).",
+      "keyCompounds": [
+        {
+          "name": "Péptidos bioactivos de colágeno (Pro-Hyp, Hyp-Gly)",
+          "lookFor": "Peso molecular 2-5 kDa (también llamado colágeno hidrolizado o péptidos de colágeno), contenido de hidroxiprolina >10% como indicador de colágeno genuino",
+          "source": "Hidrólisis enzimática de colágeno bovino, porcino o marino"
+        },
+        {
+          "name": "Colágeno tipo I y III",
+          "lookFor": "Especificación de tipos de colágeno en etiqueta, preferir productos que indiquen tipo I y III para piel y huesos",
+          "source": "Piel, huesos y tejido conectivo de animales"
+        },
+        {
+          "name": "Colágeno tipo II no desnaturalizado",
+          "lookFor": "Etiqueta debe especificar 'no desnaturalizado' o 'nativo', dosis de 40mg (no confundir con colágeno hidrolizado que requiere 10g)",
+          "source": "Cartílago de pollo principalmente"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Estimulación de condrocitos y síntesis de matriz cartilaginosa",
+        "description": "Los péptidos de colágeno bioactivos, particularmente aquellos ricos en hidroxiprolina-glicina, actúan como ligandos que se unen a receptores en condrocitos articulares, estimulando la expresión de genes para colágeno tipo II, agrecano y otras proteínas de matriz extracelular. Este proceso aumenta la producción de proteoglicanos y reduce la actividad de metaloproteinasas (MMP-13), enzimas que degradan el cartílago. Estudios in vitro demuestran que concentraciones de 10-100 μg/mL de péptidos de colágeno incrementan la síntesis de colágeno tipo II hasta en 250% comparado con controles.",
+        "studyCount": 35,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Activación de fibroblastos dérmicos y síntesis de colágeno endógeno",
+        "description": "Los péptidos de colágeno hidrolizado son absorbidos y transportados a la dermis donde estimulan fibroblastos mediante la activación de vías de señalización TGF-β y Smad. Esta activación incrementa la expresión de genes COL1A1 y COL3A1, aumentando la producción de colágeno tipo I y III, así como elastina y ácido hialurónico. Simultáneamente, los péptidos inhiben la actividad de colagenasas (MMP-1 y MMP-3), reduciendo la degradación de colágeno dérmico. Estudios ex vivo muestran aumento de 65% en síntesis de procolágeno tipo I tras exposición a péptidos específicos.",
+        "studyCount": 28,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Estimulación de osteoblastos y mineralización ósea",
+        "description": "Los péptidos de colágeno promueven la diferenciación y actividad de osteoblastos mediante la regulación positiva de factores de transcripción como Runx2 y Osterix. Estos péptidos aumentan la expresión de fosfatasa alcalina, osteocalcina y osteopontina, marcadores clave de formación ósea. Además, los péptidos ricos en prolina-hidroxiprolina facilitan la deposición de cristales de hidroxiapatita en la matriz ósea orgánica. Estudios en cultivos celulares demuestran incrementos de 30-40% en actividad de fosfatasa alcalina y 25% en deposición de calcio con tratamiento de péptidos de colágeno.",
+        "studyCount": 22,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "3-6 meses en estudios incluidos",
+        "dose": "10g/día de colágeno hidrolizado",
+        "year": 2006,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Reducción significativa del dolor articular en 70% de estudios revisados",
+          "Mejora en movilidad articular medida por índice WOMAC en 6 de 8 estudios",
+          "Perfil de seguridad excelente con efectos adversos similares a placebo"
+        ],
+        "title": "Collagen hydrolysate for the treatment of osteoarthritis and other joint disorders: a review of the literature",
+        "participants": 1500,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "8 semanas",
+        "dose": "2.5g o 5g/día de péptidos de colágeno específicos (Verisol)",
+        "year": 2014,
+        "studyType": "RCT",
+        "findings": [
+          "Aumento de 7% en elasticidad cutánea en grupo de 2.5g (p<0.05) y 12% en grupo de 5g (p<0.01) vs placebo",
+          "Reducción de 20% en profundidad de arrugas oculares medida por análisis de imagen 3D",
+          "Aumento significativo de procolágeno tipo I (65%) y elastina (18%) en biopsias dérmicas",
+          "Efectos persistieron 4 semanas después de suspender suplementación"
+        ],
+        "title": "Oral supplementation of specific collagen peptides has beneficial effects on human skin physiology: a double-blind, placebo-controlled study",
+        "participants": 114,
+        "quality": "High"
+      },
+      {
+        "duration": "12 meses",
+        "dose": "5g/día de péptidos de colágeno específicos (Fortibone)",
+        "year": 2018,
+        "studyType": "RCT",
+        "findings": [
+          "Aumento de 4.2% en densidad mineral ósea de columna lumbar vs placebo (p=0.036)",
+          "Incremento de 2.8% en DMO de cuello femoral (p=0.048)",
+          "Aumento de 16.2% en P1NP (marcador de formación ósea) y disminución de 8.5% en CTX (marcador de resorción ósea)",
+          "Efectos más pronunciados en mujeres con menor DMO inicial"
+        ],
+        "title": "Specific Collagen Peptides Improve Bone Mineral Density and Bone Markers in Postmenopausal Women: A Randomized Controlled Study",
+        "participants": 131,
+        "quality": "High"
+      },
+      {
+        "duration": "24 semanas",
+        "dose": "10g/día de colágeno hidrolizado",
+        "year": 2008,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción significativa en dolor articular durante actividad (p=0.046) y en reposo (p=0.024)",
+          "Mejora en 6 de 6 parámetros evaluados (dolor en reposo, al caminar, al estar de pie, al cargar objetos, al levantar)",
+          "Efectos observados en múltiples articulaciones: rodilla, hombro, codo, tobillo",
+          "Mayor beneficio en atletas con dolor articular más severo al inicio"
+        ],
+        "title": "24-Week study on the use of collagen hydrolysate as a dietary supplement in athletes with activity-related joint pain",
+        "participants": 147,
+        "quality": "High"
+      },
+      {
+        "duration": "12 semanas",
+        "dose": "15g/día de péptidos de colágeno",
+        "year": 2015,
+        "studyType": "RCT",
+        "findings": [
+          "Aumento de 4.2kg en masa libre de grasa vs 2.9kg en placebo (p<0.001)",
+          "Mejora de 13% en fuerza de prensa de piernas vs 7% en placebo (p=0.005)",
+          "Reducción de 5.4kg en masa grasa vs 3.5kg en placebo (p=0.01)",
+          "Efectos sinérgicos con entrenamiento de resistencia 3 veces por semana"
+        ],
+        "title": "Collagen peptide supplementation in combination with resistance training improves body composition and increases muscle strength in elderly sarcopenic men",
+        "participants": 53,
+        "quality": "High"
+      },
+      {
+        "duration": "8 semanas",
+        "dose": "2.5g/día de péptidos bioactivos de colágeno",
+        "year": 2014,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 20% en volumen de arrugas oculares medido por análisis 3D (p<0.05)",
+          "Aumento de 65% en síntesis de procolágeno tipo I en fibroblastos dérmicos ex vivo",
+          "Aumento de 18% en síntesis de elastina",
+          "Efectos más pronunciados en mujeres >50 años con signos de fotoenvejecimiento"
+        ],
+        "title": "Oral intake of specific bioactive collagen peptides reduces skin wrinkles and increases dermal matrix synthesis",
+        "participants": 69,
+        "quality": "High"
+      }
+    ]
+  }
+}

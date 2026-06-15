@@ -1,0 +1,513 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.391Z",
+    "jobId": "job_prod_matrix_1777855620384_pga1f0yev4e",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "black seed oil",
+  "metadata": {
+    "supplementId": "black seed oil",
+    "generatedAt": "2026-05-04T00:49:33.116Z",
+    "tokensUsed": 20284,
+    "bedrockDuration": 152229,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "2-3 gramos/día de aceite de semilla negra (equivalente a 1-2 cucharaditas), o 1-2 gramos/día de polvo de semilla molida, o 500mg-1g/día de extracto estandarizado en cápsulas",
+      "duration": "Efectos iniciales en glucosa y lípidos visibles desde 4 semanas. Efectos completos en HbA1c requieren 8-12 semanas. Para presión arterial: 8-12 semanas. Para síntomas alérgicos: 4-8 semanas. Uso continuo documentado como seguro hasta 12 meses en varios estudios. Ciclado no es necesario según evidencia disponible",
+      "notes": "Dividir dosis en 2 tomas diarias (mañana y noche) puede mejorar tolerancia gastrointestinal en personas sensibles. El aceite debe almacenarse en lugar fresco y oscuro, refrigeración preferible después de abrir para prevenir oxidación de ácidos grasos. Sabor fuerte y picante es normal. Puede mezclarse con miel o jugo para mejorar palatabilidad. No hay datos farmacocinéticos específicos sobre absorción diferencial según timing o co-administración con alimentos",
+      "timing": "Puede tomarse con alimentos para mejorar tolerancia gastrointestinal. Estudios clínicos han usado tanto dosis única diaria como dividida (2 veces/día). No hay evidencia clara de superioridad de un horario específico. Tomar con comidas que contengan grasa puede facilitar absorción de compuestos liposolubles, aunque no hay datos farmacocinéticos específicos publicados que cuantifiquen este efecto",
+      "optimalDose": "2-3 gramos/día de aceite mostró mejor balance entre eficacia y tolerabilidad en meta-análisis. Para control glucémico óptimo: 2.5g/día. Para lípidos: 2-3g/día",
+      "maxSafeDose": "Hasta 5 gramos/día de aceite documentado sin efectos adversos graves en estudios de 12 semanas. Dosis >3g/día no muestran beneficio adicional significativo y pueden aumentar efectos gastrointestinales",
+      "forms": [
+        {
+          "description": "Forma más estudiada en RCTs (aproximadamente 60% de estudios clínicos). Contiene espectro completo de compuestos bioactivos incluyendo timoquinona, ácidos grasos esenciales, y fitoesteroles. Preferir aceite virgen, prensado en frío, sin refinar para preservar timoquinona",
+          "studyCount": 45,
+          "form": "Aceite de semilla negra prensado en frío (cold-pressed oil)",
+          "recommended": true
+        },
+        {
+          "description": "Usado en aproximadamente 25% de estudios clínicos. Contiene fibra adicional y compuestos no extraíbles en aceite. Dosis típica 1-2g/día. Puede tener mejor efecto en control glucémico por contenido de fibra. Menos biodisponible para timoquinona que el aceite",
+          "studyCount": 18,
+          "form": "Polvo de semilla negra molida (ground seed powder)",
+          "recommended": true
+        },
+        {
+          "description": "Forma menos estudiada (aproximadamente 15% de estudios). Algunos productos estandarizados a 3-5% timoquinona. Ventaja: dosificación precisa y sin sabor. Desventaja: falta espectro completo de compuestos. Dosis típica 500mg-1g/día de extracto",
+          "studyCount": 12,
+          "form": "Extracto estandarizado en cápsulas (standardized extract)",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Metformina - sinergia documentada en control glucémico en diabetes tipo 2, efecto aditivo sin interacciones adversas",
+        "Estatinas - efecto complementario en reducción de lípidos, puede permitir reducción de dosis de estatina bajo supervisión médica",
+        "Omega-3 - sinergia en reducción de triglicéridos y marcadores inflamatorios según estudios preliminares"
+      ],
+      "effectiveDose": "1 gramo/día de aceite mostró efectos mínimos en algunos estudios metabólicos, pero 2g/día es la dosis mínima consistentemente efectiva para beneficios glucémicos y lipídicos"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 6,
+        "condition": "Mejora de función hepática en enfermedad de hígado graso no alcohólico (NAFLD)",
+        "evidenceGrade": "C",
+        "notes": "6 RCTs pequeños (n=40-80 cada uno) muestran reducción de enzimas hepáticas (ALT, AST) 15-30% y mejora en esteatosis por ultrasonido. Resultados prometedores pero se necesitan estudios más grandes con biopsia hepática o elastografía como endpoint. Población limitada a NAFLD leve-moderada. Mecanismo plausible (antioxidante, antiinflamatorio) pero requiere validación en RCTs multicéntricos grandes (n>200)."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Reducción de síntomas en artritis reumatoide",
+        "evidenceGrade": "C",
+        "notes": "5 RCTs pequeños (n=30-70) muestran reducción de dolor articular (VAS) 20-35% y mejora en DAS28 score. Reducción de marcadores inflamatorios (PCR, ESR) 25-40%. Sin embargo, estudios son de corta duración (8-12 semanas) y no evalúan progresión radiológica. Se necesitan RCTs más largos (>6 meses) con endpoints estructurales y comparación con DMARDs estándar. Población limitada a artritis leve-moderada."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Mejora de calidad de vida en hipotiroidismo subclínico",
+        "evidenceGrade": "C",
+        "notes": "4 RCTs pequeños (n=40-90) muestran reducción de TSH 10-25% y mejora en T3 libre 5-15%, con mejora subjetiva en fatiga y síntomas. Sin embargo, estudios tienen metodología heterogénea y no todos miden anticuerpos tiroideos. Se necesitan RCTs más grandes con población bien definida (TSH 4.5-10 mIU/L), medición de anticuerpos anti-TPO, y seguimiento >6 meses. Mecanismo de acción en tiroides no completamente elucidado."
+      },
+      {
+        "studyCount": 7,
+        "condition": "Control de síntomas en síndrome de ovario poliquístico (SOP)",
+        "evidenceGrade": "C",
+        "notes": "7 RCTs pequeños-medianos (n=40-100) muestran mejora en regularidad menstrual, reducción de testosterona total 10-20%, mejora en relación LH/FSH, y reducción de resistencia a insulina. Resultados prometedores pero estudios son heterogéneos en dosis, duración (3-6 meses), y criterios diagnósticos de SOP. Se necesitan RCTs multicéntricos grandes con criterios Rotterdam, medición de ovulación, y endpoints reproductivos (embarazo). Mayor evidencia necesaria para establecer como tratamiento estándar."
+      }
+    ],
+    "primaryUses": [
+      "Control glucémico en diabetes tipo 2 - reduce HbA1c 0.5-1.5% y glucosa en ayunas 15-30 mg/dL según meta-análisis de 17 RCTs",
+      "Reducción de perfil lipídico aterogénico - disminuye colesterol total 15-20 mg/dL, LDL 15-25 mg/dL, triglicéridos 20-30 mg/dL en múltiples estudios",
+      "Control de presión arterial en hipertensión leve-moderada - reduce presión sistólica 3-7 mmHg y diastólica 2-4 mmHg",
+      "Modulación de síntomas alérgicos y asma - mejora función pulmonar (FEV1) 5-15% y reduce frecuencia de síntomas 30-40%",
+      "Soporte en síndrome metabólico - mejora múltiples marcadores metabólicos simultáneamente con efectos moderados"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 2,
+        "condition": "Mejora cognitiva o prevención de demencia en adultos sanos",
+        "evidenceGrade": "D",
+        "notes": "Solo 2 estudios pequeños (n<40 cada uno) sin grupo control adecuado. No hay RCTs que demuestren mejora en memoria, atención o función ejecutiva en adultos sanos. Estudios en modelos animales no se han traducido a beneficios cognitivos documentados en humanos. Se requieren RCTs bien diseñados con pruebas cognitivas validadas."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Tratamiento o prevención de cáncer en humanos",
+        "evidenceGrade": "D",
+        "notes": "A pesar de múltiples estudios in vitro y en animales mostrando efectos antiproliferativos de timoquinona, NO existen RCTs en humanos que demuestren eficacia anticancerígena. Los estudios clínicos disponibles son series de casos sin grupo control. No debe considerarse como tratamiento o prevención de cáncer. Evidencia limitada a estudios preclínicos que no se han validado clínicamente."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Mejora de fertilidad masculina o recuento espermático",
+        "evidenceGrade": "D",
+        "notes": "Solo 3 estudios pequeños (n=30-60) con metodología limitada y resultados inconsistentes. No hay meta-análisis ni RCTs grandes que confirmen beneficio en parámetros espermáticos (recuento, motilidad, morfología). Estudios animales muestran resultados prometedores pero no replicados en humanos con rigor metodológico. Se necesitan RCTs doble-ciego con análisis de semen estandarizado."
+      },
+      {
+        "studyCount": 1,
+        "condition": "Tratamiento de infecciones bacterianas o virales sistémicas",
+        "evidenceGrade": "D",
+        "notes": "A pesar de actividad antimicrobiana in vitro documentada, NO hay evidencia clínica de eficacia en infecciones sistémicas en humanos. Un estudio pequeño en Helicobacter pylori mostró resultados no concluyentes. No debe usarse como sustituto de antibióticos o antivirales. La actividad antimicrobiana in vitro no se traduce en eficacia clínica a dosis orales estándar."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Mejora de rendimiento deportivo o fuerza muscular en atletas",
+        "evidenceGrade": "D",
+        "notes": "Solo 2 estudios pequeños (n<30) sin mostrar mejoras significativas en VO2max, fuerza máxima, o tiempo hasta fatiga vs placebo (p>0.05). No hay evidencia de mejora en composición corporal en atletas. Los efectos antiinflamatorios no se traducen en beneficios ergogénicos documentados. Se requieren estudios en poblaciones atléticas con mediciones de rendimiento validadas."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Tratamiento de depresión mayor o trastornos de ansiedad",
+        "evidenceGrade": "D",
+        "notes": "Solo 3 estudios pequeños (n=40-60) con escalas de depresión/ansiedad, resultados mixtos y sin comparación con tratamiento estándar. No hay RCTs grandes que demuestren eficacia en depresión mayor diagnosticada (DSM-5) o trastornos de ansiedad. Estudios existentes tienen alto riesgo de sesgo. No debe usarse como sustituto de tratamiento psiquiátrico establecido."
+      }
+    ],
+    "whatIsIt": "El aceite de semilla negra (black seed oil) se extrae de las semillas de Nigella sativa, una planta medicinal utilizada durante milenios en medicina tradicional del Medio Oriente y Asia. Su principal compuesto bioactivo es la timoquinona (TQ), que representa aproximadamente 30-48% del aceite volátil y actúa como potente antioxidante, antiinflamatorio y modulador inmunológico. El aceite contiene además ácidos grasos esenciales (linoleico 50-60%, oleico 20-24%), fitoesteroles, y alcaloides como nigellidina. Es notable por su amplio espectro de actividad farmacológica documentada en más de 1000 estudios, particularmente en modulación metabólica, inflamación sistémica, y función inmune.",
+    "worksFor": [
+      {
+        "studyCount": 23,
+        "condition": "Control glucémico en diabetes tipo 2",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva: 2-3g/día de aceite o 1-2g/día de polvo de semilla. Duración mínima: 8-12 semanas para efectos completos en HbA1c. Meta-análisis de 17 RCTs muestra efecto consistente. Mayor beneficio en pacientes con HbA1c basal >8%. Efecto comparable a metformina en dosis bajas. Población: adultos con diabetes tipo 2, edad 35-65 años, principalmente estudios en Medio Oriente y Asia.",
+        "effectSize": "Moderate",
+        "rctCount": 17,
+        "magnitude": "Reduce HbA1c 0.5-1.5% (reducción relativa 8-15%), glucosa en ayunas 15-30 mg/dL (10-20% de reducción), mejora HOMA-IR 15-30%",
+        "totalParticipants": 1500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 28,
+        "condition": "Reducción de perfil lipídico aterogénico (dislipidemia)",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva: 2-3g/día de aceite. Duración: efectos visibles desde 4 semanas, óptimos a 8-12 semanas. Meta-análisis de 21 RCTs confirma efecto hipolipemiante consistente. Mayor efecto en pacientes con dislipidemia moderada (LDL 130-190 mg/dL). Mecanismo: inhibición de síntesis hepática de colesterol y mejora de metabolismo lipídico. Población: adultos con dislipidemia leve-moderada, con o sin diabetes.",
+        "effectSize": "Moderate",
+        "rctCount": 21,
+        "magnitude": "Reduce colesterol total 15-20 mg/dL (8-12%), LDL 15-25 mg/dL (10-18%), triglicéridos 20-30 mg/dL (12-20%), aumenta HDL 3-5 mg/dL (5-8%)",
+        "totalParticipants": 1800,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 15,
+        "condition": "Reducción de presión arterial en hipertensión leve-moderada",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 2.5-3g/día de aceite o 500mg-1g/día de extracto. Duración: 8-12 semanas para efecto completo. Meta-análisis de 11 RCTs muestra efecto modesto pero consistente. Mayor beneficio en hipertensión leve (140-159/90-99 mmHg). Mecanismo: vasodilatación mediada por óxido nítrico y efecto diurético leve. Población: adultos con hipertensión grado 1-2, edad 40-70 años. Efecto aditivo con medicación antihipertensiva estándar.",
+        "effectSize": "Small",
+        "rctCount": 11,
+        "magnitude": "Reduce presión sistólica 3-7 mmHg (3-5% de reducción), presión diastólica 2-4 mmHg (2-4% de reducción)",
+        "totalParticipants": 900,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 18,
+        "condition": "Control de síntomas alérgicos y asma (rinitis alérgica, asma leve-moderada)",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 1-2g/día de aceite o 40-80mg/kg/día de extracto. Duración: 4-8 semanas para mejora sintomática, 12 semanas para cambios en IgE. 12 RCTs muestran beneficio en asma y rinitis alérgica. Mecanismo: inhibición de liberación de histamina, reducción de eosinófilos, modulación de respuesta Th2. Mayor efecto en asma leve-moderada controlada parcialmente. Población: adultos y niños >6 años con asma o rinitis alérgica.",
+        "effectSize": "Moderate",
+        "rctCount": 12,
+        "magnitude": "Mejora FEV1 5-15%, reduce frecuencia de síntomas asmáticos 30-40%, disminuye IgE sérica 15-25%, mejora score de rinitis alérgica 40-60%",
+        "totalParticipants": 850,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 14,
+        "condition": "Mejora de marcadores en síndrome metabólico",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 2-3g/día de aceite. Duración: 12-16 semanas para efectos completos. 10 RCTs muestran mejora en múltiples componentes del síndrome metabólico. Efecto más pronunciado cuando se combina con modificación de estilo de vida. Reduce marcadores inflamatorios (PCR) 20-40%. Población: adultos con síndrome metabólico o pre-diabetes, edad 35-65 años, IMC 28-35.",
+        "effectSize": "Moderate",
+        "rctCount": 10,
+        "magnitude": "Reduce circunferencia de cintura 2-4 cm, mejora múltiples componentes del síndrome metabólico simultáneamente (glucosa, lípidos, presión arterial) con efectos individuales moderados",
+        "totalParticipants": 750,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 16,
+        "condition": "Reducción de peso corporal y composición corporal en sobrepeso/obesidad",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 2-3g/día de aceite o 1-2g/día de polvo. Duración: mínimo 8 semanas, óptimo 12-16 semanas. Meta-análisis de 12 RCTs muestra efecto modesto pero consistente. Mayor efecto cuando se combina con restricción calórica moderada. Mecanismo: mejora de metabolismo lipídico, reducción de apetito, aumento de termogénesis. Población: adultos con sobrepeso (IMC 25-30) u obesidad leve-moderada (IMC 30-35).",
+        "effectSize": "Small",
+        "rctCount": 12,
+        "magnitude": "Reduce peso corporal 1-3 kg (1-3% del peso inicial), IMC 0.5-1.5 kg/m², circunferencia de cintura 2-4 cm en 8-12 semanas",
+        "totalParticipants": 950,
+        "metaAnalysis": true
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Black Seed Oil (Nigella sativa)",
+        "effect": "Enhanced cognitive protection",
+        "categories": [
+          "antioxidant",
+          "neuro"
+        ],
+        "type": "brain_protection",
+        "mechanism": "Neuroprotective antioxidant combination for comprehensive brain protection",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Black Seed Oil (Nigella sativa)",
+        "effect": "Stronger immune response with reduced oxidative stress",
+        "categories": [
+          "antioxidant",
+          "immune"
+        ],
+        "type": "immune_support",
+        "mechanism": "Immune-antioxidant synergy preventing oxidative collateral damage",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Black Seed Oil (Nigella sativa)",
+        "effect": "Restored immune function during stress",
+        "categories": [
+          "immune",
+          "adaptogen"
+        ],
+        "type": "stress_immunity",
+        "mechanism": "Immune-adaptogenic synergy restoring immune function during stress",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Black Seed Oil (Nigella sativa)",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "antioxidant",
+          "energy"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Black Seed Oil (Nigella sativa)",
+        "effect": "Enhanced free radical scavenging and cellular protection",
+        "categories": [
+          "antioxidant",
+          "antioxidant"
+        ],
+        "type": "antioxidant_network",
+        "mechanism": "Antioxidant network effect where multiple antioxidants regenerate each other",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Black Seed Oil (Nigella sativa)",
+        "effect": "Improved tissue repair outcomes",
+        "categories": [
+          "antioxidant",
+          "tissue"
+        ],
+        "type": "tissue_repair",
+        "mechanism": "Tissue protection synergy preserving newly formed collagen",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Black Seed Oil (Nigella sativa)",
+        "effect": "Comprehensive inflammation reduction",
+        "categories": [
+          "antioxidant",
+          "antiinflam"
+        ],
+        "type": "inflammation_control",
+        "mechanism": "Combined anti-inflammatory and antioxidant action",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Black Seed Oil (Nigella sativa)",
+        "effect": "Enhanced cardiovascular protection",
+        "categories": [
+          "antioxidant",
+          "cardio"
+        ],
+        "type": "heart_health",
+        "mechanism": "Cardiovascular-antioxidant combination reducing oxidative cardiovascular risk",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (1-1.5g/día) durante primera semana para evaluar tolerancia gastrointestinal, luego aumentar gradualmente a dosis terapéutica de 2-3g/día",
+      "Tomar con alimentos para minimizar malestar gastrointestinal. Puede mezclarse con miel, jugo de naranja, o yogurt para mejorar palatabilidad del sabor fuerte",
+      "Si usa medicación para diabetes o hipertensión, monitorear glucosa y presión arterial más frecuentemente durante primeras 2-4 semanas y consultar con médico para posibles ajustes de dosis",
+      "Refrigerar aceite después de abrir y usar dentro de 3-6 meses para prevenir oxidación. Desechar si desarrolla olor rancio",
+      "Esperar mínimo 8-12 semanas de uso consistente antes de evaluar eficacia completa, especialmente para efectos metabólicos (HbA1c, lípidos). Efectos en síntomas alérgicos pueden verse antes (4-6 semanas)"
+    ],
+    "totalStudies": 850,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo - puede tener efectos uterotónicos y abortivos según estudios en animales, evitar uso durante embarazo",
+        "Lactancia - falta evidencia de seguridad, pequeñas cantidades culinarias probablemente seguras pero evitar dosis suplementarias",
+        "Cirugía programada - discontinuar 2 semanas antes por riesgo teórico de sangrado aumentado y efectos en glucosa/presión arterial durante anestesia",
+        "Trastornos de coagulación o uso de anticoagulantes - puede tener efecto antiagregante plaquetario leve, usar con precaución",
+        "Hipotensión severa (PA <90/60) - puede reducir presión arterial adicionalmente",
+        "Hipoglucemia recurrente - puede potenciar hipoglucemia en personas susceptibles"
+      ],
+      "longTermSafety": "Uso continuo documentado como seguro hasta 12 meses en varios RCTs sin efectos adversos graves. Estudios de 6-12 meses no muestran hepatotoxicidad, nefrotoxicidad, o alteraciones hematológicas significativas. No se han reportado casos de toxicidad hepática o renal en estudios clínicos. Perfil de seguridad favorable comparado con medicamentos para diabetes e hipertensión. Uso tradicional durante siglos sugiere seguridad a largo plazo, aunque estudios formales >12 meses son limitados",
+      "notes": "Perfil de seguridad generalmente favorable con efectos adversos principalmente gastrointestinales leves y transitorios. Principal precaución: interacciones con medicación antidiabética y antihipertensiva requieren monitoreo. No hay reportes de toxicidad hepática o renal en estudios clínicos humanos. Calidad del producto es crítica - preferir aceites prensados en frío, orgánicos, con pruebas de terceros para metales pesados y pureza. Algunos productos en mercado pueden estar adulterados o oxidados, reduciendo eficacia y seguridad",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Efecto más frecuente reportado. Generalmente transitorio, mejora después de 1-2 semanas de uso continuo. Tomar con alimentos reduce incidencia significativamente. Dividir dosis en 2 tomas diarias mejora tolerancia",
+          "effect": "Malestar gastrointestinal leve (náuseas, distensión, eructos)",
+          "frequency": "15-25% de usuarios en estudios clínicos, más común en dosis >3g/día"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Generalmente leve y autolimitado. Discontinuar uso si aparece rash. Realizar prueba de parche en piel antes de uso oral en personas con historial de alergias múltiples",
+          "effect": "Reacciones alérgicas cutáneas (prurito, rash leve)",
+          "frequency": "Raro, <2% en estudios clínicos, más común en personas con alergias a plantas de familia Ranunculaceae"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Efecto aditivo con medicación antidiabética. Requiere monitoreo de glucosa y posible ajuste de dosis de medicación. Síntomas: mareo, sudoración, temblor. Más común en dosis >2.5g/día combinado con medicación",
+          "effect": "Hipoglucemia leve en usuarios de medicación antidiabética",
+          "frequency": "5-10% en pacientes diabéticos usando medicación concomitante, especialmente sulfonilureas o insulina"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Efecto aditivo con antihipertensivos. Monitorear presión arterial regularmente. Puede requerir ajuste de dosis de medicación bajo supervisión médica. Más común con dosis >3g/día",
+          "effect": "Hipotensión leve en usuarios de medicación antihipertensiva",
+          "frequency": "3-5% en pacientes hipertensos con medicación concomitante"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede potenciar efecto hipoglucemiante. Monitorear glucosa frecuentemente (2-3 veces/día inicialmente). Puede requerir reducción de 10-25% en dosis de medicación. Beneficio: posible reducción de dosis de medicación bajo supervisión médica. Consultar endocrinólogo antes de combinar",
+          "medication": "Medicamentos antidiabéticos (metformina, sulfonilureas, insulina)",
+          "mechanism": "Efecto aditivo en reducción de glucosa sanguínea mediante mejora de sensibilidad a insulina y reducción de gluconeogénesis"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Puede potenciar efecto hipotensor. Monitorear presión arterial regularmente (diario durante primeras 2 semanas). Puede requerir ajuste de dosis de medicación. Riesgo de hipotensión ortostática. Consultar cardiólogo si PA <100/60 mmHg",
+          "medication": "Antihipertensivos (IECA, ARA-II, beta-bloqueadores, diuréticos)",
+          "mechanism": "Efecto aditivo en reducción de presión arterial mediante vasodilatación y posible efecto diurético leve"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Riesgo teórico de aumento de sangrado. Evidencia clínica limitada pero precaución recomendada. Monitorear INR si usa warfarina. Discontinuar 2 semanas antes de cirugía. Reportar sangrado inusual (encías, hematomas) inmediatamente",
+          "medication": "Anticoagulantes y antiagregantes plaquetarios (warfarina, aspirina, clopidogrel)",
+          "mechanism": "Posible efecto antiagregante plaquetario leve mediante inhibición de tromboxano A2, aunque mecanismo no completamente elucidado"
+        },
+        {
+          "severity": "Mild",
+          "description": "Interacción teórica por efectos inmunomoduladores. No hay reportes de casos de rechazo de trasplante o falla de inmunosupresión. Sin embargo, consultar con médico trasplantólogo antes de usar en pacientes trasplantados. Monitorear niveles de inmunosupresores si se combina",
+          "medication": "Inmunosupresores (ciclosporina, tacrolimus, corticosteroides)",
+          "mechanism": "Posible modulación de sistema inmune mediante efectos en citoquinas y células T, aunque efecto inmunomodulador más que inmunosupresor"
+        }
+      ]
+    },
+    "synergiesSource": "external_db",
+    "buyingGuidance": {
+      "preferredForm": "Aceite de semilla negra 100% puro, prensado en frío (cold-pressed), sin refinar, orgánico. Esta es la forma más estudiada en RCTs y preserva mejor el contenido de timoquinona y otros compuestos bioactivos",
+      "avoidFlags": [
+        "Aceite refinado o procesado con calor - destruye timoquinona y reduce potencia",
+        "Productos sin información de origen o método de extracción",
+        "Aceites muy baratos que probablemente están diluidos o adulterados",
+        "Productos sin fecha de fabricación o caducidad - aceite se oxida con tiempo",
+        "Envases transparentes o plástico - luz y calor degradan compuestos activos"
+      ],
+      "qualityIndicators": [
+        "Certificación orgánica (USDA Organic, EU Organic) - reduce riesgo de pesticidas",
+        "Prensado en frío (cold-pressed) especificado en etiqueta",
+        "Pruebas de terceros para pureza, metales pesados, y contenido de timoquinona",
+        "Envase de vidrio oscuro (ámbar o violeta) para proteger de luz",
+        "Origen geográfico especificado (Egipto, Turquía, India son fuentes tradicionales)",
+        "Fecha de fabricación reciente (<6 meses) y fecha de caducidad clara",
+        "Especificación de Nigella sativa (no otras especies de Nigella)"
+      ],
+      "notes": "El aceite de semilla negra es susceptible a oxidación, especialmente después de abrir. Refrigerar después de abrir y usar dentro de 3-6 meses. Color debe ser dorado oscuro a marrón, sabor fuerte y picante es normal. Evitar aceites sin olor o sabor (probablemente refinados o viejos). Para uso terapéutico, preferir aceite sobre cápsulas para asegurar frescura y calidad. ConsumerLab no ha publicado análisis específico de aceite de semilla negra hasta la fecha, por lo que buscar marcas con pruebas de terceros independientes es crítico",
+      "keyCompounds": [
+        {
+          "name": "Timoquinona (Thymoquinone)",
+          "lookFor": "Productos que especifiquen contenido de timoquinona (idealmente 0.5-1.5% del aceite total) o que mencionen estandarización. Aceite prensado en frío preserva mejor la timoquinona",
+          "source": "Aceite volátil de semillas de Nigella sativa, representa 30-48% del aceite volátil total"
+        },
+        {
+          "name": "Ácidos grasos esenciales (ácido linoleico, oleico)",
+          "lookFor": "Aceite con perfil de ácidos grasos: ácido linoleico 50-60%, ácido oleico 20-24%. Información nutricional debe mostrar alto contenido de ácidos grasos poliinsaturados",
+          "source": "Aceite fijo de semillas, constituye la mayor parte del aceite"
+        },
+        {
+          "name": "Nigellidina y otros alcaloides",
+          "lookFor": "Aceite de espectro completo o semilla molida completa para obtener alcaloides. Extractos pueden no contener estos compuestos",
+          "source": "Semillas completas de Nigella sativa"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Actividad antioxidante mediada por timoquinona",
+        "description": "La timoquinona actúa como potente scavenger de radicales libres y upregula enzimas antioxidantes endógenas (superóxido dismutasa, catalasa, glutatión peroxidasa). Reduce el estrés oxidativo mediante inhibición de peroxidación lipídica y protección de membranas celulares. Este mecanismo está bien documentado en estudios in vitro, animales y humanos, con reducción de marcadores oxidativos (MDA, 8-OHdG) de 20-40% en estudios clínicos.",
+        "studyCount": 150,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Modulación de vías inflamatorias NF-κB y citoquinas",
+        "description": "La timoquinona inhibe la activación del factor nuclear kappa B (NF-κB), reduciendo la expresión de citoquinas proinflamatorias (TNF-α, IL-1β, IL-6) en 25-50% según estudios. También modula la vía COX-2 y 5-LOX, reduciendo producción de prostaglandinas y leucotrienos inflamatorios. Este efecto antiinflamatorio sistémico está documentado en múltiples modelos experimentales y estudios clínicos.",
+        "studyCount": 120,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Mejora de sensibilidad a insulina y metabolismo glucídico",
+        "description": "El aceite de semilla negra mejora la sensibilidad a insulina mediante múltiples mecanismos: activación de AMPK, mejora de señalización del receptor de insulina, reducción de gluconeogénesis hepática, y protección de células beta pancreáticas. Estudios muestran reducción de HOMA-IR de 15-30% y mejora en secreción de insulina. El mecanismo está respaldado por estudios en modelos animales y RCTs en humanos con diabetes tipo 2.",
+        "studyCount": 45,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "8-12 semanas promedio",
+        "dose": "1-3g/día de semilla o aceite",
+        "year": 2020,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción significativa de HbA1c: diferencia media -0.71% (IC 95%: -1.08 a -0.33, p<0.001) vs placebo",
+          "Reducción de glucosa en ayunas: -23.67 mg/dL (IC 95%: -32.87 a -14.46, p<0.001)",
+          "Mejora en HOMA-IR indicando mejor sensibilidad a insulina",
+          "Efecto dosis-dependiente: dosis >2g/día mostraron mayor eficacia"
+        ],
+        "title": "The Effect of Nigella sativa on Glycemic Control in Patients with Type 2 Diabetes Mellitus: A Systematic Review and Meta-Analysis",
+        "participants": 1500,
+        "quality": "High"
+      },
+      {
+        "duration": "4-12 semanas",
+        "dose": "1-3g/día",
+        "year": 2019,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de colesterol total: -16.18 mg/dL (IC 95%: -22.86 a -9.49, p<0.001)",
+          "Reducción de LDL: -18.09 mg/dL (IC 95%: -26.58 a -9.60, p<0.001)",
+          "Reducción de triglicéridos: -24.21 mg/dL (IC 95%: -35.85 a -12.57, p<0.001)",
+          "Aumento de HDL: +3.90 mg/dL (IC 95%: 1.46 a 6.34, p=0.002)"
+        ],
+        "title": "Effect of Nigella sativa on lipid profiles in patients with dyslipidemia: A systematic review and meta-analysis of randomized controlled trials",
+        "participants": 1800,
+        "quality": "High"
+      },
+      {
+        "duration": "12 semanas",
+        "dose": "2g/día de aceite",
+        "year": 2019,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción significativa de ALT: -15.2 U/L (p<0.001) vs placebo",
+          "Reducción de AST: -11.8 U/L (p<0.001)",
+          "Mejora en grado de esteatosis hepática por ultrasonido en 58% de pacientes",
+          "Reducción de marcadores inflamatorios (PCR, TNF-α) 30-40%"
+        ],
+        "title": "The effect of Nigella sativa oil on serum levels of inflammatory markers, liver enzymes, lipid profile, insulin and fasting blood sugar in patients with non-alcoholic fatty liver",
+        "participants": 64,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "8-12 semanas",
+        "dose": "1-3g/día",
+        "year": 2021,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de presión sistólica: -4.78 mmHg (IC 95%: -7.34 a -2.23, p<0.001)",
+          "Reducción de presión diastólica: -3.20 mmHg (IC 95%: -5.05 a -1.35, p=0.001)",
+          "Mayor efecto en pacientes con hipertensión basal >140/90 mmHg",
+          "Efecto más pronunciado con dosis >2g/día y duración >8 semanas"
+        ],
+        "title": "Effects of Nigella sativa supplementation on blood pressure and serum lipid concentrations in patients with elevated blood pressure and/or dyslipidemia: A systematic review and meta-analysis of randomized controlled trials",
+        "participants": 900,
+        "quality": "High"
+      },
+      {
+        "duration": "4-12 semanas",
+        "dose": "1-2g/día",
+        "year": 2018,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Mejora significativa en FEV1: aumento promedio de 10-15% en pacientes asmáticos",
+          "Reducción de frecuencia de síntomas asmáticos: 30-40% vs basal",
+          "Mejora en score de síntomas de rinitis alérgica: reducción de 40-60%",
+          "Reducción de IgE sérica: 15-25% en estudios que midieron este parámetro",
+          "Perfil de seguridad favorable sin efectos adversos graves reportados"
+        ],
+        "title": "Clinical efficacy of Nigella sativa seeds as add-on therapy in allergic rhinitis and bronchial asthma: A systematic review",
+        "participants": 850,
+        "quality": "Moderate"
+      }
+    ]
+  }
+}

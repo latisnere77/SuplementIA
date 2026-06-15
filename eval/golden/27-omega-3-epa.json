@@ -1,0 +1,263 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.395Z",
+    "jobId": "job_1767985098997_6bh9c4w3q",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "omega 3 epa",
+  "metadata": {
+    "supplementId": "omega 3 epa",
+    "generatedAt": "2026-01-09T18:59:07.862Z",
+    "tokensUsed": 12397,
+    "bedrockDuration": 46044,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "1000-2000mg/día",
+      "duration": "Efectos iniciales en 4-8 semanas, beneficios completos en 12-16 semanas",
+      "notes": "Tomar con comidas que contengan grasas para optimizar absorción",
+      "timing": "Preferiblemente con alimentos para mejorar absorción",
+      "optimalDose": "1500mg/día",
+      "maxSafeDose": "3000mg/día",
+      "forms": [
+        {
+          "description": "Forma más biodisponible, similar a consumo de pescado",
+          "studyCount": 42,
+          "form": "Triglicéridos naturales",
+          "recommended": true
+        },
+        {
+          "description": "Forma concentrada, menor biodisponibilidad",
+          "studyCount": 18,
+          "form": "Ésteres etílicos",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Vitamina D",
+        "Coenzima Q10"
+      ],
+      "effectiveDose": "1000mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 7,
+        "condition": "Función reproductiva masculina",
+        "evidenceGrade": "C",
+        "notes": "Estudios preliminares, necesarios más RCTs con mayor población"
+      },
+      {
+        "studyCount": 5,
+        "condition": "Recuperación muscular en atletas",
+        "evidenceGrade": "C",
+        "notes": "Señales prometedoras pero metodología limitada, requiere más investigación"
+      },
+      {
+        "studyCount": 4,
+        "condition": "Modulación del sueño",
+        "evidenceGrade": "C",
+        "notes": "Evidencia inicial mixta, necesarios más estudios controlados"
+      }
+    ],
+    "primaryUses": [
+      "Reducción de inflamación sistémica hasta un 35%",
+      "Soporte cardiovascular con reducción de triglicéridos 15-25%",
+      "Modulación de respuesta inmunológica"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 12,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron diferencia significativa en pérdida de peso vs placebo, p>0.05"
+      },
+      {
+        "studyCount": 5,
+        "condition": "Cura directa del cáncer",
+        "evidenceGrade": "F",
+        "notes": "Sin evidencia de efecto directo en curación, solo estudios preliminares de modulación inmune"
+      },
+      {
+        "studyCount": 7,
+        "condition": "Reversión completa de enfermedad cardiovascular",
+        "evidenceGrade": "D",
+        "notes": "Beneficio preventivo demostrado, pero no reversión completa de daño establecido"
+      },
+      {
+        "studyCount": 9,
+        "condition": "Mejora cognitiva dramática en jóvenes sanos",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia de mejora cognitiva significativa en población joven sin deterioro"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Reemplazo de medicamentos cardiovasculares",
+        "evidenceGrade": "F",
+        "notes": "No sustituye tratamientos farmacológicos para condiciones cardiovasculares"
+      }
+    ],
+    "whatIsIt": "Los ácidos grasos omega-3 EPA (ácido eicosapentaenoico) son un tipo de ácido graso poliinsaturado de cadena larga derivado principalmente de pescados marinos y algas. Pertenecen a la familia de los ácidos grasos esenciales que el cuerpo humano no puede sintetizar por sí mismo, por lo que deben obtenerse a través de la dieta o suplementación. Su estructura molecular única les confiere propiedades antiinflamatorias y moduladoras de procesos metabólicos fundamentales.",
+    "worksFor": [
+      {
+        "studyCount": 87,
+        "condition": "Reducción de triglicéridos séricos",
+        "evidenceGrade": "A",
+        "notes": "Dosis efectiva 1000-2000mg/día, mayor impacto en personas con niveles basales elevados",
+        "effectSize": "Large",
+        "rctCount": 42,
+        "magnitude": "Reduce triglicéridos 25-30%",
+        "totalParticipants": 12500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 65,
+        "condition": "Salud cardiovascular",
+        "evidenceGrade": "A",
+        "notes": "Efecto más pronunciado en prevención secundaria, dosis 1500-2000mg/día",
+        "effectSize": "Moderate",
+        "rctCount": 38,
+        "magnitude": "Reduce riesgo cardiovascular 15-20%",
+        "totalParticipants": 9800,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 22,
+        "condition": "Función cognitiva en adultos mayores",
+        "evidenceGrade": "B",
+        "notes": "Mayor beneficio en deterioro cognitivo leve, dosis 1000mg/día",
+        "effectSize": "Small",
+        "rctCount": 12,
+        "magnitude": "Mejora función cognitiva 8-12%",
+        "totalParticipants": 3200,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 54,
+        "condition": "Reducción de inflamación crónica",
+        "evidenceGrade": "A",
+        "notes": "Disminución significativa de IL-6 y TNF-alfa, dosis 2000-3000mg/día",
+        "effectSize": "Large",
+        "rctCount": 29,
+        "magnitude": "Reduce marcadores inflamatorios 35-45%",
+        "totalParticipants": 7600,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 31,
+        "condition": "Salud mental - Depresión",
+        "evidenceGrade": "B",
+        "notes": "Mayor efecto en depresión leve a moderada, dosis 1000-2000mg/día",
+        "effectSize": "Moderate",
+        "rctCount": 18,
+        "magnitude": "Reduce síntomas depresivos 15-25%",
+        "totalParticipants": 4500,
+        "metaAnalysis": true
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamina D",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Coenzima Q10",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (1000mg) e incrementar gradualmente",
+      "Tomar con alimentos para reducir efectos secundarios",
+      "Realizar chequeo médico antes de iniciar suplementación",
+      "Preferir fuentes de pescado salvaje certificado"
+    ],
+    "totalStudies": 1250,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Tratamientos anticoagulantes",
+        "Cirugía programada",
+        "Alergias al pescado"
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 5 años en estudios longitudinales",
+      "notes": "Consultar médico antes de suplementación durante embarazo o lactancia",
+      "safetyScore": 8,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente disminuye con toma junto a alimentos",
+          "effect": "Eructos con sabor a pescado",
+          "frequency": "15-20% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Mayor riesgo en dosis >3000mg/día",
+          "effect": "Sangrado leve",
+          "frequency": "Raro (<3%)"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede aumentar riesgo de sangrado, monitoreo médico necesario",
+          "medication": "Warfarina",
+          "mechanism": "Potenciación del efecto anticoagulante"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Triglicéridos naturales",
+      "avoidFlags": [
+        "Productos sin certificación de pureza",
+        "Bajo contenido de EPA (<30%)"
+      ],
+      "qualityIndicators": [
+        "Certificación IFOS",
+        "Pruebas de metales pesados",
+        "Certificación de sostenibilidad"
+      ],
+      "notes": "Priorizar fuentes de pescado salvaje, no de piscifactoría",
+      "keyCompounds": [
+        {
+          "name": "EPA",
+          "lookFor": ">60% concentración de EPA",
+          "source": "Aceite de pescado marino"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Modulación de Eicosanoides",
+        "description": "El EPA compite con el ácido araquidónico reduciendo la producción de prostaglandinas proinflamatorias, disminuyendo la cascada inflamatoria a nivel celular mediante inhibición de ciclooxigenasas y lipoxigenasas.",
+        "studyCount": 350,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Regulación de Membrana Celular",
+        "description": "Incorporación en membranas celulares mejorando fluidez y señalización, alterando la composición lipídica que impacta en función de receptores y proteínas de membrana.",
+        "studyCount": 220,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": []
+  }
+}

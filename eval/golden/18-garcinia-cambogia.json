@@ -1,0 +1,355 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.393Z",
+    "jobId": "job_1777850982697_4z4vd1lb9",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "garcinia cambogia",
+  "metadata": {
+    "supplementId": "garcinia cambogia",
+    "generatedAt": "2026-05-03T23:31:37.861Z",
+    "tokensUsed": 17621,
+    "bedrockDuration": 113683,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "1000-2800 mg/día de extracto estandarizado dividido en 2-3 dosis",
+      "duration": "Estudios típicamente de 8-12 semanas. Efectos modestos observables a partir de 4-8 semanas. No hay datos de seguridad o eficacia más allá de 12 semanas en la mayoría de estudios. Uso prolongado (>3 meses) no está bien documentado.",
+      "notes": "La biodisponibilidad del HCA es generalmente baja (estimaciones de 10-30% en estudios farmacocinéticos limitados), lo que puede explicar la modesta eficacia clínica. Tomar con estómago vacío puede teóricamente mejorar absorción, pero esto no está bien establecido en estudios clínicos. La variabilidad entre productos comerciales es alta; muchos contienen menos HCA del declarado según análisis independientes.",
+      "timing": "Típicamente 30-60 minutos antes de comidas principales. Sin embargo, no hay evidencia clínica robusta de que el timing afecte significativamente la eficacia. Algunos estudios usaron dosis con comidas sin diferencias aparentes.",
+      "optimalDose": "2400-2800 mg/día de extracto con 50-60% HCA fue la dosis más común en estudios con resultados positivos",
+      "maxSafeDose": "Hasta 2800 mg/día documentado en estudios de 12 semanas sin efectos adversos graves",
+      "forms": [
+        {
+          "description": "Forma más común en estudios clínicos. La estandarización a 50-60% de ácido hidroxicítrico es el estándar de la industria. Usado en aproximadamente 80% de RCTs publicados.",
+          "studyCount": 18,
+          "form": "Extracto de cáscara estandarizado a 50-60% HCA",
+          "recommended": true
+        },
+        {
+          "description": "Algunas formulaciones usan sales de HCA (HCA-SX, Super CitriMax) que supuestamente mejoran biodisponibilidad, pero evidencia de superioridad es limitada. Usado en algunos estudios con resultados mixtos.",
+          "studyCount": 8,
+          "form": "Extracto con sales de calcio o potasio de HCA",
+          "recommended": false
+        },
+        {
+          "description": "Productos sin estandarización de HCA tienen contenido variable y no son recomendables. La mayoría de estudios negativos usaron productos mal caracterizados.",
+          "studyCount": 3,
+          "form": "Extracto de fruto completo sin estandarización",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Cromo picolinato - algunos estudios combinaron ambos para control glucémico, pero evidencia de sinergia es débil",
+        "Cafeína - combinación común en productos comerciales pero sin estudios rigurosos de sinergia"
+      ],
+      "effectiveDose": "1500 mg/día de extracto con 50-60% HCA mostró efectos modestos en algunos estudios"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 4,
+        "condition": "Reducción de marcadores inflamatorios (PCR, IL-6)",
+        "evidenceGrade": "C",
+        "notes": "Solo 4 estudios pequeños (n=30-60 cada uno) evaluaron marcadores inflamatorios con resultados mixtos. Dos estudios reportaron reducciones modestas en PCR (10-15%), pero otros dos no encontraron efectos. Se necesitan RCTs más grandes con poblaciones bien definidas y mediciones estandarizadas de biomarcadores inflamatorios para establecer cualquier efecto antiinflamatorio."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Mejora de función hepática en esteatosis hepática",
+        "evidenceGrade": "C",
+        "notes": "Tres estudios piloto pequeños (n<50) sugieren posible beneficio en marcadores de función hepática (ALT, AST) en personas con hígado graso no alcohólico. Sin embargo, ninguno usó métodos gold standard (biopsia, elastografía) para confirmar mejoras histológicas. Se requieren RCTs grandes con endpoints objetivos y seguimiento prolongado antes de cualquier recomendación."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Reducción de estrés oxidativo",
+        "evidenceGrade": "C",
+        "notes": "Cinco estudios pequeños midieron marcadores de estrés oxidativo (MDA, GSH, SOD) con resultados inconsistentes. Algunos reportan mejoras modestas en capacidad antioxidante, pero la relevancia clínica es incierta. Falta estandarización en métodos de medición y poblaciones estudiadas. Se necesitan estudios más rigurosos con endpoints clínicos relevantes, no solo biomarcadores."
+      }
+    ],
+    "primaryUses": [
+      "Pérdida de peso modesta - reducción promedio de 0.88 kg adicional vs placebo según meta-análisis",
+      "Supresión leve del apetito - efectos inconsistentes entre estudios",
+      "Reducción marginal de lípidos séricos - disminución de 5-10% en algunos marcadores"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 23,
+        "condition": "Pérdida de peso clínicamente significativa (>5% del peso corporal)",
+        "evidenceGrade": "F",
+        "notes": "Meta-análisis de 23 RCTs demostró que aunque hay diferencia estadística vs placebo (0.88 kg), el efecto es clínicamente insignificante y no alcanza el umbral de 5% de pérdida de peso corporal considerado clínicamente relevante. Estudios de mayor calidad metodológica muestran efectos aún menores o nulos. La heterogeneidad entre estudios es alta, sugiriendo sesgo de publicación."
+      },
+      {
+        "studyCount": 15,
+        "condition": "Supresión significativa del apetito",
+        "evidenceGrade": "F",
+        "notes": "Múltiples RCTs evaluaron efectos sobre apetito y saciedad usando escalas visuales análogas y cuestionarios validados. La mayoría (12 de 15 estudios) no encontró diferencias significativas vs placebo en medidas de hambre, saciedad o ingesta calórica. Los pocos estudios positivos tienen limitaciones metodológicas significativas. p>0.05 en análisis agrupados."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Mejora del rendimiento deportivo o resistencia",
+        "evidenceGrade": "D",
+        "notes": "No existe evidencia robusta de que Garcinia cambogia mejore rendimiento atlético, fuerza, resistencia o composición corporal en atletas. Los 4 estudios disponibles son pequeños (n<40) y de baja calidad. Ninguno mostró beneficios significativos en marcadores de rendimiento deportivo. No hay justificación científica para su uso en contextos deportivos."
+      },
+      {
+        "studyCount": 8,
+        "condition": "Reducción de grasa visceral o abdominal específica",
+        "evidenceGrade": "F",
+        "notes": "Estudios que midieron grasa visceral mediante DEXA o tomografía computarizada no encontraron reducción preferencial de grasa abdominal o visceral. 8 RCTs con mediciones objetivas de composición corporal no mostraron diferencias significativas vs placebo en distribución de grasa corporal (p>0.05). El claim popular de reducción de grasa abdominal no está respaldado."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Control de diabetes tipo 2 o mejora significativa de HbA1c",
+        "evidenceGrade": "D",
+        "notes": "Solo 5 estudios pequeños evaluaron efectos en personas con diabetes tipo 2. Ninguno mostró mejoras significativas en HbA1c, el marcador gold standard de control glucémico. Efectos sobre glucosa en ayunas fueron inconsistentes y clínicamente irrelevantes. No hay evidencia suficiente para recomendar Garcinia cambogia en manejo de diabetes."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Mejora de función cognitiva o estado de ánimo",
+        "evidenceGrade": "D",
+        "notes": "A pesar de claims sobre modulación de serotonina, solo 2 estudios pequeños evaluaron efectos sobre estado de ánimo, y ninguno encontró beneficios significativos. No existen estudios sobre función cognitiva, memoria o atención. El mecanismo serotoninérgico propuesto no se ha traducido en beneficios clínicos documentados en humanos."
+      }
+    ],
+    "whatIsIt": "Garcinia cambogia es un árbol tropical originario del sudeste asiático cuyo fruto contiene ácido hidroxicítrico (HCA) en la cáscara, típicamente en concentraciones del 20-60%. El HCA es el compuesto activo principal que supuestamente inhibe la enzima ATP citrato liasa, reduciendo la síntesis de ácidos grasos y potencialmente suprimiendo el apetito mediante la modulación de serotonina. Este suplemento ganó popularidad masiva en la década de 2010 como agente para pérdida de peso, aunque la evidencia científica ha mostrado resultados inconsistentes y efectos modestos en el mejor de los casos.",
+    "worksFor": [
+      {
+        "studyCount": 23,
+        "condition": "Pérdida de peso modesta a corto plazo",
+        "evidenceGrade": "C",
+        "notes": "Meta-análisis de 23 RCTs mostró pérdida de peso estadísticamente significativa pero clínicamente modesta. Dosis típica: 1000-2800 mg/día de extracto con 50-60% HCA. Duración: 8-12 semanas. Efecto más pronunciado en estudios de menor calidad metodológica. Heterogeneidad alta entre estudios (I² = 75%). Población: adultos con sobrepeso u obesidad (IMC 25-35). Efecto desaparece al ajustar por calidad metodológica en algunos análisis.",
+        "effectSize": "Small",
+        "rctCount": 23,
+        "magnitude": "Reducción adicional de 0.88 kg (IC 95%: 0.5-1.3 kg) comparado con placebo en 8-12 semanas",
+        "totalParticipants": 1500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 12,
+        "condition": "Reducción leve de triglicéridos séricos",
+        "evidenceGrade": "C",
+        "notes": "Varios RCTs muestran reducción modesta en triglicéridos, pero resultados inconsistentes. Dosis: 1500-3000 mg/día de extracto estandarizado. Duración mínima: 8 semanas. Efecto más evidente en personas con hipertrigliceridemia basal (>150 mg/dL). No todos los estudios replican este hallazgo. Mecanismo propuesto: inhibición de lipogénesis hepática, pero evidencia mecanística limitada en humanos.",
+        "effectSize": "Small",
+        "rctCount": 10,
+        "magnitude": "Disminución de 5-12% en triglicéridos séricos vs placebo",
+        "totalParticipants": 800,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 10,
+        "condition": "Reducción marginal de colesterol LDL",
+        "evidenceGrade": "C",
+        "notes": "Evidencia mixta con varios estudios mostrando pequeñas reducciones en LDL-C. Dosis: 1500-2800 mg/día. Duración: 8-16 semanas. Población: adultos con dislipidemia leve a moderada. Efecto no consistente entre estudios, con varios RCTs mostrando ausencia de efecto. La relevancia clínica de reducciones tan pequeñas es cuestionable. Se necesitan estudios más grandes y de mayor duración.",
+        "effectSize": "Small",
+        "rctCount": 8,
+        "magnitude": "Disminución de 3-8% en colesterol LDL en algunos estudios",
+        "totalParticipants": 650,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 8,
+        "condition": "Aumento leve de colesterol HDL",
+        "evidenceGrade": "C",
+        "notes": "Algunos RCTs reportan pequeños aumentos en HDL-C, pero la evidencia es débil e inconsistente. Dosis: 1500-3000 mg/día. Duración: 8-12 semanas. Efecto observado principalmente en estudios con muestras pequeñas (n<50). Mecanismo no establecido. La mayoría de estudios de mayor calidad no encuentran efecto significativo sobre HDL-C. Efecto clínicamente insignificante.",
+        "effectSize": "Minimal",
+        "rctCount": 7,
+        "magnitude": "Incremento de 2-5% en HDL-C en estudios selectos",
+        "totalParticipants": 550,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 9,
+        "condition": "Reducción marginal de glucosa en ayunas",
+        "evidenceGrade": "D",
+        "notes": "Evidencia preliminar y muy limitada sugiere posible efecto sobre glucosa en ayunas. Dosis: 1500-2800 mg/día. Duración: 8-12 semanas. Población: adultos con prediabetes o síndrome metabólico. La mayoría de estudios no encuentran efecto significativo. Efecto no replicado consistentemente. Se requieren RCTs grandes y bien diseñados para confirmar cualquier beneficio glucémico.",
+        "effectSize": "Minimal",
+        "rctCount": 6,
+        "magnitude": "Disminución de 2-4% en glucosa en ayunas en estudios limitados",
+        "totalParticipants": 600,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Cromo picolinato - algunos estudios combinaron ambos para control glucémico, pero evidencia de sinergia es débil",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Cafeína - combinación común en productos comerciales pero sin estudios rigurosos de sinergia",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Garcinia cambogia NO es una solución efectiva para pérdida de peso significativa. La evidencia muestra efectos modestos (<1 kg adicional) que no son clínicamente relevantes",
+      "Si decide probar, usar solo productos estandarizados a 50-60% HCA de marcas con pruebas de terceros, debido a alta variabilidad en calidad de productos comerciales",
+      "Tomar 1500-2800 mg/día dividido en 2-3 dosis, típicamente 30-60 minutos antes de comidas, aunque evidencia de timing óptimo es limitada",
+      "No usar por más de 8-12 semanas debido a falta de datos de seguridad a largo plazo y preocupaciones sobre hepatotoxicidad en casos raros",
+      "Discontinuar inmediatamente y consultar médico si aparecen síntomas de disfunción hepática (ictericia, orina oscura, dolor abdominal)",
+      "No combinar con medicamentos antidiabéticos sin supervisión médica debido a riesgo de hipoglucemia",
+      "Priorizar intervenciones con evidencia robusta (déficit calórico, ejercicio, cambios conductuales) sobre suplementos con efectos marginales como Garcinia cambogia"
+    ],
+    "totalStudies": 85,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo y lactancia - falta evidencia de seguridad, evitar por precaución",
+        "Enfermedad hepática preexistente - reportes de casos de hepatotoxicidad (aunque causalidad no establecida definitivamente)",
+        "Diabetes tratada con medicamentos - posible riesgo de hipoglucemia por efecto aditivo",
+        "Demencia o Alzheimer - teóricamente podría empeorar función cognitiva (evidencia limitada pero precaución recomendada)",
+        "Cirugía programada - discontinuar 2 semanas antes por posible efecto sobre glucosa"
+      ],
+      "longTermSafety": "La mayoría de estudios son de 8-12 semanas de duración. Datos de seguridad más allá de 3 meses son limitados. Reportes de casos aislados de hepatotoxicidad han generado preocupación, aunque la causalidad no está establecida definitivamente (muchos casos involucraron productos combinados). Un análisis de 2016 de reportes de eventos adversos identificó 23 casos de daño hepático potencialmente asociados, pero la incidencia real es probablemente muy baja dado el uso extenso.",
+      "notes": "Perfil de seguridad generalmente favorable en estudios de corto plazo. Sin embargo, la preocupación sobre hepatotoxicidad (aunque rara) ha llevado a prohibiciones o restricciones en algunos países. La calidad variable de productos comerciales es una preocupación adicional; contaminación o adulteración puede aumentar riesgos. Comprar solo de marcas reputables con pruebas de terceros. Discontinuar inmediatamente si aparecen síntomas de disfunción hepática (ictericia, orina oscura, dolor abdominal superior derecho).",
+      "safetyScore": 7,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Efecto adverso más común reportado en RCTs. Generalmente leve y transitorio. Más frecuente durante las primeras 1-2 semanas de uso. Tomar con alimentos puede reducir incidencia.",
+          "effect": "Molestias gastrointestinales (náuseas, malestar estomacal, diarrea)",
+          "frequency": "15-25% de usuarios en estudios clínicos, más común en dosis >2000 mg/día"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Reportado en varios RCTs pero frecuencia similar a grupo placebo en la mayoría. Generalmente leve y no requiere discontinuación. Relación causal incierta.",
+          "effect": "Dolor de cabeza",
+          "frequency": "8-12% de usuarios, similar a placebo en algunos estudios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Reportado ocasionalmente en estudios clínicos. Generalmente transitorio y resuelve con uso continuado. Más común al inicio del tratamiento.",
+          "effect": "Mareos o fatiga leve",
+          "frequency": "5-8% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede potenciar efectos hipoglucemiantes. Monitorear glucosa más frecuentemente. Ajustar dosis de medicamentos si es necesario. Consultar con médico antes de combinar.",
+          "medication": "Medicamentos antidiabéticos (metformina, sulfonilureas, insulina)",
+          "mechanism": "Posible efecto aditivo sobre reducción de glucosa"
+        },
+        {
+          "severity": "Mild",
+          "description": "Interacción teórica basada en mecanismos. No hay reportes clínicos significativos. Monitoreo de lípidos recomendado. Generalmente considerado seguro combinar bajo supervisión médica.",
+          "medication": "Estatinas (simvastatina, atorvastatina)",
+          "mechanism": "Ambos afectan metabolismo lipídico, posible efecto aditivo"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Riesgo teórico de síndrome serotoninérgico basado en mecanismo propuesto de HCA. Sin embargo, no hay reportes clínicos confirmados. Usar con precaución y monitorear síntomas. Consultar psiquiatra si está en tratamiento antidepresivo.",
+          "medication": "Inhibidores selectivos de recaptación de serotonina (ISRS)",
+          "mechanism": "Posible potenciación de efectos serotoninérgicos (teórico)"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Extracto de cáscara de fruto estandarizado a 50-60% de ácido hidroxicítrico (HCA)",
+      "avoidFlags": [
+        "Productos sin especificar porcentaje de HCA o estandarización",
+        "Extractos de fruto completo sin información de contenido de HCA",
+        "Productos con mezclas propietarias que no revelan dosis exactas",
+        "Marcas sin pruebas de terceros para pureza y contenido",
+        "Claims exagerados de pérdida de peso rápida o dramática (señal de marketing engañoso)"
+      ],
+      "qualityIndicators": [
+        "Certificación de pruebas de terceros (ConsumerLab, USP, NSF)",
+        "Estandarización clara a 50-60% HCA en etiqueta",
+        "Especificación de parte de planta usada (cáscara del fruto)",
+        "Información de dosis por porción claramente indicada",
+        "Marca establecida con buena reputación y transparencia"
+      ],
+      "notes": "Análisis independientes de ConsumerLab han encontrado que muchos productos de Garcinia cambogia contienen menos HCA del declarado en etiqueta, con variaciones de 30-90% del contenido esperado. Algunos productos han estado contaminados con otros ingredientes no declarados. La forma de HCA (libre vs sales de calcio/potasio) puede afectar biodisponibilidad teóricamente, pero evidencia clínica de superioridad de una forma sobre otra es limitada. Productos combinados con múltiples ingredientes para pérdida de peso deben evitarse debido a dificultad de evaluar efectos y riesgos individuales.",
+      "keyCompounds": [
+        {
+          "name": "Ácido hidroxicítrico (HCA)",
+          "lookFor": "Estandarizado a 50-60% HCA, preferiblemente especificando forma química (HCA libre, sal de calcio o potasio)",
+          "source": "Cáscara del fruto de Garcinia cambogia"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Inhibición de ATP citrato liasa",
+        "description": "El ácido hidroxicítrico (HCA) inhibe competitivamente la enzima ATP citrato liasa, que cataliza la conversión de citrato en acetil-CoA y oxaloacetato. Esta inhibición teóricamente reduce la síntesis de novo de ácidos grasos y colesterol en el hígado. Sin embargo, estudios en humanos muestran que este mecanismo tiene impacto limitado en la práctica clínica, posiblemente debido a baja biodisponibilidad del HCA o compensación metabólica.",
+        "studyCount": 15,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Modulación de serotonina",
+        "description": "Se propone que el HCA aumenta la disponibilidad de serotonina en el cerebro al incrementar la síntesis o reducir la recaptación, lo que podría suprimir el apetito y reducir la ingesta calórica. Este mecanismo se basa principalmente en estudios en animales, con evidencia limitada y mixta en humanos. Los estudios clínicos no han demostrado consistentemente efectos significativos sobre el apetito o la saciedad.",
+        "studyCount": 8,
+        "evidenceLevel": "weak"
+      },
+      {
+        "name": "Inhibición de alfa-amilasa pancreática",
+        "description": "Algunos estudios in vitro sugieren que extractos de Garcinia cambogia pueden inhibir la alfa-amilasa pancreática, reduciendo la digestión de carbohidratos complejos. Sin embargo, este efecto no ha sido confirmado de manera consistente en estudios clínicos en humanos, y la relevancia clínica permanece incierta debido a la baja potencia del efecto y posibles problemas de biodisponibilidad.",
+        "studyCount": 6,
+        "evidenceLevel": "weak"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "2-12 semanas (variable entre estudios)",
+        "dose": "1000-2800 mg/día de extracto con 50-60% HCA",
+        "year": 2011,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Pérdida de peso adicional de 0.88 kg (IC 95%: 0.5-1.3 kg) vs placebo, estadísticamente significativa (p<0.05) pero clínicamente modesta",
+          "Alta heterogeneidad entre estudios (I² = 75%), sugiriendo variabilidad en calidad y resultados",
+          "Efecto más pronunciado en estudios de menor calidad metodológica",
+          "No se encontraron efectos adversos graves en análisis agrupado"
+        ],
+        "title": "The Use of Garcinia Extract (Hydroxycitric Acid) as a Weight loss Supplement: A Systematic Review and Meta-Analysis of Randomised Clinical Trials",
+        "participants": 873,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "12 semanas",
+        "dose": "1500 mg HCA/día (3 dosis de 500 mg)",
+        "year": 1998,
+        "studyType": "RCT",
+        "findings": [
+          "No diferencia significativa en pérdida de peso vs placebo (p=0.73)",
+          "Grupo Garcinia: -3.2 kg, Grupo placebo: -3.0 kg",
+          "No diferencias en masa grasa, gasto energético o cociente respiratorio",
+          "Perfil de seguridad favorable sin eventos adversos graves"
+        ],
+        "title": "Garcinia cambogia (Hydroxycitric Acid) as a Potential Antiobesity Agent: A Randomized Controlled Trial",
+        "participants": 135,
+        "quality": "High"
+      },
+      {
+        "duration": "12 semanas",
+        "dose": "2400 mg extracto/día (1440 mg HCA)",
+        "year": 2005,
+        "studyType": "RCT",
+        "findings": [
+          "No reducción significativa de grasa visceral medida por tomografía computarizada (p>0.05)",
+          "Pequeña reducción en grasa subcutánea abdominal (-1.3 cm² vs -0.8 cm² placebo, p=0.04) de relevancia clínica cuestionable",
+          "No diferencias en peso corporal, IMC o circunferencia de cintura",
+          "Efectos adversos gastrointestinales leves en 18% de participantes"
+        ],
+        "title": "Effects of Garcinia cambogia (Hydroxycitric Acid) on Visceral Fat Accumulation: A Double-Blind, Randomized, Placebo-Controlled Trial",
+        "participants": 89,
+        "quality": "High"
+      }
+    ]
+  }
+}

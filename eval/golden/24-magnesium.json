@@ -1,0 +1,1068 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.394Z",
+    "jobId": "supplement_1777917587400_dm6ikj515",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "magnesium",
+  "metadata": {
+    "supplementId": "magnesium",
+    "generatedAt": "2026-05-04T18:02:46.039Z",
+    "tokensUsed": 21828,
+    "bedrockDuration": 178001,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "200-400mg/día de magnesio elemental para mantenimiento general y prevención de deficiencia. 300-500mg/día para mejora de sueño y ansiedad. 400-600mg/día para prevención de migrañas",
+      "duration": "Efectos en sueño: mejoras iniciales en 2-4 semanas, efectos máximos en 6-8 semanas de uso continuo. Ansiedad: 2-3 semanas para efectos iniciales, 8-12 semanas para beneficio completo. Migrañas: mínimo 12 semanas para evaluar eficacia preventiva, efectos máximos en 3-4 meses. Calambres: 2-4 semanas. Uso continuo seguro documentado hasta 12 meses en RCTs. No necesidad de ciclar",
+      "notes": "Tomar con alimentos mejora tolerancia gastrointestinal y puede mejorar absorción de algunas formas. Dividir dosis diaria en 2-3 tomas reduce efectos laxantes. Personas con función renal comprometida deben consultar médico antes de suplementar (riesgo de hipermagnesemia). Comenzar con dosis baja (200mg) e incrementar gradualmente para evaluar tolerancia. Formas queladas (glicinato, bisglicinato) generalmente mejor toleradas que sales inorgánicas (óxido, sulfato). Evitar tomar simultáneamente con antibióticos (tetraciclinas, fluoroquinolonas) o bifosfonatos - separar por 2-3 horas",
+      "timing": "Sin preferencia de horario crítica según estudios clínicos. Para sueño: tomar 1-2 horas antes de dormir puede ser preferible por efectos relajantes, aunque no hay RCTs comparando horarios específicamente. Para calambres nocturnos: tomar por la noche. Para migrañas: dividir dosis en 2-3 tomas con alimentos mejora tolerancia. Tomar con alimentos reduce efectos laxantes",
+      "optimalDose": "400-500mg/día de magnesio elemental mostró mejor balance entre eficacia y tolerabilidad en meta-análisis para sueño, ansiedad y calambres musculares. Dosis de 600mg/día óptima específicamente para prevención de migrañas",
+      "maxSafeDose": "Hasta 350mg/día de magnesio elemental suplementario considerado seguro por NIH (UL establecido). Dosis terapéuticas de 400-600mg/día usadas en estudios clínicos sin efectos adversos graves, pero pueden causar efectos gastrointestinales leves en personas sensibles. Dosis >800mg/día no recomendadas sin supervisión médica",
+      "forms": [
+        {
+          "description": "Quelato de magnesio con glicina. Aproximadamente 14% magnesio elemental. Excelente tolerabilidad gastrointestinal y biodisponibilidad. Glicina tiene efectos calmantes adicionales (agonista de receptores de glicina). Forma preferida para sueño y ansiedad según expertos clínicos. Menos estudiada en RCTs que citrato u óxido pero creciente popularidad",
+          "studyCount": 8,
+          "form": "Glicinato de magnesio",
+          "recommended": true
+        },
+        {
+          "description": "Sal de magnesio con ácido cítrico. Aproximadamente 16% magnesio elemental. Alta biodisponibilidad documentada en estudios farmacocinéticos. Usado en múltiples RCTs para sueño, ansiedad y calambres. Efecto laxante leve puede ser beneficioso para estreñimiento pero problemático en dosis altas. Segunda forma más recomendada después de glicinato",
+          "studyCount": 24,
+          "form": "Citrato de magnesio",
+          "recommended": true
+        },
+        {
+          "description": "Aproximadamente 60% magnesio elemental (mayor concentración). Biodisponibilidad menor (4-5% según estudios) pero forma más estudiada en RCTs de migraña. Económico. Efecto laxante más pronunciado. Usado en 11 RCTs de prevención de migraña con dosis 400-600mg/día. Recomendado específicamente para migraña por guías neurológicas",
+          "studyCount": 28,
+          "form": "Óxido de magnesio",
+          "recommended": true
+        },
+        {
+          "description": "Forma patentada diseñada para penetración cerebral. Aproximadamente 8% magnesio elemental. Estudios preclínicos muestran mayor concentración en líquido cefalorraquídeo. Solo 3 RCTs pequeños en humanos (n<50) para función cognitiva con resultados prometedores pero preliminares. Más caro. Evidencia insuficiente para recomendación general pero prometedor para aplicaciones cognitivas",
+          "studyCount": 3,
+          "form": "L-treonato de magnesio (Magtein®)",
+          "recommended": false
+        },
+        {
+          "description": "Aproximadamente 12% magnesio elemental. Buena biodisponibilidad. Usado en algunos RCTs de presión arterial y función cardiovascular. Sabor amargo. Puede administrarse transdérmicamente (aceite de magnesio) aunque absorción transdérmica controversial y no bien documentada en RCTs",
+          "studyCount": 12,
+          "form": "Cloruro de magnesio",
+          "recommended": true
+        },
+        {
+          "description": "Quelato con taurina. Aproximadamente 8-10% magnesio elemental. Taurina tiene efectos cardiovasculares y calmantes adicionales. Pocos RCTs específicos pero combinación teóricamente sinérgica para sueño y función cardiovascular. Buena tolerabilidad. Evidencia clínica limitada pero prometedora",
+          "studyCount": 4,
+          "form": "Taurato de magnesio",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Vitamina D3 (2000-4000 UI/día) - el magnesio es cofactor para activación de vitamina D, y la vitamina D mejora absorción de magnesio. Sinergia documentada para salud ósea y función inmune",
+        "Vitamina B6 (40-80mg/día) - potencia efectos del magnesio en síntesis de neurotransmisores y reducción de SPM. Combinación estudiada en 4 RCTs con efectos superiores a magnesio solo",
+        "Zinc (15-30mg/día) - balance importante entre magnesio y zinc. Tomar separados (2-3 horas) para evitar competencia por absorción. Ambos importantes para función inmune y hormonal",
+        "L-Teanina (200mg) - sinergia para efectos calmantes y mejora de sueño sin sedación. Mecanismos complementarios (GABA y glutamato)",
+        "Glicina (3g antes de dormir) - aminoácido con efectos termogénicos y promotores del sueño. Complementa efectos del magnesio en calidad de sueño según estudios preliminares"
+      ],
+      "effectiveDose": "200mg/día de magnesio elemental mostró efectos mínimos en estudios de sueño. 300mg/día es la dosis mínima efectiva documentada para mejoras consistentes en calidad de sueño y ansiedad"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 4,
+        "condition": "Reducción de síntomas de fibromialgia incluyendo dolor y fatiga",
+        "evidenceGrade": "C",
+        "notes": "Solo 4 estudios pequeños (n=30-60 cada uno) han evaluado magnesio para fibromialgia, con resultados prometedores pero inconsistentes. Dos estudios mostraron reducción de 20-30% en puntuaciones de dolor, dos no mostraron diferencia significativa. Se necesitan RCTs grandes (n>200) con dosis estandarizadas y mediciones objetivas de dolor. Población estudiada muy heterogénea. Mecanismo plausible (modulación NMDA) pero confirmación clínica insuficiente."
+      },
+      {
+        "studyCount": 6,
+        "condition": "Mejora de síntomas de TDAH en niños y adolescentes",
+        "evidenceGrade": "C",
+        "notes": "6 estudios pequeños (n=25-75) sugieren que niños con TDAH tienen niveles más bajos de magnesio y que la suplementación (200-400mg/día) puede mejorar síntomas de hiperactividad e inatención en 15-25%. Sin embargo, estudios con limitaciones metodológicas (falta de cegamiento, mediciones subjetivas). Se necesitan RCTs doble-ciego grandes con evaluaciones neuropsicológicas objetivas y población más diversa. Evidencia preliminar pero insuficiente para recomendación clínica."
+      },
+      {
+        "studyCount": 7,
+        "condition": "Reducción de arritmias cardíacas específicamente fibrilación auricular",
+        "evidenceGrade": "C",
+        "notes": "7 estudios observacionales y 3 RCTs pequeños sugieren asociación entre niveles bajos de magnesio y mayor riesgo de fibrilación auricular. Suplementación intravenosa de magnesio usada en contexto hospitalario agudo. Sin embargo, evidencia insuficiente para suplementación oral preventiva a largo plazo. Se necesitan RCTs grandes con seguimiento prolongado (>12 meses) y mediciones de arritmias con Holter. Mecanismo plausible (estabilización de canales iónicos) pero confirmación clínica limitada."
+      },
+      {
+        "studyCount": 9,
+        "condition": "Mejora de síntomas de asma y función pulmonar",
+        "evidenceGrade": "C",
+        "notes": "9 RCTs han evaluado magnesio para asma: 6 con magnesio intravenoso en crisis asmáticas agudas (evidencia sólida), 3 con suplementación oral para control a largo plazo (resultados mixtos). Magnesio IV efectivo en exacerbaciones agudas, pero evidencia insuficiente para suplementación oral preventiva. Estudios orales pequeños (n<100) con resultados inconsistentes en FEV1 y síntomas. Se necesitan RCTs grandes con mediciones objetivas de función pulmonar y exacerbaciones."
+      }
+    ],
+    "primaryUses": [
+      "Mejora de calidad de sueño y reducción de insomnio - aumenta tiempo total de sueño 17-25 minutos y eficiencia del sueño 3-5% en adultos mayores",
+      "Reducción de ansiedad y estrés - disminuye puntuaciones de ansiedad 31-36% en escalas validadas",
+      "Prevención y tratamiento de migrañas - reduce frecuencia de migrañas 41.6% con suplementación de 600mg/día",
+      "Reducción de calambres musculares nocturnos - disminuye frecuencia 50-70% en embarazadas y adultos mayores",
+      "Control de presión arterial - reduce presión sistólica 3-4 mmHg y diastólica 2-3 mmHg en hipertensos"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 8,
+        "condition": "Prevención o tratamiento de osteoporosis como monoterapia",
+        "evidenceGrade": "D",
+        "notes": "Aunque el magnesio es importante para la salud ósea, 8 RCTs no mostraron beneficio significativo del magnesio solo sobre densidad mineral ósea (DMO) o reducción de fracturas (p>0.05). Meta-análisis de 2020 concluyó que el magnesio puede tener efecto sinérgico con calcio y vitamina D, pero evidencia insuficiente como monoterapia. Estudios observacionales muestran asociación, pero RCTs de intervención no confirman causalidad."
+      },
+      {
+        "studyCount": 12,
+        "condition": "Mejora del rendimiento deportivo o fuerza muscular en atletas sin deficiencia",
+        "evidenceGrade": "F",
+        "notes": "12 RCTs en atletas con niveles normales de magnesio no mostraron mejoras significativas en VO2max, fuerza máxima, potencia anaeróbica o tiempo hasta la fatiga comparado con placebo (p>0.05). Meta-análisis de 2017 concluyó que la suplementación solo beneficia a atletas con deficiencia documentada o pérdidas aumentadas por sudor. En personas con niveles adecuados, no hay efecto ergogénico adicional."
+      },
+      {
+        "studyCount": 6,
+        "condition": "Tratamiento de depresión mayor como monoterapia",
+        "evidenceGrade": "D",
+        "notes": "Aunque estudios observacionales sugieren asociación entre deficiencia de magnesio y depresión, solo 6 RCTs han evaluado magnesio para depresión mayor. Resultados inconsistentes: 3 estudios mostraron beneficio leve, 3 no mostraron diferencia vs placebo. Meta-análisis de 2019 concluyó evidencia insuficiente para recomendar magnesio como tratamiento primario de depresión. Puede ser útil como adyuvante pero no reemplaza antidepresivos estándar."
+      },
+      {
+        "studyCount": 7,
+        "condition": "Pérdida de peso o aceleración del metabolismo",
+        "evidenceGrade": "F",
+        "notes": "7 RCTs evaluaron magnesio para pérdida de peso en personas con sobrepeso/obesidad. Ninguno mostró reducción significativa de peso corporal, IMC o porcentaje de grasa comparado con placebo (p>0.05). Aunque el magnesio participa en metabolismo energético, no hay evidencia de que la suplementación aumente gasto energético o promueva pérdida de peso en ausencia de déficit. Claim popular sin respaldo científico."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Prevención o tratamiento de resfriado común o infecciones respiratorias",
+        "evidenceGrade": "D",
+        "notes": "Solo 3 estudios pequeños han evaluado magnesio para función inmune en infecciones respiratorias, con resultados no concluyentes. No hay RCTs que demuestren reducción en incidencia, duración o severidad de resfriados. Aunque el magnesio es importante para función inmune general, no hay evidencia específica para prevención de infecciones respiratorias virales. Confusión común con zinc o vitamina C."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Mejora cognitiva o prevención de demencia en adultos mayores cognitivamente sanos",
+        "evidenceGrade": "D",
+        "notes": "5 RCTs evaluaron magnesio (incluyendo L-treonato) para función cognitiva en adultos mayores sin deterioro cognitivo. Resultados mixtos y no concluyentes. Estudios con treonato de magnesio muestran señales prometedoras pero tamaños muestrales pequeños (n<50). Meta-análisis de 2021 concluyó evidencia insuficiente para recomendar magnesio para mejora cognitiva en personas sanas. Puede tener rol en deficiencia severa pero no como nootrópico general."
+      }
+    ],
+    "whatIsIt": "El magnesio es un mineral esencial involucrado en más de 300 reacciones enzimáticas en el cuerpo humano, incluyendo síntesis de proteínas, función muscular y nerviosa, control de glucosa y regulación de la presión arterial. En el contexto del sueño, el magnesio actúa como cofactor en la síntesis de neurotransmisores GABAérgicos y melatonina, además de modular la actividad del eje hipotálamo-pituitario-adrenal (HPA) reduciendo la respuesta al estrés. La deficiencia de magnesio es común en poblaciones occidentales (estimada en 10-30% según estudios de ingesta dietética) y se asocia con insomnio, ansiedad y calidad de sueño reducida. Es notable por su perfil de seguridad favorable y su capacidad para mejorar múltiples aspectos de la salud simultáneamente.",
+    "worksFor": [
+      {
+        "studyCount": 12,
+        "condition": "Mejora de calidad de sueño subjetiva y objetiva en adultos mayores con insomnio",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 320-500mg de magnesio elemental/día. Duración: Efectos significativos después de 4-8 semanas de uso continuo. Población: Principalmente adultos mayores >60 años con insomnio leve-moderado. Meta-análisis de 2021 (9 RCTs) mostró mejoras consistentes en PSQI, ISI y mediciones actigráficas. Efecto mayor en personas con deficiencia de magnesio basal (niveles séricos <0.85 mmol/L). Forma más estudiada: glicinato y citrato de magnesio.",
+        "effectSize": "Moderate",
+        "rctCount": 9,
+        "magnitude": "Aumenta tiempo total de sueño 17-25 minutos, mejora eficiencia del sueño 3-5%, reduce latencia de inicio del sueño 8-12 minutos, aumenta puntuaciones PSQI en 2.5-4.5 puntos",
+        "totalParticipants": 850,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 18,
+        "condition": "Reducción de síntomas de ansiedad generalizada y estrés percibido",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 300-600mg/día de magnesio elemental. Duración: Efectos iniciales en 2-3 semanas, máximos en 8-12 semanas. Población: Adultos 18-65 años con ansiedad leve-moderada. Meta-análisis de 2017 (11 RCTs) mostró efectos ansiolíticos significativos, especialmente en combinación con vitamina B6. Efecto comparable a dosis bajas de benzodiazepinas pero sin efectos sedantes. Mecanismo: modulación GABAérgica y reducción de cortisol. Forma recomendada: glicinato, taurato o treonato.",
+        "effectSize": "Moderate",
+        "rctCount": 11,
+        "magnitude": "Reduce puntuaciones GAD-7 en 31-36%, disminuye cortisol sérico 10-25%, mejora puntuaciones de estrés percibido (PSS) en 25-30%",
+        "totalParticipants": 1200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 15,
+        "condition": "Prevención de migrañas y reducción de frecuencia de ataques",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 400-600mg/día de magnesio elemental (óxido o citrato). Duración: Mínimo 12 semanas para evaluar eficacia, efectos preventivos máximos en 3-4 meses. Población: Adultos con migraña episódica (4-14 días/mes). Guías de la American Academy of Neurology recomiendan magnesio como terapia preventiva de primera línea (Nivel B de evidencia). Deficiencia de magnesio encontrada en 50% de pacientes con migraña. Efecto mayor en migraña menstrual y con aura. Forma: óxido de magnesio más estudiado para migraña específicamente.",
+        "effectSize": "Large",
+        "rctCount": 11,
+        "magnitude": "Reduce frecuencia de migrañas 41.6% comparado con placebo, disminuye días con migraña 2.5-3.5 días/mes, reduce intensidad del dolor 30-40%",
+        "totalParticipants": 980,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 10,
+        "condition": "Reducción de calambres musculares nocturnos en embarazadas y adultos mayores",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 300-360mg/día de magnesio elemental. Duración: Efectos en 2-4 semanas. Población: Embarazadas en segundo/tercer trimestre y adultos mayores >65 años. Meta-análisis Cochrane 2020 mostró beneficio significativo en embarazadas (7 RCTs, n=735). Mecanismo: estabilización de membrana neuromuscular y reducción de excitabilidad. Forma: citrato, glicinato o cloruro mejor tolerados que óxido. Nota: evidencia mixta en atletas sin deficiencia de magnesio.",
+        "effectSize": "Large",
+        "rctCount": 7,
+        "magnitude": "Reduce frecuencia de calambres 50-70%, disminuye intensidad del dolor 40-50%, mejora calidad de sueño secundariamente en 35-45%",
+        "totalParticipants": 735,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 34,
+        "condition": "Reducción de presión arterial en personas con hipertensión o prehipertensión",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 300-600mg/día de magnesio elemental. Duración: Mínimo 8-12 semanas para efectos sostenidos. Población: Adultos con hipertensión leve-moderada o prehipertensión. Meta-análisis de 2016 (34 RCTs, n=2028) mostró reducción dosis-dependiente. Efecto mayor en personas con ingesta dietética baja de magnesio (<250mg/día) y niveles séricos <0.85 mmol/L. Mecanismo: vasodilatación por antagonismo de calcio y mejora de función endotelial. Forma: citrato, cloruro o aspartato con mejor biodisponibilidad.",
+        "effectSize": "Small",
+        "rctCount": 28,
+        "magnitude": "Reduce presión sistólica 3-4 mmHg y diastólica 2-3 mmHg en promedio, con efectos mayores (5-6 mmHg sistólica) en personas con deficiencia de magnesio",
+        "totalParticipants": 2200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 26,
+        "condition": "Mejora de control glucémico y sensibilidad a insulina en prediabetes y diabetes tipo 2",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 250-500mg/día de magnesio elemental. Duración: Mínimo 12 semanas, efectos óptimos en 4-6 meses. Población: Adultos con prediabetes, diabetes tipo 2 o síndrome metabólico. Meta-análisis de 2016 (18 RCTs) mostró mejoras significativas en glucosa, insulina y HbA1c. Deficiencia de magnesio presente en 25-38% de diabéticos tipo 2. Mecanismo: cofactor para enzimas de metabolismo de glucosa y mejora de señalización de insulina. Efecto mayor en personas con hipomagnesemia basal (<0.75 mmol/L).",
+        "effectSize": "Moderate",
+        "rctCount": 19,
+        "magnitude": "Reduce glucosa en ayunas 4-5 mg/dL, disminuye HbA1c 0.22-0.35%, mejora HOMA-IR 15-25%",
+        "totalParticipants": 1650,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 8,
+        "condition": "Reducción de síntomas de síndrome premenstrual (SPM) incluyendo retención de líquidos y cambios de humor",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 200-360mg/día de magnesio elemental, especialmente efectivo en combinación con vitamina B6 (40-80mg). Duración: Mínimo 2-3 ciclos menstruales para evaluar eficacia. Población: Mujeres en edad reproductiva con SPM moderado-severo. Estudios muestran que niveles de magnesio eritrocitario son significativamente menores en mujeres con SPM. Mecanismo: modulación de neurotransmisores (serotonina, dopamina) y reducción de prostaglandinas inflamatorias. Forma: citrato o glicinato mejor tolerados. Tomar durante fase lútea o continuamente.",
+        "effectSize": "Moderate",
+        "rctCount": 6,
+        "magnitude": "Reduce puntuaciones totales de SPM 30-45%, disminuye síntomas de retención de líquidos 40-50%, mejora síntomas de humor 25-35%",
+        "totalParticipants": 520,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "5-HTP (5-Hydroxytryptophan)",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Apigenin",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "gaba",
+          "gaba"
+        ],
+        "type": "deep_relaxation",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Bacopa Monnieri",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Boswellia Serrata",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "gaba",
+          "antiinflam"
+        ],
+        "type": "calm_recovery",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Cat's Claw (Uncaria tomentosa)",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Coenzyme Q10 (Ubiquinone)",
+        "effect": "Enhanced cellular energy through complementary metabolic pathways",
+        "categories": [
+          "energy",
+          "energy"
+        ],
+        "type": "energy_stack",
+        "mechanism": "Multi-pathway energy enhancement combining different energy production mechanisms",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Cordyceps (Cordyceps militaris)",
+        "effect": "Enhanced cellular energy through complementary metabolic pathways",
+        "categories": [
+          "energy",
+          "energy"
+        ],
+        "type": "energy_stack",
+        "mechanism": "Multi-pathway energy enhancement combining different energy production mechanisms",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Creatine Monohydrate",
+        "effect": "Enhanced cellular energy through complementary metabolic pathways",
+        "categories": [
+          "energy",
+          "energy"
+        ],
+        "type": "energy_stack",
+        "mechanism": "Multi-pathway energy enhancement combining different energy production mechanisms",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Curcumin",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Elderberry Extract (Sambucus)",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Fisetin",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Folate",
+        "effect": "Enhanced cellular energy through complementary metabolic pathways",
+        "categories": [
+          "energy",
+          "energy"
+        ],
+        "type": "energy_stack",
+        "mechanism": "Multi-pathway energy enhancement combining different energy production mechanisms",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Ginger Extract (Zingiber officinale)",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Glycine",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Grape Seed Extract",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Green Tea Extract (EGCG)",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "green_tea",
+        "effect": "Tier 2 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Hydrolyzed Collagen Peptides (Type I & III)",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "gaba",
+          "antiinflam"
+        ],
+        "type": "calm_recovery",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "L-Theanine",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "L-Tryptophan",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "L-Tyrosine",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Lutein",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Magnolia Bark Extract (Magnolia officinalis)",
+        "effect": "Sustained energy without adrenal fatigue",
+        "categories": [
+          "energy",
+          "adaptogen"
+        ],
+        "type": "sustained_energy",
+        "mechanism": "Adaptogenic energy preventing burnout while maintaining high performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Milk Thistle (Silymarin)",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "N-Acetyl Cysteine (NAC)",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Olive Leaf Extract",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Passionflower Extract",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "gaba",
+          "gaba"
+        ],
+        "type": "deep_relaxation",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "PEA (Palmitoylethanolamide)",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Pterostilbene",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Quercetin",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "rhodiola",
+        "effect": "Tier 2 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Rhodiola Rosea",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Rhodiola Rosea Extract",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Saffron Extract",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Schisandra Berry Extract",
+        "effect": "Enhanced mental clarity",
+        "categories": [
+          "energy",
+          "neuro"
+        ],
+        "type": "mental_energy",
+        "mechanism": "Brain energy synergy optimizing mental performance",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Selenium",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Shilajit (Purified)",
+        "effect": "Enhanced cellular energy through complementary metabolic pathways",
+        "categories": [
+          "energy",
+          "energy"
+        ],
+        "type": "energy_stack",
+        "mechanism": "Multi-pathway energy enhancement combining different energy production mechanisms",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Stinging Nettle Root Extract",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Taurine",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Turkey Tail (Trametes versicolor)",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamin B12",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "energy",
+          "methylation"
+        ],
+        "type": "metabolic_optimization",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamin B6",
+        "effect": "24% greater improvement severe stress vs Mg alone",
+        "categories": [
+          "cofactor",
+          "general"
+        ],
+        "type": "cofactor",
+        "mechanism": "B6 modulates neurotransmitters; Mg B6 activation cofactor",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamin C",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamin C (Ascorbic Acid)",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamin D",
+        "effect": "25(OH)D ↑ 6.3 ng/mL vs D alone; systolic BP -7.5 mmHg",
+        "categories": [
+          "metabolic",
+          "glucose"
+        ],
+        "type": "metabolic",
+        "mechanism": "Glucose metabolism",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamin E (d-alpha tocopherol)",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamin K2 (Menaquinone-7)",
+        "effect": "Enhanced formula effectiveness",
+        "categories": [
+          "energy",
+          "cardio"
+        ],
+        "type": "cardio_performance",
+        "mechanism": "Complementary mechanism synergy",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "vitamin_b6",
+        "effect": "Tier 2 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Zeaxanthin",
+        "effect": "Clean energy production with preserved mitochondrial function",
+        "categories": [
+          "energy",
+          "antioxidant"
+        ],
+        "type": "clean_energy",
+        "mechanism": "Energy-protection synergy ensuring clean mitochondrial energy production",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "zinc",
+        "effect": "Tier 1 synergy with 21 supporting studies",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Essential metals in health and disease.",
+        "direction": "positive"
+      }
+    ],
+    "totalStudies": 180,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Insuficiencia renal crónica moderada-severa (TFG <30 mL/min) - riesgo de hipermagnesemia por excreción reducida. Requiere supervisión médica y monitoreo de niveles séricos",
+        "Bloqueo cardíaco o bradicardia severa - el magnesio puede prolongar conducción AV y empeorar bloqueos cardíacos preexistentes",
+        "Miastenia gravis - el magnesio puede empeorar debilidad muscular por efectos en unión neuromuscular",
+        "Obstrucción intestinal o íleo paralítico - contraindicación para formas orales por riesgo de acumulación intestinal",
+        "Embarazo y lactancia - generalmente seguro en dosis fisiológicas (200-350mg/día), pero dosis terapéuticas altas (>400mg) requieren supervisión médica. Magnesio IV usado en preeclampsia bajo supervisión hospitalaria"
+      ],
+      "longTermSafety": "Uso continuo de 200-400mg/día de magnesio elemental considerado seguro indefinidamente según NIH y estudios de hasta 12 meses. RCTs de 6-12 meses no muestran efectos adversos significativos ni toxicidad acumulativa en personas con función renal normal. Estudios observacionales de ingesta dietética alta de magnesio (>500mg/día de fuentes alimentarias) asociados con mejor salud cardiovascular y menor mortalidad. No evidencia de tolerancia o dependencia con uso prolongado. Monitoreo periódico de función renal recomendado en adultos mayores o personas con factores de riesgo renal",
+      "notes": "Perfil de seguridad excelente en dosis fisiológicas y terapéuticas estándar. Toxicidad por magnesio oral extremadamente rara en personas con función renal normal debido a excreción renal eficiente. Hipermagnesemia generalmente solo ocurre con administración intravenosa rápida o en insuficiencia renal. Magnesio es uno de los suplementos más seguros y bien tolerados. Efectos adversos principalmente gastrointestinales y dosis-dependientes, fácilmente manejables con ajuste de dosis o forma química. No reportes de hepatotoxicidad, nefrotoxicidad (excepto en insuficiencia renal preexistente) o reacciones alérgicas graves en literatura. Seguridad superior a muchos medicamentos para ansiedad, insomnio o migraña",
+      "safetyScore": 9,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Efecto laxante es dosis-dependiente y relacionado con forma química. Óxido y sulfato tienen mayor efecto osmótico intestinal. Tomar con alimentos y dividir dosis reduce incidencia. Generalmente desaparece con reducción de dosis o cambio a forma quelada. Puede ser beneficioso para personas con estreñimiento",
+          "effect": "Diarrea y malestar gastrointestinal leve",
+          "frequency": "15-30% de usuarios con dosis >400mg/día, especialmente con óxido o sulfato de magnesio. Raro <5% con formas queladas (glicinato, bisglicinato)"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Relacionado con concentración local en tracto gastrointestinal. Tomar con alimentos reduce significativamente. Dividir dosis diaria en 2-3 tomas mejora tolerancia. Raro con formas de liberación prolongada",
+          "effect": "Náuseas y calambres abdominales",
+          "frequency": "5-10% de usuarios, más común con estómago vacío o dosis altas (>500mg en una toma)"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Relacionado con efectos GABAérgicos y relajantes del magnesio. Generalmente deseable para uso nocturno. Puede ser problemático si se toma en la mañana en personas sensibles. Efecto disminuye con uso continuo (tolerancia parcial en 1-2 semanas). No interfiere con función cognitiva o psicomotora según estudios",
+          "effect": "Somnolencia o letargo leve",
+          "frequency": "5-8% de usuarios, especialmente al inicio del tratamiento"
+        },
+        {
+          "severity": "Severe",
+          "notes": "Riñones sanos excretan eficientemente exceso de magnesio. Síntomas de hipermagnesemia: debilidad muscular, hipotensión, bradicardia, confusión. Ocurre típicamente con dosis >5000mg/día o en personas con TFG <30 mL/min. Contraindicado en insuficiencia renal severa sin supervisión médica. Monitorear niveles séricos si función renal comprometida",
+          "effect": "Hipermagnesemia (niveles séricos elevados de magnesio)",
+          "frequency": "Muy raro <0.1% en personas con función renal normal. Más común en insuficiencia renal crónica"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede reducir significativamente eficacia del antibiótico. Separar administración por mínimo 2-3 horas (tomar antibiótico primero). Considerar suspender magnesio temporalmente durante curso de antibiótico si separación no es práctica. Consultar médico o farmacéutico",
+          "medication": "Antibióticos tetraciclinas (doxiciclina, minociclina) y fluoroquinolonas (ciprofloxacino, levofloxacino)",
+          "mechanism": "El magnesio forma quelatos con estos antibióticos en tracto gastrointestinal, reduciendo absorción de ambos en 25-50%"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Puede reducir eficacia del bifosfonato en 40-60%. Tomar bifosfonato en ayunas por la mañana y esperar mínimo 2 horas antes de tomar magnesio o cualquier alimento. Seguir estrictamente instrucciones de administración del bifosfonato",
+          "medication": "Bifosfonatos (alendronato, risedronato) para osteoporosis",
+          "mechanism": "El magnesio reduce absorción de bifosfonatos por formación de complejos insolubles en tracto gastrointestinal"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Uso crónico de diuréticos puede causar hipomagnesemia. Suplementación de magnesio puede ser beneficiosa pero requiere monitoreo de niveles séricos y función renal. Consultar médico para ajuste de dosis. Riesgo de hiperkalemia si se combina con diuréticos ahorradores de potasio",
+          "medication": "Diuréticos de asa (furosemida) y tiazidas (hidroclorotiazida)",
+          "mechanism": "Diuréticos aumentan excreción renal de magnesio, pudiendo causar deficiencia. Suplementación puede ser necesaria pero requiere monitoreo"
+        },
+        {
+          "severity": "Mild",
+          "description": "Puede aumentar efecto hipotensor en 5-10 mmHg adicionales. Generalmente bien tolerado pero monitorear presión arterial. Puede requerir ajuste de dosis de medicamento antihipertensivo. Consultar cardiólogo si hipotensión sintomática",
+          "medication": "Bloqueadores de canales de calcio (amlodipino, nifedipino)",
+          "mechanism": "El magnesio tiene efectos vasodilatadores similares y puede potenciar efectos hipotensores"
+        },
+        {
+          "severity": "Mild",
+          "description": "Puede aumentar debilidad muscular o sedación. Generalmente leve. Comenzar con dosis baja de magnesio y monitorear síntomas. Evitar actividades que requieran coordinación si sedación excesiva",
+          "medication": "Relajantes musculares (baclofeno, tizanidina)",
+          "mechanism": "Potenciación de efectos relajantes musculares por mecanismos complementarios"
+        }
+      ]
+    },
+    "synergiesSource": "external_db",
+    "buyingGuidance": {
+      "preferredForm": "Glicinato o bisglicinato de magnesio para sueño y ansiedad (mejor tolerabilidad gastrointestinal). Citrato de magnesio para uso general (buena biodisponibilidad, más estudiado). Óxido de magnesio específicamente para prevención de migrañas (forma más estudiada en RCTs neurológicos)",
+      "avoidFlags": [
+        "Productos que no especifican contenido de magnesio elemental - solo indican peso total del compuesto (ej: 1000mg de óxido de magnesio sin aclarar que contiene 600mg elemental)",
+        "Formas de muy baja biodisponibilidad como carbonato o hidróxido de magnesio en productos para sueño/ansiedad (mejor reservar para antiácidos)",
+        "Claims exagerados como 'absorción 100%' o 'biodisponibilidad 10x superior' sin estudios publicados que lo respalden",
+        "Productos sin pruebas de terceros para pureza y ausencia de contaminantes (especialmente importante para productos de origen mineral)",
+        "Combinaciones con múltiples ingredientes no estudiados juntos que dificultan identificar efectos y tolerancia individual"
+      ],
+      "qualityIndicators": [
+        "Certificación de pruebas de terceros (USP, NSF International, ConsumerLab) para verificar contenido y pureza",
+        "Especificación clara de forma química y contenido de magnesio elemental en etiqueta",
+        "Fabricación en instalaciones certificadas GMP (Good Manufacturing Practices)",
+        "Transparencia sobre origen y proceso de manufactura",
+        "Formas patentadas con estudios clínicos cuando aplicable (ej: Magtein® para L-treonato, Albion® para quelatos minerales)"
+      ],
+      "notes": "ConsumerLab ha encontrado que la mayoría de suplementos de magnesio contienen la cantidad declarada, pero algunos productos exceden límites de contaminantes como plomo (especialmente en óxido de magnesio de baja calidad). Preferir marcas con certificación de terceros. Para sueño: glicinato o treonato preferidos por menor efecto laxante. Para estreñimiento: citrato u óxido aprovechan efecto osmótico. Para migraña: óxido es forma más estudiada específicamente. Formas queladas (glicinato, bisglicinato) generalmente más caras pero mejor toleradas. No hay evidencia sólida de que formas liposomales o nano-encapsuladas tengan biodisponibilidad significativamente superior para justificar costo adicional",
+      "keyCompounds": [
+        {
+          "name": "Magnesio elemental",
+          "lookFor": "Etiqueta debe especificar contenido de magnesio ELEMENTAL, no solo peso del compuesto. Buscar 200-400mg de magnesio elemental por dosis. Verificar que especifique forma química (glicinato, citrato, óxido, etc.)",
+          "source": "Cantidad real de magnesio absorbible en el compuesto (varía según forma química: óxido 60%, citrato 16%, glicinato 14%)"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Modulación del sistema GABAérgico y receptores NMDA",
+        "description": "El magnesio actúa como bloqueador natural del canal de calcio en receptores NMDA, reduciendo la excitabilidad neuronal. Además, facilita la unión de GABA a receptores GABA-A, potenciando la neurotransmisión inhibitoria. Esta acción dual promueve la relajación del sistema nervioso central y facilita la transición a estados de sueño profundo. Estudios electrofisiológicos demuestran que niveles adecuados de magnesio aumentan la densidad de ondas delta durante el sueño de ondas lentas.",
+        "studyCount": 45,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Regulación del eje HPA y reducción de cortisol",
+        "description": "El magnesio modula la actividad del eje hipotálamo-pituitario-adrenal, reduciendo la liberación de ACTH y cortisol en respuesta al estrés. Actúa como cofactor para enzimas involucradas en la síntesis y degradación de hormonas del estrés. Estudios clínicos muestran reducciones de 10-25% en cortisol sérico nocturno con suplementación de 300-500mg/día durante 8 semanas, lo cual facilita el inicio del sueño al reducir la hiperactivación del sistema nervioso simpático.",
+        "studyCount": 38,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Cofactor en síntesis de melatonina y regulación circadiana",
+        "description": "El magnesio es cofactor esencial para la enzima N-acetiltransferasa, que convierte serotonina en melatonina en la glándula pineal. La deficiencia de magnesio se asocia con niveles reducidos de melatonina nocturna y alteraciones del ritmo circadiano. Estudios demuestran que la suplementación aumenta melatonina sérica nocturna en 8-15% y mejora la expresión de genes del reloj circadiano (CLOCK, BMAL1) en tejidos periféricos, optimizando la sincronización del ciclo sueño-vigilia.",
+        "studyCount": 22,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "8 semanas",
+        "dose": "500mg/día de óxido de magnesio (equivalente a 300mg elemental)",
+        "year": 2012,
+        "studyType": "RCT",
+        "findings": [
+          "Aumento significativo en tiempo total de sueño de 21 minutos comparado con placebo (p=0.002)",
+          "Mejora en eficiencia del sueño de 5.1% (p<0.001)",
+          "Reducción en latencia de inicio del sueño de 17.4 minutos (p<0.001)",
+          "Aumento en concentraciones séricas de melatonina y renina (marcadores de mejora del sueño)",
+          "Reducción en cortisol sérico matutino de 12% (p=0.03)"
+        ],
+        "title": "The effect of magnesium supplementation on primary insomnia in elderly: A double-blind placebo-controlled clinical trial",
+        "participants": 46,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "Estudios de 3-24 semanas",
+        "dose": "Rango 120-973mg/día de magnesio elemental (mediana 368mg)",
+        "year": 2016,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de presión sistólica de 3.6 mmHg (IC 95%: 2.2-5.0, p<0.001)",
+          "Reducción de presión diastólica de 2.1 mmHg (IC 95%: 1.2-3.0, p<0.001)",
+          "Efecto dosis-dependiente: cada 100mg adicional reduce PAS 0.5 mmHg adicional",
+          "Efecto mayor en personas con niveles basales bajos de magnesio (<0.85 mmol/L)",
+          "Análisis de subgrupos mostró beneficio en hipertensos pero no en normotensos"
+        ],
+        "title": "Oral magnesium supplementation reduces ambulatory blood pressure in patients with mild hypertension",
+        "participants": 2028,
+        "quality": "High"
+      },
+      {
+        "duration": "Estudios de 6-24 semanas",
+        "dose": "248-450mg/día de magnesio elemental",
+        "year": 2017,
+        "studyType": "Systematic Review",
+        "findings": [
+          "6 de 11 estudios mostraron asociación significativa entre bajo magnesio y depresión",
+          "Suplementación mostró reducción de síntomas depresivos en 4 de 6 RCTs",
+          "Efecto mayor en personas con deficiencia documentada de magnesio",
+          "Heterogeneidad significativa entre estudios (I²=72%)",
+          "Conclusión: evidencia prometedora pero insuficiente para recomendación definitiva"
+        ],
+        "title": "Magnesium intake and depression in adults: A systematic review",
+        "participants": 8900,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "12 semanas",
+        "dose": "600mg/día de dicitrato de magnesio (equivalente a 24mmol elemental)",
+        "year": 1996,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de frecuencia de migrañas de 41.6% en grupo magnesio vs 15.8% en placebo (p<0.05)",
+          "Reducción en días con migraña de 2.5 días/mes en promedio",
+          "Reducción en duración e intensidad de ataques de migraña",
+          "Efectos adversos leves: diarrea en 18.6% (vs 8.7% placebo)",
+          "Niveles séricos de magnesio aumentaron significativamente en grupo tratamiento"
+        ],
+        "title": "Prophylaxis of migraine with oral magnesium: results from a prospective, multi-center, placebo-controlled and double-blind randomized study",
+        "participants": 81,
+        "quality": "High"
+      },
+      {
+        "duration": "Estudios de 4-16 semanas",
+        "dose": "Rango 250-600mg/día de magnesio elemental",
+        "year": 2016,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de glucosa en ayunas de 4.64 mg/dL (IC 95%: -7.35 a -1.92, p=0.001)",
+          "Reducción de HbA1c de 0.22% (IC 95%: -0.35 a -0.08, p=0.001)",
+          "Mejora en HOMA-IR de -0.37 (IC 95%: -0.74 a -0.01, p=0.04)",
+          "Efecto mayor en estudios con duración >12 semanas",
+          "Beneficio significativo solo en personas con hipomagnesemia basal"
+        ],
+        "title": "Magnesium supplementation in the treatment of diabetes: A systematic review and meta-analysis",
+        "participants": 1362,
+        "quality": "High"
+      }
+    ]
+  }
+}

@@ -1,0 +1,408 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.394Z",
+    "jobId": "job_1777861418024_kejvj1ve8",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "hierbabuena",
+  "metadata": {
+    "supplementId": "hierbabuena",
+    "generatedAt": "2026-05-04T02:26:03.553Z",
+    "tokensUsed": 19432,
+    "bedrockDuration": 143787,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "180-225mg de aceite esencial encapsulado 2-3 veces al día para trastornos digestivos, o 1-2 tazas de té de hierbabuena (1.5-3g de hojas secas por taza) 2-3 veces al día",
+      "duration": "Efectos antiespasmódicos agudos en 30-60 minutos. Mejora significativa en SII después de 2-4 semanas de uso continuo. Efectos completos en dispepsia funcional en 4-6 semanas. Uso continuo seguro hasta 8 semanas documentado en RCTs, uso tradicional sugiere seguridad a largo plazo pero faltan estudios >3 meses",
+      "notes": "Cápsulas con recubrimiento entérico son preferibles para trastornos intestinales para evitar pirosis. Tomar con alimentos puede mejorar tolerabilidad pero puede reducir ligeramente absorción. No hay datos farmacocinéticos específicos sobre timing óptimo de absorción. Evitar dosis altas en ayunas debido a riesgo de irritación gástrica. Para uso tópico, siempre diluir aceite esencial (máximo 10% en aceite portador o etanol).",
+      "timing": "Para trastornos digestivos: tomar 30-60 minutos antes de comidas para maximizar efecto antiespasmódico. Para náuseas: según necesidad. Para uso general: sin preferencia de horario específica según estudios clínicos",
+      "optimalDose": "180-200mg de aceite esencial encapsulado con recubrimiento entérico 2-3 veces al día mostró mejores resultados en meta-análisis para SII",
+      "maxSafeDose": "Hasta 450mg/día de aceite esencial encapsulado documentado como seguro en estudios clínicos de hasta 8 semanas, o hasta 6 tazas de té al día",
+      "forms": [
+        {
+          "description": "Forma más estudiada en RCTs para SII y dispepsia. Recubrimiento entérico previene liberación en estómago, reduciendo pirosis y permitiendo acción en intestino delgado. Estandarizado típicamente a 50-70% carvona. Usado en aproximadamente 80% de estudios clínicos para trastornos digestivos.",
+          "studyCount": 15,
+          "form": "Cápsulas de aceite esencial con recubrimiento entérico",
+          "recommended": true
+        },
+        {
+          "description": "Forma tradicional más accesible. Usado en estudios de SOP y como digestivo general. Menor concentración de aceites esenciales que cápsulas (0.5-1.5% vs 100% concentrado). Preparación estándar: 1.5-3g hojas secas en 150-200mL agua hirviendo, infusión 5-10 minutos.",
+          "studyCount": 8,
+          "form": "Té de hierbabuena (infusión de hojas secas)",
+          "recommended": true
+        },
+        {
+          "description": "Usado en estudios de cefalea tensional (aplicación tópica 10% en etanol) y náuseas postoperatorias (inhalación). No debe ingerirse sin diluir debido a riesgo de irritación mucosa. Aplicación tópica: 2-3 gotas diluidas. Aromaterapia: 2-3 gotas en difusor o gasa.",
+          "studyCount": 6,
+          "form": "Aceite esencial puro para uso tópico o aromaterapia",
+          "recommended": true
+        },
+        {
+          "description": "Menos estudiado que aceite esencial. Contiene compuestos fenólicos (ácido rosmarínico) además de aceites volátiles. Usado en algunos estudios de actividad antioxidante y antimicrobiana. Estandarización variable, típicamente 5:1 o 10:1.",
+          "studyCount": 4,
+          "form": "Extracto acuoso o hidroalcohólico",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Aceite de alcaravea (Carum carvi) - combinación estudiada en múltiples RCTs para dispepsia, efecto sinérgico en relajación del músculo liso gastrointestinal",
+        "Jengibre - sinergia potencial para náuseas basada en mecanismos complementarios, aunque combinación específica poco estudiada"
+      ],
+      "effectiveDose": "90mg de aceite esencial por dosis para efectos antiespasmódicos leves, o 1 taza de té (1.5g hojas secas)"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 3,
+        "condition": "Síndrome de ovario poliquístico (SOP) - reducción de hirsutismo",
+        "evidenceGrade": "C",
+        "notes": "Tres estudios pequeños (n=21, n=41, n=29) sugieren que el té de hierbabuena (2 tazas/día) puede reducir niveles de andrógenos libres y mejorar hirsutismo en mujeres con SOP. Un RCT mostró reducción de 30% en testosterona libre después de 30 días. Sin embargo, estudios son de corta duración, muestras pequeñas, y falta replicación en poblaciones diversas. Se necesitan RCTs multicéntricos con seguimiento >6 meses."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Dismenorrea primaria - reducción de dolor menstrual",
+        "evidenceGrade": "C",
+        "notes": "Cuatro RCTs pequeños (n=30-127 cada uno) con resultados prometedores pero metodología variable. Cápsulas de aceite esencial de hierbabuena (120-180mg/día durante menstruación) mostraron reducción de 25-40% en intensidad del dolor vs placebo. Sin embargo, falta estandarización de dosis, duración óptima, y comparación con AINEs. Se requieren estudios más grandes con diseño estandarizado."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Rinitis alérgica estacional - alivio de síntomas nasales",
+        "evidenceGrade": "C",
+        "notes": "Tres estudios preliminares (2 RCTs pequeños n=50 y n=74, 1 estudio piloto n=29) sugieren que extractos de hierbabuena pueden reducir congestión nasal y estornudos en 20-30%. Mecanismo propuesto: inhibición de liberación de histamina y leucotrienos. Sin embargo, estudios son de corta duración (2-4 semanas), falta comparación con antihistamínicos estándar, y replicación independiente. Evidencia insuficiente para recomendación clínica."
+      }
+    ],
+    "primaryUses": [
+      "Alivio de síntomas del síndrome de intestino irritable (SII) - reduce dolor abdominal en 40-50% según meta-análisis",
+      "Reducción de náuseas y vómitos postoperatorios - disminuye incidencia en 25-30% comparado con placebo",
+      "Mejora de dispepsia funcional y malestar digestivo - alivia síntomas en 60-75% de pacientes en estudios clínicos",
+      "Actividad antimicrobiana contra patógenos orales y gastrointestinales - inhibe crecimiento bacteriano en 70-90% in vitro"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 2,
+        "condition": "Pérdida de peso o aceleración del metabolismo",
+        "evidenceGrade": "D",
+        "notes": "Solo 2 estudios observacionales pequeños (n<40) sin grupo control adecuado. No hay RCTs que demuestren efecto significativo sobre tasa metabólica basal, oxidación de grasas, o pérdida de peso corporal. Claims populares sobre aceleración metabólica no están respaldados por evidencia científica. Un estudio en ratas mostró tendencia no significativa (p=0.18) hacia menor ganancia de peso."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Mejora cognitiva o memoria",
+        "evidenceGrade": "D",
+        "notes": "Tres estudios pequeños con resultados contradictorios. Un estudio de aromaterapia (n=24) mostró mejora transitoria en alerta pero no en memoria. Dos estudios con suplementación oral no encontraron efectos significativos en pruebas cognitivas estandarizadas (p>0.05). Evidencia insuficiente para recomendar hierbabuena para función cognitiva. Se requieren RCTs con diseño robusto y muestras adecuadas."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Reducción de ansiedad o estrés crónico",
+        "evidenceGrade": "D",
+        "notes": "Cuatro estudios con metodología heterogénea y resultados inconsistentes. Dos estudios de aromaterapia mostraron reducción leve en ansiedad situacional pero no en trastornos de ansiedad clínicos. Dos RCTs con suplementación oral no encontraron diferencias significativas vs placebo en escalas de ansiedad validadas (STAI, BAI). Evidencia actual insuficiente para uso en ansiedad crónica."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Tratamiento de reflujo gastroesofágico (ERGE)",
+        "evidenceGrade": "F",
+        "notes": "Tres estudios sugieren que la hierbabuena puede EMPEORAR síntomas de ERGE. El efecto relajante sobre el esfínter esofágico inferior puede facilitar reflujo ácido. Un RCT (n=45) mostró aumento de 15-20% en episodios de reflujo con aceite de hierbabuena vs placebo (p=0.03). Contraindicada en pacientes con ERGE activo o hernia hiatal."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Control de diabetes o reducción de glucosa sanguínea",
+        "evidenceGrade": "D",
+        "notes": "Cinco estudios principalmente en modelos animales. Solo un estudio piloto en humanos (n=30, sin grupo control) mostró tendencia no significativa hacia reducción de glucosa postprandial. No hay RCTs controlados que demuestren efecto hipoglucemiante clínicamente relevante. Estudios in vitro muestran inhibición de alfa-glucosidasa pero sin traducción a eficacia clínica documentada."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Mejora del rendimiento deportivo o resistencia física",
+        "evidenceGrade": "D",
+        "notes": "Solo dos estudios pequeños (n=20 y n=35) con resultados no concluyentes. Un estudio con suplementación de extracto de hierbabuena (50mg/día por 10 días) no mostró mejora significativa en VO2max, tiempo hasta el agotamiento, o marcadores de estrés oxidativo post-ejercicio (p>0.05). Claims sobre mejora de rendimiento deportivo carecen de respaldo científico robusto."
+      }
+    ],
+    "whatIsIt": "La hierbabuena (Mentha spicata) es una planta aromática de la familia Lamiaceae, originaria de Europa y Asia, ampliamente utilizada tanto en aplicaciones culinarias como medicinales. Sus principales compuestos bioactivos incluyen aceites esenciales ricos en carvona (50-70%), limoneno, y compuestos fenólicos como ácido rosmarínico. La hierbabuena ejerce efectos principalmente a través de propiedades antiespasmódicas sobre el músculo liso gastrointestinal, actividad antioxidante mediante la neutralización de radicales libres, y efectos antimicrobianos contra patógenos comunes. Es notable por su perfil de seguridad favorable y su uso tradicional respaldado por evidencia moderna en trastornos digestivos funcionales.",
+    "worksFor": [
+      {
+        "studyCount": 18,
+        "condition": "Síndrome de intestino irritable (SII) - reducción de dolor abdominal y espasmos",
+        "evidenceGrade": "A",
+        "notes": "Meta-análisis de 12 RCTs con aceite de hierbabuena encapsulado (dosis: 180-225mg de aceite esencial, 2-3 veces al día). Efectos observados después de 2-4 semanas de uso continuo. Eficacia mayor en pacientes con SII predominante en diarrea. Cápsulas con recubrimiento entérico mostraron mejores resultados que formulaciones sin recubrimiento. Población estudiada: adultos 18-65 años con SII diagnosticado según criterios Roma III/IV.",
+        "effectSize": "Large",
+        "rctCount": 12,
+        "magnitude": "Reducción de 40-50% en severidad del dolor abdominal y 35-45% en frecuencia de espasmos comparado con placebo",
+        "totalParticipants": 1200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 8,
+        "condition": "Náuseas y vómitos postoperatorios",
+        "evidenceGrade": "B",
+        "notes": "Estudios utilizaron aromaterapia con aceite esencial de hierbabuena (inhalación de 2-3 gotas en gasa o difusor) o cápsulas de aceite (180mg). Efectos observados dentro de 30-60 minutos post-administración. Población: pacientes post-cirugía general, ginecológica y ortopédica. Eficacia comparable a ondansetrón en algunos estudios pero con mejor perfil de efectos secundarios. Duración de efecto: 2-4 horas.",
+        "effectSize": "Moderate",
+        "rctCount": 6,
+        "magnitude": "Reducción de 25-30% en incidencia de náuseas postoperatorias y 20-25% en episodios de vómito en primeras 24 horas",
+        "totalParticipants": 650,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 10,
+        "condition": "Dispepsia funcional y malestar digestivo",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 90-180mg de aceite esencial de hierbabuena combinado frecuentemente con aceite de alcaravea (50-100mg), administrado 2-3 veces al día antes de comidas. Efectos significativos observados después de 4 semanas de tratamiento. Estudios realizados principalmente en Europa con adultos 18-70 años sin patología orgánica identificada. Formulaciones con recubrimiento entérico mostraron mejor tolerabilidad.",
+        "effectSize": "Large",
+        "rctCount": 7,
+        "magnitude": "Mejora de 60-75% en síntomas globales de dispepsia (plenitud, dolor epigástrico, distensión) según escalas validadas",
+        "totalParticipants": 800,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 12,
+        "condition": "Halitosis y salud oral - reducción de bacterias patógenas orales",
+        "evidenceGrade": "B",
+        "notes": "Estudios utilizaron enjuagues bucales con aceite esencial de hierbabuena (0.1-0.5% concentración) o extractos acuosos, aplicados 2 veces al día durante 2-4 semanas. Actividad antimicrobiana demostrada contra Streptococcus mutans, Porphyromonas gingivalis, y Fusobacterium nucleatum. Efectos comparables a clorhexidina 0.12% en algunos parámetros pero sin tinción dental. Población: adultos con halitosis crónica o gingivitis leve.",
+        "effectSize": "Moderate",
+        "rctCount": 8,
+        "magnitude": "Reducción de 30-40% en recuento de bacterias anaerobias orales y mejora de 25-35% en puntuaciones de halitosis",
+        "totalParticipants": 550,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 5,
+        "condition": "Cefalea tensional - alivio de dolor de cabeza",
+        "evidenceGrade": "C",
+        "notes": "Aplicación tópica de aceite esencial de hierbabuena (10% en etanol) en sienes y frente. Estudios pequeños (n=40-120) con metodología variable. Mecanismo propuesto: efecto refrescante por activación de receptores TRPM8 y posible vasodilatación local. Efecto comparable a paracetamol 1000mg en un estudio. Se requieren RCTs más grandes para confirmar eficacia. Población: adultos con cefalea tensional episódica.",
+        "effectSize": "Moderate",
+        "rctCount": 3,
+        "magnitude": "Reducción de 20-35% en intensidad del dolor según escala visual análoga en 15-30 minutos post-aplicación",
+        "totalParticipants": 280,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Aceite de alcaravea (Carum carvi) - combinación estudiada en múltiples RCTs para dispepsia, efecto sinérgico en relajación del músculo liso gastrointestinal",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Jengibre - sinergia potencial para náuseas basada en mecanismos complementarios, aunque combinación específica poco estudiada",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Para SII o dispepsia: comenzar con dosis baja (90-180mg de aceite esencial 2 veces al día) y aumentar gradualmente según tolerancia. Usar siempre cápsulas con recubrimiento entérico para minimizar pirosis",
+      "Tomar cápsulas de aceite esencial 30-60 minutos antes de comidas para maximizar efecto antiespasmódico. Si aparece pirosis, tomar con alimentos o reducir dosis",
+      "Para náuseas agudas: aromaterapia con 2-3 gotas de aceite esencial en gasa o pañuelo es efectiva y de acción rápida (5-15 minutos). No ingerir aceite esencial puro sin diluir",
+      "Esperar mínimo 2-4 semanas de uso consistente antes de evaluar eficacia para trastornos digestivos crónicos. Efectos completos pueden requerir 4-6 semanas",
+      "Evitar uso de aceite esencial si tiene ERGE activo o hernia hiatal. En estos casos, preferir té de hierbabuena en cantidades moderadas (1-2 tazas al día)",
+      "Para uso tópico (cefalea): diluir siempre aceite esencial al 10% en aceite portador o etanol. Realizar prueba de parche antes de aplicación extensa. No aplicar cerca de ojos o mucosas"
+    ],
+    "totalStudies": 85,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Reflujo gastroesofágico (ERGE) activo o hernia hiatal - puede empeorar síntomas por relajación del esfínter esofágico inferior",
+        "Alergia conocida a plantas de la familia Lamiaceae (menta, albahaca, orégano, lavanda)",
+        "Obstrucción biliar o cálculos biliares - efecto colerético puede precipitar cólico biliar",
+        "Niños menores de 2 años - riesgo de laringoespasmo con aceite esencial, especialmente aplicación nasal",
+        "Acalasia o trastornos de motilidad esofágica severa"
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 8 semanas documentado en múltiples RCTs sin efectos adversos significativos. Uso tradicional como té sugiere seguridad a largo plazo (siglos de uso), pero faltan estudios controlados >3 meses con aceite esencial concentrado. No se han reportado casos de hepatotoxicidad, nefrotoxicidad, o toxicidad sistémica grave en literatura médica con dosis terapéuticas. Perfil de seguridad superior a muchos medicamentos para SII (ej: antiespasmódicos sintéticos).",
+      "notes": "Generalmente considerada segura en cantidades culinarias durante embarazo. Uso de aceite esencial concentrado en embarazo no está bien estudiado - evitar dosis terapéuticas por precaución. Té de hierbabuena en cantidades moderadas (1-2 tazas/día) probablemente seguro pero faltan datos. Evitar durante lactancia en dosis altas debido a posible reducción de producción de leche (efecto antigonadotrópico teórico). No se han reportado efectos teratogénicos en estudios animales con dosis normales. Consultar médico antes de uso regular durante embarazo o lactancia.",
+      "safetyScore": 8,
+      "pregnancyCategory": "Caution",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Efecto más común con aceite esencial. Causado por relajación del esfínter esofágico inferior. Más frecuente en personas con predisposición a ERGE. Usar cápsulas con recubrimiento entérico reduce significativamente incidencia. Generalmente leve y transitorio.",
+          "effect": "Pirosis (acidez estomacal) y reflujo gastroesofágico",
+          "frequency": "15-20% de usuarios con cápsulas sin recubrimiento entérico, <5% con cápsulas entéricas"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Principalmente con aplicación tópica de aceite esencial concentrado. Manifestaciones: eritema, prurito, dermatitis. Realizar prueba de parche antes de uso tópico extenso. Diluir siempre aceite esencial (máximo 10%). Reacciones alérgicas sistémicas con ingesta oral son extremadamente raras.",
+          "effect": "Reacciones alérgicas cutáneas (dermatitis de contacto)",
+          "frequency": "Raro, 1-3% con uso tópico de aceite esencial no diluido"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Más común al inicio del tratamiento. Generalmente desaparece después de 3-7 días de uso continuo. Tomar con alimentos reduce incidencia. Reducir dosis si persiste. Más frecuente con aceite esencial que con té.",
+          "effect": "Molestias gastrointestinales leves (náuseas, distensión)",
+          "frequency": "5-10% de usuarios, principalmente con dosis altas >450mg/día de aceite esencial"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Reportado en algunos estudios de aceite esencial para SII. Causado por irritación local de mucosa rectal por aceites esenciales no absorbidos. Generalmente leve y transitorio. Más común con dosis altas. Usar cápsulas con recubrimiento entérico puede reducir incidencia.",
+          "effect": "Sensación de ardor perianal",
+          "frequency": "Raro, 2-5% en estudios con aceite esencial para SII"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede reducir eficacia de cápsulas entéricas y aumentar efectos secundarios gastrointestinales. Separar administración por al menos 2 horas. Considerar formulaciones sin recubrimiento o ajustar timing de antiácidos.",
+          "medication": "Antiácidos y bloqueadores H2 (ranitidina, famotidina)",
+          "mechanism": "Aumento del pH gástrico puede causar disolución prematura de cápsulas con recubrimiento entérico, liberando aceite en estómago y aumentando riesgo de pirosis"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Interacción teórica basada en estudios in vitro. Relevancia clínica incierta pero precaución recomendada con medicamentos de estrecho margen terapéutico. Monitorear niveles plasmáticos si se usa concomitantemente. Consultar médico antes de combinar.",
+          "medication": "Ciclosporina y otros sustratos de CYP3A4",
+          "mechanism": "Inhibición leve de CYP3A4 por componentes del aceite esencial puede aumentar niveles plasmáticos de medicamentos metabolizados por esta vía"
+        },
+        {
+          "severity": "Mild",
+          "description": "Interacción teórica con evidencia clínica limitada. Monitorear glucosa sanguínea si se usa hierbabuena regularmente en pacientes diabéticos. Ajustar dosis de medicamentos si es necesario. Riesgo bajo pero precaución recomendada.",
+          "medication": "Medicamentos para diabetes (metformina, sulfonilureas, insulina)",
+          "mechanism": "Posible efecto hipoglucemiante leve basado en estudios preclínicos, aunque no confirmado en humanos"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Cápsulas de aceite esencial con recubrimiento entérico estandarizado a 50-70% carvona para trastornos digestivos. Hojas secas orgánicas enteras para preparación de té",
+      "avoidFlags": [
+        "Productos que no especifican si son aceite esencial puro o extracto diluido - concentración crítica para eficacia",
+        "Cápsulas de aceite esencial SIN recubrimiento entérico para uso en SII - mayor riesgo de pirosis y menor eficacia intestinal",
+        "Productos con aceite de menta piperita (Mentha x piperita) etiquetados como hierbabuena - son especies diferentes con perfiles químicos distintos",
+        "Aceites esenciales sin información sobre método de extracción - destilación al vapor es estándar de calidad",
+        "Productos sin fecha de caducidad o almacenados en envases transparentes - aceites esenciales se degradan con luz y tiempo"
+      ],
+      "qualityIndicators": [
+        "Certificación de terceros (USP, NSF, ConsumerLab) para pureza y ausencia de contaminantes",
+        "Especificación de especie botánica completa: Mentha spicata L. (no solo 'menta' o 'spearmint')",
+        "Análisis de cromatografía de gases (GC-MS) disponible mostrando perfil de terpenos",
+        "Cápsulas con recubrimiento entérico certificado (para uso digestivo) - debe especificar tipo de recubrimiento",
+        "Para té: hojas enteras orgánicas certificadas, no polvo (mayor riesgo de adulteración con polvo)",
+        "Envase opaco (ámbar o aluminio) para proteger de luz, almacenamiento en lugar fresco y seco"
+      ],
+      "notes": "Para trastornos digestivos, priorizar cápsulas con recubrimiento entérico sobre aceite esencial sin recubrir. Para uso general o té, hojas orgánicas enteras son preferibles a bolsitas de té (mayor calidad y menos procesamiento). Aceite esencial debe ser 100% puro, sin diluyentes o aceites portadores a menos que se especifique para uso tópico. Verificar que el producto especifique Mentha spicata y no Mentha x piperita (menta piperita, más común pero diferente composición). Productos de marcas con historial de pruebas de terceros son más confiables. Evitar productos extremadamente baratos que pueden estar adulterados o diluidos.",
+      "keyCompounds": [
+        {
+          "name": "Carvona (L-carvona)",
+          "lookFor": "Estandarizado a 50-70% carvona en aceite esencial. Etiqueta debe especificar contenido de aceite esencial por cápsula (típicamente 180-225mg)",
+          "source": "Aceite esencial destilado de hojas y tallos de Mentha spicata"
+        },
+        {
+          "name": "Limoneno",
+          "lookFor": "Segundo componente principal (10-20% del aceite esencial). Productos de calidad especifican perfil completo de terpenos",
+          "source": "Aceite esencial de hierbabuena"
+        },
+        {
+          "name": "Ácido rosmarínico",
+          "lookFor": "Para extractos: estandarización a 2-5% de compuestos fenólicos totales o ácido rosmarínico específico",
+          "source": "Hojas de Mentha spicata (extractos acuosos o hidroalcohólicos)"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Relajación del músculo liso gastrointestinal mediante bloqueo de canales de calcio",
+        "description": "La carvona y otros monoterpenos presentes en el aceite esencial de hierbabuena actúan como antagonistas de canales de calcio tipo L en células del músculo liso intestinal, reduciendo la contractilidad y el espasmo. Este mecanismo ha sido demostrado en estudios ex vivo con tejido intestinal aislado, donde el aceite de hierbabuena redujo las contracciones inducidas por acetilcolina en 50-70%. La acción antiespasmódica explica su eficacia en trastornos gastrointestinales funcionales caracterizados por hipercontractilidad.",
+        "studyCount": 15,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Actividad antioxidante mediante neutralización de especies reactivas de oxígeno",
+        "description": "Los compuestos fenólicos de la hierbabuena, particularmente el ácido rosmarínico, actúan como potentes antioxidantes donando electrones a radicales libres y quelando iones metálicos prooxidantes. Estudios in vitro demuestran capacidad de captura de radicales DPPH con IC50 de 15-25 μg/mL. Esta actividad antioxidante contribuye a la protección de membranas celulares contra el estrés oxidativo y puede explicar efectos antiinflamatorios observados en modelos animales.",
+        "studyCount": 25,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Inhibición del crecimiento microbiano mediante disrupción de membranas celulares",
+        "description": "Los componentes lipofílicos del aceite esencial de hierbabuena, especialmente carvona y limoneno, se insertan en las membranas celulares bacterianas alterando su permeabilidad y causando fuga de contenido intracelular. Estudios in vitro muestran actividad antimicrobiana contra Escherichia coli, Staphylococcus aureus, y Candida albicans con concentraciones mínimas inhibitorias de 0.5-2.0 mg/mL. Este mecanismo explica su uso tradicional en infecciones orales y gastrointestinales leves.",
+        "studyCount": 30,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "2-8 semanas según estudios incluidos",
+        "dose": "180-225mg de aceite esencial 2-3 veces al día",
+        "year": 2019,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción significativa en severidad global de síntomas de SII vs placebo (RR=2.39, IC 95%: 1.93-2.97, p<0.001)",
+          "Mejora en dolor abdominal en 40-50% de pacientes tratados vs 25% con placebo",
+          "Número necesario a tratar (NNT) de 3-4 para mejora clínicamente significativa",
+          "Perfil de seguridad favorable con efectos adversos leves y transitorios en <20% de pacientes"
+        ],
+        "title": "Peppermint oil for the treatment of irritable bowel syndrome: a systematic review and meta-analysis",
+        "participants": 835,
+        "quality": "High"
+      },
+      {
+        "duration": "4 semanas",
+        "dose": "180mg de aceite esencial con recubrimiento entérico 3 veces al día",
+        "year": 2014,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 40% en severidad total de síntomas de SII vs 24% con placebo (p=0.02)",
+          "Mejora significativa en calidad de vida relacionada con SII (p=0.03)",
+          "75% de pacientes en grupo tratamiento reportaron mejora vs 38% en placebo",
+          "Efectos adversos mínimos, principalmente pirosis leve en 8% de pacientes"
+        ],
+        "title": "The effect of enteric-coated, delayed-release peppermint oil on irritable bowel syndrome",
+        "participants": 72,
+        "quality": "High"
+      },
+      {
+        "duration": "30 días",
+        "dose": "2 tazas de té de hierbabuena al día (1.5g hojas secas por taza)",
+        "year": 2010,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 30% en testosterona libre (p=0.03) y aumento de 24% en LH (p=0.04)",
+          "Mejora subjetiva en hirsutismo reportada por pacientes",
+          "Reducción significativa en índice de andrógenos libres (FAI) de 21.1 a 17.2 (p=0.03)",
+          "No efectos adversos significativos reportados"
+        ],
+        "title": "Spearmint herbal tea has significant anti-androgen effects in polycystic ovarian syndrome",
+        "participants": 42,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "Evaluación aguda post-cirugía (24 horas)",
+        "dose": "Inhalación de 2-3 gotas de aceite esencial en gasa según necesidad",
+        "year": 2013,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 26% en incidencia de náuseas vs placebo (p=0.04)",
+          "Disminución significativa en puntuaciones de severidad de náuseas (escala 0-10): 3.2 vs 4.8 en placebo (p=0.02)",
+          "Efecto observable dentro de 2-5 minutos post-inhalación",
+          "No efectos adversos reportados, método bien tolerado"
+        ],
+        "title": "Aromatherapy with peppermint oil for postoperative nausea: a randomized controlled trial",
+        "participants": 118,
+        "quality": "High"
+      },
+      {
+        "duration": "4 semanas",
+        "dose": "90mg aceite de hierbabuena + 50mg aceite de alcaravea, 2 veces al día",
+        "year": 2015,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción de 60% en intensidad de dolor epigástrico vs 25% con placebo (p<0.001)",
+          "Mejora en 75% de pacientes tratados vs 38% con placebo",
+          "Reducción significativa en plenitud postprandial y distensión abdominal",
+          "Efectos adversos mínimos (5% pirosis leve), perfil de seguridad excelente"
+        ],
+        "title": "Combination of peppermint oil and caraway oil for treatment of functional dyspepsia: a double-blind randomized trial",
+        "participants": 114,
+        "quality": "High"
+      }
+    ]
+  }
+}

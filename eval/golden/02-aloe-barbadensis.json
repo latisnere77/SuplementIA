@@ -1,0 +1,472 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.389Z",
+    "jobId": "job_prod_matrix_1777855465651_84oknahnewg",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "aloe barbadensis",
+  "metadata": {
+    "supplementId": "aloe barbadensis",
+    "generatedAt": "2026-05-04T00:47:02.327Z",
+    "tokensUsed": 20219,
+    "bedrockDuration": 154762,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "Uso tópico: Gel de aloe vera al 97-99% aplicado 2-3 veces al día. Uso oral (gel): 100-300mg de extracto seco o 30-60mL de jugo al día. Látex de aloe (laxante): 100-200mg al día, máximo 7-10 días",
+      "duration": "Tópico: 2-4 semanas para quemaduras, 4-8 semanas para psoriasis, hasta 12 semanas para heridas crónicas. Oral: Mínimo 4-8 semanas para evaluar efectos, uso continuo documentado hasta 3 meses. Látex: Máximo 7-10 días",
+      "notes": "Para uso tópico, aplicar capa fina y permitir absorción completa. Refrigerar gel fresco para mayor efecto calmante. Para uso oral, preferir extractos estandarizados y certificados libres de antraquinonas. Evitar látex de aloe para uso interno prolongado. No hay datos farmacocinéticos específicos sobre absorción sistémica de polisacáridos. Seguir indicaciones del fabricante para productos comerciales",
+      "timing": "Tópico: Aplicar después de limpieza de la zona, 2-3 veces al día. Oral: Tomar con alimentos para mejor tolerancia gastrointestinal. Sin preferencia de horario específico según estudios clínicos",
+      "optimalDose": "Tópico: Gel al 97-99% puro para quemaduras y heridas. Oral: 150-300mg/día de extracto estandarizado (sin antraquinonas) para uso interno",
+      "maxSafeDose": "Tópico: Sin límite establecido, bien tolerado. Oral (gel): Hasta 600mg/día sin efectos adversos significativos. Látex: No exceder 200mg/día ni usar >10 días consecutivos",
+      "forms": [
+        {
+          "description": "Forma más estudiada para uso tópico. Extraído de la parte interna de la hoja (parénquima), libre de aloína. Usado en 80% de estudios dermatológicos. Debe ser estabilizado para preservar polisacáridos activos",
+          "studyCount": 45,
+          "form": "Gel de aloe vera puro (97-99% gel interno)",
+          "recommended": true
+        },
+        {
+          "description": "Para uso oral. Debe especificar contenido de polisacáridos (>10% acemanano) y estar libre de antraquinonas (<10 ppm aloína). Usado en estudios metabólicos. Concentración típica 200:1",
+          "studyCount": 18,
+          "form": "Extracto seco estandarizado (polvo, cápsulas)",
+          "recommended": true
+        },
+        {
+          "description": "Contiene antraquinonas (aloína, barbaloína) con efecto laxante. Usado tradicionalmente como purgante. PRECAUCIÓN: Uso prolongado asociado con toxicidad, pseudomelanosis coli, y potencial carcinogénico. No recomendado para uso regular",
+          "studyCount": 8,
+          "form": "Látex de aloe (exudado amarillo)",
+          "recommended": false
+        },
+        {
+          "description": "Forma comercial popular pero con alta variabilidad en contenido de activos. Muchos productos diluidos o con aditivos. Pocos estudios clínicos con esta forma específica. Difícil estandarización",
+          "studyCount": 6,
+          "form": "Jugo de aloe vera (bebida)",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Hidrogel o apósitos oclusivos - mejora penetración y efectos cicatrizantes en heridas",
+        "Vitamina E tópica - sinergia en cicatrización de quemaduras según 2 estudios",
+        "Miel médica - combinación estudiada para úlceras diabéticas con resultados superiores"
+      ],
+      "effectiveDose": "Tópico: Gel al 50% mínimo para efectos dermatológicos. Oral: 100mg/día de extracto estandarizado para efectos metabólicos preliminares"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 3,
+        "condition": "Liquen plano oral",
+        "evidenceGrade": "C",
+        "notes": "Solo 3 RCTs pequeños (n total <120) mostraron mejora en dolor y lesiones vs placebo. Estudios de corta duración (4-8 semanas) con tamaños muestrales insuficientes (n=20-44). Se necesitan RCTs multicéntricos con seguimiento prolongado y validación de escalas de medición. Resultados prometedores pero preliminares."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Úlceras por presión (prevención)",
+        "evidenceGrade": "C",
+        "notes": "4 estudios (2 RCTs, 2 observacionales, n total ~200) sugieren beneficio en prevención de úlceras por presión en pacientes hospitalizados. Reducción de incidencia de 30-40% vs cuidado estándar. Limitaciones: estudios pequeños, falta de cegamiento adecuado, heterogeneidad en protocolos de aplicación. Se requieren RCTs grandes con metodología rigurosa."
+      },
+      {
+        "studyCount": 6,
+        "condition": "Hiperlipidemia (reducción de colesterol y triglicéridos)",
+        "evidenceGrade": "C",
+        "notes": "6 RCTs pequeños (n=15-90 cada uno) con resultados mixtos. Meta-análisis preliminar sugiere reducción modesta de colesterol total (-15 a -35 mg/dL) y triglicéridos (-25 a -50 mg/dL), pero alta heterogeneidad (I²>80%). Dosis y formulaciones inconsistentes (100-1000mg/día). Se necesitan estudios grandes, estandarizados, con seguimiento >6 meses y endpoints cardiovasculares."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Gingivitis y enfermedad periodontal",
+        "evidenceGrade": "C",
+        "notes": "5 RCTs pequeños (n=20-60 cada uno) mostraron reducción en índice gingival y sangrado vs placebo. Enjuague bucal con aloe vera al 50-100% usado 2-3 veces al día durante 2-4 semanas. Limitaciones: corta duración, falta de estudios comparativos con clorhexidina (gold standard), sin evaluación de profundidad de bolsas periodontales. Prometedor pero requiere validación en estudios más grandes y prolongados."
+      }
+    ],
+    "primaryUses": [
+      "Tratamiento tópico de quemaduras de primer y segundo grado - acelera cicatrización 8-9 días vs tratamiento convencional",
+      "Manejo de psoriasis leve a moderada - mejora PASI score 82.8% vs 7.7% placebo",
+      "Tratamiento de mucositis oral inducida por quimioterapia/radioterapia - reduce severidad 50-60%",
+      "Mejora de estreñimiento crónico - reduce tiempo de tránsito intestinal 30-40% (látex de aloe)",
+      "Cicatrización de heridas y úlceras cutáneas - reduce tiempo de epitelización 30-50%"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 9,
+        "condition": "Diabetes tipo 2 - control glucémico (uso oral)",
+        "evidenceGrade": "D",
+        "notes": "Meta-análisis de 9 RCTs (n=283) mostró reducción no significativa de HbA1c (-0.27%, IC 95%: -0.69 a 0.15, p=0.21) y glucosa en ayunas (-46.6 mg/dL, IC 95%: -93.5 a 0.3, p=0.05). Alta heterogeneidad entre estudios (I²=89%). Estudios de baja calidad metodológica, dosis inconsistentes (100-1000mg/día), y falta de estandarización del producto. Evidencia insuficiente para recomendar uso clínico."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Síndrome de intestino irritable (SII)",
+        "evidenceGrade": "D",
+        "notes": "Revisión sistemática de 4 RCTs (n=387) no encontró beneficio significativo en síntomas globales de SII vs placebo (p>0.05). Estudio más grande (n=110) mostró mejora no significativa en dolor abdominal y calidad de vida. Dosis utilizadas: 30-150mL de jugo de aloe 2 veces al día durante 4-8 semanas. Falta de estudios de alta calidad y resultados inconsistentes. Algunos pacientes reportaron empeoramiento de diarrea."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Enfermedad inflamatoria intestinal (Colitis ulcerosa, Crohn)",
+        "evidenceGrade": "D",
+        "notes": "Solo 3 RCTs pequeños (n total <150) con resultados contradictorios. Un estudio (n=44) mostró mejora en colitis ulcerosa leve a moderada, pero dos estudios posteriores no replicaron resultados. Meta-análisis no posible por heterogeneidad. Dosis: 100mL de gel oral 2 veces al día durante 4-8 semanas. Preocupación por contenido de antraquinonas que pueden agravar inflamación intestinal. Evidencia insuficiente y potencial riesgo."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Pérdida de peso y reducción de grasa corporal",
+        "evidenceGrade": "F",
+        "notes": "5 RCTs (n=412) no mostraron diferencia significativa en peso corporal, IMC o porcentaje de grasa vs placebo (p>0.05). Estudio más grande (n=136, 8 semanas) con gel de aloe 300mg/día mostró cambio no significativo: -0.4kg vs -0.2kg placebo. No hay mecanismo biológico plausible para efectos directos en metabolismo lipídico. Claims de marketing no respaldados por evidencia científica."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Prevención o tratamiento de cáncer",
+        "evidenceGrade": "F",
+        "notes": "No existen RCTs en humanos demostrando efectos anticancerígenos. Estudios in vitro muestran actividad citotóxica de componentes aislados, pero no traducible a uso clínico. Dos estudios observacionales no mostraron beneficio en supervivencia o progresión tumoral. ADVERTENCIA: Uso oral prolongado de látex de aloe (antraquinonas) clasificado como posible carcinógeno (Grupo 2B) por IARC. Evidencia negativa para claims anticancerígenos."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Mejora cognitiva o función cerebral",
+        "evidenceGrade": "D",
+        "notes": "No existen estudios clínicos evaluando efectos cognitivos del aloe vera en humanos. Sin mecanismo de acción plausible para atravesar barrera hematoencefálica o afectar neurotransmisión. Claims de marketing completamente infundados. Cero evidencia científica."
+      },
+      {
+        "studyCount": 1,
+        "condition": "Infecciones virales sistémicas (VIH, herpes, COVID-19)",
+        "evidenceGrade": "D",
+        "notes": "Un estudio piloto pequeño (n=29) en VIH mostró resultados no concluyentes. No existen RCTs de calidad para infecciones virales sistémicas. Actividad antiviral demostrada solo in vitro sin traducción clínica. Claims sobre COVID-19 completamente infundados y peligrosos. Evidencia insuficiente para cualquier indicación antiviral sistémica."
+      },
+      {
+        "studyCount": 2,
+        "condition": "Hipertensión arterial",
+        "evidenceGrade": "D",
+        "notes": "Solo 2 estudios pequeños (n<100 combinados) con resultados inconsistentes. Un estudio mostró reducción no significativa de 3-5 mmHg en presión sistólica (p>0.05). Sin mecanismo cardiovascular establecido. Evidencia insuficiente para recomendar uso en hipertensión."
+      }
+    ],
+    "whatIsIt": "Aloe barbadensis, comúnmente conocido como aloe vera, es una planta suculenta de la familia Asphodelaceae cuyo gel interno contiene más de 75 compuestos bioactivos incluyendo polisacáridos (especialmente acemanano), antraquinonas, enzimas, vitaminas y minerales. Los mecanismos principales incluyen actividad antiinflamatoria mediante inhibición de ciclooxigenasa y modulación de citoquinas proinflamatorias, efectos inmunomoduladores a través de la estimulación de macrófagos y células NK, y propiedades cicatrizantes por estimulación de fibroblastos y síntesis de colágeno. Es notable por su uso tradicional milenario y su amplia investigación clínica en aplicaciones dermatológicas y gastrointestinales, aunque la calidad de la evidencia varía considerablemente según la indicación.",
+    "worksFor": [
+      {
+        "studyCount": 8,
+        "condition": "Quemaduras de primer y segundo grado (tratamiento tópico)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: Gel de aloe vera al 97-99% aplicado tópicamente 2-3 veces al día. Duración: 2-3 semanas para cicatrización completa. Población: Adultos con quemaduras superficiales de primer y segundo grado. Meta-análisis de 2019 mostró reducción significativa en tiempo de curación (diferencia de medias: -8.79 días, IC 95%: -10.5 a -7.08, p<0.001). Efecto más pronunciado en quemaduras de segundo grado superficiales.",
+        "effectSize": "Moderate",
+        "rctCount": 6,
+        "magnitude": "Reduce tiempo de cicatrización en 8-9 días comparado con tratamiento convencional, acelera epitelización 30-40%",
+        "totalParticipants": 450,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 5,
+        "condition": "Psoriasis vulgar leve a moderada (aplicación tópica)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: Crema de extracto de aloe vera al 0.5% aplicada 3 veces al día. Duración: Mínimo 4 semanas, efectos óptimos en 8-16 semanas. Población: Adultos con psoriasis leve a moderada (PASI <10). Estudio pivotal doble ciego (n=60) mostró tasa de curación de 83.3% vs 6.6% placebo (p<0.001). Efectos sostenidos hasta 12 meses de seguimiento. Sin efectos adversos significativos reportados.",
+        "effectSize": "Large",
+        "rctCount": 4,
+        "magnitude": "Mejora PASI score en 82.8% vs 7.7% con placebo, clearance completo o casi completo en 83% vs 6% placebo",
+        "totalParticipants": 320,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 12,
+        "condition": "Mucositis oral inducida por quimioterapia o radioterapia",
+        "evidenceGrade": "B",
+        "notes": "Dosis: Enjuague bucal con gel de aloe vera al 70% o solución oral, 3-4 veces al día. Duración: Durante todo el tratamiento oncológico y 2 semanas posteriores. Población: Pacientes con cáncer de cabeza/cuello recibiendo radioterapia o quimioterapia. Meta-análisis Cochrane mostró reducción significativa en incidencia de mucositis severa (grado 3-4) con RR 0.35 (IC 95%: 0.20-0.61). Mejora calidad de vida y capacidad de alimentación.",
+        "effectSize": "Moderate",
+        "rctCount": 9,
+        "magnitude": "Reduce severidad de mucositis en 50-60%, disminuye dolor en escala VAS 3-4 puntos vs placebo",
+        "totalParticipants": 680,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 7,
+        "condition": "Estreñimiento crónico funcional (látex de aloe - uso oral)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 100-200mg de látex de aloe (estandarizado a 10-30% aloína/barbaloína) al día. Duración: Efectos en 6-12 horas, no recomendado uso continuo >7-10 días. Población: Adultos con estreñimiento funcional crónico. Las antraquinonas actúan como laxantes estimulantes. ADVERTENCIA: Uso prolongado (>1 año) asociado con pseudomelanosis coli y potencial carcinogénico. No confundir látex con gel de aloe.",
+        "effectSize": "Moderate",
+        "rctCount": 5,
+        "magnitude": "Reduce tiempo de tránsito intestinal 30-40%, aumenta frecuencia de evacuaciones de 2.5 a 4.5 por semana",
+        "totalParticipants": 420,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 11,
+        "condition": "Cicatrización de heridas cutáneas y úlceras dérmicas",
+        "evidenceGrade": "B",
+        "notes": "Dosis: Gel de aloe vera puro aplicado tópicamente 2-3 veces al día bajo vendaje. Duración: 2-6 semanas según tamaño de herida. Población: Pacientes con heridas quirúrgicas, úlceras por presión, úlceras diabéticas. Estudios muestran reducción significativa en tamaño de herida (p<0.05) y mejora en formación de tejido de granulación. Efecto más consistente en heridas agudas que crónicas. Combinación con hidrogel mejora resultados.",
+        "effectSize": "Moderate",
+        "rctCount": 7,
+        "magnitude": "Reduce tiempo de epitelización 30-50%, aumenta tasa de cierre de herida en 40-60% vs control",
+        "totalParticipants": 550,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 3,
+        "condition": "Dermatitis seborreica del cuero cabelludo",
+        "evidenceGrade": "C",
+        "notes": "Dosis: Emulsión de aloe vera al 30% aplicada en cuero cabelludo 2 veces al día. Duración: 4-6 semanas para efectos significativos. Población: Adultos con dermatitis seborreica leve a moderada. Estudio RCT (n=44) mostró mejora significativa en escala de severidad (p<0.05) y reducción de descamación. Mecanismo propuesto: actividad antifúngica contra Malassezia y efectos antiinflamatorios. Evidencia limitada pero prometedora.",
+        "effectSize": "Moderate",
+        "rctCount": 2,
+        "magnitude": "Reduce descamación en 50-60%, mejora prurito en 40-50% vs placebo",
+        "totalParticipants": 180,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Hidrogel o apósitos oclusivos - mejora penetración y efectos cicatrizantes en heridas",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Vitamina E tópica - sinergia en cicatrización de quemaduras según 2 estudios",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Miel médica - combinación estudiada para úlceras diabéticas con resultados superiores",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Para quemaduras leves: Aplicar gel de aloe vera puro (refrigerado) 2-3 veces al día después de enfriar la quemadura con agua. No aplicar en quemaduras de tercer grado o heridas profundas sin supervisión médica",
+      "Para uso oral: Comenzar con dosis baja (100mg/día) y aumentar gradualmente para evaluar tolerancia gastrointestinal. Tomar con alimentos para reducir molestias digestivas",
+      "Realizar prueba de parche antes de uso tópico extenso: Aplicar pequeña cantidad en antebrazo interno y esperar 24 horas para descartar alergia",
+      "Evitar completamente látex de aloe para uso interno prolongado (>7-10 días) debido a riesgos de dependencia, desequilibrio electrolítico y potencial carcinogénico",
+      "Si usa medicamentos para diabetes o anticoagulantes, consultar médico antes de usar aloe oral y monitorear parámetros relevantes (glucosa, INR) más frecuentemente",
+      "Para psoriasis: Aplicar crema de aloe vera al 0.5% consistentemente 3 veces al día durante mínimo 8 semanas antes de evaluar eficacia. Resultados no son inmediatos",
+      "Almacenar gel fresco en refrigerador y usar dentro de 1-2 semanas. Productos comerciales seguir indicaciones de almacenamiento del fabricante",
+      "Embarazadas y lactantes deben evitar uso oral de aloe completamente. Uso tópico generalmente seguro pero consultar obstetra"
+    ],
+    "totalStudies": 180,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo - látex de aloe puede causar contracciones uterinas y aborto espontáneo (efecto emenagogo)",
+        "Lactancia - antraquinonas se excretan en leche materna, pueden causar diarrea en lactante",
+        "Obstrucción intestinal, enfermedad de Crohn activa, apendicitis - látex contraindicado",
+        "Alergia a plantas de familia Liliaceae/Asphodelaceae (ajo, cebolla, tulipán)",
+        "Cirugía programada - suspender uso oral 2 semanas antes por riesgo de hipoglucemia y sangrado",
+        "Insuficiencia renal - riesgo de acumulación de antraquinonas y desequilibrio electrolítico",
+        "Niños menores de 12 años - látex de aloe contraindicado, gel oral no estudiado adecuadamente"
+      ],
+      "longTermSafety": "Uso tópico: Seguro hasta 12 meses documentado en estudios de psoriasis sin efectos adversos significativos. Uso oral (gel sin antraquinonas): Seguro hasta 3 meses en estudios clínicos. Látex de aloe: NO SEGURO para uso prolongado >2 semanas. Uso crónico (>1 año) asociado con pseudomelanosis coli, dependencia de laxantes, y clasificado como posible carcinógeno (Grupo 2B) por IARC basado en estudios en roedores. FDA prohibió venta de productos laxantes con aloe en 2002 por falta de datos de seguridad",
+      "notes": "Perfil de seguridad excelente para uso tópico con mínimos efectos adversos. Uso oral requiere precaución y distinción crítica entre gel (generalmente seguro) y látex (potencialmente peligroso). Productos comerciales varían enormemente en calidad y contenido de antraquinonas. Preferir productos certificados libres de aloína (<10 ppm) para uso oral. No hay reportes de hepatotoxicidad con gel de aloe puro. Látex de aloe tiene perfil de seguridad desfavorable para uso interno prolongado",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Principalmente en personas sensibles a plantas de familia Liliaceae. Realizar prueba de parche antes de uso extenso. Reacciones generalmente leves y autolimitadas al suspender uso",
+          "effect": "Reacciones alérgicas cutáneas (dermatitis de contacto, eritema, prurito)",
+          "frequency": "Raro, 1-2% de usuarios tópicos"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Más común con productos que contienen antraquinonas (látex). Dosis >300mg/día de extracto oral aumentan incidencia. Tomar con alimentos reduce molestias. Látex de aloe causa cólicos en 30-50% de usuarios",
+          "effect": "Molestias gastrointestinales (cólicos, diarrea, náuseas)",
+          "frequency": "10-20% con uso oral, especialmente con látex de aloe"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Reportado en pacientes diabéticos usando aloe oral con medicamentos hipoglucemiantes. Monitorear glucosa si se combina con antidiabéticos. Efecto hipoglucemiante modesto pero clínicamente relevante en combinación",
+          "effect": "Hipoglucemia (uso oral prolongado)",
+          "frequency": "Raro, <2% en estudios clínicos"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Laxantes antraquinónicos causan pérdida de potasio por diarrea. Uso >1 mes puede causar hipokalemia significativa (K+ <3.5 mEq/L). Contraindicado en pacientes con arritmias o usando digoxina",
+          "effect": "Desequilibrio electrolítico (hipokalemia) con látex de aloe",
+          "frequency": "5-10% con uso prolongado de látex (>2 semanas)"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Pigmentación benigna del colon por depósito de lipofuscina. Reversible al suspender uso. Detectable por colonoscopia. No asociada con patología maligna pero indica uso excesivo de laxantes antraquinónicos",
+          "effect": "Pseudomelanosis coli (pigmentación colónica)",
+          "frequency": "Común con uso de látex >4-9 meses, hasta 70% de usuarios crónicos"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Aloe oral puede reducir glucosa 20-50 mg/dL adicionales. Riesgo de hipoglucemia sintomática. Monitorear glucosa frecuentemente y ajustar dosis de medicamentos. Consultar endocrinólogo antes de combinar",
+          "medication": "Antidiabéticos orales e insulina",
+          "mechanism": "Potenciación de efectos hipoglucemiantes por mecanismo aditivo"
+        },
+        {
+          "severity": "Severe",
+          "description": "Hipokalemia inducida por látex aumenta riesgo de arritmias y toxicidad digitálica. Combinación potencialmente peligrosa. Evitar látex de aloe completamente si usa digoxina o diuréticos depletores de potasio",
+          "medication": "Diuréticos y digoxina",
+          "mechanism": "Látex de aloe causa pérdida de potasio, potencia toxicidad de digoxina"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Reportes de caso de aumento de INR con uso de aloe oral. Monitorear INR más frecuentemente si se inicia aloe. Ajustar dosis de warfarina según necesidad. Precaución con anticoagulantes orales directos",
+          "medication": "Warfarina y anticoagulantes",
+          "mechanism": "Posible potenciación de efectos anticoagulantes, mecanismo no completamente establecido"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Látex de aloe combinado con corticosteroides aumenta riesgo de hipokalemia severa. Monitorear electrolitos. Considerar suplementación de potasio. Evitar uso prolongado de látex",
+          "medication": "Corticosteroides sistémicos",
+          "mechanism": "Ambos pueden causar pérdida de potasio, efecto aditivo"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Combinación de látex de aloe con otros laxantes estimulantes (senna, bisacodilo) puede causar diarrea severa, deshidratación y desequilibrio electrolítico. Evitar combinación",
+          "medication": "Laxantes estimulantes",
+          "mechanism": "Efecto laxante aditivo"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Gel de aloe vera puro (97-99%) de hoja interna para uso tópico. Extracto seco estandarizado libre de antraquinonas (<10 ppm aloína) para uso oral",
+      "avoidFlags": [
+        "Productos que no especifican contenido de aloína para uso oral - pueden contener látex peligroso",
+        "Jugo de aloe con aloe vera como ingrediente secundario o diluido - baja concentración de activos",
+        "Productos sin certificación de pureza o pruebas de terceros - riesgo de contaminación",
+        "Gel tópico con alcohol como primer ingrediente - deshidrata piel y desnaturaliza polisacáridos",
+        "Claims exagerados (cura cáncer, pérdida de peso milagrosa) - productos no confiables"
+      ],
+      "qualityIndicators": [
+        "Certificación IASC (International Aloe Science Council) - verifica contenido y pureza",
+        "Pruebas de terceros para aloína, metales pesados y contaminantes microbiológicos",
+        "Especificación de contenido de polisacáridos o acemanano en etiqueta",
+        "Gel estabilizado en frío para preservar actividad enzimática",
+        "Para uso oral: Certificación libre de antraquinonas (<10 ppm aloína)",
+        "Producto orgánico certificado USDA - reduce riesgo de pesticidas",
+        "Fecha de fabricación y caducidad claramente indicadas"
+      ],
+      "notes": "La industria del aloe tiene problemas significativos de control de calidad. Estudio de ConsumerLab 2016 encontró que varios productos comerciales no contenían aloe vera detectable o tenían concentraciones muy bajas. Preferir marcas con certificación IASC. Para uso tópico, gel fresco de hoja es óptimo pero debe usarse inmediatamente (se oxida rápidamente). Productos comerciales estabilizados son alternativa práctica. Para uso oral, distinción entre gel y látex es CRÍTICA - látex contiene antraquinonas laxantes potencialmente peligrosas. Verificar siempre contenido de aloína en productos orales",
+      "keyCompounds": [
+        {
+          "name": "Acemanano (polisacárido)",
+          "lookFor": "Contenido de polisacáridos >10% o acemanano >1%. Peso molecular 400-2000 kDa",
+          "source": "Gel de hoja interna (parénquima)"
+        },
+        {
+          "name": "Antraquinonas (aloína, barbaloína)",
+          "lookFor": "Para uso oral: EVITAR o verificar <10 ppm aloína. Para laxante: 10-30% antraquinonas",
+          "source": "Látex (exudado amarillo entre piel y gel)"
+        },
+        {
+          "name": "Glucomanano",
+          "lookFor": "Indicador de calidad del gel, no siempre especificado en etiqueta",
+          "source": "Gel de hoja interna"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Actividad antiinflamatoria mediante inhibición de ciclooxigenasa",
+        "description": "Los polisacáridos del aloe vera, particularmente el acemanano, inhiben la vía de la ciclooxigenasa (COX-2) y la producción de prostaglandina E2, reduciendo la respuesta inflamatoria. Estudios in vitro demuestran inhibición de 30-50% en la expresión de mediadores inflamatorios como TNF-alfa e IL-6. Adicionalmente, las antraquinonas presentes ejercen efectos antiinflamatorios por modulación de NF-kB, un factor de transcripción clave en procesos inflamatorios.",
+        "studyCount": 35,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Estimulación de síntesis de colágeno y proliferación de fibroblastos",
+        "description": "El gel de aloe vera contiene glucomanano rico en manosa que estimula la proliferación de fibroblastos dérmicos y aumenta la síntesis de colágeno tipo I y III en 30-70% según estudios in vitro. Los factores de crecimiento presentes (similares a EGF y FGF) activan receptores de tirosina quinasa que promueven migración celular y angiogénesis. Este mecanismo explica los efectos cicatrizantes observados en estudios clínicos de heridas y quemaduras.",
+        "studyCount": 28,
+        "evidenceLevel": "moderate"
+      },
+      {
+        "name": "Inmunomodulación por activación de macrófagos y células NK",
+        "description": "El acemanano, un polisacárido de alto peso molecular (400-2000 kDa), actúa como inmunomodulador activando macrófagos a través de receptores tipo Toll (TLR-4) y aumentando la producción de óxido nítrico, IL-1 y TNF-alfa. Estudios in vivo muestran aumento de 200-300% en actividad de células natural killer y mejora en respuesta de linfocitos T. Este mecanismo es relevante para efectos antivirales y antitumorales observados en investigación preclínica.",
+        "studyCount": 22,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "4-14 semanas según estudio",
+        "dose": "100-1000mg/día de extracto o gel oral",
+        "year": 2016,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción no significativa de HbA1c: -0.27% (IC 95%: -0.69 a 0.15, p=0.21)",
+          "Reducción marginal de glucosa en ayunas: -46.6 mg/dL (IC 95%: -93.5 a 0.3, p=0.05)",
+          "Alta heterogeneidad entre estudios (I²=89%)",
+          "Calidad metodológica variable, evidencia insuficiente para recomendación clínica"
+        ],
+        "title": "Efficacy of Aloe vera supplementation on prediabetes and early non-treated diabetic patients: a systematic review and meta-analysis of randomized controlled trials",
+        "participants": 283,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "Variable, 2-24 semanas",
+        "dose": "Gel de aloe vera tópico puro o crema",
+        "year": 2012,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Efectivo para quemaduras de primer y segundo grado: reduce tiempo de curación en 8.79 días (IC 95%: -10.5 a -7.08)",
+          "Evidencia limitada para heridas quirúrgicas y úlceras crónicas",
+          "Calidad de estudios variable, necesidad de RCTs más grandes",
+          "Sin efectos adversos significativos reportados"
+        ],
+        "title": "Aloe vera for treating acute and chronic wounds",
+        "participants": 371,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "2-4 semanas",
+        "dose": "Enjuague bucal con aloe vera 50-100%, 2-3 veces al día",
+        "year": 2019,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Reducción significativa de índice de placa vs placebo (p<0.05)",
+          "Reducción de sangrado gingival comparable a clorhexidina en algunos estudios",
+          "Estudios pequeños con limitaciones metodológicas",
+          "Prometedor pero requiere validación en estudios más grandes"
+        ],
+        "title": "Efficacy of aloe vera mouthwash versus chlorhexidine on plaque and gingivitis: A systematic review",
+        "participants": 235,
+        "quality": "Low"
+      },
+      {
+        "duration": "Durante radioterapia, 4-8 semanas",
+        "dose": "Gel de aloe vera al 97-99% aplicado 2-3 veces al día",
+        "year": 2013,
+        "studyType": "Systematic Review",
+        "findings": [
+          "Resultados mixtos: algunos estudios muestran beneficio, otros no",
+          "Posible reducción en severidad de dermatitis por radiación",
+          "Alta heterogeneidad en protocolos y mediciones",
+          "Evidencia insuficiente para recomendación definitiva"
+        ],
+        "title": "Aloe vera for prevention and treatment of radiation-induced dermatitis: a systematic literature review",
+        "participants": 456,
+        "quality": "Low"
+      },
+      {
+        "duration": "6 semanas",
+        "dose": "Gel de aloe vera puro aplicado 2 veces al día bajo vendaje",
+        "year": 2019,
+        "studyType": "RCT",
+        "findings": [
+          "Reducción significativa en tamaño de úlcera: 60% vs 30% en grupo control (p<0.01)",
+          "Mejora en formación de tejido de granulación",
+          "Mejor tolerabilidad que tratamiento convencional",
+          "Estudio pequeño, necesita replicación"
+        ],
+        "title": "Effectiveness of Aloe vera gel in chronic ulcers in comparison with conventional treatments",
+        "participants": 60,
+        "quality": "Moderate"
+      }
+    ]
+  }
+}

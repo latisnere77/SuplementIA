@@ -1,0 +1,426 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.388Z",
+    "jobId": "job_prod_matrix_1777855646037_x1cjc94okuc",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "aceite de comino negro",
+  "metadata": {
+    "supplementId": "aceite de comino negro",
+    "generatedAt": "2026-05-04T00:49:56.133Z",
+    "tokensUsed": 20517,
+    "bedrockDuration": 149582,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "1-3 g/día de aceite de comino negro en cápsulas, o 500-2000 mg/día de semilla en polvo, dividido en 2-3 tomas",
+      "duration": "Efectos iniciales en marcadores metabólicos (glucosa, lípidos) visibles a partir de 4-6 semanas. Efectos óptimos en 8-12 semanas de uso continuo. Estudios de seguridad documentan uso seguro hasta 12 meses. Para condiciones crónicas, uso continuo recomendado con monitoreo médico periódico",
+      "notes": "Dividir dosis diaria en 2-3 tomas mejora tolerabilidad gastrointestinal. Comenzar con dosis baja (500mg-1g/día) y aumentar gradualmente en 1-2 semanas. Almacenar en lugar fresco y oscuro para preservar timoquinona (sensible a luz y calor). Refrigeración después de abrir recomendada. No hay evidencia de necesidad de ciclado o descansos periódicos. Monitoreo de glucosa recomendado en diabéticos por riesgo de hipoglucemia cuando se combina con medicamentos hipoglucemiantes",
+      "timing": "Sin preferencia de horario según estudios clínicos. Tomar con alimentos puede mejorar tolerabilidad gastrointestinal, pero no hay datos farmacocinéticos específicos sobre absorción diferencial según timing",
+      "optimalDose": "2-2.5 g/día de aceite según meta-análisis, balance óptimo entre eficacia y tolerabilidad para efectos metabólicos",
+      "maxSafeDose": "Hasta 5 g/día de aceite documentado sin efectos adversos graves en estudios de 12 semanas, aunque dosis >3 g/día aumentan incidencia de efectos gastrointestinales",
+      "forms": [
+        {
+          "description": "Forma más estudiada en RCTs (usado en aproximadamente 70% de estudios clínicos). Prensado en frío preserva timoquinona y otros compuestos bioactivos. Estandarización a timoquinona asegura consistencia de dosis activa. Presentación típica: cápsulas de gelatina blanda 500mg",
+          "studyCount": 85,
+          "form": "Aceite de comino negro prensado en frío, estandarizado a 0.5-1.5% timoquinona",
+          "recommended": true
+        },
+        {
+          "description": "Usado en aproximadamente 25% de estudios clínicos, particularmente en estudios de diabetes y dislipidemia. Contiene aceite más fibra y otros componentes de semilla. Dosis típica 1-2g/día. Puede tener efectos gastrointestinales más pronunciados que aceite puro",
+          "studyCount": 30,
+          "form": "Semilla de Nigella sativa en polvo (500-1000mg cápsulas)",
+          "recommended": true
+        },
+        {
+          "description": "Usado en menos de 5% de estudios clínicos. Concentración variable de timoquinona. Falta estandarización entre productos. Evidencia clínica limitada comparada con aceite prensado en frío",
+          "studyCount": 6,
+          "form": "Extracto acuoso o etanólico concentrado",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Metformina - sinergia documentada en control glucémico en diabetes tipo 2, mejora adicional de 10-15% en HbA1c",
+        "Estatinas - efectos aditivos en reducción de perfil lipídico, permite reducción de dosis de estatina en algunos casos",
+        "Omega-3 (EPA/DHA) - sinergia en reducción de triglicéridos y marcadores inflamatorios"
+      ],
+      "effectiveDose": "1 g/día de aceite mostró efectos significativos en control glucémico y perfil lipídico en estudios de 8-12 semanas"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 6,
+        "condition": "Mejora de función hepática en esteatosis hepática no alcohólica (NAFLD)",
+        "evidenceGrade": "C",
+        "notes": "Seis estudios pequeños (n=30-90 cada uno) muestran reducciones en transaminasas hepáticas (ALT, AST) de 15-30% y mejoras en esteatosis por ultrasonido. Sin embargo, falta confirmación histológica (biopsia hepática), estudios con elastografía para evaluar fibrosis, y RCTs grandes multicéntricos. Duración de estudios existentes (8-12 semanas) es insuficiente para evaluar progresión de enfermedad hepática. Se necesitan estudios de 6-12 meses con endpoints duros (fibrosis, cirrosis)."
+      },
+      {
+        "studyCount": 5,
+        "condition": "Mejora de control en asma bronquial",
+        "evidenceGrade": "C",
+        "notes": "Cinco RCTs pequeños (n=29-80) muestran mejoras en función pulmonar (FEV1 aumenta 10-20%), reducción de síntomas, y menor uso de broncodilatadores de rescate. Sin embargo, estudios tienen limitaciones metodológicas (falta de estandarización de tratamiento concomitante, poblaciones heterogéneas, seguimiento corto 4-12 semanas). Se necesitan RCTs grandes con mediciones objetivas de inflamación de vía aérea (óxido nítrico exhalado, eosinófilos en esputo), evaluación de exacerbaciones, y seguimiento prolongado (6-12 meses)."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Mejora de síntomas en artritis reumatoide",
+        "evidenceGrade": "C",
+        "notes": "Cuatro estudios pequeños (n=35-60) muestran reducciones en puntajes de actividad de enfermedad (DAS28) de 15-25% y mejoras en marcadores inflamatorios (PCR, VSG). Sin embargo, todos los estudios usaron aceite de comino negro como adyuvante a DMARDs, no como monoterapia. Falta evaluación de progresión radiográfica, función física a largo plazo, y comparación directa con DMARDs biológicos. Se necesitan RCTs grandes multicéntricos con seguimiento de 12+ meses y endpoints estructurales."
+      }
+    ],
+    "primaryUses": [
+      "Control glucémico en diabetes tipo 2 - reduce glucosa en ayunas 15-20 mg/dL y HbA1c 0.5-1.0% en promedio",
+      "Reducción de perfil lipídico aterogénico - disminuye colesterol total 15-20 mg/dL, LDL 15-25 mg/dL, triglicéridos 20-30 mg/dL",
+      "Reducción de presión arterial - disminuye PAS 3-8 mmHg y PAD 2-5 mmHg en hipertensos leves-moderados",
+      "Modulación de respuesta inflamatoria - reduce marcadores como PCR, IL-6, TNF-α en 20-40%",
+      "Soporte en síndrome metabólico - mejora múltiples parámetros metabólicos simultáneamente"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 2,
+        "condition": "Mejora cognitiva o prevención de demencia en adultos sanos",
+        "evidenceGrade": "D",
+        "notes": "Solo 2 estudios pequeños (n<60 cada uno) han evaluado función cognitiva en humanos sanos, sin mostrar mejoras significativas en memoria, atención o velocidad de procesamiento vs placebo (p>0.05). La mayoría de evidencia es preclínica (modelos animales). Se necesitan RCTs grandes con baterías neuropsicológicas validadas en poblaciones con deterioro cognitivo leve o demencia establecida."
+      },
+      {
+        "studyCount": 0,
+        "condition": "Tratamiento de cáncer o prevención de metástasis",
+        "evidenceGrade": "D",
+        "notes": "A pesar de evidencia preclínica prometedora (estudios in vitro e in vivo muestran efectos antiproliferativos de timoquinona), NO existen RCTs en humanos evaluando aceite de comino negro como tratamiento oncológico. Los estudios clínicos existentes solo evalúan calidad de vida como adyuvante a quimioterapia, sin medir supervivencia o progresión tumoral. Claims de tratamiento de cáncer son prematuros y potencialmente peligrosos."
+      },
+      {
+        "studyCount": 4,
+        "condition": "Aumento de testosterona o mejora de fertilidad masculina en hombres sanos",
+        "evidenceGrade": "D",
+        "notes": "Evidencia limitada a 4 estudios pequeños (n=30-60) con resultados inconsistentes. Dos estudios mostraron aumentos modestos en testosterona total (10-15%) en hombres infértiles con oligospermia, pero dos estudios en hombres sanos no mostraron cambios significativos vs placebo (p>0.05). Mejoras en parámetros espermáticos (motilidad, morfología) solo documentadas en poblaciones con infertilidad establecida, no en hombres sanos. Se necesitan RCTs grandes en poblaciones bien definidas."
+      },
+      {
+        "studyCount": 1,
+        "condition": "Tratamiento de infecciones bacterianas o virales sistémicas",
+        "evidenceGrade": "D",
+        "notes": "A pesar de actividad antimicrobiana in vitro contra múltiples patógenos, solo 1 estudio clínico pequeño (n=88) evaluó efectos en infección por H. pylori, mostrando erradicación inferior a terapia triple estándar. NO hay RCTs evaluando eficacia en infecciones respiratorias, urinarias, o virales sistémicas en humanos. Concentraciones antimicrobianas efectivas in vitro no son alcanzables con dosis orales seguras. No debe usarse como sustituto de antibióticos."
+      },
+      {
+        "studyCount": 1,
+        "condition": "Mejora de rendimiento deportivo o aumento de masa muscular",
+        "evidenceGrade": "D",
+        "notes": "Solo 1 estudio pequeño (n=40) en atletas recreacionales evaluó efectos en rendimiento aeróbico, sin mostrar mejoras significativas en VO2max, umbral anaeróbico, o tiempo hasta fatiga vs placebo (p>0.05). NO hay estudios evaluando fuerza, potencia, hipertrofia muscular, o recuperación post-ejercicio. Efectos antioxidantes no se traducen necesariamente en mejoras de rendimiento. Se necesitan RCTs en atletas con protocolos de entrenamiento estandarizados."
+      },
+      {
+        "studyCount": 3,
+        "condition": "Tratamiento de depresión mayor o trastornos de ansiedad",
+        "evidenceGrade": "D",
+        "notes": "Tres estudios pequeños (n=40-60) evaluaron síntomas depresivos/ansiosos usando escalas validadas (BDI, HAM-A), con resultados mixtos. Un estudio mostró reducción modesta en puntajes de ansiedad (15% vs placebo), pero dos estudios no mostraron diferencias significativas en depresión (p>0.05). Ningún estudio usó criterios diagnósticos DSM-5 para trastornos mentales establecidos. Efectos ansiolíticos observados pueden ser secundarios a mejoras metabólicas, no efectos psicotrópicos directos. No debe sustituir tratamiento psiquiátrico estándar."
+      }
+    ],
+    "whatIsIt": "El aceite de comino negro (Nigella sativa) es un extracto lipídico obtenido de las semillas de la planta Nigella sativa, originaria de Asia Sudoccidental. Su principal compuesto bioactivo es la timoquinona (TQ), que representa aproximadamente 30-48% del aceite volátil y actúa como potente antioxidante y modulador inflamatorio a través de la inhibición de NF-κB y la regulación de citoquinas proinflamatorias. El aceite también contiene timohidroquinona, ditimoquinona, y ácidos grasos esenciales (ácido linoleico 50-60%, ácido oleico 20%). Es notable por su amplio perfil farmacológico documentado en más de 1000 publicaciones científicas, con efectos demostrados en metabolismo glucémico, perfil lipídico, presión arterial, y función inmune.",
+    "worksFor": [
+      {
+        "studyCount": 27,
+        "condition": "Control glucémico en diabetes tipo 2",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 1-3g/día de aceite o 500-2000mg/día de semilla en polvo. Duración: Efectos significativos a partir de 8-12 semanas. Meta-análisis de 2020 (17 RCTs, n=1210) mostró reducción significativa de glucosa en ayunas (WMD: -17.25 mg/dL, IC 95%: -26.6 a -7.9, p<0.001) y HbA1c (WMD: -0.71%, IC 95%: -1.0 a -0.4, p<0.001). Efectos más pronunciados en pacientes con HbA1c basal >8% y con uso concomitante de metformina. Población: adultos con diabetes tipo 2, edad 35-65 años.",
+        "effectSize": "Moderate",
+        "rctCount": 23,
+        "magnitude": "Reduce glucosa en ayunas 15-20 mg/dL (0.8-1.1 mmol/L) y HbA1c 0.5-1.0% en promedio",
+        "totalParticipants": 1800,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 32,
+        "condition": "Reducción de perfil lipídico aterogénico (dislipidemia)",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 1-3g/día de aceite. Duración: 6-12 semanas para efectos óptimos. Meta-análisis de 2021 (19 RCTs, n=1365) demostró reducciones significativas: colesterol total (WMD: -17.6 mg/dL, p<0.001), LDL (WMD: -22.2 mg/dL, p<0.001), triglicéridos (WMD: -25.3 mg/dL, p<0.001), y aumento de HDL (WMD: 4.3 mg/dL, p=0.003). Efectos más pronunciados en pacientes con dislipidemia basal moderada-severa. Mecanismo: inhibición de HMG-CoA reductasa y aumento de excreción biliar de colesterol. Población: adultos con dislipidemia, síndrome metabólico.",
+        "effectSize": "Moderate",
+        "rctCount": 28,
+        "magnitude": "Disminuye colesterol total 15-20 mg/dL, LDL 15-25 mg/dL, triglicéridos 20-30 mg/dL, aumenta HDL 3-5 mg/dL",
+        "totalParticipants": 2100,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 18,
+        "condition": "Reducción de presión arterial en hipertensión leve-moderada",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 2-2.5g/día de aceite o 500-1000mg/día de extracto. Duración: 8-12 semanas mínimo. Meta-análisis de 2019 (11 RCTs, n=860) mostró reducción significativa de PAS (WMD: -3.65 mmHg, IC 95%: -5.6 a -1.7, p<0.001) y PAD (WMD: -2.63 mmHg, IC 95%: -4.1 a -1.2, p<0.001). Efectos más pronunciados en pacientes con hipertensión basal >140/90 mmHg. Mecanismo: vasodilatación mediada por óxido nítrico y bloqueo de canales de calcio. Población: adultos con hipertensión leve-moderada, edad 30-70 años. Efecto comparable a cambios dietéticos, inferior a medicamentos antihipertensivos.",
+        "effectSize": "Small",
+        "rctCount": 15,
+        "magnitude": "Disminuye presión arterial sistólica 3-8 mmHg y diastólica 2-5 mmHg",
+        "totalParticipants": 1200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 15,
+        "condition": "Reducción de peso corporal y circunferencia de cintura en sobrepeso/obesidad",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 2-3g/día de aceite o 1-2g/día de semilla en polvo. Duración: 8-12 semanas. Meta-análisis de 2018 (11 RCTs, n=783) demostró reducciones significativas: peso corporal (WMD: -2.11 kg, IC 95%: -3.2 a -1.0, p<0.001), IMC (WMD: -0.84 kg/m², p<0.001), circunferencia de cintura (WMD: -3.52 cm, p<0.001). Efectos más pronunciados cuando se combina con restricción calórica moderada (déficit 300-500 kcal/día). Mecanismo: supresión de apetito, mejora de termogénesis, modulación de leptina y adiponectina. Población: adultos con sobrepeso (IMC 25-30) u obesidad (IMC >30), edad 20-60 años.",
+        "effectSize": "Small",
+        "rctCount": 13,
+        "magnitude": "Reduce peso corporal 1.5-2.5 kg y circunferencia de cintura 2-4 cm en 8-12 semanas",
+        "totalParticipants": 950,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 8,
+        "condition": "Mejora de síntomas en rinitis alérgica",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 1-2g/día de aceite en cápsulas o 40-80mg/kg/día de semilla en polvo. Duración: 4-8 semanas. Múltiples RCTs muestran mejoras significativas en puntajes de síntomas nasales (TNSS) y calidad de vida. Estudio pivotal (n=152, 2011) mostró reducción de 60% en síntomas vs 20% con placebo (p<0.001). Mecanismo: inhibición de liberación de histamina de mastocitos, reducción de IgE sérica, modulación de respuesta Th2. Efectos comparables a antihistamínicos orales pero con mejor perfil de seguridad. Población: adultos y niños >6 años con rinitis alérgica estacional o perenne.",
+        "effectSize": "Moderate",
+        "rctCount": 7,
+        "magnitude": "Reduce síntomas nasales (congestión, rinorrea, estornudos, prurito) en 40-60% según escalas validadas",
+        "totalParticipants": 520,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 22,
+        "condition": "Reducción de marcadores inflamatorios sistémicos (PCR, IL-6, TNF-α)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 1-3g/día de aceite. Duración: 6-12 semanas. Meta-análisis de 2020 (14 RCTs, n=892) demostró reducciones significativas: PCR (WMD: -2.48 mg/L, IC 95%: -3.8 a -1.2, p<0.001), IL-6 (SMD: -0.89, p<0.001), TNF-α (SMD: -1.02, p<0.001). Efectos más pronunciados en pacientes con inflamación basal elevada (PCR >3 mg/L). Mecanismo: inhibición de NF-κB, reducción de estrés oxidativo. Población: pacientes con síndrome metabólico, artritis reumatoide, enfermedad inflamatoria intestinal, obesidad. Útil como adyuvante antiinflamatorio.",
+        "effectSize": "Moderate",
+        "rctCount": 18,
+        "magnitude": "Reduce PCR 20-35%, IL-6 25-40%, TNF-α 20-30% en condiciones inflamatorias crónicas",
+        "totalParticipants": 1400,
+        "metaAnalysis": true
+      }
+    ],
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Metformina - sinergia documentada en control glucémico en diabetes tipo 2, mejora adicional de 10-15% en HbA1c",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Estatinas - efectos aditivos en reducción de perfil lipídico, permite reducción de dosis de estatina en algunos casos",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "Omega-3 (EPA/DHA) - sinergia en reducción de triglicéridos y marcadores inflamatorios",
+        "effect": "May enhance overall effectiveness",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Complementary supplement combination",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (500mg-1g/día) durante 1-2 semanas para evaluar tolerabilidad gastrointestinal, luego aumentar gradualmente a dosis objetivo de 2-2.5g/día",
+      "Tomar con alimentos para minimizar molestias gastrointestinales. Dividir dosis diaria en 2-3 tomas mejora tolerabilidad",
+      "Pacientes diabéticos deben monitorear glucosa frecuentemente al iniciar suplementación, especialmente si usan medicamentos hipoglucemiantes. Informar a médico para posible ajuste de dosis",
+      "Esperar mínimo 8-12 semanas de uso continuo antes de evaluar eficacia en condiciones metabólicas (diabetes, dislipidemia, hipertensión). Efectos son graduales, no inmediatos",
+      "Almacenar en lugar fresco y oscuro, refrigerar después de abrir. Desechar si aceite desarrolla olor rancio (indica oxidación de ácidos grasos)",
+      "Preferir productos con certificación de terceros y contenido de timoquinona especificado. Evitar productos con claims exagerados o precio sospechosamente bajo"
+    ],
+    "totalStudies": 450,
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo - puede tener efectos uterotónicos y abortivos según estudios en animales, falta evidencia de seguridad en humanos",
+        "Lactancia - falta evidencia de seguridad, posible paso a leche materna no estudiado",
+        "Cirugía programada - suspender 2 semanas antes por riesgo teórico de sangrado aumentado y potenciación de anestesia",
+        "Hipotensión severa - puede reducir presión arterial adicionalmente, usar con precaución y monitoreo",
+        "Trastornos de coagulación - evidencia preclínica sugiere efectos anticoagulantes, aunque no confirmado en humanos"
+      ],
+      "longTermSafety": "Uso continuo documentado como seguro hasta 12 meses en múltiples RCTs sin efectos adversos graves. Estudios de toxicología en animales no muestran hepatotoxicidad, nefrotoxicidad ni efectos mutagénicos en dosis equivalentes a 10-20x dosis humanas. Estudios observacionales en poblaciones que consumen comino negro tradicionalmente (Medio Oriente, Asia) no reportan toxicidad crónica. Sin embargo, estudios >12 meses son limitados. Monitoreo médico periódico recomendado en uso prolongado",
+      "notes": "Perfil de seguridad favorable comparado con muchos medicamentos para condiciones metabólicas. No se han reportado casos de hepatotoxicidad, nefrotoxicidad o toxicidad hematológica en estudios clínicos. Tasa de discontinuación por efectos adversos en RCTs: 2-5%, similar a placebo. Calidad del producto es crítica: contaminación con aflatoxinas o metales pesados reportada en algunos productos comerciales, especialmente de regiones con control de calidad deficiente. Preferir productos con certificación de terceros (USP, NSF, ConsumerLab)",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Efecto adverso más frecuentemente reportado en RCTs. Generalmente transitorio, mejora después de 1-2 semanas de uso continuo. Tomar con alimentos reduce incidencia significativamente. Dividir dosis diaria en 2-3 tomas mejora tolerabilidad",
+          "effect": "Molestias gastrointestinales (náusea, dispepsia, distensión abdominal)",
+          "frequency": "10-20% de usuarios, más común con dosis >2.5g/día o con estómago vacío"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Más común con aceite líquido que con cápsulas. No indica toxicidad. Cápsulas entéricas pueden reducir este efecto. Tomar con alimentos o al final de comida ayuda",
+          "effect": "Eructos con sabor/olor característico",
+          "frequency": "15-25% de usuarios, particularmente con aceite líquido"
+        },
+        {
+          "severity": "Moderate",
+          "notes": "Reportado en estudios de diabetes cuando se combina con metformina, sulfonilureas o insulina. Requiere monitoreo de glucosa y posible ajuste de dosis de medicamentos. Síntomas: mareo, sudoración, temblor. Pacientes deben informar a médico antes de iniciar suplementación",
+          "effect": "Hipoglucemia leve (en diabéticos con medicación)",
+          "frequency": "Raro <5%, solo en pacientes diabéticos con medicación hipoglucemiante concomitante"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Casos aislados reportados en literatura. Discontinuar uso si aparecen síntomas. Realizar prueba de parche en piel antes de uso oral en personas con historial de alergias múltiples",
+          "effect": "Reacciones alérgicas cutáneas (rash, prurito)",
+          "frequency": "Muy raro <1%, principalmente en personas con alergias a plantas de familia Ranunculaceae"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Puede potenciar efectos hipoglucemiantes y aumentar riesgo de hipoglucemia. Monitoreo frecuente de glucosa recomendado. Puede requerir reducción de dosis de medicamento. Consultar endocrinólogo antes de iniciar. Beneficio potencial: mejor control glucémico con menores dosis de medicamentos",
+          "medication": "Medicamentos hipoglucemiantes (metformina, sulfonilureas, insulina)",
+          "mechanism": "Efectos hipoglucemiantes aditivos, mejora de sensibilidad a insulina"
+        },
+        {
+          "severity": "Moderate",
+          "description": "Evidencia preclínica sugiere efectos anticoagulantes de timoquinona, aunque no confirmado en estudios clínicos humanos. Por precaución, monitorear INR en pacientes con warfarina. Suspender 2 semanas antes de cirugía. Reportar cualquier sangrado inusual",
+          "medication": "Anticoagulantes y antiplaquetarios (warfarina, clopidogrel, aspirina)",
+          "mechanism": "Posible potenciación de efectos anticoagulantes según estudios preclínicos"
+        },
+        {
+          "severity": "Mild",
+          "description": "Puede potenciar reducción de presión arterial. Monitoreo de presión arterial recomendado, especialmente primeras semanas. Puede permitir reducción de dosis de medicamentos en algunos casos. Riesgo de hipotensión ortostática en ancianos. Consultar cardiólogo",
+          "medication": "Antihipertensivos (IECA, ARA-II, betabloqueantes, diuréticos)",
+          "mechanism": "Efectos hipotensores aditivos por vasodilatación mediada por óxido nítrico"
+        },
+        {
+          "severity": "Mild",
+          "description": "Efectos inmunomoduladores de aceite de comino negro podrían teóricamente interferir con inmunosupresión. Sin embargo, no hay reportes de casos de rechazo de trasplante o falla de inmunosupresión. Por precaución, evitar en pacientes trasplantados. Consultar inmunólogo",
+          "medication": "Inmunosupresores (ciclosporina, tacrolimus, corticosteroides)",
+          "mechanism": "Posible modulación de respuesta inmune, efectos inmunoestimulantes"
+        }
+      ]
+    },
+    "synergiesSource": "claude_fallback",
+    "buyingGuidance": {
+      "preferredForm": "Aceite de comino negro prensado en frío, estandarizado a 0.5-1.5% timoquinona, en cápsulas de gelatina blanda",
+      "avoidFlags": [
+        "Productos sin especificar contenido de timoquinona - indica falta de estandarización y control de calidad",
+        "Aceite refinado o procesado con calor - destruye timoquinona y reduce potencia",
+        "Productos sin certificación de terceros para pureza y contaminantes (aflatoxinas, metales pesados)",
+        "Claims exagerados (cura cáncer, cura todas las enfermedades) - indica marketing poco ético",
+        "Precio excesivamente bajo - puede indicar producto adulterado o de baja calidad"
+      ],
+      "qualityIndicators": [
+        "Certificación de análisis de terceros (COA) disponible mostrando contenido de timoquinona y ausencia de contaminantes",
+        "Prensado en frío (cold-pressed) especificado en etiqueta",
+        "Cápsulas opacas o botella de vidrio oscuro - protege timoquinona de degradación por luz",
+        "Origen de semillas especificado (preferiblemente Egipto, Turquía, India - regiones tradicionales de cultivo)",
+        "Certificación orgánica (USDA Organic, EU Organic) - reduce riesgo de pesticidas",
+        "Fecha de manufactura y expiración claramente indicadas - timoquinona se degrada con tiempo"
+      ],
+      "notes": "La calidad del aceite de comino negro varía significativamente entre productos. Estudios de ConsumerLab y análisis independientes han encontrado que contenido de timoquinona puede variar 5-10x entre productos, incluso con claims similares. Contaminación con aflatoxinas (toxinas fúngicas) es preocupación en productos de regiones con almacenamiento inadecuado. Preferir marcas con historial establecido y certificaciones verificables. Almacenar en refrigerador después de abrir para preservar potencia. Aceite líquido tiene vida útil más corta que cápsulas (3-6 meses vs 12-24 meses)",
+      "keyCompounds": [
+        {
+          "name": "Timoquinona (TQ)",
+          "lookFor": "Estandarizado a mínimo 0.5% timoquinona, idealmente 1.0-1.5%. Etiqueta debe especificar contenido de timoquinona por cápsula",
+          "source": "Aceite volátil de semillas de Nigella sativa, obtenido por prensado en frío"
+        },
+        {
+          "name": "Ácidos grasos esenciales (ácido linoleico, ácido oleico)",
+          "lookFor": "Aceite prensado en frío (cold-pressed) para preservar ácidos grasos. Perfil típico: 50-60% ácido linoleico, 20% ácido oleico",
+          "source": "Aceite fijo de semillas, componente mayoritario del aceite"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Inhibición de NF-κB y modulación de citoquinas proinflamatorias",
+        "description": "La timoquinona inhibe la vía de señalización NF-κB, un factor de transcripción central en la respuesta inflamatoria. Esta inhibición reduce la expresión de citoquinas proinflamatorias como IL-1β, IL-6, y TNF-α. Estudios in vitro y en modelos animales demuestran que la timoquinona suprime la fosforilación de IκB-α, previniendo la translocación nuclear de NF-κB. Este mecanismo explica sus efectos antiinflamatorios sistémicos observados en estudios clínicos, con reducciones de 20-40% en marcadores inflamatorios.",
+        "studyCount": 85,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Potenciación de actividad antioxidante endógena vía Nrf2",
+        "description": "La timoquinona activa el factor de transcripción Nrf2 (factor nuclear eritroide 2), que regula la expresión de enzimas antioxidantes endógenas como superóxido dismutasa (SOD), catalasa, y glutatión peroxidasa. Estudios en humanos muestran aumentos de 15-30% en capacidad antioxidante total (TAC) y glutatión reducido (GSH) tras suplementación. Este mecanismo protege contra estrés oxidativo y daño celular, particularmente relevante en condiciones metabólicas como diabetes.",
+        "studyCount": 72,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Mejora de sensibilidad a insulina y función de células beta pancreáticas",
+        "description": "El aceite de comino negro mejora la captación de glucosa mediada por insulina en tejidos periféricos y protege las células beta pancreáticas del estrés oxidativo. Estudios mecanísticos sugieren que la timoquinona aumenta la expresión de GLUT4 en músculo esquelético y tejido adiposo, mejorando la translocación del transportador a la membrana celular. Adicionalmente, reduce la apoptosis de células beta mediante la inhibición de vías pro-apoptóticas dependientes de caspasas, preservando la secreción de insulina.",
+        "studyCount": 48,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [
+      {
+        "duration": "8-12 semanas (rango de estudios incluidos)",
+        "dose": "1-3g/día de aceite o 500-2000mg/día de semilla en polvo",
+        "year": 2020,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción significativa de glucosa en ayunas: WMD -17.25 mg/dL (IC 95%: -26.6 a -7.9, p<0.001)",
+          "Reducción de HbA1c: WMD -0.71% (IC 95%: -1.0 a -0.4, p<0.001)",
+          "Efectos más pronunciados en pacientes con HbA1c basal >8%",
+          "Sin heterogeneidad significativa entre estudios (I² = 32%)"
+        ],
+        "title": "The effect of Nigella sativa on glycemic control in patients with type 2 diabetes mellitus: A systematic review and meta-analysis",
+        "participants": 1210,
+        "quality": "High"
+      },
+      {
+        "duration": "8-12 semanas",
+        "dose": "2-2.5g/día de aceite",
+        "year": 2019,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de presión arterial sistólica: WMD -3.65 mmHg (IC 95%: -5.6 a -1.7, p<0.001)",
+          "Reducción de presión arterial diastólica: WMD -2.63 mmHg (IC 95%: -4.1 a -1.2, p<0.001)",
+          "Reducción de colesterol total: WMD -18.4 mg/dL (p<0.001)",
+          "Efectos más pronunciados en pacientes con hipertensión basal >140/90 mmHg"
+        ],
+        "title": "Effects of Nigella sativa oil on blood pressure and lipid profile in hypertensive patients: A systematic review and meta-analysis of randomized controlled trials",
+        "participants": 860,
+        "quality": "High"
+      },
+      {
+        "duration": "8-12 semanas",
+        "dose": "2-3g/día de aceite",
+        "year": 2018,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de peso corporal: WMD -2.11 kg (IC 95%: -3.2 a -1.0, p<0.001)",
+          "Reducción de IMC: WMD -0.84 kg/m² (p<0.001)",
+          "Reducción de circunferencia de cintura: WMD -3.52 cm (p<0.001)",
+          "Sin cambios significativos en masa grasa corporal medida por DEXA"
+        ],
+        "title": "The effect of Nigella sativa on obesity and its associated metabolic complications: A systematic review and meta-analysis",
+        "participants": 783,
+        "quality": "Moderate"
+      },
+      {
+        "duration": "6-12 semanas",
+        "dose": "1-3g/día de aceite",
+        "year": 2020,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Reducción de PCR: WMD -2.48 mg/L (IC 95%: -3.8 a -1.2, p<0.001)",
+          "Reducción de IL-6: SMD -0.89 (IC 95%: -1.3 a -0.5, p<0.001)",
+          "Reducción de TNF-α: SMD -1.02 (IC 95%: -1.5 a -0.6, p<0.001)",
+          "Efectos más pronunciados en pacientes con inflamación basal elevada (PCR >3 mg/L)"
+        ],
+        "title": "Anti-inflammatory effects of Nigella sativa: A systematic review and meta-analysis",
+        "participants": 892,
+        "quality": "High"
+      },
+      {
+        "duration": "4-12 semanas",
+        "dose": "1-2g/día de aceite o 40-80mg/kg/día de semilla",
+        "year": 2017,
+        "studyType": "Meta-analysis",
+        "findings": [
+          "Mejora de FEV1: WMD 0.34 L (IC 95%: 0.18 a 0.50, p<0.001)",
+          "Reducción de síntomas de asma según ACT: WMD 4.2 puntos (p<0.001)",
+          "Reducción de uso de broncodilatadores de rescate: 30-40% vs placebo",
+          "Reducción de eosinófilos en sangre: 25% (p=0.02)"
+        ],
+        "title": "Nigella sativa supplementation improves asthma control and biomarkers: A systematic review and meta-analysis of randomized clinical trials",
+        "participants": 378,
+        "quality": "Moderate"
+      }
+    ]
+  }
+}

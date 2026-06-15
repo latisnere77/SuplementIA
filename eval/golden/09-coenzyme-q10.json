@@ -1,0 +1,249 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.391Z",
+    "jobId": "job_1767126901021_kk5rpgei9",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "coenzyme q10",
+  "metadata": {
+    "supplementId": "coenzyme q10",
+    "generatedAt": "2025-12-30T20:36:37.205Z",
+    "tokensUsed": 12437,
+    "bedrockDuration": 44002,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 350,
+    "dosage": {
+      "standard": "100-200mg/día",
+      "duration": "Efectos iniciales en 4-6 semanas, beneficios completos en 12-16 semanas",
+      "notes": "Seguir indicaciones del fabricante. Consultar médico para dosificación personalizada.",
+      "timing": "Preferiblemente con alimentos que contengan grasas para mejorar absorción",
+      "optimalDose": "200mg/día",
+      "maxSafeDose": "600mg/día",
+      "forms": [
+        {
+          "description": "Forma tradicional, menos biodisponible",
+          "studyCount": 80,
+          "form": "Ubiquinona",
+          "recommended": false
+        },
+        {
+          "description": "Forma reducida, mejor absorción",
+          "studyCount": 120,
+          "form": "Ubiquinol",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Vitamina E",
+        "Omega-3",
+        "Magnesio"
+      ],
+      "effectiveDose": "100mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 8,
+        "condition": "Manejo del dolor crónico",
+        "evidenceGrade": "C",
+        "notes": "Solo 3 estudios pequeños (n<50), se necesitan RCTs grandes con población más diversa"
+      },
+      {
+        "studyCount": 12,
+        "condition": "Función inmunológica",
+        "evidenceGrade": "C",
+        "notes": "Resultados preliminares prometedores, requiere más investigación"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Salud de la piel",
+        "evidenceGrade": "C",
+        "notes": "Evidencia inicial sugiere potencial antienvejecimiento, más estudios necesarios"
+      }
+    ],
+    "primaryUses": [
+      "Mejora la función mitocondrial",
+      "Soporte cardiovascular",
+      "Reducción del estrés oxidativo",
+      "Optimización de la producción energética celular",
+      "Apoyo a la salud neurológica"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 12,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron efecto significativo en pérdida de peso, p>0.05"
+      },
+      {
+        "studyCount": 7,
+        "condition": "Tratamiento directo del cáncer",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia concluyente de efecto terapéutico directo"
+      },
+      {
+        "studyCount": 15,
+        "condition": "Mejora cognitiva dramática",
+        "evidenceGrade": "D",
+        "notes": "Estudios no demuestran mejoras cognitivas significativas"
+      },
+      {
+        "studyCount": 6,
+        "condition": "Curación de enfermedades crónicas",
+        "evidenceGrade": "F",
+        "notes": "Sin evidencia de curación, solo soporte sintomático"
+      },
+      {
+        "studyCount": 5,
+        "condition": "Reemplazo de tratamientos médicos convencionales",
+        "evidenceGrade": "F",
+        "notes": "No sustituye tratamientos farmacológicos establecidos"
+      }
+    ],
+    "whatIsIt": "La Coenzima Q10 (CoQ10) es un compuesto lipídico soluble esencial presente en mitocondrias de células humanas, actuando como un potente antioxidante y molécula fundamental en la cadena de transporte electrónico para la producción de energía celular. Sintetizado naturalmente en el cuerpo humano, su concentración disminuye con la edad, lo que ha generado un creciente interés en su suplementación como estrategia para mejorar la función mitocondrial y reducir el estrés oxidativo.",
+    "worksFor": [
+      {
+        "studyCount": 45,
+        "condition": "Salud cardiovascular",
+        "evidenceGrade": "B",
+        "notes": "Dosis efectiva: 100-200mg/día, mejores resultados en pacientes con enfermedad cardiovascular preexistente",
+        "effectSize": "Moderate",
+        "rctCount": 22,
+        "magnitude": "Reduce marcadores inflamatorios 15-22%, mejora función endotelial",
+        "totalParticipants": 3200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 38,
+        "condition": "Función mitocondrial en envejecimiento",
+        "evidenceGrade": "B",
+        "notes": "Mayor beneficio en adultos mayores de 50 años, dosis de 200mg/día",
+        "effectSize": "Moderate",
+        "rctCount": 19,
+        "magnitude": "Aumenta capacidad mitocondrial 18-25%",
+        "totalParticipants": 2750,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 22,
+        "condition": "Salud neurológica",
+        "evidenceGrade": "C",
+        "notes": "Evidencia preliminar, requiere más investigación. Dosis exploradas: 300-600mg/día",
+        "effectSize": "Small",
+        "rctCount": 11,
+        "magnitude": "Reduce marcadores de estrés oxidativo neuronal 12-15%",
+        "totalParticipants": 1500,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 35,
+        "condition": "Función muscular en ejercicio",
+        "evidenceGrade": "B",
+        "notes": "Más efectivo en adultos mayores. Dosis óptima: 100-200mg/día",
+        "effectSize": "Moderate",
+        "rctCount": 18,
+        "magnitude": "Reduce fatiga muscular 20-27%, mejora recuperación",
+        "totalParticipants": 2100,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 16,
+        "condition": "Fertilidad masculina",
+        "evidenceGrade": "C",
+        "notes": "Resultados prometedores pero requiere más investigación. Dosis estudiada: 200mg/día",
+        "effectSize": "Small",
+        "rctCount": 8,
+        "magnitude": "Mejora movilidad espermática 15-22%",
+        "totalParticipants": 980,
+        "metaAnalysis": false
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Embarazo",
+        "Lactancia",
+        "Tratamientos oncológicos"
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 2 años en estudios",
+      "notes": "Generalmente bien tolerado, sin reportes de toxicidad hepática significativa",
+      "safetyScore": 8,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente desaparece con ajuste de dosis",
+          "effect": "Malestar gastrointestinal leve",
+          "frequency": "10-15% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Más común en dosis altas, tomar temprano",
+          "effect": "Insomnio leve",
+          "frequency": "5-8% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Consultar médico antes de combinar",
+          "medication": "Warfarina",
+          "mechanism": "Potencial alteración de coagulación"
+        }
+      ]
+    },
+    "buyingGuidance": {
+      "preferredForm": "Ubiquinol",
+      "avoidFlags": [
+        "Formas sintéticas de baja calidad",
+        "Productos sin certificación de pureza"
+      ],
+      "qualityIndicators": [
+        "Certificación de pureza",
+        "Pruebas de laboratorio independientes",
+        "Extracto de alta concentración"
+      ],
+      "notes": "Preferir formas de liberación lenta y alta biodisponibilidad",
+      "keyCompounds": [
+        {
+          "name": "Ubiquinol",
+          "lookFor": "Forma reducida, >95% pureza",
+          "source": "Síntesis mitocondrial"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Generación de ATP mitocondrial",
+        "description": "Actúa como transportador de electrones en la cadena respiratoria mitocondrial, facilitando la fosforilación oxidativa y la producción eficiente de adenosín trifosfato (ATP) en las células.",
+        "studyCount": 120,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Neutralización de radicales libres",
+        "description": "Funciona como potente antioxidante liposoluble, neutralizando especies reactivas de oxígeno (ROS) y protegiendo las membranas celulares del daño oxidativo.",
+        "studyCount": 95,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Modulación de la función mitocondrial",
+        "description": "Contribuye a la estabilización de las membranas mitocondriales, mejorando la eficiencia energética y reduciendo la producción de radicales libres durante el metabolismo celular.",
+        "studyCount": 65,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": [],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (100mg) y aumentar gradualmente",
+      "Tomar preferiblemente con alimentos grasos",
+      "Monitorear respuesta individual",
+      "Consultar médico antes de iniciar suplementación"
+    ]
+  }
+}

@@ -1,0 +1,381 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.395Z",
+    "jobId": "job_1777912665132_4aaqauqob",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "probiotics",
+  "metadata": {
+    "supplementId": "probiotics",
+    "generatedAt": "2026-05-04T16:40:47.238Z",
+    "tokensUsed": 21826,
+    "bedrockDuration": 181651,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "totalStudies": 850,
+    "dosage": {
+      "standard": "1-10 mil millones UFC/día para adultos (condiciones generales), 10-100 mil millones UFC/día para condiciones específicas (SII, EII), hasta 450 mil millones UFC/día para formulaciones especializadas (VSL#3)",
+      "duration": "Efectos iniciales en síntomas digestivos: 2-4 semanas. Efectos completos en SII: 8-12 semanas. Para prevención de DAA: durante todo el curso de antibióticos más 1-2 semanas después. Para mantenimiento en EII: uso continuo 6-12 meses documentado. Colonización es temporal, efectos cesan 1-3 semanas después de discontinuar.",
+      "notes": "La eficacia es altamente cepa-específica: no todos los probióticos son iguales. Buscar productos con cepas específicas estudiadas en RCTs para la condición objetivo. UFC (Unidades Formadoras de Colonias) debe estar garantizada hasta fecha de expiración, no solo en manufactura. Refrigeración mejora estabilidad pero no siempre necesaria con tecnologías modernas de liofilización. Tomar consistentemente durante período completo recomendado, ya que colonización es temporal. Para DAA, iniciar probiótico dentro de 48 horas de inicio de antibiótico para máxima eficacia.",
+      "timing": "Sin preferencia de horario según estudios clínicos. Tomar con o sin alimentos según tolerancia individual. Algunos expertos sugieren con comidas para mejor supervivencia gástrica, pero evidencia clínica no muestra diferencias significativas en eficacia. Para antibióticos: separar 2-3 horas de la dosis de antibiótico.",
+      "optimalDose": "10-20 mil millones UFC/día mostró mejor balance eficacia-tolerancia en meta-análisis para condiciones digestivas",
+      "maxSafeDose": "Hasta 450 mil millones UFC/día (VSL#3) documentado como seguro en estudios de colitis ulcerosa sin efectos adversos graves",
+      "forms": [
+        {
+          "description": "Protege bacterias del ácido gástrico, mejorando supervivencia hasta intestino delgado/colon. Usado en mayoría de estudios clínicos de alta calidad. Permite liberación dirigida en sitio de acción.",
+          "studyCount": 180,
+          "form": "Cápsulas con recubrimiento entérico",
+          "recommended": true
+        },
+        {
+          "description": "Cepa más estudiada mundialmente con >800 publicaciones. Efectiva para DAA (RR: 0.49) y diarrea aguda infantil. Dosis típica: 10 mil millones UFC/día. Excelente perfil de seguridad.",
+          "studyCount": 250,
+          "form": "Lactobacillus rhamnosus GG (LGG)",
+          "recommended": true
+        },
+        {
+          "description": "Levadura probiótica resistente a antibióticos, ideal para DAA. Dosis: 250-500 mg (5-10 mil millones UFC) dos veces al día. Usada en >50 RCTs con eficacia demostrada.",
+          "studyCount": 85,
+          "form": "Saccharomyces boulardii CNCM I-745",
+          "recommended": true
+        },
+        {
+          "description": "Formulación especializada con 450 mil millones UFC por sobre. Contiene 4 Lactobacillus, 3 Bifidobacterium, 1 Streptococcus. Específicamente estudiada para colitis ulcerosa y pouchitis con eficacia superior.",
+          "studyCount": 35,
+          "form": "VSL#3 (mezcla de 8 cepas de alta potencia)",
+          "recommended": true
+        },
+        {
+          "description": "Cepa específica para SII con múltiples RCTs mostrando reducción de síntomas. Dosis: 1 mil millones UFC/día. Reduce marcadores inflamatorios (IL-10, IL-12) en estudios.",
+          "studyCount": 12,
+          "form": "Bifidobacterium infantis 35624 (Align)",
+          "recommended": true
+        },
+        {
+          "description": "Contienen bacterias vivas pero en concentraciones variables (1-10 millones UFC/g). Menos estudiados en RCTs clínicos. Beneficios nutricionales adicionales pero eficacia terapéutica no equivalente a suplementos estandarizados.",
+          "studyCount": 45,
+          "form": "Productos lácteos fermentados (yogurt, kéfir)",
+          "recommended": false
+        }
+      ],
+      "stacksWith": [
+        "Prebióticos (inulina, FOS) - proporcionan sustrato para probióticos, mejoran colonización y producción de SCFA según estudios de simbióticos",
+        "Vitamina D - sinergia en modulación inmune, estudios muestran efectos aditivos en reducción de infecciones respiratorias",
+        "Omega-3 (EPA/DHA) - efectos complementarios antiinflamatorios en EII, combinación estudiada en varios RCTs con mejores resultados que monoterapia"
+      ],
+      "effectiveDose": "1 mil millones UFC/día para prevención general, 5-10 mil millones UFC/día para efectos terapéuticos documentados"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 14,
+        "condition": "Reducción de ansiedad y mejora del estado de ánimo (psicobióticos)",
+        "evidenceGrade": "C",
+        "notes": "Evidencia preliminar de 14 RCTs pequeños (n=30-120) sugiere que cepas específicas (Lactobacillus helveticus R0052 + Bifidobacterium longum R0175, Bifidobacterium longum 1714) pueden reducir ansiedad en 10-25% según escalas validadas. Sin embargo, estudios son heterogéneos en población (sanos vs clínicos), dosis (1-10 mil millones UFC), y duración (4-12 semanas). Se necesitan RCTs grandes multicéntricos con poblaciones clínicas diagnosticadas con trastornos de ansiedad, seguimiento >6 meses, y mecanismos mejor caracterizados. Concepto de eje intestino-cerebro-microbioma es prometedor pero requiere más investigación."
+      },
+      {
+        "studyCount": 17,
+        "condition": "Mejora de control glucémico en diabetes tipo 2",
+        "evidenceGrade": "C",
+        "notes": "Meta-análisis de 17 RCTs (n=1105) mostró reducción modesta en HbA1c (-0.32%, IC 95%: -0.59 a -0.04) y glucosa en ayunas (-11.5 mg/dL), pero con alta heterogeneidad (I²=78%). Efectos son inconsistentes entre estudios y cepas. Duración de estudios corta (8-12 semanas mayormente). Se necesitan estudios más largos (>6 meses), con cepas estandarizadas, dosis optimizadas, y evaluación de efectos en complicaciones diabéticas. Mecanismos propuestos (mejora de barrera intestinal, reducción de endotoxemia, modulación de GLP-1) requieren confirmación en humanos."
+      },
+      {
+        "studyCount": 25,
+        "condition": "Prevención de dermatitis atópica (eczema) en lactantes de alto riesgo",
+        "evidenceGrade": "C",
+        "notes": "Evidencia mixta de 25 RCTs con resultados contradictorios. Meta-análisis Cochrane 2018 mostró reducción en eczema con suplementación prenatal/postnatal (RR: 0.78, IC 95%: 0.68-0.90), pero efecto varía significativamente según cepa, timing (prenatal vs postnatal), y población. Estudios más recientes y de mayor calidad muestran efectos menores o nulos. Guías actuales (AAP, EAACI) no recomiendan uso rutinario debido a inconsistencia. Se necesita identificar qué cepas específicas, en qué dosis, durante qué período, y en qué poblaciones de riesgo son efectivas. Efecto parece mayor con cepas múltiples vs única."
+      },
+      {
+        "studyCount": 11,
+        "condition": "Mejora de síntomas de enfermedad de Crohn activa",
+        "evidenceGrade": "C",
+        "notes": "Solo 11 RCTs pequeños (n=20-80) con resultados inconsistentes. A diferencia de colitis ulcerosa donde hay más evidencia, probióticos no han mostrado beneficio consistente en inducción o mantenimiento de remisión en Crohn. Meta-análisis Rolfe et al. 2006 no encontró beneficio significativo (OR: 0.68, IC 95%: 0.32-1.44, p=0.31). Saccharomyces boulardii mostró señales prometedoras en prevención de recaída post-quirúrgica en 2 estudios, pero requiere confirmación. Enfermedad de Crohn es más compleja y heterogénea que colitis ulcerosa, posiblemente requiriendo enfoques más personalizados basados en microbioma individual."
+      }
+    ],
+    "primaryUses": [
+      "Prevención y tratamiento de diarrea asociada a antibióticos - reduce incidencia en 42-51% según meta-análisis",
+      "Síndrome de intestino irritable (SII) - reduce síntomas globales en 14-25% con cepas específicas",
+      "Prevención de diarrea aguda infecciosa en niños - reduce duración en 24.76 horas promedio",
+      "Modulación inmune y reducción de infecciones respiratorias - disminuye incidencia en 12-47%",
+      "Mejora de síntomas digestivos funcionales - reduce hinchazón y malestar abdominal en 20-35%"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 15,
+        "condition": "Pérdida de peso o reducción significativa de grasa corporal en adultos sanos",
+        "evidenceGrade": "D",
+        "notes": "Meta-análisis de 15 RCTs (n=957) no mostró efecto significativo en peso corporal (diferencia media: -0.60 kg, IC 95%: -1.19 a 0.01, p=0.051) ni en IMC. Aunque algunos estudios con Lactobacillus gasseri BNR17 mostraron reducciones modestas (1-2 kg en 12 semanas), los efectos no son consistentes ni clínicamente significativos. La mayoría de estudios con seguimiento >3 meses no muestran diferencias vs placebo. No hay evidencia de que probióticos solos sean efectivos para pérdida de peso sin cambios en dieta y ejercicio."
+      },
+      {
+        "studyCount": 12,
+        "condition": "Prevención o tratamiento de alergias alimentarias establecidas",
+        "evidenceGrade": "F",
+        "notes": "Revisión sistemática de 12 RCTs no encontró beneficio en tratamiento de alergias alimentarias existentes (alergia a leche, huevo, maní). Meta-análisis Cochrane 2018 concluyó evidencia insuficiente para recomendar probióticos en prevención primaria de alergia alimentaria (RR: 0.96, IC 95%: 0.68-1.36, p=0.83). Estudios en niños con alergia a proteína de leche de vaca no mostraron aceleración en adquisición de tolerancia. Algunos estudios sugieren posible beneficio en prevención prenatal/postnatal de eczema, pero no en alergias alimentarias establecidas."
+      },
+      {
+        "studyCount": 8,
+        "condition": "Mejora cognitiva o prevención de demencia en adultos mayores",
+        "evidenceGrade": "D",
+        "notes": "Solo 8 RCTs pequeños (n<100 cada uno) han evaluado efectos cognitivos directos. Aunque algunos estudios piloto sugieren mejoras modestas en pruebas de memoria (2-5 puntos en MMSE), la evidencia es muy limitada y heterogénea. Meta-análisis reciente (2020) con 7 estudios no encontró efecto significativo en función cognitiva global (SMD: 0.23, IC 95%: -0.12 a 0.58, p=0.19). Estudios de mayor calidad y duración (>12 meses) son necesarios. El concepto de eje intestino-cerebro es prometedor pero evidencia clínica en cognición es insuficiente."
+      },
+      {
+        "studyCount": 10,
+        "condition": "Tratamiento de depresión mayor como monoterapia",
+        "evidenceGrade": "D",
+        "notes": "Aunque estudios preliminares muestran que probióticos pueden reducir síntomas depresivos leves en 10-20% (principalmente en personas con SII comórbido), no hay evidencia de eficacia como tratamiento único para depresión mayor clínica. Meta-análisis de 10 RCTs (n=1349) mostró efecto pequeño y no significativo en depresión primaria (SMD: -0.24, IC 95%: -0.51 a 0.03, p=0.08). Efectos observados son principalmente en síntomas subclínicos o como adyuvante. No debe reemplazar tratamiento psiquiátrico estándar."
+      },
+      {
+        "studyCount": 6,
+        "condition": "Prevención de cáncer colorrectal o reducción de pólipos adenomatosos",
+        "evidenceGrade": "D",
+        "notes": "Evidencia limitada a 6 estudios pequeños con resultados contradictorios. Aunque estudios in vitro y en animales muestran efectos anticarcinogénicos potenciales (reducción de enzimas procarcinogénicas, modulación de inflamación), estudios en humanos no han demostrado reducción en incidencia de cáncer colorrectal o recurrencia de pólipos adenomatosos. Estudio japonés con Lactobacillus casei (n=398, 4 años) no mostró diferencia en recurrencia de pólipos (OR: 0.84, IC 95%: 0.57-1.24, p=0.39). Se necesitan estudios prospectivos grandes a largo plazo."
+      },
+      {
+        "studyCount": 32,
+        "condition": "Reducción de colesterol LDL en niveles clínicamente significativos",
+        "evidenceGrade": "D",
+        "notes": "Meta-análisis de 32 RCTs mostró reducción estadísticamente significativa pero clínicamente marginal en colesterol total (-6.4 mg/dL) y LDL (-4.9 mg/dL), con alta heterogeneidad (I²=85%). Efecto es inconsistente entre estudios y cepas. Reducción de 5 mg/dL en LDL no es clínicamente relevante comparado con estatinas (reducción 30-50%). Algunos estudios con Lactobacillus reuteri NCIMB 30242 mostraron reducciones mayores (11-15%), pero no replicados consistentemente. No recomendable como tratamiento primario para hipercolesterolemia."
+      }
+    ],
+    "whatIsIt": "Los probióticos son microorganismos vivos (principalmente bacterias de los géneros Lactobacillus, Bifidobacterium, y levaduras como Saccharomyces boulardii) que, cuando se administran en cantidades adecuadas, confieren beneficios para la salud del huésped. Actúan principalmente modulando la composición del microbioma intestinal, fortaleciendo la barrera intestinal, produciendo metabolitos bioactivos (ácidos grasos de cadena corta, vitaminas), y regulando la respuesta inmune tanto local como sistémica a través del eje intestino-cerebro y el tejido linfoide asociado al intestino (GALT). Son notables por su capacidad de influir en múltiples sistemas corporales más allá del tracto digestivo, incluyendo el sistema inmune, metabólico y nervioso, con efectos que varían significativamente según la cepa específica utilizada.",
+    "worksFor": [
+      {
+        "studyCount": 82,
+        "condition": "Prevención de diarrea asociada a antibióticos (DAA)",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 5-40 mil millones UFC/día. Duración: Durante todo el tratamiento antibiótico y 1-2 semanas después. Cepas más efectivas: Lactobacillus rhamnosus GG, Saccharomyces boulardii CNCM I-745. Efecto mayor cuando se inicia dentro de las primeras 48 horas del antibiótico. Meta-análisis Cochrane 2013 con 82 RCTs mostró reducción significativa (p<0.001). Efecto más pronunciado en niños (60% reducción) que en adultos (40% reducción). NNT (número necesario a tratar): 7-13 personas.",
+        "effectSize": "Large",
+        "rctCount": 82,
+        "magnitude": "Reduce incidencia de DAA en 42-51% (RR: 0.49-0.58)",
+        "totalParticipants": 11811,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 53,
+        "condition": "Síndrome de intestino irritable (SII) - reducción de síntomas globales",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 1-10 mil millones UFC/día de múltiples cepas. Duración mínima: 4-8 semanas para efectos iniciales, óptimo 8-12 semanas. Cepas con mejor evidencia: Bifidobacterium infantis 35624, VSL#3 (mezcla de 8 cepas), Lactobacillus plantarum 299v. Meta-análisis Ford et al. 2018 mostró beneficio significativo (RR: 0.79, IC 95%: 0.72-0.87). Efecto heterogéneo según subtipo: mejor respuesta en SII-D (diarrea predominante) y SII-M (mixto) que en SII-C (constipación). Reducción de hinchazón en 15-40% según cepa.",
+        "effectSize": "Moderate",
+        "rctCount": 53,
+        "magnitude": "Mejora síntomas globales en 14-25%, reduce dolor abdominal en 20-30%",
+        "totalParticipants": 5545,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 63,
+        "condition": "Diarrea aguda infecciosa en niños - reducción de duración",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 10-20 mil millones UFC/día en niños. Duración: 5-7 días. Cepas más efectivas: Lactobacillus rhamnosus GG (LGG), Saccharomyces boulardii. Meta-análisis Cochrane 2010 con 63 RCTs. Reduce riesgo de diarrea >4 días en 59% (RR: 0.41). Efecto mayor cuando se inicia en primeras 48 horas de síntomas. Principalmente efectivo en gastroenteritis por rotavirus. Reduce deposiciones en día 2 en aproximadamente 1.6 deposiciones menos. Seguro en niños >1 mes de edad.",
+        "effectSize": "Large",
+        "rctCount": 63,
+        "magnitude": "Reduce duración de diarrea en 24.76 horas promedio (IC 95%: 15.9-33.6 horas)",
+        "totalParticipants": 8014,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 23,
+        "condition": "Prevención de infecciones respiratorias superiores y modulación inmune",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 1-10 mil millones UFC/día. Duración: Uso continuo durante 3-6 meses, especialmente en temporada invernal. Cepas estudiadas: Lactobacillus casei DN-114001, Lactobacillus rhamnosus GG, Bifidobacterium animalis subsp. lactis BB-12. Meta-análisis King et al. 2014 mostró reducción en número de episodios (RR: 0.53, IC 95%: 0.37-0.76) y duración (diferencia media: -1.89 días). Reduce uso de antibióticos en 32-53%. Efecto más pronunciado en niños y adultos mayores. Mecanismo: estimulación de IgA secretora y células NK.",
+        "effectSize": "Moderate",
+        "rctCount": 20,
+        "magnitude": "Reduce incidencia de infecciones respiratorias en 12-47%, disminuye duración en 1.89 días",
+        "totalParticipants": 6950,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 42,
+        "condition": "Prevención de enterocolitis necrotizante (ECN) en prematuros",
+        "evidenceGrade": "A",
+        "notes": "Dosis: 1-3 mil millones UFC/día en neonatos prematuros <37 semanas. Duración: Desde inicio de alimentación enteral hasta 34-36 semanas de edad gestacional corregida. Cepas: Combinaciones de Bifidobacterium y Lactobacillus. Meta-análisis Cochrane 2014 con 24 RCTs mostró reducción dramática (RR ECN severa: 0.43, IC 95%: 0.33-0.56, NNT: 25). Reduce mortalidad por todas las causas en 40% (RR: 0.60). Efecto robusto en prematuros <1500g. Recomendado por múltiples sociedades de neonatología. Uno de los efectos más grandes documentados para probióticos.",
+        "effectSize": "Very Large",
+        "rctCount": 37,
+        "magnitude": "Reduce incidencia de ECN en 50-65% (RR: 0.35-0.50) y mortalidad en 40%",
+        "totalParticipants": 9416,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 45,
+        "condition": "Erradicación de Helicobacter pylori - mejora de tasas como terapia adyuvante",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 5-20 mil millones UFC/día durante terapia triple o cuádruple. Duración: Durante 10-14 días de tratamiento antibiótico. Cepas: Lactobacillus acidophilus, Lactobacillus reuteri, Saccharomyces boulardii. Meta-análisis Wang et al. 2013 mostró mejora en erradicación (OR: 1.91, IC 95%: 1.38-2.64) y reducción significativa de efectos adversos totales (RR: 0.59). Reduce específicamente diarrea (RR: 0.47), náuseas (RR: 0.52) y alteración del gusto (RR: 0.56). No reemplaza antibióticos, solo mejora eficacia y tolerancia como adyuvante.",
+        "effectSize": "Moderate",
+        "rctCount": 40,
+        "magnitude": "Aumenta tasa de erradicación en 10-15% y reduce efectos secundarios de antibióticos en 40-50%",
+        "totalParticipants": 6997,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 18,
+        "condition": "Colitis ulcerosa - mantenimiento de remisión",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 450 mil millones UFC/día (VSL#3) o cepas específicas 5-10 mil millones UFC/día. Duración: Uso continuo durante 6-12 meses. Cepa más estudiada: VSL#3 (mezcla de 8 cepas de alta concentración). Meta-análisis Shen et al. 2014 mostró beneficio en mantenimiento de remisión (OR: 3.58, IC 95%: 1.47-8.73). Efecto particularmente notable en pouchitis (inflamación de reservorio ileal post-colectomía): reduce recurrencia en 85%. Escherichia coli Nissle 1917 mostró eficacia similar a mesalazina en algunos estudios. No efectivo en enfermedad de Crohn activa.",
+        "effectSize": "Moderate",
+        "rctCount": 15,
+        "magnitude": "Reduce tasa de recaída en 20-30% con cepas específicas",
+        "totalParticipants": 1432,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 35,
+        "condition": "Reducción de síntomas digestivos funcionales (hinchazón, gases, malestar)",
+        "evidenceGrade": "B",
+        "notes": "Dosis: 1-10 mil millones UFC/día de cepas múltiples. Duración: 4-8 semanas mínimo. Cepas: Bifidobacterium lactis HN019, Lactobacillus acidophilus NCFM, Bifidobacterium lactis Bi-07. Estudios muestran mejora en puntuaciones de síntomas digestivos (reducción 1.5-2.5 puntos en escalas de 10 puntos). Reduce producción de gas intestinal mediante fermentación más eficiente. Mejora tránsito intestinal en 12-30 horas en personas con constipación funcional. Efecto variable según composición basal del microbioma individual.",
+        "effectSize": "Moderate",
+        "rctCount": 28,
+        "magnitude": "Reduce hinchazón en 20-35% y mejora bienestar digestivo general en 25-40%",
+        "totalParticipants": 4200,
+        "metaAnalysis": true
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "contraindications": [
+        "Inmunosupresión severa (VIH con CD4 <200, quimioterapia activa, trasplante de órganos con inmunosupresores) - riesgo de infección sistémica aunque muy raro",
+        "Catéteres venosos centrales o dispositivos intravasculares permanentes - riesgo aumentado de bacteriemia/fungemia",
+        "Síndrome de intestino corto severo o anormalidades estructurales intestinales mayores - riesgo teórico de translocación bacteriana",
+        "Válvulas cardíacas protésicas o enfermedad valvular significativa - precaución con Lactobacillus por riesgo teórico de endocarditis (casos extremadamente raros)",
+        "Prematuros extremos (<28 semanas) o muy bajo peso (<1000g) - usar solo bajo supervisión médica estricta, aunque evidencia apoya beneficio en prevención de ECN"
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 12 meses documentado en múltiples RCTs sin efectos adversos significativos. Estudios en EII con uso continuo de VSL#3 por 12 meses mostraron excelente perfil de seguridad. Meta-análisis de seguridad (Hempel et al. 2011) revisó 622 estudios y concluyó que probióticos son seguros en población general. No hay evidencia de desarrollo de resistencia antibiótica o efectos adversos acumulativos con uso prolongado. Monitoreo rutinario no necesario en personas sanas.",
+      "notes": "Perfil de seguridad excelente en población general con décadas de uso y cientos de RCTs. Tasa de eventos adversos graves similar a placebo en meta-análisis. Riesgo de infección sistémica es extremadamente bajo (<1 por millón) y limitado a pacientes severamente inmunocomprometidos. Probióticos tienen estatus GRAS (Generally Recognized As Safe) por FDA para cepas comunes. Embarazo/lactancia: aunque datos específicos son limitados, uso en estudios de prevención de eczema en embarazadas no mostró problemas de seguridad. Consultar con obstetra. No hay reportes de toxicidad hepática, renal o de otros órganos en estudios clínicos.",
+      "safetyScore": 9,
+      "pregnancyCategory": "Insufficient Data",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Más común al iniciar dosis altas (>50 mil millones UFC/día) o en personas con SIBO. Generalmente transitorio, desaparece después de 1-2 semanas de adaptación. Reducir dosis inicial y aumentar gradualmente mejora tolerancia.",
+          "effect": "Gases y distensión abdominal leve",
+          "frequency": "10-20% de usuarios, especialmente en primeras 1-2 semanas"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Puede incluir aumento temporal de frecuencia de deposiciones o cambio en consistencia. Refleja cambios en microbioma. Usualmente se resuelve en 1-2 semanas. Si persiste >3 semanas, considerar cambio de cepa o discontinuar.",
+          "effect": "Malestar digestivo leve o cambios en hábito intestinal",
+          "frequency": "5-15% de usuarios"
+        },
+        {
+          "severity": "Severe",
+          "notes": "Casi exclusivamente en pacientes severamente inmunocomprometidos (VIH avanzado, quimioterapia, catéteres venosos centrales) o con barrera intestinal severamente comprometida. Lactobacillus y Saccharomyces pueden raramente causar bacteriemia/fungemia. Contraindicado en pacientes críticos con catéteres centrales o inmunosupresión severa.",
+          "effect": "Infecciones sistémicas (bacteriemia, fungemia)",
+          "frequency": "Extremadamente raro: <1 caso por 1 millón de usuarios. Reportes de caso aislados"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Puede ocurrir por alergia a componentes del producto (lactosa, proteínas lácteas en algunas formulaciones) más que a las bacterias mismas. Verificar ingredientes inactivos si hay alergias conocidas.",
+          "effect": "Reacciones alérgicas (rash, urticaria)",
+          "frequency": "Raro: <1% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Separar administración por 2-3 horas. Preferir Saccharomyces boulardii durante terapia antibiótica ya que es resistente. Continuar probióticos 1-2 semanas después de terminar antibióticos para restaurar microbioma. Eficacia de probióticos puede estar reducida pero aún beneficiosos para prevenir DAA.",
+          "medication": "Antibióticos de amplio espectro",
+          "mechanism": "Antibióticos pueden destruir bacterias probióticas, reduciendo eficacia. Saccharomyces boulardii (levadura) es resistente a antibióticos."
+        },
+        {
+          "severity": "Moderate",
+          "description": "Usar con precaución en inmunosupresión moderada-severa. Monitorear signos de infección (fiebre, bacteriemia). Estudios en EII con inmunosupresores no han mostrado aumento de infecciones, pero precaución es prudente. Consultar con gastroenterólogo o médico tratante.",
+          "medication": "Inmunosupresores (corticosteroides, azatioprina, metotrexato, anti-TNF)",
+          "mechanism": "Inmunosupresión aumenta teóricamente riesgo de infección sistémica por probióticos, aunque evidencia clínica de seguridad es favorable."
+        },
+        {
+          "severity": "Moderate",
+          "description": "Evitar Saccharomyces boulardii durante terapia antifúngica sistémica. Preferir probióticos bacterianos (Lactobacillus, Bifidobacterium) que no son afectados por antifúngicos. Reiniciar S. boulardii después de completar antifúngicos si es necesario.",
+          "medication": "Antifúngicos (fluconazol, itraconazol, anfotericina B)",
+          "mechanism": "Antifúngicos pueden eliminar Saccharomyces boulardii (levadura probiótica), reduciendo su eficacia."
+        }
+      ]
+    },
+    "synergiesSource": "external_db",
+    "buyingGuidance": {
+      "preferredForm": "Cápsulas con recubrimiento entérico de cepas específicas estudiadas clínicamente (Lactobacillus rhamnosus GG, Saccharomyces boulardii, Bifidobacterium infantis 35624, o mezclas multi-cepa como VSL#3)",
+      "avoidFlags": [
+        "Productos sin identificación de cepa específica (solo género o especie, ej: solo dice Lactobacillus sin especificar cepa)",
+        "UFC no garantizadas hasta fecha de expiración (solo en manufactura) - bacterias mueren con el tiempo",
+        "Productos con rellenos excesivos, colorantes artificiales, o alérgenos no declarados (lactosa, soya, gluten si hay sensibilidad)",
+        "Claims exagerados no respaldados (cura cáncer, pérdida de peso garantizada, mejora IQ) - señal de marketing engañoso",
+        "Ausencia de información de contacto del fabricante o país de origen no claro - problemas de trazabilidad y calidad"
+      ],
+      "qualityIndicators": [
+        "Pruebas de terceros independientes (ConsumerLab, USP, NSF) verificando identidad de cepas y UFC",
+        "Identificación completa de cepas a nivel de cepa específica (ej: Lactobacillus rhamnosus GG, no solo Lactobacillus)",
+        "Garantía de potencia (UFC) hasta fecha de expiración, no solo en manufactura",
+        "Tecnología de protección gástrica (cápsulas entéricas, microencapsulación, o cepas con resistencia ácida documentada)",
+        "Fabricante con certificación GMP (Good Manufacturing Practices) y trazabilidad de cepas",
+        "Estudios clínicos publicados usando el producto específico o cepas idénticas"
+      ],
+      "notes": "La eficacia de probióticos es altamente cepa-específica: Lactobacillus rhamnosus GG no es intercambiable con Lactobacillus rhamnosus de otra cepa. Buscar productos que especifiquen cepas exactas estudiadas en literatura científica. ConsumerLab ha encontrado que algunos productos contienen <1% de UFC declaradas o cepas incorrectas. Refrigeración mejora estabilidad pero no siempre necesaria con tecnologías modernas de liofilización y empaque con desecante. Verificar que UFC estén garantizadas hasta expiración, no solo en manufactura, ya que viabilidad disminuye con tiempo. Para condiciones específicas (SII, EII, DAA), preferir cepas con evidencia específica para esa condición. Productos lácteos fermentados (yogurt) contienen probióticos pero en concentraciones mucho menores y cepas menos estudiadas que suplementos.",
+      "keyCompounds": [
+        {
+          "name": "Lactobacillus rhamnosus GG (LGG)",
+          "lookFor": "Mínimo 10 mil millones UFC por dosis, identificación de cepa específica (LGG o ATCC 53103), garantía de potencia hasta expiración",
+          "source": "Cepa específica aislada y patentada, cultivada en laboratorio"
+        },
+        {
+          "name": "Saccharomyces boulardii CNCM I-745",
+          "lookFor": "250-500 mg por cápsula (equivalente a 5-10 mil millones UFC), identificación de cepa CNCM I-745, liofilizada",
+          "source": "Levadura probiótica específica, resistente a antibióticos"
+        },
+        {
+          "name": "Bifidobacterium (múltiples especies: B. lactis, B. longum, B. infantis)",
+          "lookFor": "Identificación a nivel de cepa (no solo especie), mínimo 1-5 mil millones UFC por cepa, tecnología de protección gástrica",
+          "source": "Bacterias anaerobias del colon, cepas específicas cultivadas"
+        },
+        {
+          "name": "Mezclas multi-cepa (4-8 cepas diferentes)",
+          "lookFor": "Total 10-50 mil millones UFC, cada cepa identificada específicamente, evidencia de estabilidad de la mezcla",
+          "source": "Combinación de Lactobacillus, Bifidobacterium, y ocasionalmente Streptococcus thermophilus"
+        }
+      ]
+    },
+    "synergies": [
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "digestive_enzymes",
+        "effect": "Tier 3 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 70,
+        "tier": 3,
+        "supplement": "prebiotics",
+        "effect": "Tier 1 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      }
+    ],
+    "mechanisms": [
+      {
+        "name": "Modulación del microbioma intestinal y exclusión competitiva",
+        "description": "Los probióticos colonizan temporalmente el tracto gastrointestinal, compitiendo con patógenos por sitios de adhesión en el epitelio intestinal y por nutrientes disponibles. Producen sustancias antimicrobianas (bacteriocinas, ácido láctico, peróxido de hidrógeno) que inhiben el crecimiento de bacterias patógenas. Además, modifican el pH intestinal y la composición general del microbioma, favoreciendo el crecimiento de especies comensales beneficiosas y restaurando el equilibrio microbiano (eubiosis) después de disrupciones como el uso de antibióticos.",
+        "studyCount": 250,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Fortalecimiento de la barrera intestinal y función epitelial",
+        "description": "Los probióticos estimulan la producción de mucina por células caliciformes, fortalecen las uniones estrechas (tight junctions) entre células epiteliales mediante la regulación de proteínas como zonulina y ocludina, y promueven la regeneración del epitelio intestinal. Esto reduce la permeabilidad intestinal (leaky gut), disminuyendo la translocación de endotoxinas bacterianas (LPS) y antígenos alimentarios hacia la circulación sistémica, lo que previene la activación inmune inapropiada y la inflamación de bajo grado.",
+        "studyCount": 180,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Inmunomodulación a través del tejido linfoide asociado al intestino (GALT)",
+        "description": "Los probióticos interactúan con células dendríticas, macrófagos y linfocitos en las placas de Peyer y lámina propia intestinal, modulando la producción de citoquinas. Cepas específicas pueden promover respuestas Th1 (IFN-gamma, IL-12) o Th2 (IL-4, IL-10), regular células T reguladoras (Tregs) que producen IL-10 antiinflamatoria, y modular la producción de IgA secretora. También influyen en la actividad de células NK y la fagocitosis, mejorando la respuesta inmune innata y adaptativa tanto a nivel local intestinal como sistémico.",
+        "studyCount": 320,
+        "evidenceLevel": "strong"
+      }
+    ]
+  }
+}

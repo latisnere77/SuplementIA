@@ -1,0 +1,256 @@
+{
+  "fixtureVersion": 1,
+  "source": {
+    "table": "suplementai-async-jobs",
+    "region": "us-east-1",
+    "extractionDate": "2026-06-14T23:43:15.389Z",
+    "jobId": "job_1767395156840_86n8yhcvu",
+    "note": "Existing completed production output only. No model inference was invoked for this golden file."
+  },
+  "supplementId": "Berberine",
+  "metadata": {
+    "supplementId": "Berberine",
+    "generatedAt": "2026-01-02T23:06:51.158Z",
+    "tokensUsed": 12351,
+    "bedrockDuration": 41515,
+    "studiesUsed": 0,
+    "hasRealData": false,
+    "sourceModel": "current-production-baseline"
+  },
+  "output": {
+    "dosage": {
+      "standard": "500-1500mg/día divididos en 2-3 tomas",
+      "duration": "Efectos iniciales en 4-6 semanas, estabilización a los 3-4 meses",
+      "notes": "Iniciar con dosis baja y aumentar gradualmente. Monitorear función hepática.",
+      "timing": "Preferiblemente con alimentos para reducir efectos gastrointestinales",
+      "optimalDose": "1200mg/día",
+      "maxSafeDose": "2000mg/día",
+      "forms": [
+        {
+          "description": "Estandarizado a 97% de alcaloides de berberina",
+          "studyCount": 65,
+          "form": "Extracto estandarizado",
+          "recommended": true
+        }
+      ],
+      "stacksWith": [
+        "Metformina - potenciación de control glucémico",
+        "Estatinas - sinergia en control lipídico"
+      ],
+      "effectiveDose": "900mg/día"
+    },
+    "limitedEvidence": [
+      {
+        "studyCount": 15,
+        "condition": "Potencial neuroprotector",
+        "evidenceGrade": "C",
+        "notes": "Solo 3 estudios en humanos, resultados preliminares requieren más investigación"
+      },
+      {
+        "studyCount": 12,
+        "condition": "Modulación del sistema inmunológico",
+        "evidenceGrade": "C",
+        "notes": "Evidencia inicial prometedora, necesarios más estudios controlados"
+      },
+      {
+        "studyCount": 8,
+        "condition": "Potencial anti-envejecimiento",
+        "evidenceGrade": "C",
+        "notes": "Estudios preclínicos interesantes, falta validación clínica robusta"
+      }
+    ],
+    "primaryUses": [
+      "Regulación metabólica con reducción de glucosa en sangre hasta 20%",
+      "Modulación lipídica con disminución de colesterol LDL 15-25%",
+      "Mejora de sensibilidad a insulina en síndrome metabólico"
+    ],
+    "doesntWorkFor": [
+      {
+        "studyCount": 12,
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "notes": "8 RCTs no mostraron pérdida de peso significativa vs placebo, p>0.05"
+      },
+      {
+        "studyCount": 5,
+        "condition": "Tratamiento directo de cáncer",
+        "evidenceGrade": "F",
+        "notes": "Estudios in vitro promisorios, pero sin evidencia clínica concluyente en humanos"
+      },
+      {
+        "studyCount": 7,
+        "condition": "Mejora cognitiva dramática",
+        "evidenceGrade": "D",
+        "notes": "Sin evidencia robusta de efectos neuroprotectores directos"
+      },
+      {
+        "studyCount": 3,
+        "condition": "Reversión completa de diabetes",
+        "evidenceGrade": "F",
+        "notes": "No reemplaza tratamiento médico convencional"
+      },
+      {
+        "studyCount": 4,
+        "condition": "Curación de enfermedades autoinmunes",
+        "evidenceGrade": "D",
+        "notes": "Evidencia insuficiente para claims curativos"
+      }
+    ],
+    "whatIsIt": "Berberina es un compuesto alcaloide bioactivo de color amarillo extraído de múltiples plantas como Berberis aristata, Hydrastis canadensis y Coptis chinensis, ampliamente utilizado en la medicina tradicional china e india. Químicamente, es un compuesto heterocíclico con potentes propiedades farmacológicas que actúa modulando múltiples vías metabólicas y enzimáticas en el organismo humano, destacando por su capacidad para regular la expresión genética y el metabolismo celular.",
+    "worksFor": [
+      {
+        "studyCount": 85,
+        "condition": "Control glucémico en diabetes tipo 2",
+        "evidenceGrade": "A",
+        "notes": "Dosis de 500-1500mg/día, efecto más pronunciado en pacientes con resistencia insulínica",
+        "effectSize": "Large",
+        "rctCount": 42,
+        "magnitude": "Reduce glucosa en ayunas 20-25%",
+        "totalParticipants": 3500,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 65,
+        "condition": "Reducción de colesterol LDL",
+        "evidenceGrade": "B",
+        "notes": "Mayor efectividad en dosis 900-1500mg/día, combinado con dieta equilibrada",
+        "effectSize": "Moderate",
+        "rctCount": 32,
+        "magnitude": "Disminución 15-22% en colesterol LDL",
+        "totalParticipants": 2800,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 55,
+        "condition": "Mejora de perfil lipídico",
+        "evidenceGrade": "B",
+        "notes": "Efecto más significativo en personas con síndrome metabólico",
+        "effectSize": "Moderate",
+        "rctCount": 28,
+        "magnitude": "Reducción triglicéridos 10-18%",
+        "totalParticipants": 2200,
+        "metaAnalysis": true
+      },
+      {
+        "studyCount": 35,
+        "condition": "Reducción de inflamación sistémica",
+        "evidenceGrade": "C",
+        "notes": "Reducción de proteína C reactiva, potencial beneficio en enfermedades crónicas",
+        "effectSize": "Small",
+        "rctCount": 18,
+        "magnitude": "Disminución marcadores inflamatorios 8-12%",
+        "totalParticipants": 1500,
+        "metaAnalysis": false
+      },
+      {
+        "studyCount": 25,
+        "condition": "Modulación de microbioma intestinal",
+        "evidenceGrade": "C",
+        "notes": "Potencial modulación de bacterias beneficiosas, requiere más investigación",
+        "effectSize": "Small",
+        "rctCount": 12,
+        "magnitude": "Cambios en composición bacteriana 6-10%",
+        "totalParticipants": 800,
+        "metaAnalysis": false
+      }
+    ],
+    "synergies": [
+      {
+        "score": 80,
+        "tier": 2,
+        "supplement": "alpha_lipoic_acid",
+        "effect": "Tier 2 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      },
+      {
+        "score": 65,
+        "tier": 3,
+        "supplement": "cinnamon",
+        "effect": "Tier 3 synergy (migrated)",
+        "categories": [],
+        "type": "general_synergy",
+        "mechanism": "Migrated from QualityMetricsService KNOWN_SYNERGIES",
+        "direction": "positive"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (500mg) e incrementar gradualmente",
+      "Tomar con alimentos para reducir malestar gastrointestinal",
+      "Realizar chequeos hepáticos periódicos durante el uso prolongado"
+    ],
+    "totalStudies": 350,
+    "safety": {
+      "overallRating": "Caution Required",
+      "contraindications": [
+        "Embarazo y lactancia",
+        "Hipersensibilidad conocida",
+        "Uso concomitante de medicamentos hepáticos"
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 12 meses en estudios clínicos",
+      "notes": "Requiere monitoreo médico, especialmente en pacientes con condiciones hepáticas preexistentes",
+      "safetyScore": 7,
+      "pregnancyCategory": "Avoid",
+      "sideEffects": [
+        {
+          "severity": "Mild",
+          "notes": "Generalmente transitorio, mejora con toma junto a alimentos",
+          "effect": "Malestar gastrointestinal",
+          "frequency": "15-20% de usuarios"
+        },
+        {
+          "severity": "Mild",
+          "notes": "Más común en dosis altas, generalmente reversible",
+          "effect": "Estreñimiento",
+          "frequency": "10-12% de usuarios"
+        }
+      ],
+      "interactions": [
+        {
+          "severity": "Moderate",
+          "description": "Monitorear tiempo de protrombina, ajustar dosis bajo supervisión médica",
+          "medication": "Warfarina",
+          "mechanism": "Potencial alteración de metabolismo de anticoagulantes"
+        }
+      ]
+    },
+    "synergiesSource": "external_db",
+    "buyingGuidance": {
+      "preferredForm": "Extracto estandarizado 97% alcaloides",
+      "avoidFlags": [
+        "Extractos no estandarizados",
+        "Productos sin certificación de calidad"
+      ],
+      "qualityIndicators": [
+        "Certificación GMP",
+        "Pruebas de metales pesados",
+        "Extracto estandarizado"
+      ],
+      "notes": "Priorizar marcas con análisis de terceros",
+      "keyCompounds": [
+        {
+          "name": "Berberina",
+          "lookFor": "≥97% alcaloides de berberina",
+          "source": "Extracto de plantas Berberis"
+        }
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Activación de AMPK",
+        "description": "Activa la proteína quinasa activada por AMP, fundamental en la regulación metabólica, promoviendo captación de glucosa, oxidación de ácidos grasos y supresión de lipogénesis hepática.",
+        "studyCount": 75,
+        "evidenceLevel": "strong"
+      },
+      {
+        "name": "Inhibición de DPP-4",
+        "description": "Inhibe la enzima dipeptidil peptidasa-4, mejorando la secreción de insulina y reduciendo la degradación de incretinas, lo que contribuye al control glucémico.",
+        "studyCount": 45,
+        "evidenceLevel": "moderate"
+      }
+    ],
+    "keyStudies": []
+  }
+}
