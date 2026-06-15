@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const migraineUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,69 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for migraine and headache', () => {
+    const migraineCopyEs = buildCategorySeoCopy({
+      slug: 'migraine-headache',
+      categoryName: 'Migraña y Dolor de Cabeza',
+      categoryDescription:
+        'Suplementos investigados para prevención de migraña y apoyo neurológico, especialmente cuando existen deficiencias o desencadenantes claros.',
+      locale: 'es',
+    });
+    const migraineCopyEn = buildCategorySeoCopy({
+      slug: 'migraine-headache',
+      categoryName: 'Migraine and Headache',
+      categoryDescription:
+        'Supplements researched for migraine prevention and neurological support, especially when deficiencies or clear triggers exist.',
+      locale: 'en',
+    });
+    const migraineContentEs = buildCategorySeoContent('migraine-headache', 'es');
+    const migraineContentEn = buildCategorySeoContent('migraine-headache', 'en');
+
+    expect(migraineCopyEs.title).toBe('Suplementos en contexto de migraña: magnesio, B2 y CoQ10');
+    expect(migraineCopyEs.description).toContain('señales de alarma');
+    expect(migraineCopyEs.title).not.toContain('evidencia científica');
+    expect(migraineCopyEn.title).toBe('Migraine context supplements: magnesium, B2, and CoQ10');
+    expect(migraineCopyEn.description).toContain('warning signs');
+    expect(migraineCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(migraineContentEs).not.toBeNull();
+    expect(migraineContentEn).not.toBeNull();
+    expect(migraineContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'magnesium',
+      'riboflavin',
+      'coenzyme-q10',
+    ]);
+    expect(migraineContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'magnesium',
+      'riboflavin',
+      'coenzyme-q10',
+    ]);
+    expect(migraineContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/sleep',
+      '/portal/category/common-deficiencies',
+      '/portal/supplement/magnesium?benefit=migraine-headache',
+      '/portal/supplement/riboflavin?benefit=migraine-headache',
+    ]);
+    expect(migraineContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/sleep',
+      '/portal/category/common-deficiencies',
+      '/portal/supplement/magnesium?benefit=migraine-headache',
+      '/portal/supplement/riboflavin?benefit=migraine-headache',
+    ]);
+    expect(migraineContentEs?.faqs).toHaveLength(4);
+    expect(migraineContentEn?.faqs).toHaveLength(4);
+    expect(migraineContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué señales requieren atención urgente?'
+    );
+    expect(migraineContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'What signs require urgent attention?'
+    );
+
+    const serialized = JSON.stringify([migraineCopyEs, migraineCopyEn, migraineContentEs, migraineContentEn]);
+    expect(serialized).not.toMatch(migraineUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +322,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('migraine-headache', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);

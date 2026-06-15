@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'migraine-headache': {
+      es: {
+        title: 'Suplementos en contexto de migraña: magnesio, B2 y CoQ10',
+        description:
+          'Compara magnesio, riboflavina, CoQ10 y melatonina por patrón de dolor, sueño, deficiencias, medicamentos y señales de alarma.',
+      },
+      en: {
+        title: 'Migraine context supplements: magnesium, B2, and CoQ10',
+        description:
+          'Compare magnesium, riboflavin, CoQ10, and melatonin by headache pattern, sleep, deficiencies, medications, and warning signs.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'migraine-headache': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados en contexto de migraña y dolor de cabeza. La lectura segura separa patrón de dolor, diagnóstico, sueño, medicamentos, deficiencias y señales de alarma antes de elegir una opción.',
+        highlights: [
+          'Magnesio se revisa mejor con ingesta baja, síntomas compatibles, tolerancia digestiva y función renal.',
+          'Riboflavina y CoQ10 se interpretan por protocolo, dosis, constancia y seguimiento, no como respuesta inmediata.',
+          'Melatonina pertenece más al contexto de sueño irregular; si el dolor cambia o aparece de forma intensa, se prioriza evaluación profesional.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Magnesio y contexto de deficiencia',
+            description:
+              'Comparar dieta, tolerancia digestiva, función renal, medicamentos y patrón de dolor antes de usarlo.',
+            supplementSlug: 'magnesium',
+            searchLabel: 'Abrir la guía de magnesio',
+          },
+          {
+            title: 'Riboflavina y constancia',
+            description:
+              'Revisar dosis, duración, tolerancia, expectativas y seguimiento cuando se usa dentro de un plan.',
+            supplementSlug: 'riboflavin',
+            searchLabel: 'Abrir la guía de riboflavina',
+          },
+          {
+            title: 'CoQ10 y energía celular',
+            description:
+              'Comparar dosis, tiempo de uso, medicamentos, costo y contexto de salud general.',
+            supplementSlug: 'coenzyme-q10',
+            searchLabel: 'Abrir la guía de CoQ10',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Sueño y descanso',
+            description:
+              'Si el dolor se relaciona con sueño irregular, revisa primero hábitos de sueño y opciones del cluster de sueño.',
+            href: '/portal/category/sleep',
+            label: 'Revisar sueño',
+          },
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'Magnesio, vitamina D, B12 y hierro se interpretan mejor con dieta, laboratorios y síntomas.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Magnesio',
+            description:
+              'Guía específica para revisar ingesta, tolerancia, función renal y medicamentos.',
+            href: '/portal/supplement/magnesium?benefit=migraine-headache',
+            label: 'Comparar magnesio',
+          },
+          {
+            title: 'Riboflavina',
+            description:
+              'Útil para revisar dosis, duración, tolerancia y expectativas realistas.',
+            href: '/portal/supplement/riboflavin?benefit=migraine-headache',
+            label: 'Comparar riboflavina',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos, migraña y dolor de cabeza',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de usar magnesio?',
+            answer:
+              'Ingesta dietaria, tolerancia digestiva, función renal, medicamentos, embarazo y patrón de dolor. Conviene tener claro el diagnóstico si el dolor es recurrente.',
+          },
+          {
+            question: '¿Riboflavina o CoQ10 funcionan de inmediato?',
+            answer:
+              'No deben plantearse como respuesta inmediata. Se revisan por dosis, constancia, duración y seguimiento dentro de un plan más amplio.',
+          },
+          {
+            question: '¿Melatonina aplica si hay migraña?',
+            answer:
+              'Puede revisarse cuando el sueño irregular es parte del contexto, pero no reemplaza evaluación si el dolor es nuevo, intenso o cambia de patrón.',
+          },
+          {
+            question: '¿Qué señales requieren atención urgente?',
+            answer:
+              'Dolor súbito e intenso, debilidad, confusión, fiebre, rigidez de cuello, pérdida de visión, embarazo, golpe en la cabeza o dolor nuevo después de los 50 años requieren atención médica.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para migraña y dolor de cabeza',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched in migraine and headache context. Safe review separates headache pattern, diagnosis, sleep, medications, deficiencies, and warning signs before choosing an option.',
+        highlights: [
+          'Magnesium is reviewed better with low intake, compatible symptoms, digestive tolerance, and kidney function.',
+          'Riboflavin and CoQ10 are interpreted by protocol, dose, consistency, and follow-up, not as an immediate answer.',
+          'Melatonin belongs more in irregular sleep context; if headache changes or appears intensely, professional evaluation comes first.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Magnesium and deficiency context',
+            description:
+              'Compare diet, digestive tolerance, kidney function, medications, and headache pattern before use.',
+            supplementSlug: 'magnesium',
+            searchLabel: 'Open the magnesium guide',
+          },
+          {
+            title: 'Riboflavin and consistency',
+            description:
+              'Review dose, duration, tolerance, expectations, and follow-up when used inside a plan.',
+            supplementSlug: 'riboflavin',
+            searchLabel: 'Open the riboflavin guide',
+          },
+          {
+            title: 'CoQ10 and cellular energy',
+            description:
+              'Compare dose, time frame, medications, cost, and general health context.',
+            supplementSlug: 'coenzyme-q10',
+            searchLabel: 'Open the CoQ10 guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Sleep and rest',
+            description:
+              'If headache is tied to irregular sleep, review sleep habits and the sleep cluster first.',
+            href: '/portal/category/sleep',
+            label: 'Review sleep',
+          },
+          {
+            title: 'Common deficiencies',
+            description:
+              'Magnesium, vitamin D, B12, and iron are interpreted better with diet, labs, and symptoms.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Magnesium',
+            description:
+              'A specific guide for reviewing intake, tolerance, kidney function, and medications.',
+            href: '/portal/supplement/magnesium?benefit=migraine-headache',
+            label: 'Compare magnesium',
+          },
+          {
+            title: 'Riboflavin',
+            description:
+              'Useful for reviewing dose, duration, tolerance, and realistic expectations.',
+            href: '/portal/supplement/riboflavin?benefit=migraine-headache',
+            label: 'Compare riboflavin',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about supplements, migraine, and headache',
+        faqs: [
+          {
+            question: 'What should I review before using magnesium?',
+            answer:
+              'Dietary intake, digestive tolerance, kidney function, medications, pregnancy, and headache pattern. A clear diagnosis matters when headache is recurrent.',
+          },
+          {
+            question: 'Do riboflavin or CoQ10 work immediately?',
+            answer:
+              'They should not be framed as an immediate answer. They are reviewed by dose, consistency, duration, and follow-up inside a broader plan.',
+          },
+          {
+            question: 'Is melatonin relevant when migraine is present?',
+            answer:
+              'It can be reviewed when irregular sleep is part of the context, but it does not replace evaluation when headache is new, intense, or changes pattern.',
+          },
+          {
+            question: 'What signs require urgent attention?',
+            answer:
+              'Sudden intense headache, weakness, confusion, fever, neck stiffness, vision loss, pregnancy, head injury, or new headache after age 50 require medical attention.',
+          },
+        ],
+        supplementLinksHeading: 'Migraine and headache supplement guides',
       },
     },
     'common-deficiencies': {
