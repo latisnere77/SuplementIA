@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'muscle-gain': {
+      es: {
+        title: 'Suplementos para músculo y fuerza: proteína, creatina y beta-alanina',
+        description:
+          'Compara proteína de suero, creatina y beta-alanina según entrenamiento, ingesta de proteína, tolerancia digestiva y objetivos de fuerza.',
+      },
+      en: {
+        title: 'Muscle and strength supplements: protein, creatine, beta-alanine',
+        description:
+          'Compare whey protein, creatine, and beta-alanine by training context, protein intake, digestive tolerance, and strength goals.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'muscle-gain': {
+      es: {
+        intro:
+          'Esta guía compara suplementos usados alrededor del entrenamiento de fuerza, recuperación y composición corporal. El punto de partida no es apilar productos, sino revisar entrenamiento, proteína total, descanso, tolerancia y consistencia.',
+        highlights: [
+          'La proteína de suero encaja mejor cuando la ingesta diaria de proteína no llega al objetivo estimado para entrenamiento.',
+          'Creatina tiene un rol distinto: se revisa por fuerza, potencia y volumen de entrenamiento, con hidratación y función renal en contexto.',
+          'Beta-alanina se compara más para esfuerzos intensos de duración intermedia; el hormigueo es un efecto esperado y dependiente de dosis.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Proteína de suero e ingesta diaria',
+            description:
+              'Útil para cubrir proteína cuando la dieta no alcanza el objetivo; revisar tolerancia a lactosa, digestión y distribución de comidas.',
+            supplementSlug: 'whey-protein',
+            searchLabel: 'Abrir la guía de proteína de suero',
+          },
+          {
+            title: 'Creatina y fuerza',
+            description:
+              'Opción estudiada para rendimiento de fuerza y potencia; revisar dosis, constancia, hidratación y contexto renal si aplica.',
+            supplementSlug: 'creatine',
+            searchLabel: 'Abrir la guía de creatina',
+          },
+          {
+            title: 'Beta-alanina y esfuerzos intensos',
+            description:
+              'Se compara cuando el entrenamiento incluye series intensas de duración intermedia; revisar parestesia, dosis divididas y tolerancia.',
+            supplementSlug: 'beta-alanine',
+            searchLabel: 'Abrir la guía de beta-alanina',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Rendimiento deportivo',
+            description:
+              'Para objetivos de potencia, resistencia o pre-entreno, compara creatina, cafeína, beta-alanina y citrulina.',
+            href: '/portal/category/sports-performance',
+            label: 'Revisar rendimiento',
+          },
+          {
+            title: 'Energía y fatiga',
+            description:
+              'Si el obstáculo principal es cansancio o baja energía, revisa sueño, cafeína, creatina y posibles deficiencias.',
+            href: '/portal/category/energy',
+            label: 'Revisar energía',
+          },
+          {
+            title: 'Creatina',
+            description:
+              'Guía específica para separar fuerza, potencia, carga, mantenimiento y seguridad práctica.',
+            href: '/portal/supplement/creatine?benefit=muscle-gain',
+            label: 'Comparar creatina',
+          },
+          {
+            title: 'Proteína de suero',
+            description:
+              'Útil para decidir si conviene ajustar alimentos, porciones o usar proteína en polvo por practicidad.',
+            href: '/portal/supplement/whey-protein?benefit=muscle-gain',
+            label: 'Comparar proteína',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos para músculo y fuerza',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de elegir un suplemento para músculo?',
+            answer:
+              'Primero entrenamiento progresivo, proteína total, calorías, sueño y constancia. Los suplementos ayudan a comparar opciones prácticas, pero no compensan una base incompleta.',
+          },
+          {
+            question: '¿Proteína de suero y creatina cumplen el mismo papel?',
+            answer:
+              'No. La proteína de suero ayuda a cubrir ingesta proteica; creatina se revisa por fuerza, potencia y volumen de entrenamiento. Pueden coexistir, pero responden a necesidades distintas.',
+          },
+          {
+            question: '¿Beta-alanina es necesaria para todos?',
+            answer:
+              'No necesariamente. Tiene más sentido cuando el deporte incluye esfuerzos intensos de duración intermedia. Si el foco es fuerza máxima o proteína insuficiente, otras comparaciones pueden ser más directas.',
+          },
+          {
+            question: '¿Cuándo conviene consultar a un profesional?',
+            answer:
+              'Si hay enfermedad renal, embarazo, adolescencia, trastornos alimentarios, lesiones, uso de medicamentos o cambios de peso no intencionales, conviene revisar el plan con un profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para músculo',
+      },
+      en: {
+        intro:
+          'This guide compares supplements used around strength training, recovery, and body composition. The starting point is not stacking products, but reviewing training, total protein intake, sleep, tolerance, and consistency.',
+        highlights: [
+          'Whey protein fits best when daily protein intake does not meet the estimated target for training.',
+          'Creatine has a different role: it is reviewed for strength, power, and training volume, with hydration and kidney context considered when relevant.',
+          'Beta-alanine is compared more for intense efforts of intermediate duration; tingling is an expected dose-related effect.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Whey protein and daily intake',
+            description:
+              'Useful for covering protein when diet falls short; review lactose tolerance, digestion, and meal distribution.',
+            supplementSlug: 'whey-protein',
+            searchLabel: 'Open the whey protein guide',
+          },
+          {
+            title: 'Creatine and strength',
+            description:
+              'An option studied for strength and power performance; review dose, consistency, hydration, and kidney context if relevant.',
+            supplementSlug: 'creatine',
+            searchLabel: 'Open the creatine guide',
+          },
+          {
+            title: 'Beta-alanine and intense efforts',
+            description:
+              'Compared when training includes intense sets of intermediate duration; review tingling, divided doses, and tolerance.',
+            supplementSlug: 'beta-alanine',
+            searchLabel: 'Open the beta-alanine guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Sports performance',
+            description:
+              'For power, endurance, or pre-workout goals, compare creatine, caffeine, beta-alanine, and citrulline.',
+            href: '/portal/category/sports-performance',
+            label: 'Review performance',
+          },
+          {
+            title: 'Energy and fatigue',
+            description:
+              'If tiredness or low energy is the main barrier, review sleep, caffeine, creatine, and possible deficiencies.',
+            href: '/portal/category/energy',
+            label: 'Review energy',
+          },
+          {
+            title: 'Creatine',
+            description:
+              'A specific guide for separating strength, power, loading, maintenance, and practical safety.',
+            href: '/portal/supplement/creatine?benefit=muscle-gain',
+            label: 'Compare creatine',
+          },
+          {
+            title: 'Whey protein',
+            description:
+              'Useful for deciding whether to adjust foods, portions, or use protein powder for convenience.',
+            href: '/portal/supplement/whey-protein?benefit=muscle-gain',
+            label: 'Compare protein',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about muscle and strength supplements',
+        faqs: [
+          {
+            question: 'What should I review before choosing a muscle supplement?',
+            answer:
+              'Start with progressive training, total protein, calories, sleep, and consistency. Supplements help compare practical options, but they do not compensate for an incomplete base.',
+          },
+          {
+            question: 'Do whey protein and creatine do the same thing?',
+            answer:
+              'No. Whey protein helps cover protein intake; creatine is reviewed for strength, power, and training volume. They can coexist, but they answer different needs.',
+          },
+          {
+            question: 'Is beta-alanine necessary for everyone?',
+            answer:
+              'Not necessarily. It makes more sense when the sport includes intense efforts of intermediate duration. If the focus is maximal strength or insufficient protein, other comparisons may be more direct.',
+          },
+          {
+            question: 'When should I consult a professional?',
+            answer:
+              'Kidney disease, pregnancy, adolescence, eating disorders, injuries, medication use, or unintentional weight changes are reasons to review the plan with a professional.',
+          },
+        ],
+        supplementLinksHeading: 'Muscle supplement guides',
       },
     },
     'common-deficiencies': {

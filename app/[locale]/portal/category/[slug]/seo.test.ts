@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const muscleGainUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for muscle gain and strength', () => {
+    const muscleCopyEs = buildCategorySeoCopy({
+      slug: 'muscle-gain',
+      categoryName: 'Ganancia de Músculo y Ejercicio',
+      categoryDescription: 'Suplementos estudiados para entrenamiento de fuerza.',
+      locale: 'es',
+    });
+    const muscleCopyEn = buildCategorySeoCopy({
+      slug: 'muscle-gain',
+      categoryName: 'Muscle Gain and Exercise',
+      categoryDescription: 'Supplements studied for strength training.',
+      locale: 'en',
+    });
+    const muscleContentEs = buildCategorySeoContent('muscle-gain', 'es');
+    const muscleContentEn = buildCategorySeoContent('muscle-gain', 'en');
+
+    expect(muscleCopyEs.title).toBe('Suplementos para músculo y fuerza: proteína, creatina y beta-alanina');
+    expect(muscleCopyEs.description).toContain('tolerancia digestiva');
+    expect(muscleCopyEs.title).not.toContain('evidencia científica');
+    expect(muscleCopyEn.title).toBe('Muscle and strength supplements: protein, creatine, beta-alanine');
+    expect(muscleCopyEn.description).toContain('strength goals');
+    expect(muscleCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(muscleContentEs).not.toBeNull();
+    expect(muscleContentEn).not.toBeNull();
+    expect(muscleContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'whey-protein',
+      'creatine',
+      'beta-alanine',
+    ]);
+    expect(muscleContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'whey-protein',
+      'creatine',
+      'beta-alanine',
+    ]);
+    expect(muscleContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/sports-performance',
+      '/portal/category/energy',
+      '/portal/supplement/creatine?benefit=muscle-gain',
+      '/portal/supplement/whey-protein?benefit=muscle-gain',
+    ]);
+    expect(muscleContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/sports-performance',
+      '/portal/category/energy',
+      '/portal/supplement/creatine?benefit=muscle-gain',
+      '/portal/supplement/whey-protein?benefit=muscle-gain',
+    ]);
+    expect(muscleContentEs?.faqs).toHaveLength(4);
+    expect(muscleContentEn?.faqs).toHaveLength(4);
+    expect(muscleContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Proteína de suero y creatina cumplen el mismo papel?'
+    );
+    expect(muscleContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'Do whey protein and creatine do the same thing?'
+    );
+
+    const serialized = JSON.stringify([muscleCopyEs, muscleCopyEn, muscleContentEs, muscleContentEn]);
+    expect(serialized).not.toMatch(muscleGainUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('muscle-gain', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);
