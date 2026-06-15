@@ -69,6 +69,18 @@ export function buildCategorySeoCopy({
           'Review omega-3, coenzyme Q10, and garlic for heart health with evidence level, safety context, and responsible-use guidance.',
       },
     },
+    energy: {
+      es: {
+        title: 'Suplementos para energía y fatiga: cafeína, rhodiola y B12',
+        description:
+          'Compara cafeína, rhodiola, creatina y nutrientes como B12 o hierro según contexto de cansancio, sueño, dieta, entrenamiento y seguridad.',
+      },
+      en: {
+        title: 'Energy and fatigue supplements: caffeine, rhodiola, B12',
+        description:
+          'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -515,6 +527,182 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Heart health supplement guides',
+      },
+    },
+    energy: {
+      es: {
+        intro:
+          'Esta guía organiza suplementos que suelen buscarse por energía, enfoque o fatiga. El punto de partida es separar cansancio por sueño, estrés, entrenamiento, dieta o posible deficiencia; no promete resolver fatiga persistente.',
+        highlights: [
+          'Cafeína encaja mejor cuando se busca alerta de corto plazo, pero timing, tolerancia, ansiedad y sueño pueden cambiar el resultado.',
+          'Rhodiola se revisa sobre todo cuando el cansancio se relaciona con estrés o carga mental; el extracto y la dosis importan.',
+          'B12, hierro y vitamina D pertenecen al cluster de deficiencias: conviene confirmarlos con análisis cuando hay cansancio persistente o dieta restrictiva.',
+          'Creatina puede ser más relevante si la intención viene de entrenamiento, fuerza o rendimiento, no como explicación única de fatiga.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Cafeína para alerta y timing',
+            description:
+              'Opción de efecto agudo donde la dosis total, el horario, sueño, ansiedad y presión arterial deben revisarse antes de aumentar consumo.',
+            supplementSlug: 'caffeine',
+            searchLabel: 'Abrir la guía de cafeína',
+          },
+          {
+            title: 'Rhodiola y fatiga por carga mental',
+            description:
+              'Se revisa cuando la fatiga aparece junto con estrés o demanda mental; no todos los extractos ni productos son equivalentes.',
+            supplementSlug: 'rhodiola-rosea',
+            searchLabel: 'Abrir la guía de rhodiola',
+          },
+          {
+            title: 'Creatina y contexto de entrenamiento',
+            description:
+              'Más útil para comparar energía muscular, fuerza y rendimiento que para explicar cansancio persistente sin evaluación de base.',
+            supplementSlug: 'creatine',
+            searchLabel: 'Abrir la guía de creatina',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'Cuando el cansancio persiste, conviene revisar vitamina D, hierro, B12 y folato con laboratorios y contexto dietario.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Sueño y descanso',
+            description:
+              'Si la energía baja viene de mal descanso, compara primero melatonina, magnesio y hábitos de sueño.',
+            href: '/portal/category/sleep',
+            label: 'Revisar sueño',
+          },
+          {
+            title: 'Cafeína',
+            description:
+              'Contrasta uso para alerta, enfoque y rendimiento con precauciones sobre sueño, ansiedad y tolerancia.',
+            href: '/portal/supplement/caffeine?benefit=energy',
+            label: 'Comparar cafeína',
+          },
+          {
+            title: 'Rhodiola rosea',
+            description:
+              'Útil para comparar intención de fatiga ligada a estrés, carga mental y diferencias entre extractos.',
+            href: '/portal/supplement/rhodiola-rosea?benefit=energy',
+            label: 'Comparar rhodiola',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre energía y fatiga',
+        faqs: [
+          {
+            question: '¿Qué suplemento revisar primero si tengo cansancio?',
+            answer:
+              'Depende del contexto. Si el cansancio es reciente y puntual, cafeína puede ser la comparación más directa. Si es persistente, conviene revisar sueño, estrés, dieta, medicamentos y posibles deficiencias antes de elegir un suplemento.',
+          },
+          {
+            question: '¿Cuándo conviene revisar B12, hierro o vitamina D?',
+            answer:
+              'Cuando hay fatiga persistente, dieta vegana o vegetariana, menstruación abundante, embarazo, malabsorción o poca exposición solar. Esos nutrientes se interpretan mejor con análisis y seguimiento profesional.',
+          },
+          {
+            question: '¿Rhodiola y cafeína son lo mismo?',
+            answer:
+              'No. Cafeína suele buscarse por alerta rápida; rhodiola se revisa más en fatiga asociada con estrés o carga mental. Seguridad, sueño y tolerancia deben revisarse en ambos casos.',
+          },
+          {
+            question: '¿Qué señales ameritan consulta?',
+            answer:
+              'Fatiga que dura semanas, falta de aire, palpitaciones, pérdida de peso, somnolencia intensa, ánimo muy bajo, dolor torácico o cambios importantes en rendimiento requieren evaluación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para energía',
+      },
+      en: {
+        intro:
+          'This guide organizes supplements users often search for energy, focus, or fatigue. The starting point is separating tiredness related to sleep, stress, training, diet, or possible deficiency; it does not promise to resolve persistent fatigue.',
+        highlights: [
+          'Caffeine fits best when users want short-term alertness, but timing, tolerance, anxiety, and sleep can change the outcome.',
+          'Rhodiola is usually reviewed when tiredness is tied to stress or mental load; extract type and dose matter.',
+          'B12, iron, and vitamin D belong in the deficiency cluster: labs are useful when fatigue is persistent or diet is restrictive.',
+          'Creatine is more relevant when intent comes from training, strength, or performance, not as a single explanation for fatigue.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Caffeine for alertness and timing',
+            description:
+              'An acute-effect option where total dose, timing, sleep, anxiety, and blood pressure should be reviewed before increasing intake.',
+            supplementSlug: 'caffeine',
+            searchLabel: 'Open the caffeine guide',
+          },
+          {
+            title: 'Rhodiola and mental-load fatigue',
+            description:
+              'Reviewed when fatigue appears alongside stress or mental demand; not all extracts or products are equivalent.',
+            supplementSlug: 'rhodiola-rosea',
+            searchLabel: 'Open the rhodiola guide',
+          },
+          {
+            title: 'Creatine and training context',
+            description:
+              'More useful for comparing muscle energy, strength, and performance than explaining persistent fatigue without baseline review.',
+            supplementSlug: 'creatine',
+            searchLabel: 'Open the creatine guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Common deficiencies',
+            description:
+              'When tiredness persists, vitamin D, iron, B12, and folate are better reviewed with labs and diet context.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Sleep and rest',
+            description:
+              'If low energy starts with poor rest, compare melatonin, magnesium, and sleep habits first.',
+            href: '/portal/category/sleep',
+            label: 'Review sleep',
+          },
+          {
+            title: 'Caffeine',
+            description:
+              'Compare use for alertness, focus, and performance with sleep, anxiety, and tolerance precautions.',
+            href: '/portal/supplement/caffeine?benefit=energy',
+            label: 'Compare caffeine',
+          },
+          {
+            title: 'Rhodiola rosea',
+            description:
+              'Useful for comparing fatigue intent tied to stress, mental load, and extract differences.',
+            href: '/portal/supplement/rhodiola-rosea?benefit=energy',
+            label: 'Compare rhodiola',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about energy and fatigue',
+        faqs: [
+          {
+            question: 'Which supplement should I review first for tiredness?',
+            answer:
+              'It depends on context. For recent and occasional tiredness, caffeine may be the most direct comparison. For persistent fatigue, sleep, stress, diet, medications, and possible deficiencies should be reviewed before choosing a supplement.',
+          },
+          {
+            question: 'When should B12, iron, or vitamin D be reviewed?',
+            answer:
+              'When fatigue is persistent, diet is vegan or vegetarian, periods are heavy, pregnancy is relevant, malabsorption is possible, or sun exposure is low. These nutrients are interpreted best with labs and professional follow-up.',
+          },
+          {
+            question: 'Are rhodiola and caffeine the same kind of option?',
+            answer:
+              'No. Caffeine is usually searched for quick alertness; rhodiola is reviewed more for fatigue associated with stress or mental load. Safety, sleep, and tolerance matter for both.',
+          },
+          {
+            question: 'What signs deserve professional review?',
+            answer:
+              'Fatigue lasting weeks, shortness of breath, palpitations, weight loss, intense sleepiness, very low mood, chest pain, or major performance changes deserve professional evaluation.',
+          },
+        ],
+        supplementLinksHeading: 'Energy supplement guides',
       },
     },
     'common-deficiencies': {

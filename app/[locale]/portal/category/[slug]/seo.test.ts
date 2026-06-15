@@ -6,6 +6,8 @@ import { buildCategorySeoContent, buildCategorySeoCopy } from './seo';
 const unsafePattern = /sirve para|treats|cures|beneficio comprobado|clinical benefit/i;
 const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const energyUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -184,6 +186,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toMatch(commonDeficienciesUnsafePattern);
   });
 
+  it('adds curated SEO content for energy and fatigue', () => {
+    const energyCopyEs = buildCategorySeoCopy({
+      slug: 'energy',
+      categoryName: 'Energía',
+      categoryDescription: 'Suplementos estudiados para energía y fatiga.',
+      locale: 'es',
+    });
+    const energyCopyEn = buildCategorySeoCopy({
+      slug: 'energy',
+      categoryName: 'Energy',
+      categoryDescription: 'Supplements studied for energy and fatigue.',
+      locale: 'en',
+    });
+    const energyContentEs = buildCategorySeoContent('energy', 'es');
+    const energyContentEn = buildCategorySeoContent('energy', 'en');
+
+    expect(energyCopyEs.title).toBe('Suplementos para energía y fatiga: cafeína, rhodiola y B12');
+    expect(energyCopyEs.description).toContain('sueño');
+    expect(energyCopyEs.title).not.toContain('evidencia científica');
+    expect(energyCopyEn.title).toBe('Energy and fatigue supplements: caffeine, rhodiola, B12');
+    expect(energyCopyEn.description).toContain('fatigue context');
+    expect(energyCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(energyContentEs).not.toBeNull();
+    expect(energyContentEn).not.toBeNull();
+    expect(energyContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'caffeine',
+      'rhodiola-rosea',
+      'creatine',
+    ]);
+    expect(energyContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'caffeine',
+      'rhodiola-rosea',
+      'creatine',
+    ]);
+    expect(energyContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/sleep',
+      '/portal/supplement/caffeine?benefit=energy',
+      '/portal/supplement/rhodiola-rosea?benefit=energy',
+    ]);
+    expect(energyContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/sleep',
+      '/portal/supplement/caffeine?benefit=energy',
+      '/portal/supplement/rhodiola-rosea?benefit=energy',
+    ]);
+    expect(energyContentEs?.faqs).toHaveLength(4);
+    expect(energyContentEn?.faqs).toHaveLength(4);
+    expect(energyContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Cuándo conviene revisar B12, hierro o vitamina D?'
+    );
+    expect(energyContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'When should B12, iron, or vitamin D be reviewed?'
+    );
+
+    const serialized = JSON.stringify([energyCopyEs, energyCopyEn, energyContentEs, energyContentEn]);
+    expect(serialized).not.toMatch(energyUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -193,6 +256,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('sleep', 'en'),
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
+      buildCategorySeoContent('energy', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);
