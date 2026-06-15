@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'sports-performance': {
+      es: {
+        title: 'Suplementos para rendimiento deportivo: creatina y cafeína',
+        description:
+          'Compara creatina, cafeína, beta-alanina y citrulina por fuerza, resistencia, timing, tolerancia, entrenamiento y seguridad.',
+      },
+      en: {
+        title: 'Sports performance supplements: creatine and caffeine',
+        description:
+          'Compare creatine, caffeine, beta-alanine, and citrulline by strength, endurance, timing, tolerance, training, and safety.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'sports-performance': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para rendimiento deportivo, fuerza, potencia, resistencia y recuperación. La lectura útil empieza por objetivo de entrenamiento, timing, dosis, tolerancia, sueño y reglas de competencia.',
+        highlights: [
+          'Creatina se revisa por fuerza, potencia, entrenamiento y consistencia de uso, con atención a hidratación y contexto renal individual.',
+          'Cafeína encaja mejor por timing, alerta, potencia o resistencia, pero tolerancia, ansiedad, presión arterial y sueño importan.',
+          'Beta-alanina y citrulina dependen del tipo de esfuerzo, duración, dosis, parestesia o tolerancia gastrointestinal.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Creatina para fuerza y potencia',
+            description:
+              'Comparar objetivo, dosis diaria, timing flexible, hidratación, entrenamiento y contexto renal individual.',
+            supplementSlug: 'creatine',
+            searchLabel: 'Abrir la guía de creatina',
+          },
+          {
+            title: 'Cafeína y timing',
+            description:
+              'Revisar dosis, horario, tolerancia, ansiedad, presión arterial, sueño y reglas de competencia.',
+            supplementSlug: 'caffeine',
+            searchLabel: 'Abrir la guía de cafeína',
+          },
+          {
+            title: 'Beta-alanina para esfuerzos intensos',
+            description:
+              'Comparar duración del esfuerzo, dosis dividida, parestesia y consistencia antes de usarla.',
+            supplementSlug: 'beta-alanine',
+            searchLabel: 'Abrir la guía de beta-alanina',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Ganancia muscular',
+            description:
+              'Si el objetivo principal es músculo, compara creatina, proteína de suero y beta-alanina en ese contexto.',
+            href: '/portal/category/muscle-gain',
+            label: 'Revisar músculo',
+          },
+          {
+            title: 'Energía y fatiga',
+            description:
+              'Si la intención es cansancio o alerta diaria, revisa cafeína, rhodiola, sueño y deficiencias.',
+            href: '/portal/category/energy',
+            label: 'Revisar energía',
+          },
+          {
+            title: 'Creatina',
+            description:
+              'Guía específica para fuerza, potencia, dosis, hidratación y contexto de entrenamiento.',
+            href: '/portal/supplement/creatine?benefit=sports-performance',
+            label: 'Comparar creatina',
+          },
+          {
+            title: 'Cafeína',
+            description:
+              'Útil para revisar timing, tolerancia, sueño, ansiedad y presión arterial.',
+            href: '/portal/supplement/caffeine?benefit=sports-performance',
+            label: 'Comparar cafeína',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos y rendimiento deportivo',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de elegir un suplemento deportivo?',
+            answer:
+              'Objetivo, tipo de entrenamiento, sueño, alimentación, cafeína total, medicamentos, condiciones médicas y reglas de competencia.',
+          },
+          {
+            question: '¿Creatina y cafeína se usan igual?',
+            answer:
+              'No. Creatina suele ser de uso consistente y no depende tanto del horario; cafeína depende mucho del timing, tolerancia y sueño.',
+          },
+          {
+            question: '¿Beta-alanina aplica para cualquier ejercicio?',
+            answer:
+              'No necesariamente. Se revisa más para esfuerzos intensos de duración corta a media, y la parestesia puede limitar tolerancia.',
+          },
+          {
+            question: '¿Cuándo buscar orientación profesional?',
+            answer:
+              'Enfermedad renal, hipertensión, arritmias, embarazo, lesiones, uso de medicamentos o competencias reguladas ameritan orientación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para rendimiento deportivo',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for sports performance, strength, power, endurance, and recovery. Useful review starts with training goal, timing, dose, tolerance, sleep, and competition rules.',
+        highlights: [
+          'Creatine is reviewed by strength, power, training, and consistent use, with attention to hydration and individual kidney context.',
+          'Caffeine fits timing, alertness, power, or endurance, but tolerance, anxiety, blood pressure, and sleep matter.',
+          'Beta-alanine and citrulline depend on effort type, duration, dose, paresthesia, or gastrointestinal tolerance.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Creatine for strength and power',
+            description:
+              'Compare goal, daily dose, flexible timing, hydration, training, and individual kidney context.',
+            supplementSlug: 'creatine',
+            searchLabel: 'Open the creatine guide',
+          },
+          {
+            title: 'Caffeine and timing',
+            description:
+              'Review dose, timing, tolerance, anxiety, blood pressure, sleep, and competition rules.',
+            supplementSlug: 'caffeine',
+            searchLabel: 'Open the caffeine guide',
+          },
+          {
+            title: 'Beta-alanine for intense efforts',
+            description:
+              'Compare effort duration, divided dosing, paresthesia, and consistency before use.',
+            supplementSlug: 'beta-alanine',
+            searchLabel: 'Open the beta-alanine guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Muscle gain',
+            description:
+              'If the main goal is muscle, compare creatine, whey protein, and beta-alanine in that context.',
+            href: '/portal/category/muscle-gain',
+            label: 'Review muscle',
+          },
+          {
+            title: 'Energy and fatigue',
+            description:
+              'If the intent is tiredness or daily alertness, review caffeine, rhodiola, sleep, and deficiencies.',
+            href: '/portal/category/energy',
+            label: 'Review energy',
+          },
+          {
+            title: 'Creatine',
+            description:
+              'A specific guide for strength, power, dose, hydration, and training context.',
+            href: '/portal/supplement/creatine?benefit=sports-performance',
+            label: 'Compare creatine',
+          },
+          {
+            title: 'Caffeine',
+            description:
+              'Useful for reviewing timing, tolerance, sleep, anxiety, and blood pressure.',
+            href: '/portal/supplement/caffeine?benefit=sports-performance',
+            label: 'Compare caffeine',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about supplements and sports performance',
+        faqs: [
+          {
+            question: 'What should I review before choosing a sports supplement?',
+            answer:
+              'Goal, training type, sleep, nutrition, total caffeine, medications, medical conditions, and competition rules.',
+          },
+          {
+            question: 'Are creatine and caffeine used the same way?',
+            answer:
+              'No. Creatine is usually used consistently and is less timing-dependent; caffeine depends heavily on timing, tolerance, and sleep.',
+          },
+          {
+            question: 'Is beta-alanine relevant for every workout?',
+            answer:
+              'Not necessarily. It is reviewed more for intense efforts of short to moderate duration, and paresthesia may limit tolerance.',
+          },
+          {
+            question: 'When should I seek professional guidance?',
+            answer:
+              'Kidney disease, hypertension, arrhythmias, pregnancy, injuries, medication use, or regulated competitions warrant professional guidance.',
+          },
+        ],
+        supplementLinksHeading: 'Sports performance supplement guides',
       },
     },
     'common-deficiencies': {

@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const sportsPerformanceUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for sports performance', () => {
+    const sportsCopyEs = buildCategorySeoCopy({
+      slug: 'sports-performance',
+      categoryName: 'Rendimiento Deportivo',
+      categoryDescription: 'Suplementos con evidencia para fuerza, potencia, resistencia, recuperación y desempeño físico.',
+      locale: 'es',
+    });
+    const sportsCopyEn = buildCategorySeoCopy({
+      slug: 'sports-performance',
+      categoryName: 'Sports Performance',
+      categoryDescription: 'Supplements with evidence for strength, power, endurance, recovery, and physical performance.',
+      locale: 'en',
+    });
+    const sportsContentEs = buildCategorySeoContent('sports-performance', 'es');
+    const sportsContentEn = buildCategorySeoContent('sports-performance', 'en');
+
+    expect(sportsCopyEs.title).toBe('Suplementos para rendimiento deportivo: creatina y cafeína');
+    expect(sportsCopyEs.description).toContain('entrenamiento');
+    expect(sportsCopyEs.title).not.toContain('evidencia científica');
+    expect(sportsCopyEn.title).toBe('Sports performance supplements: creatine and caffeine');
+    expect(sportsCopyEn.description).toContain('training');
+    expect(sportsCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(sportsContentEs).not.toBeNull();
+    expect(sportsContentEn).not.toBeNull();
+    expect(sportsContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'creatine',
+      'caffeine',
+      'beta-alanine',
+    ]);
+    expect(sportsContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'creatine',
+      'caffeine',
+      'beta-alanine',
+    ]);
+    expect(sportsContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/muscle-gain',
+      '/portal/category/energy',
+      '/portal/supplement/creatine?benefit=sports-performance',
+      '/portal/supplement/caffeine?benefit=sports-performance',
+    ]);
+    expect(sportsContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/muscle-gain',
+      '/portal/category/energy',
+      '/portal/supplement/creatine?benefit=sports-performance',
+      '/portal/supplement/caffeine?benefit=sports-performance',
+    ]);
+    expect(sportsContentEs?.faqs).toHaveLength(4);
+    expect(sportsContentEn?.faqs).toHaveLength(4);
+    expect(sportsContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué revisar antes de elegir un suplemento deportivo?'
+    );
+    expect(sportsContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'What should I review before choosing a sports supplement?'
+    );
+
+    const serialized = JSON.stringify([sportsCopyEs, sportsCopyEn, sportsContentEs, sportsContentEn]);
+    expect(serialized).not.toMatch(sportsPerformanceUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('sports-performance', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);
