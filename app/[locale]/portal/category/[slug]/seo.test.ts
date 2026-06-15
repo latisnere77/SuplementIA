@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const cognitiveUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for cognitive function', () => {
+    const cognitiveCopyEs = buildCategorySeoCopy({
+      slug: 'cognitive-function',
+      categoryName: 'Memoria y Concentración',
+      categoryDescription: 'Suplementos estudiados para memoria y foco.',
+      locale: 'es',
+    });
+    const cognitiveCopyEn = buildCategorySeoCopy({
+      slug: 'cognitive-function',
+      categoryName: 'Memory and Focus',
+      categoryDescription: 'Supplements studied for memory and focus.',
+      locale: 'en',
+    });
+    const cognitiveContentEs = buildCategorySeoContent('cognitive-function', 'es');
+    const cognitiveContentEn = buildCategorySeoContent('cognitive-function', 'en');
+
+    expect(cognitiveCopyEs.title).toBe('Suplementos para memoria y concentración: omega-3, bacopa y ginkgo');
+    expect(cognitiveCopyEs.description).toContain('carga mental');
+    expect(cognitiveCopyEs.title).not.toContain('evidencia científica');
+    expect(cognitiveCopyEn.title).toBe('Memory and focus supplements: omega-3, bacopa, and ginkgo');
+    expect(cognitiveCopyEn.description).toContain('mental-load context');
+    expect(cognitiveCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(cognitiveContentEs).not.toBeNull();
+    expect(cognitiveContentEn).not.toBeNull();
+    expect(cognitiveContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'omega-3',
+      'bacopa-monnieri',
+      'ginkgo-biloba',
+    ]);
+    expect(cognitiveContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'omega-3',
+      'bacopa-monnieri',
+      'ginkgo-biloba',
+    ]);
+    expect(cognitiveContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/energy',
+      '/portal/category/common-deficiencies',
+      '/portal/supplement/bacopa-monnieri?benefit=cognitive-function',
+      '/portal/supplement/ginkgo-biloba?benefit=cognitive-function',
+    ]);
+    expect(cognitiveContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/energy',
+      '/portal/category/common-deficiencies',
+      '/portal/supplement/bacopa-monnieri?benefit=cognitive-function',
+      '/portal/supplement/ginkgo-biloba?benefit=cognitive-function',
+    ]);
+    expect(cognitiveContentEs?.faqs).toHaveLength(4);
+    expect(cognitiveContentEn?.faqs).toHaveLength(4);
+    expect(cognitiveContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Bacopa y ginkgo son equivalentes?'
+    );
+    expect(cognitiveContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'Are bacopa and ginkgo equivalent?'
+    );
+
+    const serialized = JSON.stringify([cognitiveCopyEs, cognitiveCopyEn, cognitiveContentEs, cognitiveContentEn]);
+    expect(serialized).not.toMatch(cognitiveUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('cognitive-function', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);

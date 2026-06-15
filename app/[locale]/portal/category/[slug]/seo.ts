@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'cognitive-function': {
+      es: {
+        title: 'Suplementos para memoria y concentración: omega-3, bacopa y ginkgo',
+        description:
+          'Compara omega-3, bacopa y ginkgo por evidencia, edad, carga mental, medicamentos, sueño y seguridad.',
+      },
+      en: {
+        title: 'Memory and focus supplements: omega-3, bacopa, and ginkgo',
+        description:
+          'Compare omega-3, bacopa, and ginkgo by evidence, age, mental-load context, medications, sleep, and safety.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'cognitive-function': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para memoria, concentración y carga mental. La lectura prudente empieza por sueño, estrés, edad, medicamentos y objetivos reales antes de elegir una opción.',
+        highlights: [
+          'Omega-3 se revisa por contexto general de dieta, salud cardiovascular y DHA; no todos los objetivos cognitivos tienen la misma evidencia.',
+          'Bacopa se compara más cuando la intención es memoria o aprendizaje, con efectos que dependen de extracto, dosis y tiempo de uso.',
+          'Ginkgo requiere especial cuidado con anticoagulantes, cirugía, edad avanzada y preparación específica; no debe leerse como una promesa genérica.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Omega-3 y DHA',
+            description:
+              'Opción relevante cuando la ingesta de pescado es baja o se revisa DHA; conviene separar salud general, lípidos y objetivos cognitivos.',
+            supplementSlug: 'omega-3',
+            searchLabel: 'Abrir la guía de omega-3',
+          },
+          {
+            title: 'Bacopa y memoria',
+            description:
+              'Se compara para memoria y aprendizaje con atención a extracto, dosis, tiempo de uso, digestión y somnolencia.',
+            supplementSlug: 'bacopa-monnieri',
+            searchLabel: 'Abrir la guía de bacopa',
+          },
+          {
+            title: 'Ginkgo y seguridad',
+            description:
+              'Revisar preparación, edad, anticoagulantes, cirugía y riesgo de sangrado antes de considerarlo.',
+            supplementSlug: 'ginkgo-biloba',
+            searchLabel: 'Abrir la guía de ginkgo',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Energía y fatiga',
+            description:
+              'Si la concentración baja se mezcla con cansancio, revisa sueño, cafeína, creatina y posibles deficiencias.',
+            href: '/portal/category/energy',
+            label: 'Revisar energía',
+          },
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'B12, hierro, folato y vitamina D pueden importar cuando hay dieta restrictiva, cansancio o laboratorios pendientes.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Bacopa monnieri',
+            description:
+              'Guía específica para comparar memoria, aprendizaje, extractos, tiempo de uso y tolerancia.',
+            href: '/portal/supplement/bacopa-monnieri?benefit=cognitive-function',
+            label: 'Comparar bacopa',
+          },
+          {
+            title: 'Ginkgo biloba',
+            description:
+              'Útil para revisar preparación, interacciones y límites de la evidencia antes de usarlo.',
+            href: '/portal/supplement/ginkgo-biloba?benefit=cognitive-function',
+            label: 'Comparar ginkgo',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre memoria y concentración',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de elegir un suplemento cognitivo?',
+            answer:
+              'Sueño, estrés, cafeína, medicamentos, dieta, edad y cambios recientes suelen explicar más que un suplemento aislado. La comparación es más útil cuando el objetivo está definido.',
+          },
+          {
+            question: '¿Bacopa y ginkgo son equivalentes?',
+            answer:
+              'No. Bacopa se revisa más por memoria y aprendizaje con uso sostenido; ginkgo requiere más atención a preparación, edad e interacciones. Conviene compararlos por contexto, no por nombre comercial.',
+          },
+          {
+            question: '¿Cuándo conviene revisar B12 o hierro?',
+            answer:
+              'Cuando hay cansancio, dieta vegana o vegetariana, menstruación abundante, malabsorción o síntomas persistentes. Es mejor confirmar con análisis y seguimiento profesional.',
+          },
+          {
+            question: '¿Qué señales requieren evaluación profesional?',
+            answer:
+              'Pérdida de memoria progresiva, confusión, cambios neurológicos, dolor de cabeza nuevo, depresión intensa o deterioro funcional deben revisarse con un profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para memoria',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for memory, focus, and mental load. A prudent review starts with sleep, stress, age, medications, and realistic goals before choosing an option.',
+        highlights: [
+          'Omega-3 is reviewed through diet, cardiovascular context, and DHA; not every cognitive goal has the same evidence.',
+          'Bacopa is compared more when the intent is memory or learning, with effects depending on extract, dose, and duration of use.',
+          'Ginkgo requires special attention to anticoagulants, surgery, older age, and specific preparation; it should not be read as a generic promise.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Omega-3 and DHA',
+            description:
+              'Relevant when fish intake is low or DHA is being reviewed; separate general health, lipid, and cognitive goals.',
+            supplementSlug: 'omega-3',
+            searchLabel: 'Open the omega-3 guide',
+          },
+          {
+            title: 'Bacopa and memory',
+            description:
+              'Compared for memory and learning with attention to extract, dose, duration, digestion, and drowsiness.',
+            supplementSlug: 'bacopa-monnieri',
+            searchLabel: 'Open the bacopa guide',
+          },
+          {
+            title: 'Ginkgo and safety',
+            description:
+              'Review preparation, age, anticoagulants, surgery, and bleeding risk before considering it.',
+            supplementSlug: 'ginkgo-biloba',
+            searchLabel: 'Open the ginkgo guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Energy and fatigue',
+            description:
+              'If low focus overlaps with tiredness, review sleep, caffeine, creatine, and possible deficiencies.',
+            href: '/portal/category/energy',
+            label: 'Review energy',
+          },
+          {
+            title: 'Common deficiencies',
+            description:
+              'B12, iron, folate, and vitamin D may matter when diet is restrictive, tiredness is present, or labs are pending.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Bacopa monnieri',
+            description:
+              'A specific guide for comparing memory, learning, extracts, duration of use, and tolerance.',
+            href: '/portal/supplement/bacopa-monnieri?benefit=cognitive-function',
+            label: 'Compare bacopa',
+          },
+          {
+            title: 'Ginkgo biloba',
+            description:
+              'Useful for reviewing preparation, interactions, and evidence limits before using it.',
+            href: '/portal/supplement/ginkgo-biloba?benefit=cognitive-function',
+            label: 'Compare ginkgo',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about memory and focus',
+        faqs: [
+          {
+            question: 'What should I review before choosing a cognitive supplement?',
+            answer:
+              'Sleep, stress, caffeine, medications, diet, age, and recent changes often explain more than an isolated supplement. Comparison is more useful when the goal is defined.',
+          },
+          {
+            question: 'Are bacopa and ginkgo equivalent?',
+            answer:
+              'No. Bacopa is reviewed more for memory and learning with sustained use; ginkgo needs more attention to preparation, age, and interactions. Compare them by context, not by product name.',
+          },
+          {
+            question: 'When should B12 or iron be reviewed?',
+            answer:
+              'When tiredness, vegan or vegetarian diet, heavy periods, malabsorption, or persistent symptoms are relevant. Lab confirmation and professional follow-up are better.',
+          },
+          {
+            question: 'What signs need professional evaluation?',
+            answer:
+              'Progressive memory loss, confusion, neurologic changes, a new headache pattern, intense depression, or functional decline should be reviewed with a professional.',
+          },
+        ],
+        supplementLinksHeading: 'Memory supplement guides',
       },
     },
     'common-deficiencies': {
