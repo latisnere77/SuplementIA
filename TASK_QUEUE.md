@@ -32,7 +32,21 @@ sin cambios de producto. Marca T1 como DONE (PR #n).
 
 ---
 
-## T2 — SEO cluster: anxiety  ·  PENDING
+## T-AUDIT — Auditar 18 categorías con contenido SEO curado  ·  DONE
+
+**Tipo:** discovery/audit.
+**Objetivo:** auditar las 18 páginas de categoría con contenido en `buildCategorySeoContent`
+para detectar enlaces internos inválidos, cobertura sitemap/metadata y oportunidades de
+structured data.
+**Resultado:** observaciones documentadas en `.planning/seo-audit/OBSERVATIONS.md`.
+**Hallazgos:**
+- Sin `relatedLinks` rotos o incoherentes.
+- Las 18 categorías están cubiertas por sitemap, canonical y hreflang.
+- Oportunidad accionable: añadir `FAQPage` JSON-LD para páginas de categoría con FAQs.
+
+---
+
+## T2 — SEO cluster: anxiety  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `anxiety`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -57,7 +71,7 @@ otro slug/categoría.
 
 ---
 
-## T3 — SEO cluster: muscle-gain  ·  PENDING
+## T3 — SEO cluster: muscle-gain  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `muscle-gain`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -82,7 +96,7 @@ otro slug/categoría.
 
 ---
 
-## T4 — SEO cluster: cognitive-function  ·  PENDING
+## T4 — SEO cluster: cognitive-function  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `cognitive-function`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -107,7 +121,7 @@ otro slug/categoría.
 
 ---
 
-## T5 — SEO cluster: joint-bone-health  ·  PENDING
+## T5 — SEO cluster: joint-bone-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `joint-bone-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -132,7 +146,7 @@ otro slug/categoría.
 
 ---
 
-## T6 — SEO cluster: skin-hair-health  ·  PENDING
+## T6 — SEO cluster: skin-hair-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `skin-hair-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -157,7 +171,7 @@ otro slug/categoría.
 
 ---
 
-## T7 — SEO cluster: immunity  ·  PENDING
+## T7 — SEO cluster: immunity  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `immunity`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -182,7 +196,7 @@ otro slug/categoría.
 
 ---
 
-## T8 — SEO cluster: mens-health  ·  PENDING
+## T8 — SEO cluster: mens-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `mens-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -207,7 +221,7 @@ otro slug/categoría.
 
 ---
 
-## T9 — SEO cluster: womens-health  ·  PENDING
+## T9 — SEO cluster: womens-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `womens-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -232,7 +246,7 @@ otro slug/categoría.
 
 ---
 
-## T10 — SEO cluster: blood-sugar  ·  PENDING
+## T10 — SEO cluster: blood-sugar  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `blood-sugar`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -257,7 +271,7 @@ otro slug/categoría.
 
 ---
 
-## T11 — SEO cluster: inflammation  ·  PENDING
+## T11 — SEO cluster: inflammation  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `inflammation`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -282,7 +296,7 @@ otro slug/categoría.
 
 ---
 
-## T12 — SEO cluster: sports-performance  ·  PENDING
+## T12 — SEO cluster: sports-performance  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `sports-performance`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -307,7 +321,7 @@ otro slug/categoría.
 
 ---
 
-## T13 — SEO cluster: hormonal-health  ·  PENDING
+## T13 — SEO cluster: hormonal-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `hormonal-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -332,7 +346,7 @@ otro slug/categoría.
 
 ---
 
-## T14 — SEO cluster: migraine-headache  ·  PENDING
+## T14 — SEO cluster: migraine-headache  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `migraine-headache`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -354,6 +368,27 @@ otro slug/categoría.
 - `npm run test:e2e -- e2e/portal.spec.ts` verde (chromium + mobile-chrome) — render de portal (§4).
 - El control negativo `gut-health` sigue devolviendo null.
 - Un PR por cluster, ready-for-review, base `main`, SIN merge.
+
+---
+
+## T15 — Category FAQPage JSON-LD  ·  PENDING
+
+**Objetivo:** añadir `FAQPage` JSON-LD explícito para páginas de categoría que ya tienen
+FAQs curadas en `buildCategorySeoContent`, sin emitir `@type: Product`.
+**IN SCOPE:** `app/[locale]/portal/category/[slug]/page.tsx`,
+`e2e/portal.spec.ts` o test focalizado existente si cubre structured data de categoría.
+**OUT OF SCOPE:** `seo.ts`, copy SEO, sitemap, robots, canonical/hreflang, enricher/AWS/Lambda/
+Terraform, checkout/Stripe, auth, referrals, `.DS_Store`, `.claude/`.
+**Requisitos:**
+- Conservar `CollectionPage` y `BreadcrumbList`.
+- Añadir un objeto `FAQPage` solo cuando `seoContent?.faqs.length` exista.
+- Mapear cada FAQ a `Question` + `acceptedAnswer`.
+- Añadir cobertura que verifique `FAQPage` en una categoría curada y ausencia de
+  `@type: Product`.
+**Aceptación:**
+- `npm test`, `npm run type-check`, `npm run lint` verdes.
+- `npm run test:e2e -- e2e/portal.spec.ts` verde porque toca render del portal (§4).
+- PR ready-for-review contra `main`, SIN merge.
 
 ---
 
