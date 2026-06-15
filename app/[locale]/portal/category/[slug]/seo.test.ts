@@ -8,6 +8,231 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const integratedClusterUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const integratedClusterCases = [
+  {
+    slug: 'anxiety',
+    esTitle: 'Suplementos para estrés y calma: ashwagandha, teanina y manzanilla',
+    enTitle: 'Stress and calm supplements: ashwagandha, theanine, chamomile',
+    priorityTopics: [
+      'ashwagandha',
+      'l-theanine',
+      'chamomile'
+    ],
+    relatedLinks: [
+      '/portal/category/sleep',
+      '/portal/category/energy',
+      '/portal/supplement/ashwagandha?benefit=anxiety',
+      '/portal/supplement/l-theanine?benefit=anxiety'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'muscle-gain',
+    esTitle: 'Suplementos para músculo y fuerza: proteína, creatina y beta-alanina',
+    enTitle: 'Muscle and strength supplements: protein, creatine, beta-alanine',
+    priorityTopics: [
+      'whey-protein',
+      'creatine',
+      'beta-alanine'
+    ],
+    relatedLinks: [
+      '/portal/category/sports-performance',
+      '/portal/category/energy',
+      '/portal/supplement/creatine?benefit=muscle-gain',
+      '/portal/supplement/whey-protein?benefit=muscle-gain'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'cognitive-function',
+    esTitle: 'Suplementos para memoria y concentración: omega-3, bacopa y ginkgo',
+    enTitle: 'Memory and focus supplements: omega-3, bacopa, and ginkgo',
+    priorityTopics: [
+      'omega-3',
+      'bacopa-monnieri',
+      'ginkgo-biloba'
+    ],
+    relatedLinks: [
+      '/portal/category/energy',
+      '/portal/category/common-deficiencies',
+      '/portal/supplement/bacopa-monnieri?benefit=cognitive-function',
+      '/portal/supplement/ginkgo-biloba?benefit=cognitive-function'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'joint-bone-health',
+    esTitle: 'Suplementos para articulaciones y huesos: vitamina D, glucosamina y colágeno',
+    enTitle: 'Joint and bone supplements: vitamin D, glucosamine, collagen',
+    priorityTopics: [
+      'vitamin-d',
+      'glucosamine',
+      'hydrolyzed-collagen'
+    ],
+    relatedLinks: [
+      '/portal/category/common-deficiencies',
+      '/portal/category/sports-performance',
+      '/portal/supplement/vitamin-d?benefit=joint-bone-health',
+      '/portal/supplement/glucosamine?benefit=joint-bone-health'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'skin-hair-health',
+    esTitle: 'Suplementos para piel y cabello: colágeno, biotina y vitamina C',
+    enTitle: 'Skin and hair supplements: collagen, biotin, and vitamin C',
+    priorityTopics: [
+      'collagen',
+      'biotin',
+      'vitamin-c'
+    ],
+    relatedLinks: [
+      '/portal/category/common-deficiencies',
+      '/portal/category/joint-bone-health',
+      '/portal/supplement/collagen?benefit=skin-hair-health',
+      '/portal/supplement/biotin?benefit=skin-hair-health'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'immunity',
+    esTitle: 'Suplementos para inmunidad: vitamina C, zinc y equinácea',
+    enTitle: 'Immune support supplements: vitamin C, zinc, and echinacea',
+    priorityTopics: [
+      'vitamin-c',
+      'zinc',
+      'echinacea'
+    ],
+    relatedLinks: [
+      '/portal/category/common-deficiencies',
+      '/portal/category/sleep',
+      '/portal/supplement/vitamin-c?benefit=immunity',
+      '/portal/supplement/zinc?benefit=immunity'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'mens-health',
+    esTitle: 'Suplementos para salud masculina: próstata, zinc y vitalidad',
+    enTitle: 'Men’s health supplements: prostate context, zinc, and vitality',
+    priorityTopics: [
+      'saw-palmetto',
+      'zinc',
+      'vitamin-d'
+    ],
+    relatedLinks: [
+      '/portal/category/common-deficiencies',
+      '/portal/category/heart-health',
+      '/portal/supplement/saw-palmetto?benefit=mens-health',
+      '/portal/supplement/zinc?benefit=mens-health'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'womens-health',
+    esTitle: 'Suplementos para salud femenina: folato, hierro y calcio',
+    enTitle: 'Women’s health supplements: folate, iron, and calcium',
+    priorityTopics: [
+      'folic-acid',
+      'iron',
+      'calcium'
+    ],
+    relatedLinks: [
+      '/portal/category/common-deficiencies',
+      '/portal/category/joint-bone-health',
+      '/portal/supplement/folic-acid?benefit=womens-health',
+      '/portal/supplement/iron?benefit=womens-health'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'blood-sugar',
+    esTitle: 'Suplementos para glucosa: berberina, psyllium y canela',
+    enTitle: 'Blood sugar supplements: berberine, psyllium, and cinnamon',
+    priorityTopics: [
+      'berberine',
+      'fiber-psyllium',
+      'cinnamon'
+    ],
+    relatedLinks: [
+      '/portal/category/common-deficiencies',
+      '/portal/category/heart-health',
+      '/portal/supplement/berberine?benefit=blood-sugar',
+      '/portal/supplement/fiber-psyllium?benefit=blood-sugar'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'inflammation',
+    esTitle: 'Suplementos para inflamación: curcumina, omega-3 y boswellia',
+    enTitle: 'Inflammation supplements: curcumin, omega-3, and boswellia',
+    priorityTopics: [
+      'curcumin',
+      'omega-3',
+      'boswellia-serrata'
+    ],
+    relatedLinks: [
+      '/portal/category/joint-bone-health',
+      '/portal/category/heart-health',
+      '/portal/supplement/curcumin?benefit=inflammation',
+      '/portal/supplement/omega-3?benefit=inflammation'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'sports-performance',
+    esTitle: 'Suplementos para rendimiento deportivo: creatina y cafeína',
+    enTitle: 'Sports performance supplements: creatine and caffeine',
+    priorityTopics: [
+      'creatine',
+      'caffeine',
+      'beta-alanine'
+    ],
+    relatedLinks: [
+      '/portal/category/muscle-gain',
+      '/portal/category/energy',
+      '/portal/supplement/creatine?benefit=sports-performance',
+      '/portal/supplement/caffeine?benefit=sports-performance'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'hormonal-health',
+    esTitle: 'Suplementos para salud hormonal: inositol, vitamina D y zinc',
+    enTitle: 'Hormonal health supplements: inositol, vitamin D, and zinc',
+    priorityTopics: [
+      'inositol',
+      'vitamin-d',
+      'zinc'
+    ],
+    relatedLinks: [
+      '/portal/category/womens-health',
+      '/portal/category/blood-sugar',
+      '/portal/supplement/inositol?benefit=hormonal-health',
+      '/portal/supplement/vitamin-d?benefit=hormonal-health'
+    ],
+    faqCount: 4
+  },
+  {
+    slug: 'migraine-headache',
+    esTitle: 'Suplementos en contexto de migraña: magnesio, B2 y CoQ10',
+    enTitle: 'Migraine context supplements: magnesium, B2, and CoQ10',
+    priorityTopics: [
+      'magnesium',
+      'riboflavin',
+      'coenzyme-q10'
+    ],
+    relatedLinks: [
+      '/portal/category/sleep',
+      '/portal/category/common-deficiencies',
+      '/portal/supplement/magnesium?benefit=migraine-headache',
+      '/portal/supplement/riboflavin?benefit=migraine-headache'
+    ],
+    faqCount: 4
+  }
+] as const;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -244,6 +469,40 @@ describe('category page SEO', () => {
 
     const serialized = JSON.stringify([energyCopyEs, energyCopyEn, energyContentEs, energyContentEn]);
     expect(serialized).not.toMatch(energyUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
+  it.each(integratedClusterCases)('adds curated SEO content for $slug', (cluster) => {
+    const copyEs = buildCategorySeoCopy({
+      slug: cluster.slug,
+      categoryName: cluster.slug,
+      categoryDescription: 'Cluster description.',
+      locale: 'es',
+    });
+    const copyEn = buildCategorySeoCopy({
+      slug: cluster.slug,
+      categoryName: cluster.slug,
+      categoryDescription: 'Cluster description.',
+      locale: 'en',
+    });
+    const contentEs = buildCategorySeoContent(cluster.slug, 'es');
+    const contentEn = buildCategorySeoContent(cluster.slug, 'en');
+
+    expect(copyEs.title).toBe(cluster.esTitle);
+    expect(copyEn.title).toBe(cluster.enTitle);
+    expect(copyEs.title).not.toContain('evidencia científica');
+    expect(copyEn.title).not.toContain('Evidence-based supplements');
+    expect(contentEs).not.toBeNull();
+    expect(contentEn).not.toBeNull();
+    expect(contentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual(cluster.priorityTopics);
+    expect(contentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual(cluster.priorityTopics);
+    expect(contentEs?.relatedLinks?.map((link) => link.href)).toEqual(cluster.relatedLinks);
+    expect(contentEn?.relatedLinks?.map((link) => link.href)).toEqual(cluster.relatedLinks);
+    expect(contentEs?.faqs).toHaveLength(cluster.faqCount);
+    expect(contentEn?.faqs).toHaveLength(cluster.faqCount);
+
+    const serialized = JSON.stringify([copyEs, copyEn, contentEs, contentEn]);
+    expect(serialized).not.toMatch(integratedClusterUnsafePattern);
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
