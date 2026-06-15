@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    'blood-sugar': {
+      es: {
+        title: 'Suplementos para glucosa: berberina, psyllium y canela',
+        description:
+          'Compara berberina, psyllium, canela y magnesio por glucosa, comidas, laboratorios, medicamentos, tolerancia y seguridad.',
+      },
+      en: {
+        title: 'Blood sugar supplements: berberine, psyllium, and cinnamon',
+        description:
+          'Compare berberine, psyllium, cinnamon, and magnesium by glucose context, meals, labs, medications, tolerance, and safety.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,182 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    'blood-sugar': {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para glucosa, comidas, sensibilidad a la insulina y salud metabólica. La lectura responsable separa dieta, actividad física, laboratorios, medicamentos y seguimiento profesional.',
+        highlights: [
+          'Berberina se revisa con especial cuidado si hay medicamentos para diabetes, embarazo, lactancia o problemas gastrointestinales.',
+          'Psyllium es una fibra soluble que se compara mejor por comidas, saciedad, tolerancia digestiva y separación de medicamentos.',
+          'Canela tiene evidencia variable y depende del tipo de extracto; conviene revisar dosis, calidad y seguridad hepática.',
+          'Magnesio pertenece más al contexto de deficiencia o ingesta baja que a una promesa directa sobre glucosa.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Berberina y medicamentos',
+            description:
+              'Revisar glucosa, medicamentos, embarazo, lactancia, tolerancia digestiva e interacciones antes de usarla.',
+            supplementSlug: 'berberine',
+            searchLabel: 'Abrir la guía de berberina',
+          },
+          {
+            title: 'Psyllium con comidas',
+            description:
+              'Comparar fibra soluble, saciedad, agua, tolerancia digestiva y separación de medicamentos.',
+            supplementSlug: 'fiber-psyllium',
+            searchLabel: 'Abrir la guía de psyllium',
+          },
+          {
+            title: 'Canela y extracto',
+            description:
+              'Revisar tipo de canela, extracto, dosis, variabilidad de evidencia y seguridad antes de usarla.',
+            supplementSlug: 'cinnamon',
+            searchLabel: 'Abrir la guía de canela',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Deficiencias comunes',
+            description:
+              'Magnesio, vitamina D y otros nutrientes se interpretan mejor con dieta, laboratorios y contexto metabólico.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Revisar deficiencias',
+          },
+          {
+            title: 'Salud cardiovascular',
+            description:
+              'Glucosa, lípidos y presión arterial suelen revisarse juntos dentro del riesgo cardiometabólico.',
+            href: '/portal/category/heart-health',
+            label: 'Revisar salud cardíaca',
+          },
+          {
+            title: 'Berberina',
+            description:
+              'Guía específica para revisar medicamentos, tolerancia digestiva y límites de evidencia.',
+            href: '/portal/supplement/berberine?benefit=blood-sugar',
+            label: 'Comparar berberina',
+          },
+          {
+            title: 'Psyllium',
+            description:
+              'Útil para revisar comidas, fibra soluble, agua, saciedad e interacciones por horario.',
+            href: '/portal/supplement/fiber-psyllium?benefit=blood-sugar',
+            label: 'Comparar psyllium',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos y glucosa',
+        faqs: [
+          {
+            question: '¿Qué revisar antes de usar berberina?',
+            answer:
+              'Medicamentos para glucosa, embarazo, lactancia, función hepática o renal, tolerancia digestiva y seguimiento profesional. No debe sustituir controles ni tratamiento indicado.',
+          },
+          {
+            question: '¿Psyllium se usa igual que berberina?',
+            answer:
+              'No. Psyllium es fibra soluble y depende mucho de comida, agua y tolerancia digestiva. Berberina requiere más cuidado con medicamentos e interacciones.',
+          },
+          {
+            question: '¿Canela tiene evidencia consistente?',
+            answer:
+              'La evidencia es variable y depende del producto, extracto y dosis. También conviene revisar seguridad hepática y uso con otros suplementos.',
+          },
+          {
+            question: '¿Cuándo buscar orientación profesional?',
+            answer:
+              'Glucosa alta, síntomas nuevos, diabetes, embarazo, hipoglucemias, uso de insulina o medicamentos para glucosa requieren orientación profesional.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para glucosa',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for glucose context, meals, insulin sensitivity, and metabolic health. Responsible review separates diet, physical activity, labs, medications, and professional follow-up.',
+        highlights: [
+          'Berberine needs special care when diabetes medications, pregnancy, breastfeeding, or gastrointestinal issues are relevant.',
+          'Psyllium is a soluble fiber best compared by meals, satiety, digestive tolerance, and medication timing.',
+          'Cinnamon has variable evidence and depends on extract type; dose, quality, and liver safety should be reviewed.',
+          'Magnesium fits more in deficiency or low-intake context than as a direct glucose promise.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Berberine and medications',
+            description:
+              'Review glucose context, medications, pregnancy, breastfeeding, digestive tolerance, and interactions before use.',
+            supplementSlug: 'berberine',
+            searchLabel: 'Open the berberine guide',
+          },
+          {
+            title: 'Psyllium with meals',
+            description:
+              'Compare soluble fiber, satiety, water intake, digestive tolerance, and medication timing.',
+            supplementSlug: 'fiber-psyllium',
+            searchLabel: 'Open the psyllium guide',
+          },
+          {
+            title: 'Cinnamon and extract type',
+            description:
+              'Review cinnamon type, extract, dose, evidence variability, and safety before use.',
+            supplementSlug: 'cinnamon',
+            searchLabel: 'Open the cinnamon guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Common deficiencies',
+            description:
+              'Magnesium, vitamin D, and other nutrients are interpreted better with diet, labs, and metabolic context.',
+            href: '/portal/category/common-deficiencies',
+            label: 'Review deficiencies',
+          },
+          {
+            title: 'Heart health',
+            description:
+              'Glucose, lipids, and blood pressure are often reviewed together in cardiometabolic risk.',
+            href: '/portal/category/heart-health',
+            label: 'Review heart health',
+          },
+          {
+            title: 'Berberine',
+            description:
+              'A specific guide for reviewing medications, digestive tolerance, and evidence limits.',
+            href: '/portal/supplement/berberine?benefit=blood-sugar',
+            label: 'Compare berberine',
+          },
+          {
+            title: 'Psyllium',
+            description:
+              'Useful for reviewing meals, soluble fiber, water, satiety, and timing interactions.',
+            href: '/portal/supplement/fiber-psyllium?benefit=blood-sugar',
+            label: 'Compare psyllium',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about supplements and blood sugar',
+        faqs: [
+          {
+            question: 'What should I review before using berberine?',
+            answer:
+              'Glucose medications, pregnancy, breastfeeding, liver or kidney context, digestive tolerance, and professional follow-up. It should not replace monitoring or indicated care.',
+          },
+          {
+            question: 'Is psyllium used the same way as berberine?',
+            answer:
+              'No. Psyllium is soluble fiber and depends heavily on meals, water, and digestive tolerance. Berberine needs more care around medications and interactions.',
+          },
+          {
+            question: 'Is cinnamon evidence consistent?',
+            answer:
+              'Evidence is variable and depends on product, extract, and dose. Liver safety and use with other supplements should also be reviewed.',
+          },
+          {
+            question: 'When should I seek professional guidance?',
+            answer:
+              'High glucose, new symptoms, diabetes, pregnancy, hypoglycemia, insulin use, or glucose medications warrant professional guidance.',
+          },
+        ],
+        supplementLinksHeading: 'Blood sugar supplement guides',
       },
     },
     'common-deficiencies': {

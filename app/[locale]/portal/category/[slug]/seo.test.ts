@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const bloodSugarUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,74 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for blood sugar', () => {
+    const bloodSugarCopyEs = buildCategorySeoCopy({
+      slug: 'blood-sugar',
+      categoryName: 'Control de Glucosa',
+      categoryDescription:
+        'Suplementos que pueden apoyar el metabolismo de la glucosa, la sensibilidad a la insulina y hábitos de salud metabólica.',
+      locale: 'es',
+    });
+    const bloodSugarCopyEn = buildCategorySeoCopy({
+      slug: 'blood-sugar',
+      categoryName: 'Blood Sugar Control',
+      categoryDescription:
+        'Supplements that may support glucose metabolism, insulin sensitivity, and metabolic health habits.',
+      locale: 'en',
+    });
+    const bloodSugarContentEs = buildCategorySeoContent('blood-sugar', 'es');
+    const bloodSugarContentEn = buildCategorySeoContent('blood-sugar', 'en');
+
+    expect(bloodSugarCopyEs.title).toBe('Suplementos para glucosa: berberina, psyllium y canela');
+    expect(bloodSugarCopyEs.description).toContain('medicamentos');
+    expect(bloodSugarCopyEs.title).not.toContain('evidencia científica');
+    expect(bloodSugarCopyEn.title).toBe('Blood sugar supplements: berberine, psyllium, and cinnamon');
+    expect(bloodSugarCopyEn.description).toContain('medications');
+    expect(bloodSugarCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(bloodSugarContentEs).not.toBeNull();
+    expect(bloodSugarContentEn).not.toBeNull();
+    expect(bloodSugarContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'berberine',
+      'fiber-psyllium',
+      'cinnamon',
+    ]);
+    expect(bloodSugarContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'berberine',
+      'fiber-psyllium',
+      'cinnamon',
+    ]);
+    expect(bloodSugarContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/heart-health',
+      '/portal/supplement/berberine?benefit=blood-sugar',
+      '/portal/supplement/fiber-psyllium?benefit=blood-sugar',
+    ]);
+    expect(bloodSugarContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/common-deficiencies',
+      '/portal/category/heart-health',
+      '/portal/supplement/berberine?benefit=blood-sugar',
+      '/portal/supplement/fiber-psyllium?benefit=blood-sugar',
+    ]);
+    expect(bloodSugarContentEs?.faqs).toHaveLength(4);
+    expect(bloodSugarContentEn?.faqs).toHaveLength(4);
+    expect(bloodSugarContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Qué revisar antes de usar berberina?'
+    );
+    expect(bloodSugarContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'What should I review before using berberine?'
+    );
+
+    const serialized = JSON.stringify([
+      bloodSugarCopyEs,
+      bloodSugarCopyEn,
+      bloodSugarContentEs,
+      bloodSugarContentEn,
+    ]);
+    expect(serialized).not.toMatch(bloodSugarUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +327,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('blood-sugar', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);
