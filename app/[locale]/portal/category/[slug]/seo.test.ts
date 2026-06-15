@@ -8,6 +8,8 @@ const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
+const anxietyUnsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 
 describe('category page SEO', () => {
   it('builds targeted metadata for priority category pages', () => {
@@ -247,6 +249,67 @@ describe('category page SEO', () => {
     expect(serialized).not.toContain('"@type":"Product"');
   });
 
+  it('adds curated SEO content for anxiety and stress', () => {
+    const anxietyCopyEs = buildCategorySeoCopy({
+      slug: 'anxiety',
+      categoryName: 'Ansiedad y Estrés',
+      categoryDescription: 'Suplementos estudiados para estrés y calma.',
+      locale: 'es',
+    });
+    const anxietyCopyEn = buildCategorySeoCopy({
+      slug: 'anxiety',
+      categoryName: 'Anxiety and Stress',
+      categoryDescription: 'Supplements studied for stress and calm.',
+      locale: 'en',
+    });
+    const anxietyContentEs = buildCategorySeoContent('anxiety', 'es');
+    const anxietyContentEn = buildCategorySeoContent('anxiety', 'en');
+
+    expect(anxietyCopyEs.title).toBe('Suplementos para estrés y calma: ashwagandha, teanina y manzanilla');
+    expect(anxietyCopyEs.description).toContain('estrés cotidiano');
+    expect(anxietyCopyEs.title).not.toContain('evidencia científica');
+    expect(anxietyCopyEn.title).toBe('Stress and calm supplements: ashwagandha, theanine, chamomile');
+    expect(anxietyCopyEn.description).toContain('everyday stress context');
+    expect(anxietyCopyEn.title).not.toContain('Evidence-based supplements');
+
+    expect(anxietyContentEs).not.toBeNull();
+    expect(anxietyContentEn).not.toBeNull();
+    expect(anxietyContentEs?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'ashwagandha',
+      'l-theanine',
+      'chamomile',
+    ]);
+    expect(anxietyContentEn?.priorityTopics?.map((topic) => topic.supplementSlug)).toEqual([
+      'ashwagandha',
+      'l-theanine',
+      'chamomile',
+    ]);
+    expect(anxietyContentEs?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/sleep',
+      '/portal/category/energy',
+      '/portal/supplement/ashwagandha?benefit=anxiety',
+      '/portal/supplement/l-theanine?benefit=anxiety',
+    ]);
+    expect(anxietyContentEn?.relatedLinks?.map((link) => link.href)).toEqual([
+      '/portal/category/sleep',
+      '/portal/category/energy',
+      '/portal/supplement/ashwagandha?benefit=anxiety',
+      '/portal/supplement/l-theanine?benefit=anxiety',
+    ]);
+    expect(anxietyContentEs?.faqs).toHaveLength(4);
+    expect(anxietyContentEn?.faqs).toHaveLength(4);
+    expect(anxietyContentEs?.faqs.map((faq) => faq.question)).toContain(
+      '¿Cuándo buscar apoyo profesional?'
+    );
+    expect(anxietyContentEn?.faqs.map((faq) => faq.question)).toContain(
+      'When should I seek professional support?'
+    );
+
+    const serialized = JSON.stringify([anxietyCopyEs, anxietyCopyEn, anxietyContentEs, anxietyContentEn]);
+    expect(serialized).not.toMatch(anxietyUnsafePattern);
+    expect(serialized).not.toContain('"@type":"Product"');
+  });
+
   it('does not add generic SEO content for non-priority categories', () => {
     expect(buildCategorySeoContent('gut-health', 'en')).toBeNull();
   });
@@ -257,6 +320,7 @@ describe('category page SEO', () => {
       buildCategorySeoContent('cholesterol-triglycerides', 'en'),
       buildCategorySeoContent('heart-health', 'es'),
       buildCategorySeoContent('energy', 'es'),
+      buildCategorySeoContent('anxiety', 'es'),
     ]);
 
     expect(serialized).not.toMatch(unsafePattern);

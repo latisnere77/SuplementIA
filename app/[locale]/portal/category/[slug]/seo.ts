@@ -81,6 +81,18 @@ export function buildCategorySeoCopy({
           'Compare caffeine, rhodiola, creatine, and nutrients such as B12 or iron by fatigue context, sleep, diet, training, and safety.',
       },
     },
+    anxiety: {
+      es: {
+        title: 'Suplementos para estrés y calma: ashwagandha, teanina y manzanilla',
+        description:
+          'Compara ashwagandha, L-teanina y manzanilla por evidencia, tolerancia, somnolencia, medicamentos y contexto de estrés cotidiano.',
+      },
+      en: {
+        title: 'Stress and calm supplements: ashwagandha, theanine, chamomile',
+        description:
+          'Compare ashwagandha, L-theanine, and chamomile by evidence, tolerability, drowsiness, medications, and everyday stress context.',
+      },
+    },
     'common-deficiencies': {
       es: {
         title: 'Deficiencias comunes: vitamina D, hierro, B12, folato y zinc',
@@ -703,6 +715,180 @@ export function buildCategorySeoContent(slug: string, locale: 'es' | 'en'): Cate
           },
         ],
         supplementLinksHeading: 'Energy supplement guides',
+      },
+    },
+    anxiety: {
+      es: {
+        intro:
+          'Esta guía compara suplementos buscados para estrés cotidiano, sensación de calma y descanso mental. No reemplaza evaluación profesional: organiza ashwagandha, L-teanina y manzanilla por evidencia, seguridad, somnolencia e interacciones posibles.',
+        highlights: [
+          'Ashwagandha se revisa más cuando la intención principal es estrés percibido o carga mental sostenida; la preparación y la dosis cambian el contexto.',
+          'L-teanina suele interesar cuando se busca relajación sin mucha somnolencia, especialmente si también se consume cafeína.',
+          'Manzanilla encaja como opción herbal suave, con evidencia más variable y precauciones si hay alergias o uso de sedantes.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Ashwagandha y estrés percibido',
+            description:
+              'Opción adaptógena estudiada en estrés cotidiano; conviene revisar extracto, dosis, tiroides, embarazo, hígado y medicamentos.',
+            supplementSlug: 'ashwagandha',
+            searchLabel: 'Abrir la guía de ashwagandha',
+          },
+          {
+            title: 'L-teanina para calma diurna',
+            description:
+              'Aminoácido del té verde revisado para relajación y foco tranquilo; el contexto cambia si se combina con cafeína.',
+            supplementSlug: 'l-theanine',
+            searchLabel: 'Abrir la guía de L-teanina',
+          },
+          {
+            title: 'Manzanilla como opción herbal',
+            description:
+              'Opción tradicional para descanso y calma, con evidencia más modesta; revisar alergias, sedantes y embarazo.',
+            supplementSlug: 'chamomile',
+            searchLabel: 'Abrir la guía de manzanilla',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Sueño y descanso',
+            description:
+              'Si el estrés se mezcla con mal descanso, compara melatonina, magnesio, lavanda y hábitos de sueño antes de apilar suplementos.',
+            href: '/portal/category/sleep',
+            label: 'Revisar sueño',
+          },
+          {
+            title: 'Energía y fatiga',
+            description:
+              'Cuando la carga mental se siente como cansancio, revisa sueño, cafeína, rhodiola y posibles deficiencias.',
+            href: '/portal/category/energy',
+            label: 'Revisar energía',
+          },
+          {
+            title: 'Ashwagandha',
+            description:
+              'Guía específica para comparar evidencia, seguridad hepática rara, tiroides, embarazo y diferencias de extracto.',
+            href: '/portal/supplement/ashwagandha?benefit=anxiety',
+            label: 'Comparar ashwagandha',
+          },
+          {
+            title: 'L-teanina',
+            description:
+              'Útil para usuarios que quieren separar calma diurna, cafeína, foco y somnolencia.',
+            href: '/portal/supplement/l-theanine?benefit=anxiety',
+            label: 'Comparar L-teanina',
+          },
+        ],
+        faqHeading: 'Preguntas frecuentes sobre suplementos para estrés y calma',
+        faqs: [
+          {
+            question: '¿Qué suplemento revisar primero para estrés cotidiano?',
+            answer:
+              'Depende del contexto. Ashwagandha se compara más para estrés percibido sostenido; L-teanina para calma diurna; manzanilla para una opción herbal suave. Sueño, cafeína, alcohol y medicamentos cambian la decisión.',
+          },
+          {
+            question: '¿Puedo combinar ashwagandha, teanina y manzanilla?',
+            answer:
+              'Conviene evitar combinaciones sin revisar somnolencia, sedantes, alcohol, embarazo, lactancia, hígado, tiroides y medicamentos. Comparar una opción a la vez facilita entender tolerancia.',
+          },
+          {
+            question: '¿Cuándo buscar apoyo profesional?',
+            answer:
+              'Si hay crisis de pánico, pensamientos de autolesión, síntomas intensos, insomnio persistente, uso de benzodiacepinas o antidepresivos, o deterioro funcional, la evaluación profesional tiene prioridad.',
+          },
+          {
+            question: '¿El estrés puede venir de sueño o deficiencias?',
+            answer:
+              'Sí. Falta de sueño, exceso de cafeína, alcohol, baja ingesta, anemia u otros factores pueden influir. Por eso conviene revisar hábitos, laboratorios y contexto antes de elegir suplementos.',
+          },
+        ],
+        supplementLinksHeading: 'Guías de suplementos para estrés',
+      },
+      en: {
+        intro:
+          'This guide compares supplements searched for everyday stress, a calmer state, and mental rest. It does not replace professional evaluation: it organizes ashwagandha, L-theanine, and chamomile by evidence, safety, drowsiness, and possible interactions.',
+        highlights: [
+          'Ashwagandha is usually reviewed when the main intent is perceived stress or sustained mental load; extract and dose change the context.',
+          'L-theanine is often considered when people want relaxation without much drowsiness, especially when caffeine is also used.',
+          'Chamomile fits as a gentle herbal option, with more variable evidence and precautions around allergies or sedatives.',
+        ],
+        priorityTopics: [
+          {
+            title: 'Ashwagandha and perceived stress',
+            description:
+              'An adaptogen option studied in everyday stress; review extract, dose, thyroid, pregnancy, liver context, and medications.',
+            supplementSlug: 'ashwagandha',
+            searchLabel: 'Open the ashwagandha guide',
+          },
+          {
+            title: 'L-theanine for daytime calm',
+            description:
+              'A green-tea amino acid reviewed for relaxation and calm focus; context changes when it is paired with caffeine.',
+            supplementSlug: 'l-theanine',
+            searchLabel: 'Open the L-theanine guide',
+          },
+          {
+            title: 'Chamomile as a herbal option',
+            description:
+              'A traditional option for rest and calm, with more modest evidence; review allergies, sedatives, and pregnancy.',
+            supplementSlug: 'chamomile',
+            searchLabel: 'Open the chamomile guide',
+          },
+        ],
+        relatedLinks: [
+          {
+            title: 'Sleep and rest',
+            description:
+              'If stress overlaps with poor rest, compare melatonin, magnesium, lavender, and sleep habits before stacking supplements.',
+            href: '/portal/category/sleep',
+            label: 'Review sleep',
+          },
+          {
+            title: 'Energy and fatigue',
+            description:
+              'When mental load feels like tiredness, review sleep, caffeine, rhodiola, and possible deficiencies.',
+            href: '/portal/category/energy',
+            label: 'Review energy',
+          },
+          {
+            title: 'Ashwagandha',
+            description:
+              'A specific guide for evidence, rare liver safety signals, thyroid context, pregnancy, and extract differences.',
+            href: '/portal/supplement/ashwagandha?benefit=anxiety',
+            label: 'Compare ashwagandha',
+          },
+          {
+            title: 'L-theanine',
+            description:
+              'Useful for separating daytime calm, caffeine pairing, focus, and drowsiness.',
+            href: '/portal/supplement/l-theanine?benefit=anxiety',
+            label: 'Compare L-theanine',
+          },
+        ],
+        faqHeading: 'Frequently asked questions about stress and calm supplements',
+        faqs: [
+          {
+            question: 'Which supplement should I review first for everyday stress?',
+            answer:
+              'It depends on context. Ashwagandha is compared more for sustained perceived stress; L-theanine for daytime calm; chamomile as a gentle herbal option. Sleep, caffeine, alcohol, and medications change the decision.',
+          },
+          {
+            question: 'Can I combine ashwagandha, theanine, and chamomile?',
+            answer:
+              'Avoid combinations without reviewing drowsiness, sedatives, alcohol, pregnancy, breastfeeding, liver context, thyroid context, and medications. Comparing one option at a time makes tolerability easier to interpret.',
+          },
+          {
+            question: 'When should I seek professional support?',
+            answer:
+              'Panic attacks, self-harm thoughts, intense symptoms, persistent insomnia, benzodiazepine or antidepressant use, or functional impairment deserve professional evaluation first.',
+          },
+          {
+            question: 'Can stress be related to sleep or deficiencies?',
+            answer:
+              'Yes. Poor sleep, too much caffeine, alcohol, low intake, anemia, or other factors can contribute. That is why habits, labs, and context should be reviewed before choosing supplements.',
+          },
+        ],
+        supplementLinksHeading: 'Stress supplement guides',
       },
     },
     'common-deficiencies': {
