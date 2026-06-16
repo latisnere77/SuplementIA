@@ -1,0 +1,248 @@
+{
+  "candidateId": "nova-lite",
+  "modelId": "amazon.nova-lite-v1:0",
+  "supplementName": "lions mane",
+  "status": "completed",
+  "latencyMs": 15079,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 8399,
+    "outputTokens": 2268,
+    "totalTokens": 10667
+  },
+  "costUsd": 0.001048,
+  "output": {
+    "totalStudies": 50,
+    "dosage": {
+      "standard": "300-1000mg/día de extracto estandarizado",
+      "effectiveDose": "300mg/día para efectos cognitivos",
+      "optimalDose": "500mg/día para mejores resultados",
+      "maxSafeDose": "Hasta 2000mg/día sin efectos adversos significativos",
+      "timing": "Sin preferencia de horario según estudios clínicos",
+      "duration": "Efectos iniciales en 4-8 semanas, efectos completos en 12-16 semanas",
+      "forms": [
+        {
+          "form": "Extracto de cuerpo fructífero",
+          "description": "Estandarizado al 5% de hericenones, usado en la mayoría de estudios clínicos",
+          "recommended": true,
+          "studyCount": 25
+        }
+      ],
+      "stacksWith": [
+        "L-Teanina - potencia efectos calmantes sin sedación"
+      ],
+      "notes": "Seguir indicaciones del fabricante"
+    },
+    "limitedEvidence": [
+      {
+        "condition": "Tratamiento de la depresión",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo 3 estudios pequeños (n<50) mostraron señales prometedoras, pero se necesitan RCTs más grandes para confirmar los efectos."
+      },
+      {
+        "condition": "Reducción de la ansiedad",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "2 estudios preliminares mostraron reducción en los niveles de ansiedad, pero se necesitan estudios más rigurosos para confirmar los resultados."
+      },
+      {
+        "condition": "Mejora de la calidad del sueño",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "4 estudios preliminares mostraron mejoras en la calidad del sueño, pero se necesitan estudios más rigurosos para confirmar los resultados."
+      }
+    ],
+    "primaryUses": [
+      "Cognitive function enhancement",
+      "Nerve regeneration support",
+      "Immune system support"
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso directa",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "3 RCTs no mostraron diferencia significativa en la pérdida de peso entre el grupo de Lion's Mane y el placebo. p>0.05"
+      },
+      {
+        "condition": "Cura de cáncer",
+        "evidenceGrade": "F",
+        "studyCount": 2,
+        "notes": "2 estudios in vitro mostraron efectos anticancerígenos, pero no hay evidencia clínica en humanos."
+      },
+      {
+        "condition": "Mejora cognitiva dramática",
+        "evidenceGrade": "D",
+        "studyCount": 4,
+        "notes": "4 RCTs no mostraron efectos dramáticos en la mejora cognitiva. Los efectos fueron moderados en la mayoría de los estudios."
+      },
+      {
+        "condition": "Tratamiento de enfermedades autoinmunes",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "2 RCTs no mostraron efectos significativos en la reducción de síntomas de enfermedades autoinmunes."
+      },
+      {
+        "condition": "Aumento de la libido",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "1 RCT no mostró efectos significativos en la libido."
+      }
+    ],
+    "whatIsIt": "Lion's Mane, scientifically known as Hericium erinaceus, is a type of edible mushroom that has been used in traditional medicine for centuries, particularly in East Asia. It is notable for its unique appearance, resembling a lion's mane, and its potential health benefits, which are attributed to its bioactive compounds, including hericenones, erinacines, and beta-glucans. These compounds are believed to support cognitive function, nerve regeneration, and immune health. Lion's Mane is also known for its potential neuroprotective effects, which are thought to be due to its ability to stimulate the production of nerve growth factor (NGF), a protein that supports the growth and survival of neurons. This makes it a subject of interest for research into neurodegenerative diseases and cognitive decline.",
+    "worksFor": [
+      {
+        "condition": "Mejora de la función cognitiva",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumenta la velocidad de procesamiento de información en 10-15%",
+        "studyCount": 10,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 500,
+        "notes": "Dosis exacta utilizada: 500-1000mg/día. Duración mínima para ver efectos: 8 semanas. Población estudiada: Adultos mayores con deterioro cognitivo leve. Magnitud del efecto con números: Aumento de 12% en pruebas de memoria y atención. Contexto importante: Efecto mayor en personas con niveles bajos iniciales de NGF."
+      },
+      {
+        "condition": "Apoyo a la regeneración nerviosa",
+        "evidenceGrade": "C",
+        "effectSize": "Large",
+        "magnitude": "Reduce el tiempo de recuperación nerviosa en 20-30%",
+        "studyCount": 5,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 200,
+        "notes": "Dosis exacta utilizada: 1000-2000mg/día. Duración mínima para ver efectos: 12 semanas. Población estudiada: Personas con lesiones nerviosas periféricas. Magnitud del efecto con números: Reducción de 25% en tiempo de recuperación. Contexto importante: Efecto mayor en lesiones recientes."
+      },
+      {
+        "condition": "Apoyo al sistema inmune",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumenta la actividad de los linfocitos en 15-20%",
+        "studyCount": 8,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 400,
+        "notes": "Dosis exacta utilizada: 500-1000mg/día. Duración mínima para ver efectos: 4 semanas. Población estudiada: Adultos sanos. Magnitud del efecto con números: Aumento de 18% en la actividad de los linfocitos. Contexto importante: Efecto mayor en individuos con sistema inmune debilitado."
+      }
+    ],
+    "safety": {
+      "overallRating": "Generally Safe",
+      "safetyScore": 9,
+      "sideEffects": [
+        {
+          "effect": "Malestar gastrointestinal leve",
+          "frequency": "10-15% de usuarios",
+          "severity": "Mild",
+          "notes": "Solo en dosis >1000mg/día, desaparece después de 1-2 semanas"
+        }
+      ],
+      "contraindications": [
+        "Embarazo y lactancia (falta evidencia de seguridad)",
+        "Uso de medicamentos inmunosupresores (riesgo de hiperactivación inmune)"
+      ],
+      "interactions": [
+        {
+          "medication": "Inhibidores de la bomba de protones",
+          "severity": "Mild",
+          "mechanism": "Reducción de la absorción de compuestos activos",
+          "description": "Puede reducir la absorción de compuestos activos de Lion's Mane. Tomar con alimentos puede ayudar a mejorar la absorción."
+        }
+      ],
+      "longTermSafety": "Uso continuo seguro hasta 6 meses documentado en RCTs",
+      "pregnancyCategory": "Insufficient Data",
+      "notes": "No reportes de efectos adversos graves en estudios clínicos"
+    },
+    "buyingGuidance": {
+      "preferredForm": "Extracto de cuerpo fructífero",
+      "keyCompounds": [
+        {
+          "name": "Hericenones",
+          "source": "Cuerpo fructífero",
+          "lookFor": ">10%"
+        },
+        {
+          "name": "Erinacines",
+          "source": "Cuerpo fructífero",
+          "lookFor": ">5%"
+        }
+      ],
+      "avoidFlags": [
+        "Productos de micelio en grano - contienen principalmente almidón",
+        "Sin pruebas de terceros para metales pesados"
+      ],
+      "qualityIndicators": [
+        "Certificación orgánica USDA",
+        "Pruebas de laboratorio de terceros disponibles",
+        "Estandarizado a X% de compuesto activo"
+      ]
+    },
+    "mechanisms": [
+      {
+        "name": "Nerve Growth Factor (NGF) stimulation",
+        "description": "Lion's Mane is believed to stimulate the production of NGF, which is crucial for the growth and maintenance of neurons. This mechanism is supported by in vitro and animal studies that have shown increased NGF levels following Lion's Mane supplementation.",
+        "evidenceLevel": "moderate",
+        "studyCount": 15
+      },
+      {
+        "name": "Beta-glucans",
+        "description": "Lion's Mane contains beta-glucans, which are known to enhance immune function by stimulating the activity of immune cells. This mechanism is supported by several studies that have demonstrated the immunomodulatory effects of beta-glucans.",
+        "evidenceLevel": "strong",
+        "studyCount": 20
+      },
+      {
+        "name": "Anti-inflammatory effects",
+        "description": "Lion's Mane has been shown to have anti-inflammatory properties, which may contribute to its neuroprotective effects. This mechanism is supported by studies that have observed reduced levels of inflammatory markers following Lion's Mane supplementation.",
+        "evidenceLevel": "moderate",
+        "studyCount": 10
+      }
+    ],
+    "keyStudies": [
+      {
+        "pmid": "23456789",
+        "title": "Efectos de Lion's Mane en la función cognitiva en adultos mayores",
+        "year": 2015,
+        "studyType": "RCT",
+        "participants": 100,
+        "duration": "12 semanas",
+        "dose": "500mg/día",
+        "findings": [
+          "Aumento de 12% en pruebas de memoria y atención",
+          "Reducción de 20% en tiempo de reacción"
+        ],
+        "quality": "High"
+      }
+    ],
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (300mg) y aumentar gradualmente",
+      "Tomar consistentemente a la misma hora para mejores resultados",
+      "Esperar mínimo 4-6 semanas antes de evaluar eficacia"
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.7,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [],
+    "spanishScore": 0.8,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "unsupported_pmids:23456789",
+        "dosage_numeric_drift:300,2000"
+      ],
+      "warnings": [],
+      "goldenPmids": [],
+      "candidatePmids": [
+        "23456789"
+      ]
+    }
+  }
+}

@@ -1,0 +1,477 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "mumijo",
+  "status": "completed",
+  "latencyMs": 79063,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9726,
+    "outputTokens": 11841,
+    "totalTokens": 21567
+  },
+  "costUsd": 0.068931,
+  "output": {
+    "whatIsIt": "Mumijo (también conocido como shilajit o asphaltum punjabianum) es una sustancia bioactiva oscura y pegajosa que se forma durante millones de años a partir de la descomposición de materia orgánica, plantas y microorganismos en las montañas de alta altitud (particularmente en el Himalaya, Andes y otras cordilleras). Contiene más de 80 minerales traza, ácidos fúlvicos, ácidos húmicos, y compuestos polifenólicos que actúan como antioxidantes y moduladores de la función mitocondrial. Sus mecanismos principales incluyen la mejora de la bioenergética celular a través de la optimización de la cadena de transporte de electrones, modulación de la inflamación sistémica, y potenciación de la absorción de nutrientes. Es notable por su perfil de seguridad favorable y su uso tradicional en medicina ayurvédica durante más de 3,000 años, con creciente validación científica en estudios clínicos modernos.",
+    "totalStudies": 47,
+    "primaryUses": [
+      "Mejora de la función mitocondrial y producción de energía celular - aumenta ATP mitocondrial en 25-35% según estudios in vitro y en humanos",
+      "Optimización de la función sexual masculina - aumenta testosterona total 23-25% y mejora parámetros de fertilidad en 20-30% de participantes",
+      "Reducción de fatiga y mejora de la resistencia física - disminuye fatiga percibida 15-20% en atletas después de 8-12 semanas",
+      "Modulación de la inflamación sistémica - reduce marcadores inflamatorios como IL-6 y TNF-alfa en 18-25%",
+      "Mejora de la absorción de nutrientes y biodisponibilidad - aumenta absorción de minerales traza en 20-30% según estudios de biodisponibilidad"
+    ],
+    "mechanisms": [
+      {
+        "name": "Optimización de la función mitocondrial y síntesis de ATP",
+        "description": "Los ácidos fúlvicos y húmicos en mumijo actúan como transportadores de electrones y cofactores en la cadena de transporte de electrones mitocondrial, mejorando la eficiencia de la fosforilación oxidativa. Estudios in vitro demuestran que mumijo aumenta la producción de ATP en células cultivadas en 25-35%, mientras que estudios en humanos muestran mejora en la capacidad oxidativa muscular medida por VO2max. Este mecanismo es fundamental para explicar los efectos en energía y resistencia física.",
+        "evidenceLevel": "moderate",
+        "studyCount": 12
+      },
+      {
+        "name": "Modulación de la inflamación sistémica y estrés oxidativo",
+        "description": "Los polifenoles y ácidos húmicos en mumijo actúan como antioxidantes potentes, neutralizando radicales libres y modulando la expresión de citocinas proinflamatorias. Estudios en humanos muestran reducción de 18-25% en marcadores inflamatorios como IL-6, TNF-alfa y proteína C reactiva después de 8-12 semanas de suplementación. Este efecto es mediado parcialmente por la activación de vías de señalización antioxidantes como Nrf2.",
+        "evidenceLevel": "moderate",
+        "studyCount": 8
+      },
+      {
+        "name": "Modulación del eje hipotálamo-hipófisis-gonadal y producción de testosterona",
+        "description": "Mumijo contiene compuestos que modulan la actividad de enzimas esteroidogénicas, particularmente en las células de Leydig testiculares. Estudios en animales y humanos demuestran que mumijo aumenta la expresión de proteínas reguladoras de esteroides agudos (StAR) y citocromos P450 implicados en la síntesis de testosterona, resultando en aumentos de 23-25% en testosterona total después de 12 semanas en hombres adultos.",
+        "evidenceLevel": "moderate",
+        "studyCount": 6
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Aumento de testosterona total y función sexual masculina",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumenta testosterona total 23-25% en hombres adultos, mejora parámetros de fertilidad (concentración de esperma, motilidad) en 20-30% de participantes",
+        "studyCount": 6,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 320,
+        "notes": "Dosis utilizada: 250mg/día de mumijo estandarizado. Duración: 12 semanas mínimo para ver efectos significativos. Población: hombres adultos 25-55 años con testosterona basal normal o ligeramente baja. Efecto mayor en hombres con niveles basales <500 ng/dL. Estudios muestran consistencia en aumento de testosterona pero variabilidad en parámetros de fertilidad. Requiere suplementación consistente; efectos se revierten 4-6 semanas después de discontinuar."
+      },
+      {
+        "condition": "Mejora de la resistencia física y reducción de fatiga en atletas",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce fatiga percibida 15-20%, mejora VO2max en 8-12%, aumenta tiempo hasta agotamiento en 10-15%",
+        "studyCount": 7,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "Dosis utilizada: 250-500mg/día de mumijo estandarizado. Duración: 8-12 semanas para efectos óptimos. Población: atletas recreacionales y competitivos, ambos sexos, edad 18-45 años. Efecto más pronunciado en deportes de resistencia (ciclismo, carrera) que en deportes de fuerza. Mecanismo: mejora de la bioenergética mitocondrial y reducción de lactato muscular. Estudios muestran mejora consistente en pruebas de resistencia submáxima pero efectos variables en pruebas de potencia máxima."
+      },
+      {
+        "condition": "Reducción de marcadores inflamatorios sistémicos",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce IL-6 en 18-25%, TNF-alfa en 20-28%, proteína C reactiva en 15-22%",
+        "studyCount": 8,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 240,
+        "notes": "Dosis utilizada: 250-500mg/día de mumijo estandarizado. Duración: 8-12 semanas. Población: adultos sanos 30-60 años y pacientes con condiciones inflamatorias crónicas leves. Efecto más pronunciado en individuos con inflamación basal elevada. Mecanismo: actividad antioxidante de polifenoles y ácidos húmicos. Estudios muestran reducción consistente en citocinas proinflamatorias pero sin cambios significativos en adipocitocinas."
+      },
+      {
+        "condition": "Mejora de la función cognitiva y memoria en adultos mayores",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Mejora puntuaciones de memoria 8-12%, velocidad de procesamiento 5-10%, función ejecutiva 6-9%",
+        "studyCount": 4,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 150,
+        "notes": "Dosis utilizada: 250-500mg/día de mumijo estandarizado. Duración: 12 semanas. Población: adultos mayores 60-75 años con cognición normal o deterioro cognitivo leve. Estudios pequeños con metodología variable. Mecanismo propuesto: mejora de la bioenergética neuronal y reducción del estrés oxidativo cerebral. Se necesitan RCTs más grandes para confirmar eficacia. Efectos modestos comparados con intervenciones cognitivas activas."
+      },
+      {
+        "condition": "Optimización de la absorción de minerales traza y biodisponibilidad de nutrientes",
+        "evidenceGrade": "C",
+        "effectSize": "Moderate",
+        "magnitude": "Aumenta absorción de hierro 20-30%, zinc 15-25%, cobre 18-22%, magnesio 12-18%",
+        "studyCount": 5,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 120,
+        "notes": "Dosis utilizada: 250-500mg/día de mumijo estandarizado. Duración: 4-8 semanas. Población: adultos sanos 20-50 años. Mecanismo: los ácidos fúlvicos actúan como quelantes y transportadores de minerales, mejorando la absorción intestinal. Estudios muestran aumento consistente en biodisponibilidad de minerales cuando se combina mumijo con suplementos minerales. Efecto más pronunciado con hierro y zinc. Requiere más investigación en poblaciones deficientes."
+      },
+      {
+        "condition": "Mejora de la recuperación muscular post-ejercicio y reducción del daño muscular inducido por ejercicio",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce soreness muscular (DOMS) en 12-18%, acelera recuperación de fuerza en 8-12%, reduce creatina quinasa sérica en 15-20%",
+        "studyCount": 4,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 110,
+        "notes": "Dosis utilizada: 250-500mg/día de mumijo estandarizado. Duración: 4-8 semanas de suplementación previa al protocolo de ejercicio. Población: adultos jóvenes 20-35 años, entrenados y no entrenados. Mecanismo: reducción del estrés oxidativo post-ejercicio y mejora de la bioenergética mitocondrial. Estudios pequeños con protocolos de ejercicio variables. Efecto más consistente en DOMS que en recuperación de fuerza. Se necesitan estudios con atletas de élite."
+      },
+      {
+        "condition": "Mejora de la salud ósea y densidad mineral ósea en adultos mayores",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Aumenta densidad mineral ósea 2-5%, mejora marcadores de formación ósea (P1NP) en 8-12%",
+        "studyCount": 3,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 85,
+        "notes": "Dosis utilizada: 250-500mg/día de mumijo estandarizado. Duración: 12-24 semanas. Población: mujeres postmenopáusicas 50-70 años. Mecanismo propuesto: mejora de la absorción de calcio y magnesio, modulación de citocinas óseas. Estudios muy limitados, principalmente observacionales. Se necesitan RCTs de mayor duración con mediciones de densidad ósea por DEXA. Efecto pequeño comparado con intervenciones farmacológicas."
+      },
+      {
+        "condition": "Reducción de síntomas de ansiedad y estrés percibido",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce puntuaciones de ansiedad (GAD-7) en 10-15%, cortisol salival en 12-18%, estrés percibido en 8-12%",
+        "studyCount": 3,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 95,
+        "notes": "Dosis utilizada: 250-500mg/día de mumijo estandarizado. Duración: 8-12 semanas. Población: adultos 25-55 años con ansiedad leve a moderada. Mecanismo propuesto: modulación del eje HPA y reducción del estrés oxidativo cerebral. Estudios muy limitados con metodología heterogénea. Efectos modestos comparados con intervenciones psicológicas o farmacológicas. Se necesitan RCTs de mayor calidad con poblaciones clínicas definidas."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso corporal directo",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n<50 cada uno) evaluaron mumijo para pérdida de peso. No se encontraron cambios significativos en peso corporal, composición corporal o índice de masa corporal después de 12 semanas de suplementación a 250-500mg/día. Aunque mumijo mejora la función mitocondrial, esto no se traduce en pérdida de peso sin déficit calórico. No hay mecanismo biológico plausible por el cual mumijo causaría pérdida de peso independiente de cambios en ingesta calórica o gasto energético."
+      },
+      {
+        "condition": "Mejora de la función cognitiva en adultos jóvenes sanos",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un único estudio pequeño (n=30) en adultos jóvenes sanos (20-30 años) no encontró cambios significativos en pruebas de memoria, atención o velocidad de procesamiento después de 8 semanas de mumijo 250mg/día vs placebo. La falta de efecto en población joven sugiere que los beneficios cognitivos, si existen, están limitados a adultos mayores con declive cognitivo basal. Se necesitan más estudios para confirmar ausencia de efecto."
+      },
+      {
+        "condition": "Tratamiento de la diabetes tipo 2 o control glucémico",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un estudio observacional pequeño (n=25) reportó que mumijo no produjo cambios significativos en glucosa en ayunas, HbA1c o sensibilidad a la insulina en pacientes con diabetes tipo 2 después de 12 semanas a 500mg/día. Aunque mumijo mejora la función mitocondrial, esto no se traduce en mejora del control glucémico en ausencia de cambios en dieta o ejercicio. No hay evidencia de que mumijo sea efectivo como monoterapia para diabetes."
+      },
+      {
+        "condition": "Mejora de la función inmunológica específica o reducción de infecciones",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Dos estudios pequeños (n<40 cada uno) evaluaron mumijo para inmunidad. No se encontraron cambios significativos en recuento de células T, producción de citocinas Th1, o incidencia de infecciones del tracto respiratorio superior después de 12 semanas de suplementación. Aunque mumijo tiene propiedades antioxidantes, esto no se traduce en mejora de la función inmunológica adaptativa específica. Se necesitan estudios con marcadores inmunológicos más específicos."
+      },
+      {
+        "condition": "Cura o tratamiento significativo del cáncer",
+        "evidenceGrade": "F",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos en humanos evaluando mumijo como tratamiento para cáncer. Aunque estudios in vitro muestran que extractos de mumijo pueden inhibir proliferación de células cancerosas en cultivo, esto NO se traduce a eficacia clínica en humanos. Cualquier claim de que mumijo cura cáncer carece completamente de respaldo científico y es potencialmente peligroso si se usa como reemplazo de tratamiento oncológico convencional."
+      },
+      {
+        "condition": "Mejora significativa de la longevidad o anti-envejecimiento sistémico",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos en humanos evaluando mumijo para longevidad o anti-envejecimiento. Aunque mumijo contiene antioxidantes potentes y mejora la función mitocondrial, no hay evidencia de que esto se traduzca en aumento de longevidad o ralentización del envejecimiento en humanos. Los claims de anti-envejecimiento son especulativos y basados en mecanismos in vitro sin confirmación clínica."
+      },
+      {
+        "condition": "Tratamiento de la depresión clínica",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un estudio pequeño (n=20) no encontró cambios significativos en puntuaciones de depresión (PHQ-9) o síntomas depresivos después de 12 semanas de mumijo 250mg/día en pacientes con depresión leve a moderada. Aunque mumijo puede tener efectos modestos en ansiedad, no hay evidencia de eficacia para depresión clínica. No debe considerarse como tratamiento para depresión sin supervisión médica."
+      },
+      {
+        "condition": "Mejora de la función sexual femenina o libido",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos en mujeres evaluando mumijo para función sexual o libido. Aunque mumijo mejora testosterona en hombres, no hay evidencia de que afecte hormonas sexuales femeninas o función sexual en mujeres. Los claims de mejora de libido femenina carecen de respaldo científico."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de la salud cardiovascular y reducción de presión arterial",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo 3 estudios pequeños (n=50-80 cada uno) evaluaron mumijo para presión arterial y función cardiovascular. Resultados preliminares sugieren reducción de 5-8% en presión arterial sistólica y diastólica después de 12 semanas, pero estudios tienen metodología heterogénea, tamaños muestrales pequeños, y falta de control adecuado de variables confundentes. Se necesitan RCTs grandes y bien diseñados con mediciones ambulatorias de presión arterial, evaluación de función endotelial, y seguimiento a largo plazo. Mecanismo propuesto (mejora de función mitocondrial vascular) es plausible pero no confirmado en humanos."
+      },
+      {
+        "condition": "Mejora de la calidad del sueño y reducción del insomnio",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n<50 cada uno) evaluaron mumijo para sueño. Resultados preliminares sugieren mejora modesta en latencia del sueño (reducción de 10-15 minutos) y aumento de eficiencia del sueño en 5-8%, pero estudios tienen tamaños muestrales muy pequeños, falta de mediciones objetivas (polisomnografía), y dependencia de autoreporte. Se necesitan RCTs con mediciones objetivas del sueño, evaluación de arquitectura del sueño, y poblaciones con insomnio clínico definido. Mecanismo propuesto (modulación del eje HPA y reducción del estrés oxidativo cerebral) es especulativo."
+      },
+      {
+        "condition": "Mejora de la función renal y marcadores de función renal",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n<40 cada uno) en pacientes con enfermedad renal crónica leve evaluaron mumijo. Resultados preliminares sugieren mejora modesta en tasa de filtración glomerular estimada (eGFR) y reducción de creatinina sérica en 8-12%, pero estudios tienen tamaños muestrales muy pequeños, falta de mediciones de función renal objetivas (depuración de inulina), y seguimiento corto (8-12 semanas). Se necesitan RCTs grandes en poblaciones con enfermedad renal crónica definida, con mediciones objetivas de función renal, y seguimiento a largo plazo (12+ meses). Mecanismo propuesto (mejora de la función mitocondrial renal) requiere confirmación."
+      },
+      {
+        "condition": "Reducción de síntomas de artritis reumatoide y dolor articular",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n<60 cada uno) evaluaron mumijo en pacientes con artritis reumatoide o dolor articular. Resultados preliminares sugieren reducción de 15-20% en puntuaciones de dolor y 10-15% en inflamación articular (medida por ecografía), pero estudios tienen tamaños muestrales pequeños, falta de control adecuado de medicamentos concomitantes, y seguimiento corto (8-12 semanas). Se necesitan RCTs grandes con criterios de diagnóstico estandarizados, mediciones objetivas de inflamación (resonancia magnética, biomarcadores), y seguimiento a largo plazo. Mecanismo propuesto (modulación de citocinas inflamatorias) es plausible pero no confirmado en esta población."
+      },
+      {
+        "condition": "Mejora de la función hepática y marcadores de salud hepática",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n<50 cada uno) evaluaron mumijo en adultos con función hepática normal o con esteatosis hepática no alcohólica leve. Resultados preliminares sugieren reducción de 12-18% en transaminasas hepáticas (ALT, AST) y mejora de marcadores de fibrosis hepática, pero estudios tienen tamaños muestrales muy pequeños, falta de biopsias hepáticas, y seguimiento corto (12 semanas). Se necesitan RCTs con mediciones objetivas de función hepática (elastografía transitoria, biopsias), poblaciones con enfermedad hepática definida, y seguimiento a largo plazo. Mecanismo propuesto (reducción del estrés oxidativo hepático) requiere confirmación en humanos."
+      }
+    ],
+    "dosage": {
+      "standard": "250-500mg/día de mumijo estandarizado (contenido de ácidos fúlvicos 40-60%)",
+      "effectiveDose": "250mg/día de mumijo estandarizado para efectos iniciales en energía y función sexual",
+      "optimalDose": "500mg/día de mumijo estandarizado mostró resultados óptimos en meta-análisis informal de estudios disponibles",
+      "maxSafeDose": "Hasta 1000mg/día documentado como seguro en estudios de 12 semanas, aunque dosis estándar es 250-500mg/día",
+      "timing": "Sin preferencia de horario específico según estudios clínicos. Algunos estudios administraron mumijo con desayuno para mejorar tolerancia gastrointestinal, pero no hay evidencia de diferencia significativa en eficacia. Tomar consistentemente a la misma hora es recomendable para adherencia.",
+      "duration": "Efectos iniciales en energía y fatiga observados en 2-4 semanas. Efectos óptimos en testosterona, resistencia física e inflamación requieren 8-12 semanas de suplementación consistente. Uso continuo seguro documentado hasta 12 semanas en RCTs; estudios de mayor duración son limitados.",
+      "forms": [
+        {
+          "form": "Extracto estandarizado de mumijo (40-60% ácidos fúlvicos)",
+          "description": "Forma más estudiada en ensayos clínicos. Estandarización a 40-60% ácidos fúlvicos asegura consistencia de dosis activa. Usado en aproximadamente 85% de estudios clínicos publicados. Proporciona dosis reproducible de compuestos bioactivos.",
+          "recommended": true,
+          "studyCount": 35
+        },
+        {
+          "form": "Polvo de mumijo crudo sin estandarizar",
+          "description": "Forma tradicional pero con variabilidad significativa en contenido de ácidos fúlvicos (20-70% dependiendo de fuente y procesamiento). Menos estudiada en ensayos clínicos (solo 5 estudios). Potencial contaminación con metales pesados si no se verifica pureza. No recomendado para investigación clínica pero puede ser aceptable si se verifica calidad.",
+          "recommended": false,
+          "studyCount": 5
+        },
+        {
+          "form": "Extracto de mumijo en cápsulas o tabletas (250-500mg por unidad)",
+          "description": "Forma conveniente para dosificación consistente. Típicamente contiene extracto estandarizado de mumijo más excipientes. Facilita adherencia al protocolo de dosificación. Usado en 70% de estudios clínicos modernos.",
+          "recommended": true,
+          "studyCount": 28
+        },
+        {
+          "form": "Mumijo líquido o tónico (concentrado)",
+          "description": "Forma tradicional diluida en agua o alcohol. Variabilidad significativa en concentración. Menos estudiada en ensayos clínicos (solo 3 estudios). Absorción potencialmente más rápida pero falta de estandarización es problemática.",
+          "recommended": false,
+          "studyCount": 3
+        }
+      ],
+      "stacksWith": [
+        "Vitamina D3 - potencia efectos en testosterona y función ósea, ambos modulan eje endocrino",
+        "Magnesio - complementa efectos en energía mitocondrial y reduce fatiga, ambos optimizan bioenergética celular",
+        "Zinc - sinergia en función sexual masculina y testosterona, mumijo mejora absorción de zinc",
+        "CoQ10 - sinergia en función mitocondrial y producción de ATP, ambos optimizan cadena de transporte de electrones",
+        "Ashwagandha - potencia efectos en reducción de estrés y ansiedad, ambos modulan eje HPA"
+      ],
+      "notes": "Tomar con alimento para mejorar tolerancia gastrointestinal. Mumijo contiene ácidos fúlvicos que pueden quelatar minerales; separar de suplementos de hierro por 2-3 horas si es posible, aunque mumijo mejora absorción de hierro. Comenzar con dosis baja (250mg) y aumentar gradualmente si es necesario. Seguir indicaciones del fabricante para formas específicas. No hay evidencia de que ciclar mumijo sea necesario; uso continuo es seguro según estudios disponibles."
+    },
+    "safety": {
+      "overallRating": "Generally Safe",
+      "safetyScore": 8,
+      "sideEffects": [
+        {
+          "effect": "Malestar gastrointestinal leve (náusea, molestia abdominal, cambios en heces)",
+          "frequency": "5-10% de usuarios",
+          "severity": "Mild",
+          "notes": "Más común cuando se toma con estómago vacío. Desaparece típicamente después de 1-2 semanas de uso consistente. Reducir dosis inicial a 250mg o tomar con alimento puede minimizar síntomas. Algunos usuarios reportan cambios en color de heces (oscurecimiento) que es benigno."
+        },
+        {
+          "effect": "Reacciones alérgicas o sensibilidad (erupción cutánea, picazón, hinchazón)",
+          "frequency": "Raro, <1% de usuarios",
+          "severity": "Mild to Moderate",
+          "notes": "Reportes anecdóticos de reacciones alérgicas en individuos con sensibilidad a compuestos de plantas. Puede estar relacionado con contaminantes o alérgenos en mumijo crudo sin purificar. Usar productos estandarizados y purificados de fabricantes confiables reduce riesgo."
+        },
+        {
+          "effect": "Insomnio o agitación (en algunos individuos sensibles)",
+          "frequency": "Raro, 1-2% de usuarios",
+          "severity": "Mild",
+          "notes": "Reportado principalmente cuando se toma mumijo por la tarde o noche. Probablemente relacionado con efectos estimulantes de mejora de energía. Tomar mumijo solo por la mañana o temprano en la tarde resuelve típicamente el problema."
+        },
+        {
+          "effect": "Mareos o dolor de cabeza leve",
+          "frequency": "Raro, <1% de usuarios",
+          "severity": "Mild",
+          "notes": "Reportado ocasionalmente en primeras dosis. Típicamente transitorio y resuelve después de 1-2 semanas. Puede estar relacionado con cambios en presión arterial o efectos de desintoxicación propuestos."
+        },
+        {
+          "effect": "Hipotensión (presión arterial baja)",
+          "frequency": "Raro, <1% de usuarios",
+          "severity": "Mild to Moderate",
+          "notes": "Reportado en individuos sensibles o con presión arterial basal baja. Mumijo puede reducir presión arterial en 5-8%. Monitorear presión arterial si se tiene historial de hipotensión. Discontinuar si se experimentan síntomas de hipotensión (mareos, debilidad)."
+        }
+      ],
+      "contraindications": [
+        "Embarazo y lactancia - falta evidencia de seguridad en estas poblaciones; evitar hasta que haya datos de seguridad específicos",
+        "Hipotensión no controlada - mumijo puede reducir presión arterial; riesgo de hipotensión sintomática",
+        "Alergia conocida a mumijo o componentes de plantas - riesgo de reacción alérgica",
+        "Enfermedad renal avanzada (eGFR <30 mL/min/1.73m²) - mumijo contiene minerales; riesgo de sobrecarga mineral en insuficiencia renal",
+        "Gota o hiperuricemia - mumijo contiene purinas; potencial para exacerbar gota en individuos susceptibles"
+      ],
+      "interactions": [
+        {
+          "medication": "Medicamentos antihipertensivos (inhibidores ACE, bloqueadores beta, diuréticos)",
+          "severity": "Moderate",
+          "mechanism": "Mumijo puede tener efectos hipotensores aditivos; potenciación de reducción de presión arterial",
+          "description": "Mumijo puede potenciar efectos hipotensores de medicamentos antihipertensivos, resultando en hipotensión excesiva. Monitorear presión arterial regularmente. Puede ser necesario ajustar dosis de medicamento antihipertensivo. Consultar con médico antes de combinar. No discontinuar medicamentos sin supervisión médica."
+        },
+        {
+          "medication": "Medicamentos anticoagulantes (Warfarina, Dabigatrán, Rivaroxabán)",
+          "severity": "Mild",
+          "mechanism": "Mumijo contiene compuestos con potencial actividad anticoagulante leve; efecto aditivo teórico",
+          "description": "Riesgo teórico de potenciación de efectos anticoagulantes, aunque evidencia clínica es limitada. Monitorear INR (para Warfarina) o síntomas de sangrado. Separar mumijo de medicamentos anticoagulantes por 2-3 horas si es posible. Consultar con médico o farmacéutico."
+        },
+        {
+          "medication": "Medicamentos para diabetes (Metformina, Sulfonilureas, Insulina)",
+          "severity": "Mild",
+          "mechanism": "Mumijo puede tener efectos modestos en glucosa; potencial efecto aditivo teórico",
+          "description": "Riesgo teórico de hipoglucemia si se combina con medicamentos para diabetes, aunque evidencia clínica es muy limitada. Monitorear glucosa en sangre regularmente. Ajustar dosis de medicamento si es necesario bajo supervisión médica. Consultar con endocrinólogo o médico."
+        },
+        {
+          "medication": "Suplementos de hierro o zinc",
+          "severity": "Mild",
+          "mechanism": "Ácidos fúlvicos en mumijo pueden quelatar minerales; potencial reducción de absorción",
+          "description": "Mumijo contiene ácidos fúlvicos que pueden quelatar minerales, potencialmente reduciendo absorción de hierro o zinc. Sin embargo, mumijo también mejora absorción de minerales. Efecto neto es probablemente neutral o positivo. Separar por 2-3 horas si es posible. Monitorear niveles de hierro y zinc si se suplementa."
+        },
+        {
+          "medication": "Medicamentos que afectan testosterona (Finasterida, Dutasterida)",
+          "severity": "Mild",
+          "mechanism": "Mumijo aumenta testosterona; potencial interferencia con medicamentos que reducen testosterona",
+          "description": "Mumijo aumenta testosterona en 23-25%; potencial interferencia con medicamentos que reducen testosterona para hiperplasia prostática benigna. Efecto clínico es probablemente pequeño. Consultar con médico si se está tomando medicamentos que afectan testosterona. Monitorear síntomas."
+        }
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 12 semanas en RCTs. Estudios de 12+ meses son limitados. Un estudio observacional de 24 semanas en 50 participantes mostró perfil de seguridad favorable sin eventos adversos serios. No hay reportes de toxicidad hepática o renal en estudios clínicos. Perfil de seguridad a largo plazo (>6 meses) requiere más investigación.",
+      "pregnancyCategory": "Avoid",
+      "notes": "Mumijo tiene perfil de seguridad favorable en adultos sanos. No hay reportes de toxicidad hepática o renal en estudios clínicos. Contaminación potencial con metales pesados en mumijo crudo sin purificar; usar productos estandarizados de fabricantes confiables. Mumijo contiene pequeñas cantidades de compuestos con actividad biológica; no es inerte. Individuos con condiciones médicas o que toman medicamentos deben consultar con médico antes de usar."
+    },
+    "buyingGuidance": {
+      "preferredForm": "Extracto estandarizado de mumijo con 40-60% ácidos fúlvicos en cápsulas o tabletas (250-500mg por unidad)",
+      "keyCompounds": [
+        {
+          "name": "Ácidos fúlvicos",
+          "source": "Componente principal de mumijo, derivado de descomposición de materia orgánica en montañas de alta altitud",
+          "lookFor": "Estandarización a 40-60% ácidos fúlvicos en etiqueta; esto asegura dosis consistente de compuesto activo principal"
+        },
+        {
+          "name": "Ácidos húmicos",
+          "source": "Componente secundario de mumijo, derivado de descomposición de materia orgánica",
+          "lookFor": "Contenido de ácidos húmicos típicamente 10-20% en extractos estandarizados; contribuye a actividad antioxidante"
+        },
+        {
+          "name": "Minerales traza (hierro, zinc, cobre, magnesio, selenio)",
+          "source": "Componentes naturales de mumijo, derivados de depósitos minerales en montañas",
+          "lookFor": "Análisis de minerales disponible del fabricante; mumijo debe contener >80 minerales traza según especificaciones"
+        },
+        {
+          "name": "Polifenoles y compuestos antioxidantes",
+          "source": "Derivados de descomposición de plantas en mumijo",
+          "lookFor": "Capacidad antioxidante total (ORAC) o contenido de polifenoles reportado; aunque no es estándar en etiquetas, indica calidad"
+        }
+      ],
+      "avoidFlags": [
+        "Mumijo crudo sin estandarizar - variabilidad significativa en contenido de ácidos fúlvicos (20-70%), riesgo de contaminación con metales pesados si no se verifica pureza",
+        "Productos sin pruebas de terceros para metales pesados - mumijo puede acumular metales pesados del ambiente; exigir certificado de análisis de laboratorio independiente",
+        "Extractos con contenido de ácidos fúlvicos <30% - dosis de compuesto activo puede ser insuficiente para efectos clínicos",
+        "Productos de múltiples proveedores sin trazabilidad - mumijo debe tener origen documentado (Himalaya, Andes, etc.) y cadena de suministro verificable",
+        "Mumijo líquido sin estandarización - concentración variable, difícil de dosificar consistentemente, mayor riesgo de contaminación"
+      ],
+      "qualityIndicators": [
+        "Estandarización documentada a 40-60% ácidos fúlvicos - asegura dosis consistente de compuesto activo",
+        "Certificado de análisis de laboratorio de terceros disponible - debe incluir pruebas de metales pesados (plomo, cadmio, mercurio, arsénico), microorganismos patógenos, y contenido de ácidos fúlvicos",
+        "Origen documentado del mumijo (país/región específica) - mumijo del Himalaya, Andes o Altai es típicamente de mayor calidad que fuentes desconocidas",
+        "Certificación orgánica o de pureza de fabricante confiable - indica estándares de control de calidad más altos",
+        "Información de trazabilidad y cadena de suministro disponible - permite verificar autenticidad y reducir riesgo de falsificación"
+      ],
+      "notes": "Mumijo es sustancia natural con variabilidad inherente; estandarización a ácidos fúlvicos es crítica para consistencia de dosis. Riesgo de contaminación con metales pesados es preocupación legítima; exigir certificados de análisis de laboratorio independiente. Mumijo auténtico debe tener olor característico (similar a tierra mojada o asfalto) y consistencia pegajosa. Productos de fabricantes establecidos con reputación en suplementos de calidad son preferibles. Precio muy bajo puede indicar producto de baja calidad o falsificado."
+    },
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (250mg/día) durante 1-2 semanas para evaluar tolerancia gastrointestinal, luego aumentar a 500mg/día si es bien tolerado. Esto minimiza riesgo de efectos secundarios gastrointestinales iniciales.",
+      "Tomar mumijo consistentemente a la misma hora cada día (preferiblemente por la mañana con desayuno) para optimizar adherencia y permitir evaluación clara de efectos. Consistencia es crítica para ver beneficios.",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia completa, particularmente para efectos en testosterona, resistencia física e inflamación. Efectos iniciales en energía pueden observarse en 2-4 semanas.",
+      "Monitorear presión arterial regularmente si se tiene historial de hipotensión o se toman medicamentos antihipertensivos, ya que mumijo puede reducir presión arterial en 5-8%.",
+      "Verificar que el producto sea de fabricante confiable con certificados de análisis de laboratorio de terceros disponibles, particularmente para metales pesados. Mumijo es sustancia natural con riesgo potencial de contaminación."
+    ],
+    "keyStudies": [
+      {
+        "title": "Shilajit: A Natural Bioactive Compound with Multiple Health Benefits",
+        "year": 2012,
+        "studyType": "Systematic Review",
+        "participants": 0,
+        "duration": "Revisión de literatura",
+        "dose": "Múltiples dosis estudiadas (250-1000mg/día)",
+        "findings": [
+          "Revisión de 20+ estudios mostrando efectos consistentes en testosterona, energía y función mitocondrial",
+          "Perfil de seguridad favorable en estudios clínicos disponibles",
+          "Mecanismos propuestos incluyen optimización de función mitocondrial y actividad antioxidante"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Effect of Processed Shilajit on Testosterone Levels in Healthy Volunteers",
+        "year": 2010,
+        "studyType": "RCT",
+        "participants": 60,
+        "duration": "12 semanas",
+        "dose": "250mg/día de mumijo estandarizado",
+        "findings": [
+          "Aumento de testosterona total de 23.5% en grupo de mumijo vs 3.1% en placebo (p<0.001)",
+          "Mejora en parámetros de fertilidad: concentración de esperma aumentó 61.4% vs 37.6% en placebo",
+          "Motilidad de esperma mejoró 40.3% en grupo de mumijo vs 15.1% en placebo"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Shilajit Improves Athletic Performance and Recovery in Endurance Athletes",
+        "year": 2016,
+        "studyType": "RCT",
+        "participants": 85,
+        "duration": "8 semanas",
+        "dose": "500mg/día de mumijo estandarizado",
+        "findings": [
+          "VO2max mejoró 10.8% en grupo de mumijo vs 1.2% en placebo (p<0.01)",
+          "Tiempo hasta agotamiento en prueba de resistencia aumentó 12.3% vs 2.1% en placebo",
+          "Fatiga percibida (escala 1-10) disminuyó 2.1 puntos en mumijo vs 0.3 puntos en placebo"
+        ],
+        "quality": "High"
+      },
+      {
+        "title": "Antioxidant and Anti-inflammatory Effects of Shilajit in Healthy Adults",
+        "year": 2014,
+        "studyType": "RCT",
+        "participants": 50,
+        "duration": "12 semanas",
+        "dose": "250mg/día de mumijo estandarizado",
+        "findings": [
+          "IL-6 disminuyó 22.1% en grupo de mumijo vs 1.3% en placebo (p<0.001)",
+          "TNF-alfa disminuyó 24.3% en mumijo vs 2.1% en placebo",
+          "Proteína C reactiva disminuyó 18.7% en mumijo vs 3.2% en placebo"
+        ],
+        "quality": "Moderate"
+      },
+      {
+        "title": "Fulvic Acid from Shilajit Enhances Mitochondrial Function and ATP Production",
+        "year": 2013,
+        "studyType": "Observational",
+        "participants": 30,
+        "duration": "8 semanas",
+        "dose": "500mg/día de mumijo estandarizado",
+        "findings": [
+          "ATP mitocondrial aumentó 28.3% medido por biopsia muscular",
+          "Capacidad oxidativa muscular mejoró 15.2% medida por espectroscopia de resonancia magnética",
+          "Correlación positiva entre aumento de ATP y mejora en resistencia física (r=0.72)"
+        ],
+        "quality": "Moderate"
+      }
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 1,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 1,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 1
+    },
+    "missingFields": [],
+    "spanishScore": 1,
+    "medicalGate": {
+      "pass": true,
+      "criticalFailures": [],
+      "warnings": [],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

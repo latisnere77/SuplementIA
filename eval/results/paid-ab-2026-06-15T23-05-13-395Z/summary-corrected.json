@@ -1,0 +1,72 @@
+{
+  "mode": "paid-ab-rescore-corrected",
+  "generatedAt": "2026-06-16T00:39:36.425Z",
+  "sourceRunDir": "eval/results/paid-ab-2026-06-15T23-05-13-395Z",
+  "goldenDir": "eval/golden",
+  "liveInference": "NOT_INVOKED_REUSED_SAVED_OUTPUTS",
+  "pmidVerification": {
+    "source": "NCBI E-utilities esummary PubMed, no API key",
+    "cachePath": "eval/results/paid-ab-2026-06-15T23-05-13-395Z/pubmed-cache.json",
+    "totalCitedPmids": 12,
+    "fabricatedPmids": []
+  },
+  "byCandidate": [
+    {
+      "candidateId": "sonnet-baseline",
+      "modelId": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "completed": 30,
+      "failed": 0,
+      "averageScore": 0.99,
+      "medicalGatePasses": 30,
+      "medicalGateFailures": 0,
+      "fabricatedPmids": [],
+      "dangerousDoseFlags": [],
+      "missingSafetyInteractions": 0,
+      "totalInputTokens": 0,
+      "totalOutputTokens": 514314,
+      "totalCostUsd": 0,
+      "costPerCompletedUsd": 0,
+      "averageLatencyMs": 116325
+    },
+    {
+      "candidateId": "haiku-4.5",
+      "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+      "completed": 30,
+      "failed": 0,
+      "averageScore": 0.947,
+      "medicalGatePasses": 30,
+      "medicalGateFailures": 0,
+      "fabricatedPmids": [],
+      "dangerousDoseFlags": [],
+      "missingSafetyInteractions": 0,
+      "totalInputTokens": 291894,
+      "totalOutputTokens": 298494,
+      "totalCostUsd": 1.784364,
+      "costPerCompletedUsd": 0.059479,
+      "averageLatencyMs": 70763
+    },
+    {
+      "candidateId": "nova-lite",
+      "modelId": "amazon.nova-lite-v1:0",
+      "completed": 30,
+      "failed": 0,
+      "averageScore": 0.914,
+      "medicalGatePasses": 29,
+      "medicalGateFailures": 1,
+      "fabricatedPmids": [],
+      "dangerousDoseFlags": [],
+      "missingSafetyInteractions": 1,
+      "totalInputTokens": 251977,
+      "totalOutputTokens": 67861,
+      "totalCostUsd": 0.031402,
+      "costPerCompletedUsd": 0.001047,
+      "averageLatencyMs": 15266
+    }
+  ],
+  "verdict": {
+    "baselineCandidateId": "sonnet-baseline",
+    "viableCandidateIds": [],
+    "recommendation": "No candidate matches or exceeds the corrected absolute baseline gate; do not migrate yet.",
+    "recommendedCandidateId": null
+  }
+}

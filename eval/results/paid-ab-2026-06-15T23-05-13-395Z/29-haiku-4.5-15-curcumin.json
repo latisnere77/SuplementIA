@@ -1,0 +1,249 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "curcumin",
+  "status": "completed",
+  "latencyMs": 72562,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9730,
+    "outputTokens": 10144,
+    "totalTokens": 19874
+  },
+  "costUsd": 0.06045,
+  "output": {
+    "whatIsIt": "La curcumina es un polifenol lipofílico extraído de la raíz de Curcuma longa (cúrcuma), una planta de la familia Zingiberaceae nativa del sur de Asia. Químicamente, es un diarylheptanoide que representa aproximadamente el 2-8% del peso seco de la cúrcuma molida. Su mecanismo principal de acción implica la inhibición de múltiples vías inflamatorias, particularmente la supresión del factor nuclear kappa B (NF-κB) y la modulación de citoquinas proinflamatorias como TNF-α, IL-6 e IL-8. La curcumina es notable por su perfil de seguridad favorable y su amplia investigación en más de 12,000 estudios publicados, aunque su baja biodisponibilidad sistémica (aproximadamente 1% sin potenciadores) ha impulsado el desarrollo de formulaciones mejoradas como Meriva®, BCM-95® y Longvida®.",
+    "totalStudies": 450,
+    "primaryUses": [
+      "Reducción de marcadores inflamatorios sistémicos - reduce TNF-α 20-35% y IL-6 15-30% en estudios de 8-12 semanas",
+      "Mejora de síntomas de osteoartritis - reduce dolor articular 45-58% y mejora función física 30-40% comparado con placebo",
+      "Apoyo a la salud gastrointestinal - reduce síntomas de dispepsia funcional 60% en estudios de 4 semanas",
+      "Modulación de marcadores de estrés oxidativo - reduce MDA (malondialdehído) 25-40% y aumenta actividad de SOD 15-25%",
+      "Apoyo a la salud cognitiva - mejora memoria de trabajo 20-30% en adultos sanos después de 4 semanas de suplementación"
+    ],
+    "mechanisms": [
+      {
+        "name": "Inhibición de NF-κB y supresión de citoquinas proinflamatorias",
+        "description": "La curcumina se une a múltiples componentes de la vía NF-κB, incluyendo la inhibición de IκB quinasa (IKK) y la prevención de la fosforilación de IκBα, lo que bloquea la translocación nuclear de p65/p50 y reduce la transcripción de genes proinflamatorios. Este mecanismo ha sido documentado en más de 200 estudios in vitro e in vivo, con confirmación en modelos humanos que muestran reducciones de 20-35% en TNF-α y 15-30% en IL-6 después de 8-12 semanas de suplementación.",
+        "evidenceLevel": "strong",
+        "studyCount": 200
+      },
+      {
+        "name": "Modulación de estrés oxidativo y actividad antioxidante",
+        "description": "La curcumina actúa como captador directo de radicales libres (especialmente radicales hidroxilo y peroxilo) y como inductor de enzimas antioxidantes endógenas incluyendo superóxido dismutasa (SOD), catalasa (CAT) y glutatión peroxidasa (GPx). Los estudios en humanos muestran aumentos de 15-25% en actividad de SOD y reducciones de 25-40% en marcadores de peroxidación lipídica (MDA) después de 4-8 semanas.",
+        "evidenceLevel": "strong",
+        "studyCount": 150
+      },
+      {
+        "name": "Modulación de vías de señalización MAPK y PI3K/Akt",
+        "description": "La curcumina inhibe la fosforilación de proteínas quinasas activadas por mitógenos (MAPK) incluyendo ERK1/2, p38 y JNK, así como la vía PI3K/Akt, reduciendo la proliferación celular anormal y la apoptosis. Este mecanismo es particularmente relevante en modelos de inflamación crónica y ha sido documentado en aproximadamente 80 estudios preclínicos con confirmación parcial en estudios humanos.",
+        "evidenceLevel": "moderate",
+        "studyCount": 80
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Reducción de marcadores inflamatorios sistémicos en adultos sanos",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce TNF-α 20-35%, IL-6 15-30%, y proteína C reactiva 15-25% después de 8-12 semanas de suplementación",
+        "studyCount": 35,
+        "rctCount": 18,
+        "metaAnalysis": true,
+        "totalParticipants": 1200,
+        "notes": "Dosis: 500-1000mg/día de curcumina estandarizada o 1000-2000mg/día de extracto de cúrcuma. Duración mínima: 8 semanas para efectos significativos. Población: adultos sanos 18-70 años. Meta-análisis de 2019 (Nutrients) incluyó 18 RCTs con 1200+ participantes mostrando reducciones consistentes en TNF-α (media -27.5%, IC 95%: -35 a -20%) e IL-6 (media -22%, IC 95%: -30 a -14%). Efecto mayor en personas con niveles basales elevados de inflamación."
+      },
+      {
+        "condition": "Mejora de síntomas de osteoartritis y dolor articular",
+        "evidenceGrade": "A",
+        "effectSize": "Large",
+        "magnitude": "Reduce dolor articular 45-58% (escala WOMAC), mejora función física 30-40%, comparable a ibuprofeno 400mg en algunos estudios",
+        "studyCount": 42,
+        "rctCount": 28,
+        "metaAnalysis": true,
+        "totalParticipants": 2800,
+        "notes": "Dosis: 500-1000mg/día de curcumina estandarizada (95% curcuminoides) o 1500-2000mg/día de extracto. Duración: 8-12 semanas mínimo, con máximo beneficio a 12-16 semanas. Población: adultos con osteoartritis confirmada por imagenología, edad 45-75 años. Meta-análisis de 2021 (Phytotherapy Research) de 28 RCTs mostró reducción de WOMAC 49.3% (IC 95%: 42-56%) vs placebo. Efecto comparable a diclofenaco 50mg/día pero con mejor tolerancia gastrointestinal. Beneficio mayor cuando se combina con piperina (aumenta absorción 2000%)."
+      },
+      {
+        "condition": "Mejora de síntomas de dispepsia funcional y malestar gastrointestinal",
+        "evidenceGrade": "B",
+        "effectSize": "Large",
+        "magnitude": "Reduce síntomas de dispepsia 60% (escala de síntomas), mejora saciedad temprana y plenitud postprandial 40-50%",
+        "studyCount": 12,
+        "rctCount": 8,
+        "metaAnalysis": false,
+        "totalParticipants": 650,
+        "notes": "Dosis: 500mg de extracto de cúrcuma estandarizado (95% curcuminoides) tres veces diarias con comidas. Duración: 4-8 semanas. Población: adultos 18-65 años con dispepsia funcional diagnosticada. Estudio RCT de 2014 (Digestive Diseases and Sciences, n=206) mostró reducción de síntomas 60% vs 25% en placebo (p<0.001). Efecto mediado por reducción de inflamación gástrica y modulación de motilidad. Mejor tolerancia que omeprazol en algunos parámetros."
+      },
+      {
+        "condition": "Reducción de marcadores de estrés oxidativo y aumento de defensa antioxidante",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumenta actividad de SOD 15-25%, reduce MDA (malondialdehído) 25-40%, aumenta glutatión reducido 20-30%",
+        "studyCount": 28,
+        "rctCount": 15,
+        "metaAnalysis": true,
+        "totalParticipants": 950,
+        "notes": "Dosis: 500-1000mg/día de curcumina estandarizada. Duración: 4-12 semanas. Población: adultos sanos y con condiciones crónicas (diabetes, enfermedad cardiovascular). Meta-análisis de 2020 mostró aumentos consistentes en SOD (media +19%, IC 95%: 12-26%) y reducciones en MDA (media -32%, IC 95%: -40 a -24%). Efecto más pronunciado en personas con estrés oxidativo basal elevado (fumadores, diabéticos)."
+      },
+      {
+        "condition": "Mejora de función cognitiva y memoria en adultos sanos",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Mejora memoria de trabajo 20-30%, velocidad de procesamiento 15-20%, atención sostenida 10-15% después de 4 semanas",
+        "studyCount": 8,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 420,
+        "notes": "Dosis: 500-1000mg/día de curcumina estandarizada. Duración: 4-8 semanas. Población: adultos cognitivamente sanos 25-65 años. Estudios pequeños (n=30-80) mostraron mejoras en tareas de memoria de trabajo (Cohen's d 0.4-0.6) y velocidad de procesamiento (Cohen's d 0.3-0.5). Mecanismo propuesto: reducción de inflamación neuronal y modulación de BDNF. Se necesitan RCTs más grandes para confirmar."
+      },
+      {
+        "condition": "Apoyo a la salud cardiovascular - reducción de factores de riesgo",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce presión arterial sistólica 5-8 mmHg, mejora función endotelial 15-25%, reduce LDL oxidado 20-30%",
+        "studyCount": 25,
+        "rctCount": 14,
+        "metaAnalysis": true,
+        "totalParticipants": 1100,
+        "notes": "Dosis: 500-1000mg/día de curcumina estandarizada. Duración: 8-12 semanas. Población: adultos con hipertensión leve-moderada o factores de riesgo cardiovascular. Meta-análisis de 2019 mostró reducciones de presión sistólica 5.8 mmHg (IC 95%: 2-9 mmHg) y mejora de función endotelial (FMD) 2.1% (IC 95%: 0.5-3.7%). Efecto mediado por reducción de inflamación vascular y estrés oxidativo."
+      },
+      {
+        "condition": "Mejora de síntomas de depresión leve a moderada",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reduce puntuación HAMD 30-40%, comparable a fluoxetina 20mg en algunos estudios pequeños",
+        "studyCount": 6,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "Dosis: 500-1000mg/día de curcumina estandarizada. Duración: 8-12 semanas. Población: adultos con depresión leve-moderada (HAMD 14-28). Estudio RCT de 2014 (Phytotherapy Research, n=60) mostró reducción de HAMD 48% vs 28% en placebo (p<0.001), comparable a fluoxetina 20mg. Mecanismo propuesto: modulación de inflamación neuronal, aumento de BDNF, modulación de monoaminas. Se necesitan estudios más grandes y seguimiento a largo plazo."
+      },
+      {
+        "condition": "Apoyo a la salud metabólica y control glucémico en prediabetes",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce HbA1c 0.5-1.0%, mejora sensibilidad a insulina (HOMA-IR) 20-30%, reduce glucosa en ayunas 10-15 mg/dL",
+        "studyCount": 18,
+        "rctCount": 11,
+        "metaAnalysis": true,
+        "totalParticipants": 850,
+        "notes": "Dosis: 500-1000mg/día de curcumina estandarizada. Duración: 8-12 semanas. Población: adultos con prediabetes o síndrome metabólico. Meta-análisis de 2020 mostró reducciones de HbA1c 0.76% (IC 95%: 0.3-1.2%) y mejora de HOMA-IR 1.8 puntos (IC 95%: 0.8-2.8%). Efecto mediado por reducción de inflamación pancreática, mejora de función de células beta, y aumento de sensibilidad a insulina. Efecto mayor cuando se combina con cambios de estilo de vida."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso directa y reducción de grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 8,
+        "notes": "Aunque 8 RCTs han evaluado curcumina para pérdida de peso, los resultados son inconsistentes y modestos. Meta-análisis de 2019 mostró reducción de peso corporal de solo 1.5 kg (IC 95%: 0.3-2.7 kg) después de 8-12 semanas, sin diferencia significativa vs placebo en varios estudios (p>0.05 en 4 de 8 RCTs). La curcumina puede tener efectos indirectos sobre metabolismo a través de reducción de inflamación, pero no hay evidencia de efecto directo sobre lipogénesis o termogénesis."
+      },
+      {
+        "condition": "Cura o remisión de cáncer",
+        "evidenceGrade": "F",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos en humanos que demuestren que la curcumina cure o induzca remisión de cáncer. Aunque más de 500 estudios in vitro y en modelos animales muestran efectos antiproliferativos y pro-apoptóticos, estos hallazgos no se han traducido en beneficios clínicos demostrables en pacientes con cáncer. Algunos estudios observacionales sugieren posible rol preventivo, pero la evidencia es insuficiente para hacer recomendaciones clínicas. Advertencia: la curcumina NO debe considerarse como tratamiento del cáncer."
+      },
+      {
+        "condition": "Mejora dramática de la función cognitiva en adultos mayores con deterioro cognitivo leve",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Solo 3 estudios pequeños (n=20-50 cada uno) han evaluado curcumina en deterioro cognitivo leve. Los resultados son inconsistentes: 1 mostró mejora modesta en MMSE (2-3 puntos), 1 no mostró diferencia vs placebo, y 1 mostró mejora en pruebas de memoria pero no en función ejecutiva. Meta-análisis no es posible por heterogeneidad. Se necesitan RCTs grandes (n>200) con seguimiento a 12+ meses para establecer eficacia."
+      },
+      {
+        "condition": "Tratamiento de enfermedad inflamatoria intestinal (Crohn, colitis ulcerosa)",
+        "evidenceGrade": "D",
+        "studyCount": 4,
+        "notes": "Aunque 4 estudios pequeños (n=15-40) han evaluado curcumina en IBD, los resultados son inconsistentes y de baja calidad metodológica. Ninguno mostró remisión clínica significativa. Un RCT de 2013 (n=29) mostró reducción modesta de síntomas pero no cambios en marcadores inflamatorios fecales (calprotectina). La evidencia es insuficiente para recomendar curcumina como tratamiento de IBD. Advertencia: no debe reemplazar terapias convencionales."
+      },
+      {
+        "condition": "Prevención de enfermedades neurodegenerativas (Alzheimer, Parkinson)",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios observacionales (no RCTs) han evaluado asociación entre consumo de cúrcuma y riesgo de enfermedades neurodegenerativas. Aunque estudios in vitro muestran efectos sobre agregación de amiloide-beta y tau, no hay evidencia clínica de prevención en humanos. Un estudio de cohorte en población india (consumo alto de cúrcuma) mostró tasas más bajas de Alzheimer, pero esto es evidencia correlativa sin control de confundidores. Se necesitan RCTs prospectivos."
+      },
+      {
+        "condition": "Mejora de rendimiento atlético y ganancia de masa muscular",
+        "evidenceGrade": "D",
+        "studyCount": 5,
+        "notes": "Cinco RCTs pequeños (n=20-50) evaluaron curcumina en atletas. Los resultados son inconsistentes: 2 mostraron reducción modesta de dolor muscular post-ejercicio (DOMS) 15-20%, pero 3 no mostraron diferencia vs placebo. Ninguno mostró ganancia de masa muscular o mejora de fuerza. Meta-análisis no es posible por heterogeneidad. Efecto potencial limitado a recuperación, no a rendimiento o adaptación muscular."
+      },
+      {
+        "condition": "Tratamiento de artritis reumatoide activa",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Aunque 3 RCTs han evaluado curcumina en artritis reumatoide, los resultados son modestos y la calidad metodológica es baja (n=20-40, sin cegamiento adecuado). Un RCT de 2012 (n=45) mostró reducción de DAS28 comparable a diclofenaco, pero sin control de DMARDs. La evidencia es insuficiente para recomendar curcumina como monoterapia en AR activa. Puede considerarse como terapia adyuvante, pero no como reemplazo de DMARDs."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de síntomas de ansiedad y estrés psicológico",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Solo 4 RCTs pequeños (n=30-80 cada uno) han evaluado curcumina para ansiedad. Resultados preliminares muestran reducciones de 20-35% en puntuaciones de ansiedad (STAI, GAD-7) después de 4-8 semanas, pero con heterogeneidad metodológica significativa. Falta: (1) RCTs grandes (n>200), (2) comparación con ansiolíticos estándar, (3) seguimiento a largo plazo, (4) evaluación de poblaciones específicas (trastorno de ansiedad generalizada vs ansiedad subclínica). Mecanismo propuesto: modulación de inflamación neuronal y estrés oxidativo, pero requiere confirmación en humanos."
+      },
+      {
+        "condition": "Apoyo a la salud hepática y función detoxificación",
+        "evidenceGrade": "C",
+        "studyCount": 5,
+        "notes": "Cinco estudios (3 RCTs pequeños, 2 observacionales) han evaluado curcumina en función hepática. Resultados preliminares muestran reducciones de 15-30% en transaminasas (ALT, AST) en personas con enfermedad hepática grasa no alcohólica (NAFLD), pero con tamaños muestrales pequeños (n=20-50). Falta: (1) RCTs grandes con seguimiento a 12+ meses, (2) evaluación de fibrosis hepática mediante elastografía, (3) estudios en hepatitis viral, (4) mecanismos específicos en humanos. Promisorio pero insuficiente para recomendaciones clínicas."
+      },
+      {
+        "condition": "Mejora de calidad del sueño y reducción de insomnio",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Solo 3 RCTs pequeños (n=25-60) han evaluado curcumina para sueño. Resultados preliminares muestran mejoras de 20-30% en puntuaciones de PSQI (Pittsburgh Sleep Quality Index) después de 4-8 semanas, pero con heterogeneidad en poblaciones (adultos sanos vs con insomnio). Falta: (1) RCTs grandes en pacientes con insomnio diagnosticado, (2) evaluación objetiva mediante polisomnografía, (3) comparación con hipnóticos estándar, (4) mecanismos específicos (modulación de melatonina, GABA, etc.). Mecanismo propuesto: reducción de inflamación neuronal y estrés oxidativo, pero requiere confirmación."
+      },
+      {
+        "condition": "Apoyo a la salud renal y función glomerular en enfermedad renal crónica",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Cuatro estudios pequeños (2 RCTs, 2 observacionales) han evaluado curcumina en enfermedad renal crónica. Resultados preliminares muestran reducciones de 15-25% en proteinuria y mejoras modestas en tasa de filtración glomerular estimada (eGFR) después de 8-12 semanas, pero con tamaños muestrales muy pequeños (n=15-40). Falta: (1) RCTs grandes (n>200) con seguimiento a 12+ meses, (2) evaluación de progresión de ERC, (3) mecanismos específicos en nefronas humanas, (4) seguridad en enfermedad renal avanzada. Promisorio pero insuficiente para cambiar práctica clínica."
+      },
+      {
+        "condition": "Mejora de cicatrización de heridas y regeneración tisular",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Tres estudios pequeños (2 RCTs, 1 observacional) han evaluado curcumina tópica para cicatrización de heridas. Resultados preliminares muestran aceleración de cicatrización 20-30% y reducción de inflamación local, pero con metodología heterogénea y tamaños muestrales muy pequeños (n=20-50). Falta: (1) RCTs grandes con heridas estandarizadas, (2) evaluación de diferentes tipos de heridas (quirúrgicas, traumáticas, diabéticas), (3) comparación con apósitos estándar, (4) mecanismos específicos en humanos. Promisorio pero insuficiente para recomendaciones clínicas generales."
+      }
+    ],
+    "dosage": "{\"standard\":\"500-1000mg/día de curcumina estandarizada (95% curcuminoides) o 1500-2000mg/día de extracto de cúrcuma (2-8% curcuminoides). Para formulaciones mejoradas (Meriva®, BCM-95®, Longvida®): 500-750mg/día\",\"effectiveDose\":\"300-500mg/día de curcumina estandarizada para efectos anti-inflamatorios detectables, aunque 500-1000mg/día es más común en estudios clínicos\",\"optimalDose\":\"750-1000mg/día de curcumina estandarizada (95% curcuminoides) mostró mejor balance entre eficacia y tolerancia en meta-análisis de 2019. Para extracto de cúrcuma: 1500-2000mg/día\",\"maxSafeDose\":\"Hasta 2000mg/día de curcumina estandarizada ha sido documentado como seguro en estudios de 12+ semanas sin efectos adversos significativos. Algunos estudios han evaluado hasta 4000mg/día sin toxicidad, pero datos limitados a largo plazo\",\"timing\":\"Sin preferencia de horario específico según estudios clínicos. Sin embargo, tomar con comidas que contengan grasas aumenta absorción (curcumina es lipofílica). Algunos estudios sugieren tomar con piperina (5-20mg) para aumentar biodisponibilidad 2000%, aunque esto no es obligatorio con formulaciones mejoradas.\",\"duration\":\"Efectos iniciales detectables en 2-4 semanas para marcadores inflamatorios. Efectos máximos en 8-12 semanas de suplementación continua. Para osteoartritis: 12-16 semanas para máximo beneficio. Uso continuo seguro hasta 6 meses documentado en RCTs; estudios de 12+ meses muestran perfil de seguridad favorable.\",\"forms\":[{\"form\":\"Curcumina estandarizada 95% curcuminoides (polvo o cápsula)\",\"description\":\"Forma más común en estudios clínicos, utilizada en aproximadamente 60% de RCTs. Biodisponibilidad limitada sin potenciadores (1-3% absorción sistémica). Requiere piperina o formulaciones mejoradas para absorción óptima.\",\"recommended\":true,\"studyCount\":180},{\"form\":\"Meriva® (curcumina fosfolipidada)\",\"description\":\"Formulación patentada con fosfolípidos que aumenta absorción 29 veces vs curcumina estándar según estudios. Utilizada en 15-20% de RCTs recientes. Dosis típica: 500-750mg/día.\",\"recommended\":true,\"studyCount\":35},{\"form\":\"BCM-95® (curcumina con aceite de cúrcuma)\",\"description\":\"Formulación con aceite esencial de cúrcuma que aumenta absorción 7 veces vs curcumina estándar. Utilizada en 10-15% de RCTs. Dosis típica: 500-750mg/día.\",\"recommended\":true,\"studyCount\":25},{\"form\":\"Longvida® (curcumina solubilizada)\",\"description\":\"Formulación con tecnología de solubilización que mejora absorción. Utilizada en estudios recientes de función cognitiva. Dosis típica: 400-500mg/día.\",\"recommended\":true,\"studyCount\":12},{\"form\":\"Extracto de cúrcuma 2-8% curcuminoides (polvo)\",\"description\":\"Forma menos procesada, contiene otros componentes de la planta. Requiere dosis más altas (1500-2000mg/día) para equivalencia con curcumina estandarizada. Utilizada en 20-25% de estudios.\",\"recommended\":false,\"studyCount\":95},{\"form\":\"Curcumina con piperina (5-20mg piperina)\",\"description\":\"Combinación que aumenta absorción de curcumina 2000% según estudios. Piperina inhibe glucuronidación hepática. Utilizada en 25-30% de RCTs. Dosis típica: 500-1000mg curcumina + 5-20mg piperina.\",\"recommended\":true,\"studyCount\":85}],\"stacksWith\":[\"Piperina (5-20mg) - aumenta absorción de curcumina 2000% mediante inhibición de glucuronidación hepática y aumento de permeabilidad intestinal\",\"Grasas/aceites - aumentan absorción de curcumina (lipofílica) cuando se toman juntos con comidas grasas\",\"Quercetina - potencia efectos anti-inflamatorios sin sinergia farmacocinética documentada\",\"Boswellia serrata - complementa efectos anti-inflamatorios en osteoartritis (meta-análisis de 2019 mostró sinergia)\",\"Jengibre (Zingiber officinale) - potencia efectos anti-inflamatorios y gastrointestinales\"],\"notes\":\"La absorción de curcumina es limitada sin potenciadores (1-3% biodisponibilidad sistémica). Formulaciones mejoradas (Meriva®, BCM-95®, Longvida®) aumentan absorción 7-29 veces. Tomar con grasas dietéticas aumenta absorción. Piperina es el potenciador más estudiado (aumenta absorción 2000%). Seguir indicaciones del fabricante para formulaciones específicas. No hay evidencia de que cycling (períodos de descanso) sea necesario según estudios clínicos de 12+ meses.\"}}",
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":8,\"sideEffects\":[{\"effect\":\"Malestar gastrointestinal leve (náuseas, dispepsia, diarrea)\",\"frequency\":\"5-10% de usuarios, más común en dosis >1000mg/día\",\"severity\":\"Mild\",\"notes\":\"Generalmente desaparece después de 1-2 semanas de uso continuo. Más frecuente en estómago vacío. Tomar con comidas reduce incidencia. Raro en dosis <500mg/día.\"},{\"effect\":\"Reacciones alérgicas cutáneas (rash, urticaria)\",\"frequency\":\"Raro, <1% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Reportado principalmente en personas con alergia conocida a Curcuma longa o plantas de la familia Zingiberaceae. Descontinuar si ocurre.\"},{\"effect\":\"Cefalea leve\",\"frequency\":\"2-3% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Reportado en algunos estudios, pero frecuencia similar a placebo en meta-análisis. Puede estar relacionado con dosis o formulación específica.\"},{\"effect\":\"Interacción con absorción de hierro (teórica)\",\"frequency\":\"Potencial en dosis muy altas (>2000mg/día)\",\"severity\":\"Mild\",\"notes\":\"Curcumina puede quelatar hierro in vitro, pero relevancia clínica en humanos es incierta. Separar ingesta de suplementos de hierro por 2+ horas si es preocupante.\"}],\"contraindications\":[\"Embarazo - falta evidencia de seguridad, algunos estudios en animales sugieren efectos sobre contractilidad uterina\",\"Lactancia - no hay datos de seguridad, curcumina puede pasar a leche materna\",\"Alergia conocida a Curcuma longa o plantas de la familia Zingiberaceae\",\"Deficiencia de hierro severa - curcumina puede reducir absorción de hierro (teórico, relevancia clínica incierta)\",\"Cirugía programada - descontinuar 2 semanas antes debido a potencial anticoagulante (teórico, basado en estudios in vitro)\"],\"interactions\":[{\"medication\":\"Anticoagulantes (Warfarina, Dabigatrán, Apixabán)\",\"severity\":\"Moderate\",\"mechanism\":\"Curcumina puede potenciar efectos anticoagulantes mediante inhibición de agregación plaquetaria y potencial inhibición de vitamina K. Estudios in vitro muestran efectos antitrombóticos, pero relevancia clínica en humanos es limitada.\",\"description\":\"Riesgo potencial de sangrado aumentado. Monitorear INR si se usa warfarina. Consultar con médico antes de combinar. Separar ingesta por 2+ horas si es posible, aunque no hay datos específicos de interacción farmacocinética.\"},{\"medication\":\"Medicamentos que reducen ácido gástrico (Inhibidores de bomba de protones, H2-antagonistas)\",\"severity\":\"Mild\",\"mechanism\":\"Curcumina requiere ambiente ácido para absorción óptima. Medicamentos que reducen ácido gástrico pueden disminuir absorción de curcumina.\",\"description\":\"Puede reducir eficacia de curcumina. Separar ingesta por 2+ horas. Considerar tomar curcumina con comidas ácidas (vinagre, limón) para mejorar absorción.\"},{\"medication\":\"Medicamentos metabolizados por CYP3A4 (Estatinas, Bloqueadores de calcio, Ciclosporina)\",\"severity\":\"Mild\",\"mechanism\":\"Curcumina puede inhibir CYP3A4 in vitro, potencialmente aumentando niveles de medicamentos metabolizados por esta enzima.\",\"description\":\"Riesgo teórico de aumento de efectos adversos. Relevancia clínica en humanos es limitada. Monitorear efectos adversos. Consultar con médico si se usan dosis altas de curcumina (>1500mg/día).\"},{\"medication\":\"Medicamentos antiplaquetarios (Aspirina, Clopidogrel)\",\"severity\":\"Mild\",\"mechanism\":\"Curcumina puede potenciar efectos antiplaquetarios mediante inhibición de agregación plaquetaria.\",\"description\":\"Riesgo potencial de sangrado aumentado. Monitorear signos de sangrado. Consultar con médico antes de combinar, especialmente en dosis altas.\"},{\"medication\":\"Medicamentos para diabetes (Metformina, Sulfonilureas, Insulina)\",\"severity\":\"Mild\",\"mechanism\":\"Curcumina puede mejorar sensibilidad a insulina y potenciar efectos hipoglucemiantes.\",\"description\":\"Riesgo potencial de hipoglucemia. Monitorear glucosa en sangre. Puede ser beneficioso pero requiere supervisión médica. Ajuste de dosis de medicamento puede ser necesario.\"}],\"longTermSafety\":\"Uso continuo seguro hasta 6 meses documentado en RCTs de alta calidad. Estudios de 12+ meses (n=100-300) muestran perfil de seguridad favorable sin efectos adversos serios. No hay reportes de toxicidad hepática, renal o hematológica en estudios clínicos. Estudios de toxicidad en animales con dosis equivalentes a 2000+ mg/día en humanos no mostraron toxicidad significativa.\",\"pregnancyCategory\":\"Avoid\",\"notes\":\"No hay reportes de hepatotoxicidad en estudios clínicos con dosis hasta 2000mg/día. Perfil de seguridad superior a muchos medicamentos anti-inflamatorios (AINE). Curcumina tiene historia de uso seguro en cocina durante siglos. Efectos adversos graves son extremadamente raros. Monitorear si se usan medicamentos que interactúan.\"}}",
+    "buyingGuidance": "{\"preferredForm\":\"Curcumina estandarizada 95% curcuminoides con piperina (5-20mg), o formulaciones mejoradas como Meriva®, BCM-95® o Longvida®. Estas formas tienen respaldo en estudios clínicos y absorción documentada 7-2000 veces mayor que curcumina estándar.\",\"keyCompounds\":[{\"name\":\"Curcuminoides (principalmente curcumina, demetoxicurcumina, bisdemetoxicurcumina)\",\"source\":\"Rizoma de Curcuma longa (cúrcuma)\",\"lookFor\":\"Estandarizado a mínimo 95% curcuminoides totales. Buscar en etiqueta: 'Curcumina 95%' o 'Curcuminoides 95%'. Evitar productos que solo digan 'extracto de cúrcuma' sin especificar porcentaje.\"},{\"name\":\"Piperina (alcaloide de pimienta negra)\",\"source\":\"Fruto de Piper nigrum (pimienta negra)\",\"lookFor\":\"5-20mg de piperina por dosis. Buscar en etiqueta: 'BioPerine®' (marca registrada) o 'Piperina 5-20mg'. Aumenta absorción de curcumina 2000%.\"},{\"name\":\"Fosfolípidos (en formulaciones Meriva®)\",\"source\":\"Lecitina de soja o girasol\",\"lookFor\":\"Para Meriva®: buscar 'Meriva®' en etiqueta. Contiene curcumina fosfolipidada. Aumenta absorción 29 veces vs curcumina estándar.\"},{\"name\":\"Aceite esencial de cúrcuma (en formulaciones BCM-95®)\",\"source\":\"Rizoma de Curcuma longa\",\"lookFor\":\"Para BCM-95®: buscar 'BCM-95®' en etiqueta. Contiene aceite esencial. Aumenta absorción 7 veces vs curcumina estándar.\"}],\"avoidFlags\":[\"Productos que solo dicen 'Extracto de cúrcuma' sin especificar porcentaje de curcuminoides - probablemente contienen 2-8% curcuminoides, requiriendo dosis muy altas (1500-2000mg/día)\",\"Productos sin piperina o formulación mejorada que afirmen 'absorción óptima' - curcumina estándar tiene biodisponibilidad <3% sin potenciadores\",\"Productos que no especifican estandarización o porcentaje de curcuminoides - indica baja calidad y eficacia impredecible\",\"Productos con precio extremadamente bajo (<$5 por 60 cápsulas) - sugiere baja concentración de curcuminoides o rellenos\",\"Productos sin pruebas de terceros (ConsumerLab, NSF, USP) - no hay verificación de contenido de curcuminoides o contaminantes\"],\"qualityIndicators\":[\"Estandarizado a mínimo 95% curcuminoides - indica concentración consistente y eficacia predecible\",\"Contiene piperina 5-20mg o usa formulación mejorada (Meriva®, BCM-95®, Longvida®) - indica optimización de absorción\",\"Pruebas de terceros disponibles (ConsumerLab, NSF, USP) - verifica contenido de curcuminoides y ausencia de contaminantes\",\"Certificación orgánica USDA o equivalente - indica ausencia de pesticidas y metales pesados\",\"Información de fabricante sobre biodisponibilidad o estudios clínicos - indica transparencia y respaldo científico\"],\"notes\":\"Curcumina estándar (95% curcuminoides) tiene biodisponibilidad sistémica muy baja (1-3%) sin potenciadores. Piperina aumenta absorción 2000% mediante inhibición de glucuronidación hepática y aumento de permeabilidad intestinal. Formulaciones mejoradas (Meriva®, BCM-95®, Longvida®) aumentan absorción 7-29 veces sin necesidad de piperina. Para máxima eficacia, elegir: (1) Curcumina 95% + piperina 5-20mg, o (2) Meriva®, BCM-95®, o Longvida® sin piperina adicional. Tomar con comidas grasas mejora absorción. Buscar productos con pruebas de terceros para verificar contenido y pureza.\"}}",
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (300-500mg/día) durante 1-2 semanas para evaluar tolerancia gastrointestinal, luego aumentar a 750-1000mg/día. Tomar con comidas que contengan grasas para mejorar absorción.",
+      "Usar formulación con piperina (5-20mg) o formulación mejorada (Meriva®, BCM-95®, Longvida®) para absorción óptima. Curcumina estándar sin potenciadores tiene biodisponibilidad muy baja (<3%).",
+      "Esperar mínimo 4-8 semanas antes de evaluar eficacia. Para osteoartritis, esperar 12-16 semanas para máximo beneficio. Efecto anti-inflamatorio es gradual y acumulativo.",
+      "Mantener suplementación consistente (misma hora diaria, preferiblemente con comidas). Discontinuidad reduce eficacia. Estudios muestran que beneficios se mantienen con uso continuo.",
+      "Combinar con cambios de estilo de vida (ejercicio, dieta antiinflamatoria, manejo de estrés) para potenciar efectos. Curcumina es más efectiva como parte de enfoque integral, no como monoterapia."
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.534,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.92,
+      "dosageForms": 0,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [
+      "keyStudies"
+    ],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:5,20,300,2000,4000",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

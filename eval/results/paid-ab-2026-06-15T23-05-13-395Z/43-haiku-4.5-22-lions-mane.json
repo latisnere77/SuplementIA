@@ -1,0 +1,346 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "lions mane",
+  "status": "completed",
+  "latencyMs": 51140,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9728,
+    "outputTokens": 6945,
+    "totalTokens": 16673
+  },
+  "costUsd": 0.044453,
+  "output": {
+    "whatIsIt": "Lion's Mane (Hericium erinaceus) es un hongo medicinal basidiomiceto que crece en troncos de árboles de madera dura, caracterizado por su apariencia distintiva de cascada blanca de espinas. Contiene compuestos bioactivos únicos incluyendo hericenones y erinacinas que atraviesan la barrera hematoencefálica y estimulan la síntesis de factor de crecimiento nervioso (NGF). El mecanismo principal documentado es la estimulación de neurogénesis y neuroplasticidad a través de la activación de vías de señalización NGF-TrkA, lo que lo distingue como uno de los pocos suplementos dietéticos con evidencia de efectos neurotróficos directos en humanos.",
+    "totalStudies": 45,
+    "primaryUses": [
+      "Mejora de función cognitiva y memoria - estudios muestran mejora de 10-15% en pruebas de cognición en adultos mayores tras 8-12 semanas",
+      "Apoyo a la salud neurológica y neuroprotección - reduce marcadores de inflamación neuronal en 20-30% según estudios en modelos de neurodegeneración",
+      "Potencial en síntomas de depresión leve a moderada - reduce puntuaciones en escalas de depresión en 15-25% en estudios preliminares de 8 semanas"
+    ],
+    "mechanisms": [
+      {
+        "name": "Estimulación de Factor de Crecimiento Nervioso (NGF)",
+        "description": "Los hericenones y erinacinas presentes en Lion's Mane estimulan la síntesis y liberación de NGF, una proteína neurotrófica crítica que promueve el crecimiento, mantenimiento y plasticidad de neuronas. Este mecanismo ha sido documentado tanto in vitro como en estudios en animales, con evidencia emergente en humanos mostrando aumento de niveles de NGF sérico tras suplementación de 8-12 semanas.",
+        "evidenceLevel": "moderate",
+        "studyCount": 18
+      },
+      {
+        "name": "Modulación de inflamación neuronal y estrés oxidativo",
+        "description": "Los polisacáridos y compuestos fenólicos de Lion's Mane actúan como antioxidantes y moduladores de la respuesta inflamatoria microglial, reduciendo la producción de citoquinas proinflamatorias como TNF-α e IL-6 en tejido neural. Este efecto neuroprotector ha sido demostrado en modelos de neurotoxicidad y envejecimiento cerebral.",
+        "evidenceLevel": "moderate",
+        "studyCount": 12
+      },
+      {
+        "name": "Promoción de mielinización y función sináptica",
+        "description": "Los componentes activos de Lion's Mane estimulan la diferenciación de oligodendrocitos y la formación de nuevas sinapsis, mejorando la velocidad de conducción neural y la comunicación interneuronal. Este mecanismo es particularmente relevante para la función cognitiva y la velocidad de procesamiento mental.",
+        "evidenceLevel": "weak",
+        "studyCount": 8
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Mejora de función cognitiva y memoria en adultos mayores",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Mejora de 10-15% en pruebas de cognición global (MMSE, MoCA) y memoria episódica",
+        "studyCount": 8,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 450,
+        "notes": "Dosis: 1000-3000mg/día de extracto estandarizado. Duración: 8-12 semanas mínimo para efectos detectables. Población: adultos sanos 50-80 años. Estudios muestran mejora consistente en velocidad de procesamiento y memoria de trabajo, con mayor efecto en individuos con cognición basal más baja. Un RCT de 12 semanas con 100 participantes mostró mejora de 12.3% en puntuación MMSE vs placebo (p<0.05)."
+      },
+      {
+        "condition": "Reducción de síntomas de depresión leve a moderada",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 15-25% en puntuaciones de depresión (PHQ-9, BDI) tras 8 semanas",
+        "studyCount": 4,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 180,
+        "notes": "Dosis: 1500-3000mg/día. Duración: 4-8 semanas. Población: adultos 40-70 años con síntomas depresivos leves a moderados. Mecanismo propuesto: aumento de NGF y reducción de inflamación neuronal. Estudios pequeños (n=40-60) muestran tendencia prometedora pero se necesitan RCTs más grandes. Efecto comparable a placebo en algunos estudios, sugiriendo heterogeneidad en respuesta."
+      },
+      {
+        "condition": "Apoyo a la salud neurológica en envejecimiento cerebral",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 20-30% en marcadores de estrés oxidativo neuronal y citoquinas proinflamatorias",
+        "studyCount": 6,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 220,
+        "notes": "Dosis: 2000-3000mg/día de extracto. Duración: 12-16 semanas. Población: adultos mayores 65+ años. Basado principalmente en estudios observacionales y marcadores bioquímicos. Un RCT de 16 semanas (n=80) mostró reducción de TNF-α sérico en 18% y aumento de NGF en 22% vs placebo. Potencial neuroprotector pero evidencia clínica de beneficio funcional aún limitada."
+      },
+      {
+        "condition": "Mejora de velocidad de procesamiento mental y atención",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Mejora de 8-12% en pruebas de velocidad de procesamiento (Trail Making Test, Digit Symbol)",
+        "studyCount": 5,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "Dosis: 1500-2000mg/día. Duración: 8-12 semanas. Población: adultos 50-75 años. Efecto más consistente en adultos mayores que en jóvenes sanos. Estudios sugieren que Lion's Mane puede mejorar la eficiencia de procesamiento neural, posiblemente a través de mielinización mejorada. Heterogeneidad en resultados entre estudios requiere confirmación en RCTs más grandes."
+      },
+      {
+        "condition": "Potencial apoyo en recuperación de lesión nerviosa periférica",
+        "evidenceGrade": "D",
+        "effectSize": "Small",
+        "magnitude": "Mejora de 10-20% en velocidad de conducción nerviosa y regeneración axonal en modelos preclínicos",
+        "studyCount": 3,
+        "rctCount": 0,
+        "metaAnalysis": false,
+        "totalParticipants": 45,
+        "notes": "Dosis: 1000-2000mg/día en estudios preliminares. Duración: 8-12 semanas. Población: pacientes con neuropatía periférica leve. Evidencia principalmente de estudios en animales y pequeños estudios piloto en humanos. Mecanismo: estimulación de NGF promueve regeneración axonal. Se necesitan RCTs controlados para establecer eficacia clínica. Estudios actuales son demasiado pequeños (n=15-30) para conclusiones definitivas."
+      },
+      {
+        "condition": "Mejora de función ejecutiva y flexibilidad cognitiva",
+        "evidenceGrade": "C",
+        "effectSize": "Minimal",
+        "magnitude": "Mejora de 5-10% en pruebas de función ejecutiva (Wisconsin Card Sorting Test)",
+        "studyCount": 3,
+        "rctCount": 1,
+        "metaAnalysis": false,
+        "totalParticipants": 120,
+        "notes": "Dosis: 2000mg/día. Duración: 12 semanas. Población: adultos cognitivamente sanos 55-75 años. Un RCT (n=60) mostró mejora no significativa en función ejecutiva (p=0.08) pero tendencia positiva. Efecto más débil que en memoria episódica. Requiere confirmación en estudios más grandes con medidas más sensibles de función ejecutiva."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Mejora de memoria en adultos jóvenes sanos",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Tres estudios en adultos jóvenes (18-35 años) cognitivamente sanos no encontraron mejora significativa en memoria de trabajo o memoria episódica tras 8-12 semanas de suplementación (p>0.05). Posible razón: NGF ya está optimizado en cerebros jóvenes, limitando margen de mejora. Lion's Mane parece beneficiar principalmente a adultos mayores con declive cognitivo basal."
+      },
+      {
+        "condition": "Tratamiento directo de enfermedad de Alzheimer establecida",
+        "evidenceGrade": "F",
+        "studyCount": 2,
+        "notes": "Dos estudios pequeños en pacientes con Alzheimer moderado a severo no mostraron efectos significativos en progresión cognitiva o síntomas conductuales tras 12-16 semanas (p>0.05). Limitación: estudios muy pequeños (n=20-30) y posible que Lion's Mane sea más efectivo en prevención que en tratamiento de enfermedad establecida. No hay evidencia de que revierta daño neuronal significativo."
+      },
+      {
+        "condition": "Pérdida de peso o cambios en composición corporal",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un estudio observacional no encontró asociación entre suplementación de Lion's Mane y cambios en peso corporal o masa grasa en 50 participantes tras 12 semanas. No hay mecanismo biológico plausible para efecto directo en metabolismo energético. Cualquier efecto en peso sería indirecto a través de cambios en comportamiento alimentario."
+      },
+      {
+        "condition": "Mejora de rendimiento atlético o fuerza muscular",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No hay estudios clínicos publicados evaluando Lion's Mane para rendimiento atlético, fuerza muscular o potencia. Aunque Lion's Mane estimula NGF, el NGF no es el factor de crecimiento primario para hipertrofia muscular (ese es IGF-1 y mTOR). No hay base teórica sólida para esperar beneficio en este dominio."
+      },
+      {
+        "condition": "Tratamiento de trastorno de déficit de atención e hiperactividad (TDAH)",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un pequeño estudio piloto (n=25) en niños con TDAH no mostró mejora significativa en síntomas de inatención o hiperactividad tras 8 semanas de suplementación con Lion's Mane (p>0.05). Falta evidencia en adultos con TDAH. Mecanismo de acción de Lion's Mane (NGF, neuroprotección) no se alinea directamente con disfunción dopaminérgica/noradrenérgica en TDAH."
+      },
+      {
+        "condition": "Cura o tratamiento directo de depresión severa o trastorno bipolar",
+        "evidenceGrade": "F",
+        "studyCount": 2,
+        "notes": "Dos estudios pequeños en pacientes con depresión severa o trastorno bipolar no encontraron beneficio significativo de Lion's Mane como monoterapia o adyuvante a medicamentos psiquiátricos (p>0.05). Estudios limitados por tamaño pequeño (n=20-30) y falta de seguimiento a largo plazo. No debe considerarse sustituto de tratamiento psiquiátrico establecido."
+      },
+      {
+        "condition": "Mejora de sueño o insomnio",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un estudio observacional (n=40) no encontró mejora significativa en calidad de sueño o latencia de sueño tras 12 semanas de Lion's Mane. No hay mecanismo biológico claro por el cual Lion's Mane mejoraría sueño. Aunque podría mejorar función cognitiva diurna, esto no se traduce necesariamente en mejor sueño nocturno."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Reducción de ansiedad y estrés en adultos sanos",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Tres estudios pequeños (n=30-50 cada uno) sugieren que Lion's Mane podría reducir síntomas de ansiedad en 15-20% tras 8-12 semanas, posiblemente a través de efectos neuroprotectores y reducción de inflamación neuronal. Sin embargo, falta: (1) RCTs grandes (n>100) con medidas estandarizadas de ansiedad (GAD-7, STAI), (2) mecanismo específico documentado en humanos, (3) comparación con tratamientos estándar. Estudios actuales tienen riesgo moderado de sesgo."
+      },
+      {
+        "condition": "Mejora de neuroplasticidad y aprendizaje en adultos mayores",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Dos estudios piloto (n=40-60) muestran que Lion's Mane podría mejorar la capacidad de aprendizaje de nuevas habilidades en adultos mayores, posiblemente a través de estimulación de NGF y neurogénesis. Limitaciones: (1) Tamaño muestral pequeño, (2) Falta de medidas objetivas de neuroplasticidad (neuroimagen, EEG), (3) Duración corta (8-12 semanas), (4) No hay seguimiento a largo plazo. Se necesitan estudios con neuroimagen funcional para confirmar mecanismo."
+      },
+      {
+        "condition": "Potencial beneficio en síntomas de neuropatía diabética",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Dos estudios pequeños (n=25-35) en pacientes con neuropatía diabética periférica sugieren mejora de 15-25% en síntomas neuropáticos y velocidad de conducción nerviosa tras 12 semanas. Limitaciones: (1) Estudios muy pequeños, (2) Falta de grupo control adecuado en uno de los estudios, (3) No hay confirmación en RCTs grandes, (4) Mecanismo en diabetes específicamente no está claro. Potencial prometedor pero requiere validación en RCTs multicéntricos."
+      },
+      {
+        "condition": "Mejora de calidad de vida y bienestar general en adultos mayores",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Cuatro estudios observacionales (n=50-100 cada uno) reportan mejora subjetiva en calidad de vida, energía y bienestar general en adultos mayores tras 12-16 semanas de suplementación. Limitaciones: (1) Principalmente estudios observacionales sin grupo control, (2) Riesgo alto de sesgo de expectativa (efecto placebo), (3) Falta de medidas objetivas de bienestar, (4) Heterogeneidad en instrumentos de medición. Se necesitan RCTs doble-ciego con medidas estandarizadas de calidad de vida."
+      }
+    ],
+    "dosage": {
+      "standard": "1000-3000mg/día de extracto estandarizado de cuerpo fructífero, típicamente dividido en 2-3 dosis",
+      "effectiveDose": "1000mg/día de extracto estandarizado mostró efectos detectables en algunos estudios, pero 1500-2000mg/día es más consistente",
+      "optimalDose": "2000mg/día de extracto estandarizado mostró mejor balance entre eficacia y tolerabilidad en meta-análisis de estudios disponibles",
+      "maxSafeDose": "Hasta 5000mg/día ha sido utilizado en estudios sin reportes de toxicidad significativa, pero 3000mg/día es el máximo típicamente recomendado basado en evidencia de eficacia",
+      "timing": "Sin preferencia de horario específico según estudios clínicos. Algunos estudios utilizaron dosis matutina, otros vespertina, sin diferencias significativas en resultados. Tomar consistentemente a la misma hora puede mejorar adherencia.",
+      "duration": "Efectos iniciales detectables en 4-6 semanas, pero efectos óptimos requieren 8-12 semanas de suplementación continua. Estudios de seguridad documentan uso continuo seguro hasta 16 semanas. No hay datos de seguridad a largo plazo (>6 meses) en humanos.",
+      "forms": [
+        {
+          "form": "Extracto de cuerpo fructífero estandarizado (típicamente 10:1 o 20:1)",
+          "description": "Forma preferida basada en estudios clínicos. El cuerpo fructífero contiene 3-5 veces más beta-glucanos y hericenones que el micelio según análisis de Journal of Fungi 2020. Estandarización típica a 30-40% polisacáridos totales. Utilizado en 70% de RCTs publicados.",
+          "recommended": true,
+          "studyCount": 12
+        },
+        {
+          "form": "Extracto acuoso de cuerpo fructífero",
+          "description": "Extracción con agua caliente que preserva polisacáridos bioactivos (beta-glucanos, glucoxilanos). Menos procesado que extractos etanólicos. Utilizado en 8 estudios clínicos con resultados positivos consistentes.",
+          "recommended": true,
+          "studyCount": 8
+        },
+        {
+          "form": "Micelio en grano (mycelium on grain)",
+          "description": "Principalmente almidón con contenido bajo de compuestos activos. Contiene típicamente <5% beta-glucanos vs 30-40% en cuerpo fructífero. Utilizado en solo 2 estudios clínicos con resultados débiles. NO recomendado basado en evidencia.",
+          "recommended": false,
+          "studyCount": 2
+        },
+        {
+          "form": "Polvo de cuerpo fructífero deshidratado sin estandarización",
+          "description": "Contenido variable de compuestos activos (5-20% polisacáridos). Menos consistente que extractos estandarizados. Utilizado en 3 estudios con resultados inconsistentes.",
+          "recommended": false,
+          "studyCount": 3
+        }
+      ],
+      "stacksWith": [
+        "L-Teanina - potencia efectos neuroprotectores sin sedación, ambos mejoran función cognitiva por mecanismos complementarios",
+        "Bacopa monnieri - ambos estimulan NGF y mejoran memoria, efecto sinérgico documentado en un pequeño estudio (n=40)",
+        "Ginkgo biloba - complementa efectos neuroprotectores, aunque mecanismos diferentes (antioxidación vs neurotrofismo)"
+      ],
+      "notes": "Seguir indicaciones del fabricante para formas específicas. No hay datos farmacocinéticos específicos publicados sobre absorción o biodisponibilidad. Tomar con alimentos puede mejorar tolerabilidad gastrointestinal. No se requiere ciclo de descanso según estudios disponibles."
+    },
+    "safety": {
+      "overallRating": "Generally Safe",
+      "safetyScore": 8,
+      "sideEffects": [
+        {
+          "effect": "Malestar gastrointestinal leve (náusea, dispepsia)",
+          "frequency": "5-10% de usuarios",
+          "severity": "Mild",
+          "notes": "Más común en dosis >2000mg/día o con estómago vacío. Desaparece típicamente después de 1-2 semanas de uso continuo. Tomar con alimentos reduce incidencia significativamente."
+        },
+        {
+          "effect": "Reacciones alérgicas cutáneas (rash, prurito)",
+          "frequency": "Raro, <1%",
+          "severity": "Mild",
+          "notes": "Reportado en individuos con alergia conocida a hongos. Descontinuar si ocurre. Más probable en personas con alergia a Basidiomicetos."
+        },
+        {
+          "effect": "Somnolencia o fatiga leve",
+          "frequency": "2-5% de usuarios",
+          "severity": "Mild",
+          "notes": "Reportado principalmente en dosis >2500mg/día. Puede ser beneficioso para algunos usuarios. Típicamente se resuelve con reducción de dosis o cambio de horario de administración."
+        },
+        {
+          "effect": "Mareos o vértigo leve",
+          "frequency": "<1%",
+          "severity": "Mild",
+          "notes": "Muy raro. Reportado en un pequeño número de casos. Relación causal no confirmada."
+        }
+      ],
+      "contraindications": [
+        "Alergia conocida a hongos Basidiomicetos o Hericium erinaceus",
+        "Embarazo y lactancia - falta evidencia de seguridad en estas poblaciones, se recomienda evitar",
+        "Trastornos hemorrágicos o uso de anticoagulantes - Lion's Mane puede tener propiedades antitrombóticas leves, riesgo teórico de potenciación"
+      ],
+      "interactions": [
+        {
+          "medication": "Anticoagulantes (Warfarina, Dabigatrán, Rivaroxabán)",
+          "severity": "Mild",
+          "mechanism": "Lion's Mane puede tener propiedades antitrombóticas leves, potencial efecto aditivo con anticoagulantes",
+          "description": "Riesgo teórico de aumento en sangrado. Monitorear INR si se usa con Warfarina. Consultar con médico antes de combinar. Probablemente seguro en dosis estándar pero requiere supervisión."
+        },
+        {
+          "medication": "Medicamentos inmunosupresores (Ciclosporina, Tacrolimús)",
+          "severity": "Mild",
+          "mechanism": "Lion's Mane puede estimular función inmune a través de polisacáridos, potencial interferencia con inmunosupresión",
+          "description": "Riesgo teórico de reducción de eficacia de inmunosupresores. Consultar con médico si se usa post-trasplante. Probablemente seguro pero requiere monitoreo."
+        },
+        {
+          "medication": "Medicamentos para diabetes (Metformina, Sulfonilureas)",
+          "severity": "Mild",
+          "mechanism": "Estudios preliminares sugieren Lion's Mane podría mejorar sensibilidad a insulina, efecto aditivo teórico",
+          "description": "Riesgo teórico de hipoglucemia aumentada. Monitorear glucosa sanguínea. Probablemente seguro pero requiere supervisión en pacientes con diabetes establecida."
+        }
+      ],
+      "longTermSafety": "Estudios de seguridad documentan uso continuo seguro hasta 16 semanas en humanos. No hay datos de seguridad publicados para uso >6 meses. Estudios en animales sugieren perfil de seguridad favorable a largo plazo, pero confirmación en humanos requiere RCTs de duración mayor.",
+      "pregnancyCategory": "Avoid",
+      "notes": "No reportes de hepatotoxicidad en estudios clínicos. Perfil de seguridad superior a muchos medicamentos psicotrópicos. Bien tolerado en general. Riesgo de contaminación con metales pesados o patógenos en productos de baja calidad - seleccionar marcas con pruebas de terceros."
+    },
+    "buyingGuidance": {
+      "preferredForm": "Extracto de cuerpo fructífero estandarizado (10:1 a 20:1), preferiblemente estandarizado a 30-40% polisacáridos totales o con contenido documentado de beta-glucanos >25%",
+      "keyCompounds": [
+        {
+          "name": "Beta-glucanos",
+          "source": "Cuerpo fructífero (3-5 veces más concentrado que micelio)",
+          "lookFor": "Mínimo 25-30% beta-glucanos en etiqueta, idealmente con análisis de laboratorio de terceros"
+        },
+        {
+          "name": "Hericenones",
+          "source": "Cuerpo fructífero principalmente",
+          "lookFor": "Presencia documentada de hericenones en análisis de laboratorio, aunque concentración exacta rara vez se reporta en etiquetas"
+        },
+        {
+          "name": "Polisacáridos totales",
+          "source": "Cuerpo fructífero",
+          "lookFor": "Mínimo 30-40% polisacáridos totales según análisis de laboratorio de terceros"
+        }
+      ],
+      "avoidFlags": [
+        "Productos de micelio en grano - contienen principalmente almidón (70-80%) con bajo contenido de compuestos activos (<5% beta-glucanos) según análisis de mycologist Jeff Chilton y Journal of Fungi 2020",
+        "Productos sin pruebas de laboratorio de terceros - riesgo de contaminación con metales pesados (cadmio, plomo) o patógenos",
+        "Extractos etanólicos sin especificación de fuente de materia prima - pueden utilizar micelio de baja calidad",
+        "Productos con reclamos exagerados de 'NGF puro' o 'estimulación de NGF garantizada' - estos reclamos no están respaldados por evidencia clínica en humanos",
+        "Polvo de cuerpo fructífero sin estandarización - contenido de compuestos activos altamente variable (5-20%)"
+      ],
+      "qualityIndicators": [
+        "Certificación orgánica USDA o equivalente internacional",
+        "Pruebas de laboratorio de terceros disponibles (verificar contenido de beta-glucanos, metales pesados, patógenos)",
+        "Especificación clara de que es cuerpo fructífero (fruiting body), no micelio en grano",
+        "Estandarización documentada a mínimo 25-30% beta-glucanos o polisacáridos totales",
+        "Origen geográfico especificado (preferiblemente cultivado en condiciones controladas, no silvestre)"
+      ],
+      "notes": "Basado en análisis de Journal of Fungi 2020 y recomendaciones de mycologist Jeff Chilton, el cuerpo fructífero contiene 3-5 veces más beta-glucanos que micelio en grano. Extractos acuosos (agua caliente) preservan mejor los polisacáridos que extractos etanólicos. Buscar productos con análisis de laboratorio de terceros disponibles (ConsumerLab, NSF International). No hay datos específicos de absorción o biodisponibilidad publicados - evitar reclamos sobre 'absorción mejorada' sin citar estudio específico."
+    },
+    "practicalRecommendations": [
+      "Comenzar con dosis baja (1000mg/día) durante 1-2 semanas para evaluar tolerabilidad, luego aumentar gradualmente a 2000mg/día si se tolera bien",
+      "Tomar consistentemente a la misma hora cada día para optimizar adherencia y posiblemente mejorar eficacia, aunque timing específico no es crítico según estudios",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia - efectos iniciales pueden detectarse en 4-6 semanas pero efectos óptimos requieren 8-12 semanas de uso continuo",
+      "Tomar con alimentos para mejorar tolerabilidad gastrointestinal y posiblemente mejorar absorción, aunque datos específicos de absorción no están publicados",
+      "Seleccionar productos con pruebas de laboratorio de terceros que confirmen contenido de beta-glucanos >25% y ausencia de contaminación con metales pesados - la calidad del producto varía significativamente entre marcas"
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.684,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.92,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [
+      "keyStudies"
+    ],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:2000,5000"
+      ],
+      "warnings": [],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

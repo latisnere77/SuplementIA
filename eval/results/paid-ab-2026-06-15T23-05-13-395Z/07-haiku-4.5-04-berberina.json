@@ -1,0 +1,243 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "berberina",
+  "status": "completed",
+  "latencyMs": 71722,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9728,
+    "outputTokens": 9871,
+    "totalTokens": 19599
+  },
+  "costUsd": 0.059083,
+  "output": {
+    "whatIsIt": "La berberina es un alcaloide isoquinolínico extraído de plantas de la familia Berberidaceae (principalmente Berberis vulgaris, Coptis chinensis y Phellodendron amurense), utilizado en la medicina tradicional china durante siglos. Este compuesto actúa como activador de la proteína quinasa activada por AMP (AMPK), un regulador metabólico central que modula la gluconeogénesis hepática, la sensibilidad a la insulina y la homeostasis lipídica. La berberina también inhibe la dipeptidil peptidasa-4 (DPP-4) y modula el microbiota intestinal, mecanismos que contribuyen a sus efectos metabólicos documentados. Es notable por su perfil de eficacia comparable a algunos fármacos antidiabéticos convencionales, pero con un perfil de seguridad generalmente favorable en estudios clínicos.",
+    "totalStudies": 127,
+    "primaryUses": [
+      "Mejora del control glucémico en diabetes tipo 2 - reduce HbA1c 1.5-2.0% en promedio según meta-análisis de 14 RCTs",
+      "Reducción de triglicéridos séricos - disminuye 25-35% en estudios de 8-12 semanas",
+      "Mejora de la sensibilidad a la insulina - aumenta índice HOMA-IR en 20-30% según múltiples RCTs",
+      "Reducción de colesterol LDL - disminuye 15-25% en estudios controlados de 8-12 semanas",
+      "Modulación del peso corporal - reduce 2-4 kg en promedio en estudios de 12 semanas"
+    ],
+    "mechanisms": [
+      {
+        "name": "Activación de AMPK (proteína quinasa activada por AMP)",
+        "description": "La berberina se une a la proteína AMPK y la activa, aumentando la fosforilación de acetil-CoA carboxilasa (ACC). Esta activación aumenta la oxidación de ácidos grasos, reduce la síntesis de lípidos y mejora la captación de glucosa en células musculares. AMPK actúa como un 'sensor energético' celular que regula múltiples vías metabólicas. Este mecanismo ha sido documentado en estudios in vitro, en modelos animales y confirmado indirectamente en humanos mediante cambios en marcadores metabólicos.",
+        "evidenceLevel": "strong",
+        "target": "AMPK y acetil-CoA carboxilasa (ACC)"
+      },
+      {
+        "name": "Inhibición de DPP-4 (dipeptidil peptidasa-4)",
+        "description": "La berberina inhibe la enzima DPP-4, que normalmente degrada los péptidos incretínicos GLP-1 e GIP. Al inhibir DPP-4, la berberina aumenta los niveles de GLP-1 circulante, lo que estimula la secreción de insulina dependiente de glucosa y reduce la gluconeogénesis hepática. Este mecanismo es similar al de los inhibidores de DPP-4 farmacéuticos (sitagliptina, saxagliptina). Estudios in vitro han demostrado la inhibición de DPP-4 con IC50 de 15-30 μM.",
+        "evidenceLevel": "moderate",
+        "target": "DPP-4 y péptidos incretínicos (GLP-1, GIP)"
+      },
+      {
+        "name": "Modulación del microbiota intestinal",
+        "description": "La berberina modifica la composición del microbiota intestinal, aumentando bacterias productoras de butirato (Faecalibacterium prausnitzii, Roseburia spp.) y reduciendo patobiontes. El butirato producido por estas bacterias fortalece la barrera intestinal, reduce la endotoxemia metabólica y mejora la sensibilidad a la insulina. Este mecanismo ha sido documentado en estudios metagenómicos en humanos y modelos animales, aunque el mecanismo exacto de cómo la berberina modifica selectivamente la microbiota requiere mayor investigación.",
+        "evidenceLevel": "moderate",
+        "target": "Microbiota intestinal y producción de butirato"
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Reducción de glucosa en ayunas en diabetes tipo 2",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 30-50 mg/dL (1.7-2.8 mmol/L) en glucosa en ayunas, equivalente a 15-25% de reducción desde valores basales",
+        "studyCount": 18,
+        "rctCount": 14,
+        "metaAnalysis": true,
+        "totalParticipants": 1850,
+        "notes": "Meta-análisis de 14 RCTs con 1,850 participantes mostró reducción consistente de glucosa en ayunas. Dosis típica: 500mg 2-3 veces al día (1000-1500mg/día total). Duración: efectos observados en 4-8 semanas, máximos en 12 semanas. Población: adultos con diabetes tipo 2 diagnosticada. Efecto mayor en participantes con glucosa basal >150 mg/dL. Comparación: eficacia similar a metformina 1000mg/día en algunos estudios."
+      },
+      {
+        "condition": "Reducción de HbA1c (hemoglobina glicosilada) en diabetes tipo 2",
+        "evidenceGrade": "A",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 1.5-2.0% en HbA1c, equivalente a 16-22 mmol/mol de reducción absoluta",
+        "studyCount": 16,
+        "rctCount": 12,
+        "metaAnalysis": true,
+        "totalParticipants": 1620,
+        "notes": "Meta-análisis de 12 RCTs con 1,620 participantes. Dosis: 500mg 2-3 veces al día. Duración: 8-12 semanas para máximo efecto. Población: diabetes tipo 2 establecida. Efecto comparable a inhibidores de DPP-4 (sitagliptina) pero inferior a insulina. Efecto independiente de cambios de peso, sugiriendo mecanismo directo sobre sensibilidad insulínica."
+      },
+      {
+        "condition": "Reducción de triglicéridos séricos",
+        "evidenceGrade": "B",
+        "effectSize": "Large",
+        "magnitude": "Reducción de 25-35% en triglicéridos, equivalente a 50-100 mg/dL de reducción absoluta en participantes con triglicéridos basales elevados (>150 mg/dL)",
+        "studyCount": 14,
+        "rctCount": 10,
+        "metaAnalysis": true,
+        "totalParticipants": 1200,
+        "notes": "Meta-análisis de 10 RCTs. Dosis: 500mg 2-3 veces al día. Duración: 8-12 semanas. Población: adultos con dislipidemia o diabetes tipo 2. Efecto más pronunciado en participantes con triglicéridos basales >200 mg/dL. Mecanismo: inhibición de síntesis de VLDL hepática y aumento de oxidación de ácidos grasos."
+      },
+      {
+        "condition": "Mejora de sensibilidad a la insulina (HOMA-IR)",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 20-30% en índice HOMA-IR, indicando mejora de sensibilidad insulínica",
+        "studyCount": 12,
+        "rctCount": 9,
+        "metaAnalysis": false,
+        "totalParticipants": 950,
+        "notes": "Múltiples RCTs documentan mejora en HOMA-IR. Dosis: 500mg 2-3 veces al día. Duración: 8-12 semanas. Población: adultos con resistencia insulínica, prediabetes o diabetes tipo 2. Efecto observable incluso sin cambios significativos de peso, sugiriendo efecto directo en sensibilidad insulínica periférica y hepática."
+      },
+      {
+        "condition": "Reducción de colesterol LDL",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 15-25% en colesterol LDL, equivalente a 30-60 mg/dL de reducción absoluta",
+        "studyCount": 11,
+        "rctCount": 8,
+        "metaAnalysis": false,
+        "totalParticipants": 820,
+        "notes": "RCTs documentan reducción consistente de LDL. Dosis: 500mg 2-3 veces al día. Duración: 8-12 semanas. Población: adultos con dislipidemia o diabetes tipo 2. Mecanismo: aumento de expresión de receptores LDL hepáticos y reducción de síntesis de colesterol. Efecto menor que estatinas pero sin efectos secundarios musculares reportados."
+      },
+      {
+        "condition": "Reducción de peso corporal en sobrepeso/obesidad",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 2-4 kg en promedio, equivalente a 2-3% de pérdida de peso corporal",
+        "studyCount": 10,
+        "rctCount": 7,
+        "metaAnalysis": false,
+        "totalParticipants": 680,
+        "notes": "RCTs de 12 semanas documentan pérdida de peso modesta. Dosis: 500mg 2-3 veces al día. Duración: 12 semanas. Población: adultos con sobrepeso (BMI 25-30) u obesidad (BMI >30). Efecto independiente de cambios dietéticos, aunque se potencia con restricción calórica. Mecanismo: aumento de gasto energético y reducción de acumulación de grasa visceral."
+      },
+      {
+        "condition": "Reducción de presión arterial sistólica en hipertensión leve",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 5-10 mmHg en presión arterial sistólica",
+        "studyCount": 6,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 420,
+        "notes": "Estudios limitados documentan reducción modesta de presión arterial. Dosis: 500mg 2-3 veces al día. Duración: 8-12 semanas. Población: adultos con hipertensión leve (140-160 mmHg sistólica). Efecto menor que antihipertensivos farmacéuticos. Mecanismo propuesto: mejora de función endotelial y reducción de resistencia vascular periférica."
+      },
+      {
+        "condition": "Mejora de marcadores inflamatorios (PCR, IL-6)",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 15-25% en proteína C reactiva (PCR) y citoquinas proinflamatorias",
+        "studyCount": 8,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 550,
+        "notes": "Estudios documentan reducción de marcadores inflamatorios. Dosis: 500mg 2-3 veces al día. Duración: 8-12 semanas. Población: adultos con diabetes tipo 2 o síndrome metabólico. Mecanismo: reducción de endotoxemia metabólica y modulación de microbiota intestinal. Efecto clínico significado aún por determinar."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso significativa como monoterapia en obesidad severa",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Tres estudios pequeños (n<100) no demostraron pérdida de peso >5% como monoterapia en obesidad severa (BMI >35). La berberina produce pérdida de peso modesta (2-4 kg) principalmente en sobrepeso/obesidad leve. No hay evidencia de que sea efectiva como tratamiento único para obesidad severa sin intervención dietética."
+      },
+      {
+        "condition": "Mejora de función cognitiva en adultos sanos",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n<50 cada uno) evaluaron efectos cognitivos. No hay RCTs de calidad en adultos sanos. Estudios in vitro sugieren potencial neuroprotector, pero sin confirmación clínica en humanos. No hay evidencia de que mejore memoria, atención o velocidad de procesamiento en población sin patología neurológica."
+      },
+      {
+        "condition": "Tratamiento de infecciones bacterianas sistémicas",
+        "evidenceGrade": "F",
+        "studyCount": 4,
+        "notes": "Cuatro estudios in vitro documentaron actividad antibacteriana contra Staphylococcus aureus y Escherichia coli, pero concentraciones requeridas (100-500 μM) son 10-50 veces superiores a niveles séricos alcanzables con suplementación oral (1-5 μM). Ningún estudio clínico en humanos. No hay evidencia de eficacia clínica como antibiótico sistémico."
+      },
+      {
+        "condition": "Mejora de función sexual o libido",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Solo 1 estudio pequeño (n=30) en hombres con diabetes tipo 2 sugirió mejora en función eréctil, probablemente secundaria a mejor control glucémico. No hay RCTs específicos evaluando libido o función sexual como endpoint primario. Evidencia insuficiente para recomendar berberina para disfunción sexual."
+      },
+      {
+        "condition": "Cura o remisión de diabetes tipo 2",
+        "evidenceGrade": "D",
+        "studyCount": 0,
+        "notes": "No hay estudios documentando remisión de diabetes tipo 2 con berberina como monoterapia. La berberina mejora control glucémico pero no induce remisión de la enfermedad. Requiere continuación de tratamiento. Pacientes que descontinúan berberina muestran retorno a valores glucémicos basales en 4-8 semanas."
+      },
+      {
+        "condition": "Prevención de complicaciones diabéticas microvasculares (nefropatía, retinopatía)",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Solo 2 estudios pequeños (n<100 cada uno) evaluaron complicaciones microvasculares. Ninguno mostró prevención de progresión de nefropatía o retinopatía diabética. Duración insuficiente (máximo 12 semanas) para evaluar prevención de complicaciones que requieren años de seguimiento. No hay evidencia de eficacia en prevención de complicaciones microvasculares."
+      },
+      {
+        "condition": "Mejora de función hepática en hepatitis viral crónica",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Solo 1 estudio pequeño (n=40) en hepatitis B crónica no mostró mejora en transaminasas o carga viral. Estudios in vitro sugieren potencial antiviral contra hepatitis C, pero sin confirmación clínica. Evidencia insuficiente para recomendar berberina en hepatitis viral."
+      },
+      {
+        "condition": "Tratamiento de síndrome de ovario poliquístico (SOP)",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Tres estudios pequeños (n<80 cada uno) en mujeres con SOP mostraron mejora en sensibilidad insulínica pero no en ciclos menstruales regulares, niveles de andrógenos o fertilidad. Duración máxima 12 semanas. Evidencia insuficiente para recomendar berberina como tratamiento de SOP."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Reducción de riesgo cardiovascular en diabetes tipo 2",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Tres estudios observacionales (n=150-300 cada uno) documentan asociación entre uso de berberina y reducción de eventos cardiovasculares, pero sin RCTs prospectivos de larga duración. Se necesitan RCTs de 2-3 años evaluando infarto de miocardio, accidente cerebrovascular y mortalidad cardiovascular como endpoints primarios. Mecanismos plausibles (mejora de lípidos, glucosa, presión arterial) pero impacto clínico en eventos duros aún no confirmado."
+      },
+      {
+        "condition": "Mejora de función endotelial y rigidez arterial",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Cuatro estudios pequeños (n<100 cada uno) documentan mejora en velocidad de onda de pulso (PWV) y dilatación mediada por flujo (FMD), pero con heterogeneidad metodológica. Se necesitan RCTs más grandes con estandarización de mediciones vasculares. Relevancia clínica de mejoras en FMD y PWV aún por determinar. Población estudiada principalmente diabetes tipo 2."
+      },
+      {
+        "condition": "Prevención o tratamiento de esteatosis hepática no alcohólica (NAFLD)",
+        "evidenceGrade": "C",
+        "studyCount": 5,
+        "notes": "Cinco estudios pequeños (n<100 cada uno) documentan reducción de grasa hepática por ultrasonografía o elastografía, pero sin confirmación por resonancia magnética espectroscópica (gold standard). Se necesitan RCTs con biopsia hepática o RMN-E como endpoint. Duración máxima 12 semanas. Mecanismo plausible (activación AMPK, reducción de triglicéridos) pero eficacia clínica aún no confirmada."
+      },
+      {
+        "condition": "Mejora de marcadores de estrés oxidativo y antioxidantes",
+        "evidenceGrade": "C",
+        "studyCount": 6,
+        "notes": "Seis estudios pequeños (n<80 cada uno) documentan reducción de malondialdehído (MDA) y aumento de superóxido dismutasa (SOD), pero con heterogeneidad en métodos de medición. Relevancia clínica de cambios en marcadores de estrés oxidativo aún no establecida. Se necesitan estudios correlacionando cambios en estrés oxidativo con outcomes clínicos."
+      }
+    ],
+    "dosage": "{\"standard\":\"500mg 2-3 veces al día (1000-1500mg/día total) de extracto de berberina pura o de plantas que contienen berberina\",\"effectiveDose\":\"500mg una vez al día mostró efectos modestos en glucosa en ayunas, pero 1000-1500mg/día (dividido en 2-3 dosis) es la dosis más comúnmente utilizada en estudios clínicos\",\"optimalDose\":\"1000-1500mg/día dividido en 2-3 dosis (500mg por dosis) mostró mejor balance entre eficacia y tolerabilidad gastrointestinal en meta-análisis\",\"maxSafeDose\":\"Hasta 1500mg/día documentado como seguro en estudios de 12 semanas. Estudios de hasta 3 meses con 2000mg/día no reportaron eventos adversos graves, pero datos de seguridad limitados a esta dosis\",\"timing\":\"Sin preferencia de horario específico según estudios clínicos. Algunos estudios administraron con comidas para mejorar tolerabilidad gastrointestinal, pero no hay evidencia de que esto mejore absorción o eficacia. Tomar consistentemente a la misma hora puede mejorar adherencia.\",\"duration\":\"Efectos iniciales observados en 2-4 semanas (mejora en glucosa en ayunas), efectos máximos en 8-12 semanas (HbA1c, lípidos). Uso continuo seguro documentado hasta 3 meses en RCTs. Estudios de 6-12 meses en diabetes tipo 2 muestran mantenimiento de beneficios sin desarrollo de tolerancia. Recomendación: evaluación de eficacia a las 8-12 semanas.\",\"forms\":[{\"form\":\"Berberina HCl (clorhidrato de berberina) pura\",\"description\":\"Forma más estudiada en RCTs clínicos. Biodisponibilidad oral baja (aproximadamente 5%) pero suficiente para efectos sistémicos. Utilizada en mayoría de estudios (>80% de RCTs). Estandarización: típicamente 98%+ pureza.\",\"recommended\":true,\"studyCount\":45},{\"form\":\"Extracto de Coptis chinensis estandarizado a 8-10% berberina\",\"description\":\"Forma tradicional utilizada en medicina china. Contiene otros alcaloides (palmatina, jateorrhizina) con posibles efectos sinérgicos. Utilizada en 15-20% de estudios clínicos. Menos estandarizada que berberina pura.\",\"recommended\":false,\"studyCount\":8},{\"form\":\"Extracto de Berberis vulgaris estandarizado a 5-8% berberina\",\"description\":\"Fuente occidental de berberina. Contiene otros compuestos (ácido tánico, flavonoides). Menos estudiada que Coptis chinensis. Utilizada en <10% de estudios clínicos.\",\"recommended\":false,\"studyCount\":3},{\"form\":\"Berberina con fosfolípidos (Meriva®-like formulations)\",\"description\":\"Formulaciones con fosfolípidos para mejorar absorción. Estudios in vitro sugieren aumento de biodisponibilidad, pero confirmación clínica limitada. Utilizada en <5% de estudios. Datos de eficacia clínica insuficientes.\",\"recommended\":false,\"studyCount\":2}],\"stacksWith\":[\"Metformina - potencia efectos hipoglucemiantes sin interacciones adversas documentadas\",\"Estatinas (atorvastatina, simvastatina) - efectos aditivos en reducción de lípidos sin interacciones significativas\",\"Ácido alfa-lipoico - potencia efectos antioxidantes y mejora de sensibilidad insulínica\",\"Inositol (myo-inositol) - mejora sinérgica de sensibilidad insulínica en síndrome metabólico\"],\"notes\":\"Absorción oral de berberina es baja (5-10%) pero suficiente para efectos sistémicos. Tomar con comidas puede reducir malestar gastrointestinal. Ciclar la berberina no es necesario según estudios de 3 meses. Algunos estudios sugieren que la berberina puede mejorar absorción de otros compuestos, pero datos específicos limitados. Si experimenta malestar gastrointestinal, reducir dosis a 500mg una vez al día e incrementar gradualmente.\"},\"keyStudies\":[{\"title\":\"Efficacy of berberine in patients with type 2 diabetes mellitus\",\"year\":2012,\"studyType\":\"Meta-analysis\",\"participants\":1850,\"duration\":\"8-12 weeks (individual studies)\",\"dose\":\"500mg 2-3 times daily\",\"findings\":[\"Reducción de glucosa en ayunas: 30-50 mg/dL (1.7-2.8 mmol/L)\",\"Reducción de HbA1c: 1.5-2.0% (16-22 mmol/mol)\",\"Reducción de triglicéridos: 25-35%\",\"Eficacia comparable a metformina 1000mg/día\"],\"quality\":\"High\"},{\"title\":\"Berberine for the treatment of type 2 diabetes mellitus: A systematic review and meta-analysis of randomized controlled trials\",\"year\":2015,\"studyType\":\"Systematic Review\",\"participants\":2100,\"duration\":\"8-12 weeks (individual studies)\",\"dose\":\"500-1500mg/day\",\"findings\":[\"Confirmación de reducción de HbA1c 1.5-2.0%\",\"Mejora de HOMA-IR 20-30%\",\"Reducción de LDL colesterol 15-25%\",\"Reducción de peso 2-4 kg en promedio\"],\"quality\":\"High\"},{\"title\":\"Berberine improves glucose metabolism through induction of Sirt1 and activation of AMP-activated protein kinase\",\"year\":2011,\"studyType\":\"RCT\",\"participants\":116,\"duration\":\"12 weeks\",\"dose\":\"500mg twice daily\",\"findings\":[\"Aumento de expresión de SIRT1 en células mononucleares\",\"Activación de AMPK documentada indirectamente por cambios metabólicos\",\"Mejora de sensibilidad insulínica independiente de cambios de peso\"],\"quality\":\"Moderate\"}]}",
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":8,\"sideEffects\":[{\"effect\":\"Malestar gastrointestinal (náuseas, diarrea, constipación, molestias abdominales)\",\"frequency\":\"20-30% de usuarios, más común en dosis >1000mg/día o con estómago vacío\",\"severity\":\"Mild\",\"notes\":\"Efecto más común reportado. Típicamente desaparece después de 1-2 semanas de uso continuo. Puede mitigarse tomando con comidas. Si persiste, reducir dosis a 500mg una vez al día e incrementar gradualmente. Diarrea más común que constipación en primeras 1-2 semanas.\"},{\"effect\":\"Hipoglucemia (glucosa baja)\",\"frequency\":\"Raro <1% en monoterapia, 5-10% cuando se combina con otros hipoglucemiantes\",\"severity\":\"Moderate\",\"notes\":\"Riesgo principalmente cuando se combina con metformina, sulfonilureas o insulina. Monitorear glucosa si se combina con otros agentes hipoglucemiantes. Síntomas: temblores, sudoración, confusión. Requiere reducción de dosis de otros hipoglucemiantes.\"},{\"effect\":\"Reacciones alérgicas (rash, prurito, angioedema)\",\"frequency\":\"Raro <1%\",\"severity\":\"Mild to Moderate\",\"notes\":\"Reacciones alérgicas reportadas en <1% de usuarios. Típicamente rash cutáneo leve. Descontinuar si ocurre angioedema o dificultad respiratoria.\"},{\"effect\":\"Mareos o vértigo\",\"frequency\":\"Raro 1-2%\",\"severity\":\"Mild\",\"notes\":\"Probablemente secundario a hipoglucemia o cambios en presión arterial. Más común en primeras 1-2 semanas. Desaparece con continuación del tratamiento.\"},{\"effect\":\"Insomnio o alteraciones del sueño\",\"frequency\":\"Raro 1-2%\",\"severity\":\"Mild\",\"notes\":\"Reportado en <2% de usuarios. Mecanismo desconocido. Considerar tomar dosis matutina en lugar de nocturna si ocurre.\"}],\"contraindications\":[\"Embarazo - falta evidencia de seguridad. Estudios en animales muestran potencial teratogénico a dosis altas. Evitar durante embarazo y lactancia.\",\"Hipoglucemia severa o diabetes tipo 1 - berberina puede potenciar hipoglucemia. Riesgo particular en diabetes tipo 1 donde control glucémico es crítico.\",\"Alergia conocida a berberina o plantas de la familia Berberidaceae (Berberis, Coptis)\"],\"interactions\":[{\"medication\":\"Metformina\",\"severity\":\"Mild\",\"mechanism\":\"Efectos aditivos en mejora de sensibilidad insulínica y reducción de glucosa\",\"description\":\"Combinación generalmente segura y potencialmente sinérgica. Ambos mejoran sensibilidad insulínica por mecanismos diferentes. Riesgo: hipoglucemia si no se ajustan dosis. Recomendación: monitorear glucosa regularmente. Consultar médico para ajuste de dosis.\"},{\"medication\":\"Sulfonilureas (glibenclamida, glipizida, gliclazida)\",\"severity\":\"Moderate\",\"mechanism\":\"Efectos aditivos hipoglucemiantes - berberina mejora sensibilidad insulínica mientras sulfonilureas estimulan secreción insulínica\",\"description\":\"Riesgo significativo de hipoglucemia. Combinación requiere monitoreo cuidadoso. Recomendación: reducir dosis de sulfonilurea 25-50% cuando se inicia berberina. Monitorear glucosa capilar 2-3 veces diarias. Consultar médico obligatoriamente.\"},{\"medication\":\"Inhibidores de CYP3A4 (claritromicina, ketoconazol, ritonavir)\",\"severity\":\"Moderate\",\"mechanism\":\"Inhibición de CYP3A4 puede aumentar niveles séricos de berberina\",\"description\":\"Berberina es metabolizada por CYP3A4. Inhibidores pueden aumentar concentraciones de berberina 1.5-2 veces. Riesgo: aumento de efectos adversos gastrointestinales. Recomendación: reducir dosis de berberina 25-50% si se usa con inhibidores CYP3A4. Monitorear tolerabilidad.\"},{\"medication\":\"Ciclosporina\",\"severity\":\"Moderate\",\"mechanism\":\"Berberina puede inhibir transportador P-gp (glicoproteína P), aumentando absorción de ciclosporina\",\"description\":\"Ciclosporina es sustrato de P-gp. Inhibición de P-gp puede aumentar niveles de ciclosporina. Riesgo: toxicidad de ciclosporina. Recomendación: monitorear niveles de ciclosporina. Consultar con farmacéutico o médico antes de combinar.\"},{\"medication\":\"Anticoagulantes (warfarina)\",\"severity\":\"Mild\",\"mechanism\":\"Berberina puede tener efectos antiagregantes plaquetarios leves\",\"description\":\"Riesgo teórico de aumento de sangrado, pero evidencia clínica limitada. Recomendación: monitorear INR regularmente si se combina. Consultar médico. Probablemente seguro pero requiere vigilancia.\"},{\"medication\":\"Antihipertensivos\",\"severity\":\"Mild\",\"mechanism\":\"Berberina puede reducir presión arterial modestamente, efecto aditivo con antihipertensivos\",\"description\":\"Riesgo: hipotensión excesiva. Berberina reduce presión arterial 5-10 mmHg. Combinación con antihipertensivos puede potenciar efecto. Recomendación: monitorear presión arterial. Puede requerir ajuste de dosis de antihipertensivo.\"}],\"longTermSafety\":\"Uso continuo seguro documentado hasta 3 meses en RCTs. Estudios observacionales de 6-12 meses en diabetes tipo 2 muestran perfil de seguridad favorable sin desarrollo de eventos adversos graves. No hay reportes de hepatotoxicidad, nefrotoxicidad o eventos adversos graves en seguimiento de 12 meses. Datos de seguridad a largo plazo (>12 meses) limitados. Recomendación: monitoreo periódico de función hepática y renal si uso prolongado (>6 meses).\",\"pregnancyCategory\":\"Avoid\",\"notes\":\"Perfil de seguridad general favorable comparable a metformina. No hay reportes de hepatotoxicidad en estudios clínicos. Efectos adversos principalmente gastrointestinales y generalmente leves. Berberina tiene potencial teratogénico en estudios animales a dosis altas, por lo que debe evitarse en embarazo. Lactancia: desconocido si se excreta en leche materna, evitar por precaución.\"},\"practicalRecommendations\":[\"Comenzar con dosis baja (500mg una vez al día) y aumentar gradualmente a 500mg 2-3 veces al día durante 1-2 semanas para minimizar malestar gastrointestinal\",\"Tomar con comidas para mejorar tolerabilidad gastrointestinal y posiblemente reducir malestar estomacal\",\"Esperar mínimo 8-12 semanas antes de evaluar eficacia en control glucémico, lípidos y peso - los efectos no son inmediatos\",\"Si se combina con otros hipoglucemiantes (metformina, sulfonilureas), monitorear glucosa capilar regularmente (2-3 veces por semana) para detectar hipoglucemia y ajustar dosis de otros medicamentos\",\"Mantener consistencia en horarios de administración y no descontinuar abruptamente - los beneficios desaparecen en 4-8 semanas después de suspender el tratamiento\"]}",
+    "buyingGuidance": "{\"preferredForm\":\"Berberina HCl (clorhidrato de berberina) pura con pureza certificada de 98%+ - esta es la forma más estudiada en RCTs clínicos (utilizada en >80% de estudios) y tiene perfil de seguridad y eficacia mejor documentado que extractos de plantas\",\"keyCompounds\":[{\"name\":\"Berberina\",\"source\":\"Síntesis química o extracción de plantas Berberidaceae (Coptis chinensis, Berberis vulgaris, Phellodendron amurense)\",\"lookFor\":\"Certificación de pureza 98%+ de berberina HCl. Etiqueta debe especificar 'berberina HCl' o 'berberina clorhidrato'. Evitar productos que solo digan 'extracto de Coptis' sin especificar contenido de berberina.\"}],\"avoidFlags\":[\"Productos sin especificación de contenido de berberina - muchos 'extractos de Coptis' contienen <5% berberina, insuficiente para efectos documentados en estudios\",\"Productos sin pruebas de terceros (third-party testing) - riesgo de contaminación con metales pesados (plomo, cadmio) documentado en suplementos de plantas asiáticas\",\"Formulaciones con 'biodisponibilidad mejorada' sin evidencia clínica - afirmaciones de absorción aumentada sin estudios en humanos son marketing no respaldado\",\"Productos combinados con múltiples ingredientes sin dosis claras de berberina - dificulta determinar si dosis es terapéutica (mínimo 500mg)\",\"Berberina de fuentes no verificadas o sin certificación de origen - riesgo de adulteración o contaminación\"],\"qualityIndicators\":[\"Certificación de pureza 98%+ de berberina HCl verificada por laboratorio independiente\",\"Pruebas de terceros (USP, NSF, ConsumerLab) documentando ausencia de metales pesados (plomo, cadmio, arsénico)\",\"Etiqueta clara especificando 'berberina HCl' con dosis exacta por cápsula/porción (típicamente 500mg)\",\"Certificación de origen vegetal si es extracto (ej: Coptis chinensis cultivada orgánicamente)\",\"Fecha de fabricación y vencimiento claramente indicadas; preferir productos fabricados en últimos 12 meses\"],\"notes\":\"Berberina tiene absorción oral baja (5-10%) pero suficiente para efectos sistémicos documentados. No hay evidencia de que formulaciones con fosfolípidos o 'biodisponibilidad mejorada' sean superiores a berberina HCl pura en estudios clínicos. La mayoría de estudios clínicos utilizaron berberina HCl pura, por lo que esta es la forma con mejor evidencia de eficacia. Costo: berberina HCl pura típicamente $15-30 USD por mes (dosis 1000-1500mg/día). Extractos de plantas pueden ser más económicos pero con menor estandarización.\"},\"doesntWorkFor\":[{\"condition\":\"Pérdida de peso significativa como monoterapia en obesidad severa\",\"evidenceGrade\":\"D\",\"studyCount\":3,\"notes\":\"Tres estudios pequeños (n<100) no demostraron pérdida de peso >5% como monoterapia en obesidad severa (BMI >35). La berberina produce pérdida de peso modesta (2-4 kg) principalmente en sobrepeso/obesidad leve. No hay evidencia de que sea efectiva como tratamiento único para obesidad severa sin intervención dietética.\"},{\"condition\":\"Mejora de función cognitiva en adultos sanos\",\"evidenceGrade\":\"D\",\"studyCount\":2,\"notes\":\"Solo 2 estudios pequeños (n<50 cada uno) evaluaron efectos cognitivos. No hay RCTs de calidad en adultos sanos. Estudios in vitro sugieren potencial neuroprotector, pero sin confirmación clínica en humanos. No hay evidencia de que mejore memoria, atención o velocidad de procesamiento en población sin patología neurológica.\"},{\"condition\":\"Tratamiento de infecciones bacterianas sistémicas\",\"evidenceGrade\":\"F\",\"studyCount\":4,\"notes\":\"Cuatro estudios in vitro documentaron actividad antibacteriana contra Staphylococcus aureus y Escherichia coli, pero concentraciones requeridas (100-500 μM) son 10-50 veces superiores a niveles séricos alcanzables con suplementación oral (1-5 μM). Ningún estudio clínico en humanos. No hay evidencia de eficacia clínica como antibiótico sistémico.\"},{\"condition\":\"Mejora de función sexual o libido\",\"evidenceGrade\":\"D\",\"studyCount\":1,\"notes\":\"Solo 1 estudio pequeño (n=30) en hombres con diabetes tipo 2 sugirió mejora en función eréctil, probablemente secundaria a mejor control glucémico. No hay RCTs específicos evaluando libido o función sexual como endpoint primario. Evidencia insuficiente para recomendar berberina para disfunción sexual.\"},{\"condition\":\"Cura o remisión de diabetes tipo 2\",\"evidenceGrade\":\"D\",\"studyCount\":0,\"notes\":\"No hay estudios documentando remisión de diabetes tipo 2 con berberina como monoterapia. La berberina mejora control glucémico pero no induce remisión de la enfermedad. Requiere continuación de tratamiento. Pacientes que descontinúan berberina muestran retorno a valores glucémicos basales en 4-8 semanas.\"},{\"condition\":\"Prevención de complicaciones diabéticas microvasculares (nefropatía, retinopatía)\",\"evidenceGrade\":\"D\",\"studyCount\":2,\"notes\":\"Solo 2 estudios pequeños (n<100 cada uno) evaluaron complicaciones microvasculares. Ninguno mostró prevención de progresión de nefropatía o retinopatía diabética. Duración insuficiente (máximo 12 semanas) para evaluar prevención de complicaciones que requieren años de seguimiento. No hay evidencia de eficacia en prevención de complicaciones microvasculares.\"},{\"condition\":\"Tratamiento de síndrome de ovario poliquístico (SOP)\",\"evidenceGrade\":\"D\",\"studyCount\":3,\"notes\":\"Tres estudios pequeños (n<80 cada uno) en mujeres con SOP mostraron mejora en sensibilidad insulínica pero no en ciclos menstruales regulares, niveles de andrógenos o fertilidad. Duración máxima 12 semanas. Evidencia insuficiente para recomendar berberina como tratamiento de SOP.\"}]}"
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.516,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.83,
+      "dosageForms": 0,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [
+      "practicalRecommendations",
+      "keyStudies"
+    ],
+    "spanishScore": 1,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:30,50",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

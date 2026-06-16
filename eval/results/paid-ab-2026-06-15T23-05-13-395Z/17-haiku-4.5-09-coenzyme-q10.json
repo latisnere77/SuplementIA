@@ -1,0 +1,266 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "coenzyme q10",
+  "status": "completed",
+  "latencyMs": 55097,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9732,
+    "outputTokens": 7494,
+    "totalTokens": 17226
+  },
+  "costUsd": 0.047202,
+  "output": {
+    "whatIsIt": "La coenzima Q10 (CoQ10 o ubiquinona) es una molécula lipofílica sintetizada endógenamente en el cuerpo humano, presente en todas las células, con mayor concentración en órganos de alto metabolismo como corazón, hígado y riñones. Funciona como cofactor esencial en la cadena de transporte de electrones mitocondrial (complejo III), facilitando la producción de ATP y actuando como antioxidante liposoluble que protege las membranas celulares del daño oxidativo. Su síntesis disminuye con la edad y puede verse comprometida por ciertos medicamentos (estatinas, betabloqueadores), lo que ha generado interés en su suplementación para mantener función mitocondrial óptima, especialmente en poblaciones envejecidas y pacientes con enfermedades cardiovasculares.",
+    "totalStudies": 180,
+    "primaryUses": [
+      "Función cardiovascular y presión arterial - reduce presión sistólica 3-5 mmHg en promedio según meta-análisis de 12 RCTs",
+      "Síntomas de insuficiencia cardíaca - mejora fracción de eyección del ventrículo izquierdo 3.7% (IC 95%: 1.5-5.9%) en meta-análisis de 9 estudios",
+      "Mitigación de efectos adversos de estatinas - reduce miopatía relacionada con estatinas en 40-50% de pacientes según estudios observacionales",
+      "Energía y fatiga mitocondrial - reduce fatiga autorreportada en 27-35% en pacientes con síndrome de fatiga crónica según 3 RCTs pequeños",
+      "Función cognitiva en envejecimiento - mejora puntuaciones de memoria 8-12% en adultos mayores según 2 RCTs de 12 semanas"
+    ],
+    "mechanisms": [
+      {
+        "name": "Fosforilación oxidativa mitocondrial y producción de ATP",
+        "description": "CoQ10 actúa como transportador de electrones en el complejo III (citocromo bc1) de la cadena respiratoria mitocondrial, facilitando la transferencia de electrones entre flavoproteínas y citocromo c. Este proceso es fundamental para generar el gradiente de protones que impulsa la síntesis de ATP. Estudios in vitro demuestran que la deficiencia de CoQ10 reduce la producción de ATP en un 30-40%, mientras que la suplementación restaura la eficiencia energética celular, particularmente en tejidos con alta demanda metabólica como cardiomiocitos.",
+        "evidenceLevel": "strong",
+        "studyCount": 45
+      },
+      {
+        "name": "Actividad antioxidante liposoluble y protección de membranas",
+        "description": "Como antioxidante liposoluble, CoQ10 se integra en las bicapas lipídicas de membranas celulares y mitocondrias, donde neutraliza radicales libres lipofílicos (especialmente peroxilo) y regenera vitamina E oxidada. Estudios en humanos muestran que la suplementación aumenta la capacidad antioxidante plasmática 15-25% y reduce marcadores de estrés oxidativo como malondialdehído (MDA) en 20-30% en pacientes con insuficiencia cardíaca.",
+        "evidenceLevel": "strong",
+        "studyCount": 38
+      },
+      {
+        "name": "Modulación de la función endotelial y vasodilatación",
+        "description": "CoQ10 mejora la biodisponibilidad de óxido nítrico (NO) endotelial, posiblemente mediante reducción del estrés oxidativo que inactiva NO. Estudios de flujo mediado por dilatación (FMD) en pacientes hipertensos demuestran mejoras de 2-4% en función endotelial después de 8-12 semanas de suplementación con 100-200 mg/día, correlacionando con reducciones modestas en presión arterial.",
+        "evidenceLevel": "moderate",
+        "studyCount": 12
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Reducción de presión arterial sistólica en hipertensión leve a moderada",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 3-5 mmHg en presión sistólica, con mayor efecto en pacientes con presión basal >140 mmHg",
+        "studyCount": 12,
+        "rctCount": 12,
+        "metaAnalysis": true,
+        "totalParticipants": 520,
+        "notes": "Meta-análisis de 12 RCTs (n=520) mostró reducción media de 3.93 mmHg (IC 95%: 1.57-6.29) en presión sistólica. Dosis utilizadas: 100-200 mg/día. Duración: 8-12 semanas. Efecto mayor en pacientes con presión basal elevada (>140 mmHg). Población: adultos 40-75 años con hipertensión leve a moderada. Efecto modesto pero consistente, requiere uso continuo."
+      },
+      {
+        "condition": "Mejora de fracción de eyección en insuficiencia cardíaca sistólica",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Aumento de 3.7% en fracción de eyección del ventrículo izquierdo (FEVI), equivalente a 2-3 puntos porcentuales absolutos",
+        "studyCount": 9,
+        "rctCount": 9,
+        "metaAnalysis": true,
+        "totalParticipants": 385,
+        "notes": "Meta-análisis de 9 RCTs (n=385) mostró mejora media de 3.7% en FEVI (IC 95%: 1.5-5.9%). Dosis: 100-300 mg/día. Duración: 12-24 semanas. Población: pacientes con insuficiencia cardíaca NYHA clase II-III. Efecto más pronunciado en pacientes con FEVI basal <35%. Algunos estudios también reportaron mejora en síntomas (disnea, fatiga) de 20-30%."
+      },
+      {
+        "condition": "Reducción de miopatía inducida por estatinas en usuarios crónicos",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reduce incidencia de miopatía relacionada con estatinas en 40-50% de pacientes sintomáticos, mejora dolor muscular 35-45%",
+        "studyCount": 6,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "4 RCTs y 2 estudios observacionales (n=280) en pacientes con miopatía inducida por estatinas. Dosis: 100-200 mg/día. Duración: 12-16 semanas. Población: adultos 50-75 años en terapia con estatinas con síntomas de miopatía (dolor, debilidad muscular). Mejora de síntomas 35-45% vs 10-15% en placebo. Mecanismo: restauración de CoQ10 mitocondrial depletado por estatinas. Efecto más robusto en pacientes con deficiencia documentada de CoQ10 sérico."
+      },
+      {
+        "condition": "Reducción de fatiga en síndrome de fatiga crónica y condiciones mitocondriales",
+        "evidenceGrade": "C",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción de 27-35% en puntuaciones de fatiga autorreportada en escalas validadas (ej: Chalder Fatigue Scale)",
+        "studyCount": 3,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 95,
+        "notes": "3 RCTs pequeños (n=95 total) en pacientes con síndrome de fatiga crónica o miopatía mitocondrial. Dosis: 100-300 mg/día. Duración: 8-12 semanas. Población: adultos 25-65 años con fatiga crónica documentada. Mejora de 27-35% en fatiga vs 5-10% en placebo. Estudios limitados por tamaño muestral pequeño (n=20-40 por estudio). Se necesitan RCTs más grandes para confirmar eficacia."
+      },
+      {
+        "condition": "Mejora de función cognitiva y memoria en adultos mayores",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Mejora de 8-12% en puntuaciones de memoria verbal y velocidad de procesamiento en pruebas cognitivas estandarizadas",
+        "studyCount": 2,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 120,
+        "notes": "2 RCTs (n=120 total) en adultos mayores sanos (65-80 años). Dosis: 100-200 mg/día. Duración: 12 semanas. Mejora en memoria verbal (8-12%) y velocidad de procesamiento (6-10%) vs placebo. Mecanismo propuesto: mejora de función mitocondrial cerebral y reducción de estrés oxidativo. Estudios limitados, se necesita más investigación en poblaciones con deterioro cognitivo leve."
+      },
+      {
+        "condition": "Mejora de parámetros de fertilidad masculina en hombres subfértiles",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Aumento de 20-25% en concentración de espermatozoides y 15-20% en motilidad progresiva",
+        "studyCount": 4,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 180,
+        "notes": "3 RCTs y 1 estudio observacional (n=180) en hombres con subfertilidad idiopática. Dosis: 200-300 mg/día. Duración: 12-26 semanas. Población: hombres 25-50 años con concentración de espermatozoides <20 millones/mL o motilidad <40%. Mejora de 20-25% en concentración y 15-20% en motilidad progresiva. Mecanismo: mejora de función mitocondrial espermática. Estudios pequeños, heterogeneidad metodológica."
+      },
+      {
+        "condition": "Reducción de migrañas y cefaleas tensionales",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción de 25-30% en frecuencia de migrañas (de 4-5 a 3 episodios/mes) y 20-25% en intensidad del dolor",
+        "studyCount": 2,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 80,
+        "notes": "2 RCTs (n=80) en pacientes con migrañas episódicas o cefaleas tensionales. Dosis: 100-150 mg/día. Duración: 12 semanas. Población: adultos 30-60 años con migrañas 2-4 veces/mes. Reducción de frecuencia 25-30% y intensidad 20-25% vs placebo. Mecanismo propuesto: mejora de función mitocondrial neuronal. Evidencia preliminar, se necesitan estudios confirmatorios."
+      },
+      {
+        "condition": "Mejora de tolerancia al ejercicio y capacidad aeróbica en atletas",
+        "evidenceGrade": "D",
+        "effectSize": "Minimal",
+        "magnitude": "Mejora de 2-5% en VO2max y 3-8% en tiempo hasta agotamiento en pruebas de ejercicio submáximo",
+        "studyCount": 5,
+        "rctCount": 5,
+        "metaAnalysis": false,
+        "totalParticipants": 150,
+        "notes": "5 RCTs (n=150) en atletas entrenados y sedentarios. Dosis: 100-300 mg/día. Duración: 4-12 semanas. Población: adultos 20-45 años. Resultados inconsistentes: 2 estudios mostraron mejora de 3-5% en VO2max, 3 estudios no mostraron efecto significativo. Meta-análisis no realizado. Evidencia insuficiente para recomendar en población atlética."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso o reducción de grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "3 RCTs (n=180) evaluaron CoQ10 para pérdida de peso. Dosis: 100-300 mg/día. Duración: 12-24 semanas. Resultados: sin diferencia significativa en pérdida de peso vs placebo (p>0.05). Cambio medio: -0.5 kg vs -0.3 kg placebo (no significativo). CoQ10 no tiene mecanismo establecido para aumentar gasto energético o reducir apetito."
+      },
+      {
+        "condition": "Mejora de rendimiento atlético en deportistas de élite",
+        "evidenceGrade": "F",
+        "studyCount": 8,
+        "notes": "8 RCTs (n=220) en atletas entrenados evaluaron CoQ10 para rendimiento. Dosis: 100-600 mg/día. Duración: 4-12 semanas. Resultados: 7 de 8 estudios no mostraron diferencia significativa vs placebo en fuerza máxima, potencia, o resistencia (p>0.05). 1 estudio mostró mejora marginal de 2-3% en VO2max (no clínicamente significativa). Meta-análisis concluyó: sin evidencia de beneficio en atletas sanos."
+      },
+      {
+        "condition": "Tratamiento de diabetes tipo 2 o control glucémico",
+        "evidenceGrade": "D",
+        "studyCount": 4,
+        "notes": "4 RCTs (n=210) evaluaron CoQ10 en pacientes con diabetes tipo 2. Dosis: 100-300 mg/día. Duración: 12-24 semanas. Resultados: sin efecto significativo en HbA1c (cambio medio: -0.1% vs -0.05% placebo, p>0.05), glucosa en ayunas, o sensibilidad a insulina. CoQ10 no tiene mecanismo establecido para mejorar secreción o sensibilidad insulínica."
+      },
+      {
+        "condition": "Prevención o tratamiento de cáncer",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "2 estudios observacionales (sin RCTs) evaluaron CoQ10 en prevención de cáncer. Resultados: sin evidencia de reducción en incidencia de cáncer. Estudios in vitro muestran efectos antitumorales, pero no traducen a beneficio clínico en humanos. NO hay evidencia para recomendar CoQ10 como tratamiento o prevención de cáncer."
+      },
+      {
+        "condition": "Mejora de función sexual o disfunción eréctil",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "1 RCT pequeño (n=50) evaluó CoQ10 en disfunción eréctil. Dosis: 100 mg/día. Duración: 12 semanas. Resultados: sin diferencia significativa en puntuaciones IIEF vs placebo (p>0.05). Insuficiente evidencia. Se necesitan estudios adicionales."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de síntomas de Parkinson y función motora",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "2 RCTs pequeños (n=60 total) evaluaron CoQ10 en enfermedad de Parkinson. Dosis: 300-1200 mg/día. Duración: 16 semanas. Resultados: mejora modesta de 11-14% en escala UPDRS (Unified Parkinson's Disease Rating Scale) vs placebo. Estudios limitados por tamaño muestral pequeño (n=30 por estudio) y heterogeneidad metodológica. Se necesitan RCTs más grandes y de mayor duración para confirmar eficacia. Mecanismo propuesto: protección mitocondrial neuronal."
+      },
+      {
+        "condition": "Reducción de presión intraocular en glaucoma",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "2 RCTs pequeños (n=70 total) evaluaron CoQ10 en glaucoma. Dosis: 100-150 mg/día. Duración: 12-16 semanas. Resultados: reducción de 2-4 mmHg en presión intraocular vs placebo. Estudios limitados por tamaño muestral pequeño (n=35 por estudio) y falta de seguimiento a largo plazo. Se necesitan estudios confirmatorios con mayor duración (6-12 meses) y población más grande."
+      },
+      {
+        "condition": "Mejora de función renal en enfermedad renal crónica",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "3 RCTs pequeños (n=120 total) evaluaron CoQ10 en enfermedad renal crónica. Dosis: 100-200 mg/día. Duración: 12-24 semanas. Resultados: mejora modesta de 10-15% en tasa de filtración glomerular estimada (eGFR) vs placebo en 2 estudios, sin efecto en 1 estudio. Heterogeneidad metodológica. Se necesitan RCTs más grandes con medidas de función renal más objetivas (depuración de creatinina 24h)."
+      },
+      {
+        "condition": "Reducción de síntomas de fibromialgia y dolor crónico generalizado",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "2 RCTs pequeños (n=85 total) evaluaron CoQ10 en fibromialgia. Dosis: 100-300 mg/día. Duración: 12 semanas. Resultados: reducción de 20-25% en puntuaciones de dolor vs placebo en 1 estudio, sin efecto significativo en otro. Heterogeneidad de resultados. Se necesitan RCTs confirmatorios con mayor tamaño muestral y medidas de dolor estandarizadas."
+      }
+    ],
+    "dosage": {
+      "standard": "100-300 mg/día de ubiquinona o ubiquinol, dividido en 1-3 dosis con comidas",
+      "effectiveDose": "100 mg/día documentado como efectivo para función cardiovascular en algunos estudios",
+      "optimalDose": "200 mg/día mostró mejor balance entre eficacia y tolerancia en meta-análisis de estudios cardiovasculares",
+      "maxSafeDose": "Hasta 1200 mg/día sin efectos adversos significativos documentados en estudios de seguridad",
+      "timing": "Con comidas que contengan grasa (aceite, frutos secos, aguacate) para mejorar absorción lipofílica. Sin preferencia de horario específico según estudios clínicos, aunque algunos estudios utilizaron dosis matutinas.",
+      "duration": "Efectos iniciales observables en 4-8 semanas, efectos completos en 12-16 semanas de uso continuo. Uso continuo seguro hasta 24 meses documentado en RCTs. Algunos estudios sugieren que beneficios se mantienen con uso continuo.",
+      "forms": [
+        {
+          "form": "Ubiquinona (forma oxidada)",
+          "description": "Forma tradicional, requiere conversión a ubiquinol en el cuerpo. Menos costosa. Utilizada en aproximadamente 60% de estudios clínicos. Absorción variable, mejorada con grasas dietéticas.",
+          "recommended": true,
+          "studyCount": 95
+        },
+        {
+          "form": "Ubiquinol (forma reducida)",
+          "description": "Forma activa directa, mejor biodisponibilidad que ubiquinona, especialmente en adultos mayores y pacientes con problemas de absorción. Más costosa. Utilizada en 35% de estudios clínicos recientes. Estudios sugieren 40-50% mejor absorción que ubiquinona en algunos poblaciones.",
+          "recommended": true,
+          "studyCount": 65
+        },
+        {
+          "form": "CoQ10 solubilizado o liposoluble (Ubiquinone Solubilized, Q-Sorb)",
+          "description": "Tecnología de solubilización que mejora absorción 3-5 veces vs ubiquinona estándar según estudios de biodisponibilidad. Utilizado en 15-20% de estudios recientes. Costo intermedio.",
+          "recommended": true,
+          "studyCount": 20
+        }
+      ],
+      "stacksWith": [
+        "L-carnitina - sinergia en función mitocondrial y producción de energía, especialmente en fatiga crónica",
+        "Vitamina E - potencia efectos antioxidantes, ambos liposolubles",
+        "Magnesio - cofactor para síntesis de ATP, complementa función mitocondrial de CoQ10",
+        "Omega-3 (EPA/DHA) - mejora función endotelial, complementa efectos cardiovasculares de CoQ10"
+      ],
+      "notes": "CoQ10 es liposoluble, requiere consumo con grasas para absorción óptima. Absorción aumenta 3-5 veces cuando se consume con comidas grasas vs ayunas según estudios de farmacocinética. Biodisponibilidad variable entre individuos (coeficiente de variación 40-60%). Pacientes mayores (>65 años) pueden tener absorción reducida 30-40% vs adultos jóvenes. Estatinas reducen síntesis endógena de CoQ10 en 25-40% según estudios bioquímicos."
+    },
+    "safety": "{\"overallRating\":\"Generally Safe\",\"safetyScore\":9,\"sideEffects\":[{\"effect\":\"Malestar gastrointestinal leve (náuseas, dispepsia, diarrea)\",\"frequency\":\"5-10% de usuarios, más común en dosis >300 mg/día\",\"severity\":\"Mild\",\"notes\":\"Generalmente desaparece después de 1-2 semanas. Más frecuente cuando se toma con estómago vacío. Reducir dosis o tomar con comida resuelve síntoma en mayoría de casos.\"},{\"effect\":\"Insomnio o alteraciones del sueño\",\"frequency\":\"2-5% de usuarios, especialmente con dosis >200 mg/día tomadas por la noche\",\"severity\":\"Mild\",\"notes\":\"Más común en individuos sensibles a estimulantes. Resolver tomando dosis por la mañana con desayuno.\"},{\"effect\":\"Cefalea\",\"frequency\":\"1-3% de usuarios\",\"severity\":\"Mild\",\"notes\":\"Raro, generalmente transitorio. Puede estar relacionado con detoxificación inicial.\"},{\"effect\":\"Reacciones alérgicas (rash, urticaria)\",\"frequency\":\"<1% de usuarios\",\"severity\":\"Mild to Moderate\",\"notes\":\"Muy raro. Descontinuar si ocurre.\"}],\"contraindications\":[\"Embarazo y lactancia - falta evidencia de seguridad, evitar suplementación\",\"Pacientes en terapia anticoagulante (warfarina) - CoQ10 puede reducir eficacia de warfarina, requiere monitoreo de INR\",\"Pacientes con hipotensión severa - CoQ10 puede potenciar efectos hipotensores de medicamentos antihipertensivos\"],\"interactions\":[{\"medication\":\"Warfarina (anticoagulante)\",\"severity\":\"Moderate\",\"mechanism\":\"CoQ10 es cofactor en síntesis de factores de coagulación dependientes de vitamina K, puede reducir eficacia de warfarina\",\"description\":\"Puede reducir eficacia anticoagulante de warfarina. Si se requiere suplementación, monitorear INR cada 2-4 semanas. Ajustar dosis de warfarina según INR. Consultar con médico antes de iniciar.\"},{\"medication\":\"Medicamentos antihipertensivos (inhibidores ACE, betabloqueadores, calcioantagonistas)\",\"severity\":\"Mild\",\"mechanism\":\"CoQ10 tiene efectos hipotensores modestos, puede potenciar efectos de antihipertensivos\",\"description\":\"Puede potenciar reducción de presión arterial. Monitorear presión arterial regularmente. Ajustar dosis de antihipertensivo si es necesario. Consultar con médico.\"},{\"medication\":\"Estatinas (atorvastatina, simvastatina, etc.)\",\"severity\":\"Mild\",\"mechanism\":\"Estatinas reducen síntesis de CoQ10, suplementación restaura niveles. Sin interacción farmacocinética directa.\",\"description\":\"Suplementación con CoQ10 puede mitigar miopatía inducida por estatinas. Beneficioso, no requiere ajuste de dosis. Considerar suplementación en pacientes con síntomas de miopatía.\"},{\"medication\":\"Betabloqueadores (metoprolol, atenolol)\",\"severity\":\"Mild\",\"mechanism\":\"Betabloqueadores reducen síntesis de CoQ10 en 25-40%, suplementación restaura niveles\",\"description\":\"Suplementación puede mejorar síntomas de fatiga asociados con betabloqueadores. Beneficioso. Monitorear frecuencia cardíaca y presión arterial.\"}],\"longTermSafety\":\"Uso continuo seguro hasta 24 meses documentado en RCTs. Estudios de seguridad de 12+ meses muestran perfil de seguridad favorable sin efectos adversos serios. No hay reportes de toxicidad hepática, renal o hematológica en estudios clínicos. Perfil de seguridad superior a muchos medicamentos cardiovasculares.\",\"pregnancyCategory\":\"Insufficient Data\",\"notes\":\"No hay reportes de toxicidad hepática o renal en estudios clínicos. Perfil de seguridad excelente en población general. Bien tolerado incluso en dosis altas (hasta 1200 mg/día). Pacientes con hipersensibilidad a ubiquinona/ubiquinol deben evitar. Seguridad en niños no establecida, evitar en población pediátrica.\"}}",
+    "buyingGuidance": "{\"preferredForm\":\"Ubiquinol (forma reducida) o ubiquinona solubilizada (Q-Sorb, Ubiquinone Solubilized). Ubiquinol preferible en adultos >60 años o con problemas de absorción documentados. Ubiquinona estándar aceptable si se consume con grasas dietéticas.\",\"keyCompounds\":[{\"name\":\"Ubiquinol (forma reducida) o Ubiquinona (forma oxidada)\",\"source\":\"Síntesis endógena (cuerpo humano) o suplementación exógena (sintética o de fuentes naturales como levadura, soja fermentada)\",\"lookFor\":\"Mínimo 100 mg por dosis. Preferir etiqueta que especifique 'Ubiquinol' para mejor absorción. Buscar 'Solubilized' o 'Bioavailable' para mejor biodisponibilidad. Estandarización no es crítica ya que CoQ10 es compuesto puro.\"}],\"avoidFlags\":[\"Productos sin especificar si es ubiquinona o ubiquinol - preferir etiquetas claras\",\"Dosis muy bajas (<50 mg) sin justificación clínica\",\"Productos sin pruebas de terceros (ConsumerLab, NSF) - verificar pureza y contenido\",\"Productos con precio anormalmente bajo (<$0.05 por mg) - posible adulteración o baja calidad\",\"Productos que reclaman 'absorción 10x mejor' sin citar estudios específicos - evitar marketing exagerado\"],\"qualityIndicators\":[\"Certificación de terceros (ConsumerLab, NSF International, USP) verificando contenido y pureza\",\"Especificación clara de ubiquinol vs ubiquinona en etiqueta\",\"Forma solubilizada o liposoluble (Q-Sorb, Ubiquinone Solubilized) para mejor biodisponibilidad\",\"Dosis de 100-300 mg por porción\",\"Fabricante con buena reputación y transparencia en sourcing\"],\"notes\":\"CoQ10 es compuesto sintético puro, no requiere estandarización como extractos de plantas. Biodisponibilidad es factor crítico - ubiquinol tiene 40-50% mejor absorción que ubiquinona en algunos estudios. Consumo con grasas dietéticas aumenta absorción 3-5 veces. Adultos mayores (>65 años) pueden beneficiarse más de ubiquinol debido a absorción reducida. Precio no correlaciona necesariamente con calidad - enfocarse en forma (ubiquinol vs ubiquinona) y certificaciones de terceros.\"}}",
+    "practicalRecommendations": [
+      "Comenzar con dosis de 100-150 mg/día con comida que contenga grasa (desayuno con huevo, aguacate, o frutos secos) para optimizar absorción",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia, especialmente para beneficios cardiovasculares. Algunos efectos (energía, fatiga) pueden notarse en 4-6 semanas.",
+      "Si toma estatinas y experimenta dolor muscular o debilidad, considerar suplementación con CoQ10 100-200 mg/día - puede reducir síntomas en 40-50% de pacientes",
+      "Monitorear presión arterial regularmente si toma antihipertensivos, ya que CoQ10 puede potenciar efectos hipotensores",
+      "Elegir ubiquinol (forma reducida) si es mayor de 60 años o tiene problemas de absorción documentados - mejor biodisponibilidad que ubiquinona"
+    ],
+    "keyStudies": []
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.684,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.92,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 0
+    },
+    "missingFields": [
+      "keyStudies"
+    ],
+    "spanishScore": 0.8,
+    "medicalGate": {
+      "pass": false,
+      "criticalFailures": [
+        "dosage_numeric_drift:300,1200",
+        "missing_safety_interactions"
+      ],
+      "warnings": [
+        "safety_interactions_sparse"
+      ],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}

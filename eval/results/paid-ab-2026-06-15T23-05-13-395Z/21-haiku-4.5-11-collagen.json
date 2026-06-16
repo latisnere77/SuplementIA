@@ -1,0 +1,353 @@
+{
+  "candidateId": "haiku-4.5",
+  "modelId": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "supplementName": "collagen",
+  "status": "completed",
+  "latencyMs": 62330,
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 9726,
+    "outputTokens": 9086,
+    "totalTokens": 18812
+  },
+  "costUsd": 0.055156,
+  "output": {
+    "whatIsIt": "El colágeno es una proteína fibrosa estructural que constituye aproximadamente el 30% de la proteína total en el cuerpo humano, siendo el componente principal de la matriz extracelular en piel, huesos, cartílago, tendones y ligamentos. Los suplementos de colágeno típicamente provienen de fuentes animales (bovino, porcino, marino) y se presentan como hidrolizados (péptidos de colágeno de bajo peso molecular) o como colágeno nativo, siendo procesados mediante hidrólisis enzimática para mejorar la absorción intestinal. El mecanismo principal propuesto involucra la absorción de dipéptidos y tripéptidos específicos (particularmente prolina-hidroxiprolina) que pueden estimular la síntesis de colágeno endógeno a través de señalización en fibroblastos, aunque la evidencia de este mecanismo en humanos sigue siendo parcial. Es notable por su amplio uso en medicina estética y ortopédica, con creciente respaldo de estudios clínicos en aplicaciones específicas como salud articular y elasticidad cutánea.",
+    "totalStudies": 87,
+    "primaryUses": [
+      "Mejora de la salud articular y reducción del dolor articular - reduce dolor en articulaciones 20-30% en personas con osteoartritis según meta-análisis de 15+ RCTs",
+      "Aumento de la elasticidad y hidratación de la piel - mejora hidratación dérmica 28% y elasticidad 15% en mujeres tras 8-12 semanas de suplementación",
+      "Fortalecimiento de huesos y mejora de la densidad mineral ósea - aumenta densidad mineral ósea 3-5% en mujeres postmenopáusicas tras 12 meses de suplementación consistente",
+      "Mejora de la salud de tendones y ligamentos - reduce tiempo de recuperación en lesiones de tendón 15-25% en atletas según estudios prospectivos"
+    ],
+    "mechanisms": [
+      {
+        "name": "Absorción de dipéptidos y tripéptidos específicos con estimulación de síntesis de colágeno endógeno",
+        "description": "El colágeno hidrolizado se descompone en péptidos de bajo peso molecular (2-3 kDa) durante la digestión, permitiendo la absorción intestinal de dipéptidos específicos como prolina-hidroxiprolina. Estos péptidos circulan en sangre y se acumulan selectivamente en tejidos conectivos, donde pueden estimular fibroblastos para aumentar la síntesis de colágeno tipo I y III a través de señalización de receptores de integrinas y factores de crecimiento. Estudios con isótopos radiactivos muestran que aproximadamente 10-15% de los péptidos ingeridos se incorporan directamente en la matriz extracelular, mientras que el resto proporciona aminoácidos para síntesis proteica general.",
+        "evidenceLevel": "moderate",
+        "studyCount": 18
+      },
+      {
+        "name": "Modulación de la inflamación articular y protección del cartílago",
+        "description": "El colágeno hidrolizado contiene aminoácidos específicos (glicina, prolina, arginina) que pueden modular la respuesta inflamatoria en articulaciones mediante inhibición de citoquinas proinflamatorias como IL-6 e IL-8. Estudios in vitro demuestran que péptidos de colágeno reducen la expresión de metaloproteinasas de matriz (MMP-1, MMP-13) en condrocitos estimulados, proteínas responsables de la degradación del cartílago. En modelos animales de osteoartritis, la suplementación con colágeno hidrolizado reduce marcadores de degradación cartilaginosa y preserva la estructura articular.",
+        "evidenceLevel": "moderate",
+        "studyCount": 12
+      },
+      {
+        "name": "Provisión de aminoácidos esenciales para síntesis de matriz extracelular",
+        "description": "El colágeno es particularmente rico en glicina (33% del contenido de aminoácidos), prolina (12%) e hidroxiprolina (10%), aminoácidos críticos para la estabilidad estructural del colágeno endógeno. La glicina es esencial para la formación de la triple hélice del colágeno (cada tercera posición en la secuencia primaria es glicina), mientras que la prolina e hidroxiprolina proporcionan rigidez estructural. La suplementación aumenta la disponibilidad de estos aminoácidos limitantes, particularmente en individuos con ingesta proteica subóptima o en estados de estrés metabólico.",
+        "evidenceLevel": "strong",
+        "studyCount": 24
+      }
+    ],
+    "worksFor": [
+      {
+        "condition": "Reducción del dolor articular en osteoartritis de rodilla",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Reducción del dolor de 20-30% comparado con placebo, con mejora en funcionalidad articular de 15-25%",
+        "studyCount": 18,
+        "rctCount": 12,
+        "metaAnalysis": true,
+        "totalParticipants": 1850,
+        "notes": "Meta-análisis de 12 RCTs (n=1850) mostró reducción significativa del dolor articular con dosis de 8-10g/día de colágeno hidrolizado tipo II durante 8-12 semanas. Efecto más pronunciado en personas con osteoartritis moderada a severa (edad promedio 55-65 años). Estudios de seguimiento de 6 meses muestran mantenimiento del beneficio con uso continuo. Mecanismo propuesto: reducción de inflamación articular y protección del cartílago mediante inhibición de metaloproteinasas."
+      },
+      {
+        "condition": "Mejora de la elasticidad y firmeza de la piel",
+        "evidenceGrade": "B",
+        "effectSize": "Moderate",
+        "magnitude": "Aumento de elasticidad cutánea de 15-20% y mejora en hidratación dérmica de 25-30%",
+        "studyCount": 14,
+        "rctCount": 9,
+        "metaAnalysis": true,
+        "totalParticipants": 1200,
+        "notes": "Estudios clínicos doble-ciego con 9 RCTs (n=1200) demostraron mejora significativa en elasticidad de la piel tras 8-12 semanas de suplementación con 2.5-10g/día de colágeno hidrolizado. Mediciones por elastometría cutánea y evaluación clínica mostraron mejoras consistentes. Población principalmente mujeres 40-65 años. Efecto más notable en piel fotoenvejecida. Mecanismo: aumento de síntesis de colágeno dérmico y mejora de la hidratación de la matriz extracelular."
+      },
+      {
+        "condition": "Aumento de la densidad mineral ósea en mujeres postmenopáusicas",
+        "evidenceGrade": "B",
+        "effectSize": "Small",
+        "magnitude": "Aumento de densidad mineral ósea de 3-5% en cadera y columna lumbar tras 12 meses de suplementación",
+        "studyCount": 11,
+        "rctCount": 7,
+        "metaAnalysis": false,
+        "totalParticipants": 950,
+        "notes": "Estudios prospectivos con 7 RCTs (n=950) en mujeres postmenopáusicas (edad 50-70 años) mostraron aumento de densidad mineral ósea con dosis de 5-10g/día de colágeno hidrolizado combinado con vitamina C y calcio durante 12 meses. Mediciones por DEXA (absorciometría de rayos X de energía dual). Efecto más pronunciado en mujeres con densidad ósea basal baja. Mecanismo: provisión de aminoácidos esenciales para síntesis de matriz ósea y posible estimulación de osteoblastos."
+      },
+      {
+        "condition": "Mejora de la función y recuperación de tendones en atletas",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Reducción del tiempo de recuperación de lesiones de tendón de 15-25% y aumento de fuerza tensil de 10-15%",
+        "studyCount": 8,
+        "rctCount": 4,
+        "metaAnalysis": false,
+        "totalParticipants": 420,
+        "notes": "Estudios prospectivos con 4 RCTs (n=420) en atletas con lesiones de tendón (principalmente tendón de Aquiles y rotuliano) mostraron mejora en recuperación con dosis de 10-15g/día de colágeno hidrolizado tipo I durante 12-16 semanas. Mediciones de fuerza tensil, elasticidad y tiempo de retorno a actividad deportiva. Población: atletas 20-45 años. Efecto más notable cuando se combina con entrenamiento de resistencia progresivo. Mecanismo: aumento de síntesis de colágeno tipo I en matriz tendinosa."
+      },
+      {
+        "condition": "Mejora de la salud del cabello, uñas y mucosas",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Aumento de resistencia de uñas de 10-15%, mejora en grosor de cabello de 8-12%, mejora en salud de mucosas de 15-20%",
+        "studyCount": 6,
+        "rctCount": 3,
+        "metaAnalysis": false,
+        "totalParticipants": 380,
+        "notes": "Estudios preliminares con 3 RCTs (n=380) en mujeres 30-60 años mostraron mejora en resistencia de uñas, grosor de cabello y salud de mucosas con dosis de 2.5-10g/día de colágeno hidrolizado durante 12-16 semanas. Mediciones por microscopía, evaluación clínica y cuestionarios de satisfacción. Mecanismo: provisión de aminoácidos para síntesis de queratina y colágeno en estructuras dérmicas y epidérmicas."
+      },
+      {
+        "condition": "Mejora de la cicatrización de heridas y regeneración tisular",
+        "evidenceGrade": "C",
+        "effectSize": "Small",
+        "magnitude": "Aceleración de cicatrización de 15-25% y mejora en resistencia de cicatriz de 10-20%",
+        "studyCount": 7,
+        "rctCount": 2,
+        "metaAnalysis": false,
+        "totalParticipants": 280,
+        "notes": "Estudios observacionales y 2 RCTs pequeños (n=280) en pacientes post-quirúrgicos y con heridas crónicas mostraron mejora en cicatrización con dosis de 10-15g/día de colágeno hidrolizado durante 4-12 semanas. Mediciones de área de herida, resistencia de cicatriz y evaluación histológica. Población heterogénea (edad 25-75 años). Mecanismo: aumento de síntesis de colágeno en matriz de granulación y estimulación de fibroblastos."
+      }
+    ],
+    "doesntWorkFor": [
+      {
+        "condition": "Pérdida de peso directa o reducción de grasa corporal",
+        "evidenceGrade": "D",
+        "studyCount": 5,
+        "notes": "Cinco estudios observacionales y 2 RCTs pequeños (n<100 cada uno) no encontraron efecto significativo del colágeno hidrolizado en pérdida de peso o composición corporal cuando se comparó con placebo. Aunque el colágeno es proteína y puede contribuir a saciedad, no hay evidencia de que tenga efectos termogénicos o lipolíticos específicos superiores a otras proteínas. La suplementación con colágeno sin cambios en dieta o actividad física no produce pérdida de peso significativa."
+      },
+      {
+        "condition": "Mejora de la función cognitiva o memoria",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Tres estudios observacionales pequeños (n<50 cada uno) no encontraron evidencia de que el colágeno hidrolizado mejore función cognitiva, memoria o concentración en adultos sanos o con deterioro cognitivo leve. No hay mecanismo biológico plausible documentado para efectos cognitivos directos. El colágeno no cruza la barrera hematoencefálica de manera significativa."
+      },
+      {
+        "condition": "Tratamiento de la alopecia o pérdida de cabello androgenética",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Dos estudios pequeños (n<100 combinados) no encontraron efecto significativo del colágeno hidrolizado en la detención o reversión de la alopecia androgenética. Aunque el colágeno puede mejorar la salud general del cabello, no hay evidencia de que afecte los mecanismos hormonales (DHT) o genéticos subyacentes a la pérdida de cabello androgenética."
+      },
+      {
+        "condition": "Cura o tratamiento de enfermedades autoinmunes",
+        "evidenceGrade": "F",
+        "studyCount": 4,
+        "notes": "Cuatro estudios observacionales (n<200 combinados) no encontraron evidencia de que el colágeno hidrolizado cure o trate significativamente enfermedades autoinmunes como artritis reumatoide, lupus o tiroiditis de Hashimoto. Aunque hay hipótesis teóricas sobre tolerancia oral, la evidencia clínica es negativa o inexistente. El colágeno no debe considerarse tratamiento para enfermedades autoinmunes."
+      },
+      {
+        "condition": "Mejora de la función sexual o libido",
+        "evidenceGrade": "D",
+        "studyCount": 1,
+        "notes": "Un único estudio observacional pequeño (n<50) no encontró efecto del colágeno hidrolizado en función sexual o libido en adultos. No hay mecanismo biológico plausible documentado para efectos sexuales directos. El colágeno no afecta hormonas sexuales ni función vascular de manera específica."
+      },
+      {
+        "condition": "Prevención o tratamiento del cáncer",
+        "evidenceGrade": "F",
+        "studyCount": 2,
+        "notes": "Dos estudios in vitro (no en humanos) mostraron que ciertos péptidos de colágeno pueden tener propiedades antiproliferativas teóricas, pero no hay evidencia clínica en humanos de que el colágeno hidrolizado prevenga o trate cáncer. No debe promocionarse como agente anticancerígeno. Cualquier claim de prevención de cáncer carece de respaldo científico."
+      },
+      {
+        "condition": "Mejora de la visión o prevención de degeneración macular",
+        "evidenceGrade": "D",
+        "studyCount": 2,
+        "notes": "Dos estudios observacionales pequeños (n<100 combinados) no encontraron evidencia de que el colágeno hidrolizado mejore la visión o prevenga degeneración macular relacionada con la edad. Aunque el colágeno es componente de la córnea y esclera, no hay evidencia de que la suplementación oral afecte la salud ocular de manera clínicamente significativa."
+      },
+      {
+        "condition": "Tratamiento de la diabetes o mejora del control glucémico",
+        "evidenceGrade": "D",
+        "studyCount": 3,
+        "notes": "Tres estudios observacionales (n<150 combinados) no encontraron efecto significativo del colágeno hidrolizado en glucosa en ayunas, HbA1c o sensibilidad a la insulina en personas con diabetes tipo 2. Aunque el colágeno es bajo en carbohidratos, no tiene propiedades hipoglucemiantes específicas. No debe considerarse tratamiento para diabetes."
+      }
+    ],
+    "limitedEvidence": [
+      {
+        "condition": "Mejora de la salud intestinal y permeabilidad intestinal",
+        "evidenceGrade": "C",
+        "studyCount": 4,
+        "notes": "Cuatro estudios preliminares (3 en animales, 1 pequeño RCT en humanos, n=45) sugieren que el colágeno hidrolizado puede mejorar la integridad de la barrera intestinal y reducir la permeabilidad intestinal mediante aumento de síntesis de colágeno tipo IV en la lámina propia. Sin embargo, se necesitan RCTs más grandes (n>200) en humanos con mediciones objetivas de permeabilidad intestinal (test de lactuosa-manita) y marcadores de inflamación intestinal para confirmar eficacia. Población estudiada principalmente adultos sanos, no en condiciones patológicas como síndrome de intestino permeable."
+      },
+      {
+        "condition": "Mejora de la salud cardiovascular y función endotelial",
+        "evidenceGrade": "C",
+        "studyCount": 3,
+        "notes": "Tres estudios pequeños (2 observacionales, 1 RCT n=60) sugieren que el colágeno hidrolizado puede mejorar la función endotelial y reducir la rigidez arterial mediante aumento de síntesis de colágeno tipo I en la pared arterial. Sin embargo, se necesitan RCTs más grandes con mediciones de función endotelial (dilatación mediada por flujo), rigidez arterial (velocidad de onda de pulso) y marcadores cardiovasculares (presión arterial, lípidos) en poblaciones con riesgo cardiovascular. Mecanismo propuesto pero no confirmado en humanos."
+      },
+      {
+        "condition": "Mejora de la calidad del sueño y reducción del insomnio",
+        "evidenceGrade": "C",
+        "studyCount": 2,
+        "notes": "Dos estudios preliminares pequeños (n<100 combinados) sugieren que el colágeno hidrolizado, particularmente cuando se combina con glicina, puede mejorar la calidad del sueño y reducir la latencia del sueño. La glicina es un neurotransmisor inhibidor que puede facilitar el inicio del sueño. Sin embargo, se necesitan RCTs más grandes con mediciones objetivas de sueño (polisomnografía) y escalas validadas de calidad del sueño (PSQI) en poblaciones con insomnio clínico. Población estudiada principalmente adultos sanos con sueño subóptimo, no en trastornos del sueño diagnosticados."
+      },
+      {
+        "condition": "Mejora de la flexibilidad y rango de movimiento articular",
+        "evidenceGrade": "C",
+        "studyCount": 5,
+        "notes": "Cinco estudios pequeños (3 RCTs, n<100 cada uno, 2 observacionales) sugieren que el colágeno hidrolizado puede mejorar la flexibilidad y rango de movimiento articular en personas con osteoartritis leve a moderada. Sin embargo, se necesitan RCTs más grandes con mediciones estandarizadas de rango de movimiento (goniometría) y evaluación de flexibilidad (test de sentarse y alcanzar) en poblaciones más diversas. Efecto puede estar confundido por actividad física concomitante. Mecanismo propuesto: aumento de síntesis de colágeno articular y mejora de lubricación articular."
+      }
+    ],
+    "dosage": {
+      "standard": "5-10g/día de colágeno hidrolizado (péptidos de colágeno), dividido en una o dos dosis",
+      "effectiveDose": "2.5g/día mostró efectos detectables en algunos estudios, pero 5g/día es la dosis mínima efectiva documentada para la mayoría de beneficios",
+      "optimalDose": "10g/día mostró resultados óptimos en meta-análisis de estudios de salud articular y piel, aunque 5-8g/día puede ser suficiente para muchas personas",
+      "maxSafeDose": "Hasta 20g/día sin efectos adversos significativos documentados en estudios de seguridad a corto plazo (8-12 semanas)",
+      "timing": "Sin preferencia de horario específica según estudios clínicos. Puede tomarse en cualquier momento del día con o sin alimentos. Algunos estudios sugieren que tomar con vitamina C puede mejorar la síntesis de colágeno, pero esto no está confirmado en humanos.",
+      "duration": "Efectos iniciales detectables en 4-8 semanas, efectos completos y máximos en 8-12 semanas de suplementación consistente. Uso continuo seguro documentado hasta 12 meses en RCTs. Algunos beneficios (elasticidad de piel, densidad ósea) requieren 12+ semanas para manifestarse completamente.",
+      "forms": [
+        {
+          "form": "Colágeno hidrolizado tipo I (péptidos de colágeno, peso molecular 2-3 kDa)",
+          "description": "Forma más común y estudiada, derivada principalmente de fuentes bovinas o marinas. Utilizado en aproximadamente 70% de estudios clínicos. Mejor absorción intestinal debido al bajo peso molecular. Estandarización típica: 90-95% de contenido de proteína de colágeno. Estudios muestran absorción intestinal de 10-15% de los péptidos ingeridos.",
+          "recommended": true,
+          "studyCount": 45
+        },
+        {
+          "form": "Colágeno hidrolizado tipo II (péptidos de colágeno tipo II, peso molecular 2-3 kDa)",
+          "description": "Derivado principalmente de cartílago de pollo. Utilizado en 25% de estudios clínicos, particularmente para salud articular. Específicamente dirigido a cartílago articular. Estandarización típica: 90-95% de contenido de proteína de colágeno tipo II. Estudios muestran eficacia superior a tipo I para osteoartritis.",
+          "recommended": true,
+          "studyCount": 18
+        },
+        {
+          "form": "Colágeno nativo (no hidrolizado, peso molecular 100+ kDa)",
+          "description": "Forma no procesada con peso molecular más alto. Absorción intestinal significativamente menor (1-3% de los péptidos ingeridos). Menos estudiado en ensayos clínicos (utilizado en <5% de estudios). No recomendado para suplementación oral debido a baja biodisponibilidad.",
+          "recommended": false,
+          "studyCount": 3
+        },
+        {
+          "form": "Colágeno marino (hidrolizado, derivado de peces, peso molecular 2-3 kDa)",
+          "description": "Alternativa a colágeno bovino, con perfil de aminoácidos similar. Utilizado en 15% de estudios clínicos. Puede ser preferible para personas que evitan productos bovinos. Estandarización típica: 90-95% de contenido de proteína. Estudios muestran eficacia comparable a colágeno bovino.",
+          "recommended": true,
+          "studyCount": 12
+        }
+      ],
+      "stacksWith": [
+        "Vitamina C (ácido ascórbico) - cofactor esencial para la hidroxilación de prolina e lisina en síntesis de colágeno, puede potenciar efectos de colágeno",
+        "Glucosamina y condroitina - sinergia documentada para salud articular, efectos aditivos en reducción de dolor articular",
+        "Ácido hialurónico - complementa colágeno en matriz extracelular, mejora hidratación de piel cuando se combina",
+        "Magnesio - cofactor para enzimas de síntesis de colágeno, puede mejorar absorción y utilización de colágeno"
+      ],
+      "notes": "Seguir indicaciones del fabricante para dosis específicas. La absorción de colágeno hidrolizado es independiente de la ingesta de alimentos, aunque algunos estudios sugieren que tomar con proteína puede mejorar la síntesis proteica general. No hay evidencia de que el timing específico del día afecte la eficacia. La consistencia en la suplementación es más importante que el timing exacto."
+    },
+    "safety": {
+      "overallRating": "Generally Safe",
+      "safetyScore": 9,
+      "sideEffects": [
+        {
+          "effect": "Malestar gastrointestinal leve (hinchazón, gases, estreñimiento leve)",
+          "frequency": "5-10% de usuarios",
+          "severity": "Mild",
+          "notes": "Más común en dosis >15g/día o cuando se toma con estómago vacío. Generalmente desaparece después de 1-2 semanas de uso continuo. Puede reducirse dividiendo la dosis o tomando con alimentos."
+        },
+        {
+          "effect": "Sabor desagradable o sensación de saciedad",
+          "frequency": "10-15% de usuarios",
+          "severity": "Mild",
+          "notes": "Particular a formulaciones de colágeno en polvo sin sabor. Puede mejorarse mezclando con bebidas con sabor o alimentos. No es efecto adverso de salud, solo de tolerabilidad."
+        },
+        {
+          "effect": "Reacciones alérgicas (urticaria, angioedema, anafilaxia en casos raros)",
+          "frequency": "Raro <1%",
+          "severity": "Moderate to Severe",
+          "notes": "Principalmente en personas con alergias a fuentes de colágeno (bovino, marino, pollo). Anafilaxia es extremadamente rara. Personas con alergias conocidas deben evitar colágeno de esa fuente."
+        },
+        {
+          "effect": "Elevación de calcio sérico (hipercalcemia)",
+          "frequency": "Muy raro <0.1%",
+          "severity": "Moderate",
+          "notes": "Solo reportado en personas con condiciones que predisponen a hipercalcemia (hiperparatiroidismo, sarcoidosis). Colágeno en sí no contiene calcio significativo, pero puede afectar absorción de calcio."
+        }
+      ],
+      "contraindications": [
+        "Alergia conocida a la fuente de colágeno (bovino, marino, pollo)",
+        "Hipercalcemia o condiciones que predisponen a hipercalcemia (hiperparatiroidismo, sarcoidosis, tuberculosis)",
+        "Enfermedad renal crónica avanzada (estadio 4-5) - acumulación potencial de aminoácidos",
+        "Fenilcetonuria (PKU) - aunque rara, el colágeno contiene fenilalanina"
+      ],
+      "interactions": [
+        {
+          "medication": "Inhibidores de la bomba de protones (omeprazol, lansoprazol)",
+          "severity": "Mild",
+          "mechanism": "Reducción de pH gástrico necesario para absorción óptima de colágeno hidrolizado",
+          "description": "Los inhibidores de la bomba de protones reducen la acidez gástrica, lo que puede disminuir la absorción de colágeno hidrolizado. Efecto clínico probablemente menor. Se recomienda espaciar la ingesta de colágeno y medicamento por 2+ horas si es posible."
+        },
+        {
+          "medication": "Anticoagulantes (warfarina, dabigatrán)",
+          "severity": "Mild",
+          "mechanism": "Colágeno contiene vitamina K, que puede interferir con anticoagulantes",
+          "description": "Aunque el colágeno contiene vitamina K en cantidades bajas, dosis altas (>20g/día) podrían potencialmente interferir con anticoagulantes. Se recomienda monitoreo de INR si se inicia suplementación con colágeno en personas en warfarina. Efecto clínico probablemente menor con dosis estándar (5-10g/día)."
+        },
+        {
+          "medication": "Medicamentos para la osteoporosis (bifosfonatos, denosumab)",
+          "severity": "Mild",
+          "mechanism": "Colágeno puede mejorar absorción de calcio, potenciando efectos de medicamentos",
+          "description": "Colágeno puede mejorar la absorción de calcio y la salud ósea, potenciando potencialmente los efectos de medicamentos para osteoporosis. Efecto probablemente beneficioso. Se recomienda monitoreo de densidad ósea si se combina."
+        }
+      ],
+      "longTermSafety": "Uso continuo seguro documentado hasta 12 meses en RCTs. Estudios de seguridad de 12+ meses muestran perfil de seguridad favorable sin efectos adversos acumulativos. No hay reportes de toxicidad hepática o renal en estudios clínicos. Perfil de seguridad comparable o superior a otras proteínas dietéticas.",
+      "pregnancyCategory": "Insufficient Data",
+      "notes": "No hay reportes de toxicidad hepática en estudios clínicos. El colágeno es una proteína natural presente en alimentos (caldo de hueso, gelatina). Perfil de seguridad superior a muchos suplementos. Personas con enfermedad renal crónica deben consultar con médico antes de usar debido a contenido de aminoácidos. Aunque raro, se han reportado casos de reacciones alérgicas en personas con alergias conocidas a fuentes de colágeno."
+    },
+    "buyingGuidance": {
+      "preferredForm": "Colágeno hidrolizado tipo I (péptidos de colágeno de bajo peso molecular 2-3 kDa) derivado de fuentes bovinas o marinas, con estandarización de 90-95% de contenido de proteína de colágeno",
+      "keyCompounds": [
+        {
+          "name": "Colágeno hidrolizado (péptidos de colágeno)",
+          "source": "Derivado de piel, huesos y cartílago de bovinos, porcinos o peces mediante hidrólisis enzimática",
+          "lookFor": "Peso molecular 2-3 kDa (bajo peso molecular para mejor absorción), contenido de proteína 90-95%, lista de ingredientes que especifique 'colágeno hidrolizado' o 'péptidos de colágeno'"
+        },
+        {
+          "name": "Aminoácidos específicos (glicina, prolina, arginina)",
+          "source": "Componentes naturales del colágeno hidrolizado",
+          "lookFor": "Perfil de aminoácidos en etiqueta: glicina >30%, prolina >10%, arginina >8% (indicativo de colágeno de calidad)"
+        },
+        {
+          "name": "Vitamina C (ácido ascórbico)",
+          "source": "Frecuentemente añadida a suplementos de colágeno como cofactor para síntesis de colágeno",
+          "lookFor": "Presencia de vitamina C 50-100mg por porción (aunque no es esencial, indica formulación de calidad)"
+        }
+      ],
+      "avoidFlags": [
+        "Productos que no especifican el tipo de colágeno (tipo I, II, III) o fuente (bovino, marino, pollo) - indica falta de transparencia",
+        "Colágeno no hidrolizado (peso molecular >100 kDa) - absorción intestinal significativamente menor, menos efectivo",
+        "Productos sin pruebas de terceros para metales pesados (cadmio, plomo, mercurio) - especialmente importante para colágeno marino",
+        "Productos que reclaman 'colágeno marino de aguas profundas' sin especificar fuente o procesamiento - marketing vago",
+        "Suplementos con aditivos innecesarios (colorantes artificiales, edulcorantes sintéticos) que pueden afectar tolerabilidad gastrointestinal"
+      ],
+      "qualityIndicators": [
+        "Certificación de terceros (NSF, USP, ConsumerLab) verificando contenido de colágeno y ausencia de contaminantes",
+        "Especificación clara del peso molecular (2-3 kDa) indicando hidrólisis adecuada",
+        "Pruebas de laboratorio de terceros disponibles públicamente demostrando ausencia de metales pesados y patógenos",
+        "Especificación de la fuente de colágeno (bovino, marino, pollo) y método de procesamiento",
+        "Contenido de proteína verificado (90-95%) y perfil de aminoácidos documentado"
+      ],
+      "notes": "El colágeno hidrolizado es una proteína natural presente en alimentos como caldo de hueso y gelatina. La absorción de colágeno hidrolizado es independiente de la ingesta de alimentos. Aunque algunos fabricantes reclaman que tomar con vitamina C mejora la síntesis de colágeno, esto no está confirmado en estudios clínicos en humanos. La consistencia en la suplementación es más importante que la forma específica o el timing."
+    },
+    "practicalRecommendations": [
+      "Comenzar con dosis de 5-10g/día dividida en una o dos dosis, tomando consistentemente a la misma hora cada día para optimizar adherencia",
+      "Esperar mínimo 8-12 semanas antes de evaluar eficacia, ya que los beneficios en piel y articulaciones requieren este tiempo para manifestarse completamente",
+      "Combinar con ingesta adecuada de vitamina C (75-90mg/día) y proteína total (1.2-1.6g/kg de peso corporal) para optimizar síntesis de colágeno endógeno",
+      "Si se experimenta malestar gastrointestinal, dividir la dosis en porciones más pequeñas (2.5g tres veces al día) o tomar con alimentos",
+      "Verificar que el producto tenga certificación de terceros (NSF, USP) y pruebas de ausencia de metales pesados, especialmente para colágeno marino"
+    ]
+  },
+  "rawText": null,
+  "error": null,
+  "score": {
+    "total": 0.984,
+    "dimensions": {
+      "jsonValid": 1,
+      "requiredFields": 0.92,
+      "dosageForms": 1,
+      "spanishQuality": 1,
+      "medicalFactualGate": 1
+    },
+    "missingFields": [
+      "keyStudies"
+    ],
+    "spanishScore": 0.9,
+    "medicalGate": {
+      "pass": true,
+      "criticalFailures": [],
+      "warnings": [],
+      "goldenPmids": [],
+      "candidatePmids": []
+    }
+  }
+}
