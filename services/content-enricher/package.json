@@ -1,0 +1,20 @@
+{
+  "name": "@suplementai/content-enricher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Governed TypeScript source reconstruction for production-content-enricher.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "jest --runTestsByPath services/content-enricher/__tests__/reconstruction.test.ts --runInBand"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.946.0",
+    "@aws-sdk/client-dynamodb": "^3.936.0",
+    "@aws-sdk/client-sts": "^3.936.0",
+    "@aws-sdk/lib-dynamodb": "^3.932.0",
+    "aws-xray-sdk-core": "^3.10.3"
+  }
+}
+
