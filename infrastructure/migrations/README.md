@@ -2,6 +2,12 @@
 
 This directory contains SQL migrations for the RDS Postgres knowledge base.
 
+## Source Of Truth Warning
+
+Read `SOURCE_OF_TRUTH.md` before running migrations. The documented operational setup
+path is `001_setup_pgvector.sql`; do not run both initial SQL files blindly through the
+all-SQL runner until migration history is reconciled.
+
 ## Prerequisites
 
 1. **AWS CLI configured** with appropriate credentials

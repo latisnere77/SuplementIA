@@ -20,7 +20,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Medio
   Agente recomendado: Careful TypeScript maintenance agent.
 
-- [ ] TAREA: Discover Database Migration Source Of Truth. ESTADO: IN_PROGRESS
+- [x] TAREA: Discover Database Migration Source Of Truth. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Alto
   Agente recomendado: Backend/data platform agent with SQL migration experience.
 

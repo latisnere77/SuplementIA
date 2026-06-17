@@ -51,7 +51,8 @@ Risk:
 Containment:
 
 - Do not run migrations casually.
-- Reconcile migration history in a dedicated read-only discovery task before any schema change.
+- Read-only discovery completed: current documented operational setup path is `001_setup_pgvector.sql`, while `npm run migrate` applies all SQL files and should not be used blindly until migration history is reconciled.
+- See `infrastructure/migrations/SOURCE_OF_TRUTH.md`.
 
 ### AWS/Bedrock Paths Can Be Reached From Search Or Enrichment
 
