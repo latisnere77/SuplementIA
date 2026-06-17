@@ -16,7 +16,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Bajo
   Agente recomendado: Documentation and governance agent.
 
-- [ ] TAREA: Audit Duplicate Files With Space-Two Suffix. ESTADO: IN_PROGRESS
+- [x] TAREA: Audit Duplicate Files With Space-Two Suffix. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Medio
   Agente recomendado: Careful TypeScript maintenance agent.
 
