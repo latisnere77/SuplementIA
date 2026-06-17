@@ -36,7 +36,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Alto
   Agente recomendado: Senior TypeScript/AWS Lambda agent with human supervision.
 
-- [ ] TAREA: Review E2E Runtime Isolation. ESTADO: IN_PROGRESS
+- [x] TAREA: Review E2E Runtime Isolation. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Bajo
   Agente recomendado: QA automation agent familiar with Playwright.
 

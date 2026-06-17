@@ -68,6 +68,7 @@ Containment:
 
 - For local e2e, keep `SEARCH_BACKEND=local`, `USE_LANCEDB=false`, and `JOB_STORE_DRIVER=memory`.
 - Treat AWS writes, Lambda invokes, and Bedrock actions as human-gated.
+- Playwright server reuse is now opt-in with `PLAYWRIGHT_REUSE_SERVER=1`; default e2e runs start an isolated server.
 
 ## Medium
 
