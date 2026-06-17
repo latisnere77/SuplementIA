@@ -32,7 +32,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Medio
   Agente recomendado: Full-stack search/data agent.
 
-- [ ] TAREA: Plan Content Enricher Type-Safety Recovery. ESTADO: IN_PROGRESS
+- [x] TAREA: Plan Content Enricher Type-Safety Recovery. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Alto
   Agente recomendado: Senior TypeScript/AWS Lambda agent with human supervision.
 

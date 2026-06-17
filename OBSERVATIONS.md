@@ -37,6 +37,7 @@ Containment:
 
 - Do not edit content-enricher, Bedrock prompts, Lambda packaging, or deployment paths without explicit human approval.
 - Keep production-content-enricher work in dedicated PRs with artifact comparison and rollback plan.
+- Type-safety recovery plan is documented in `docs/content-enricher-type-safety-recovery-plan.md`; future implementation remains human-gated.
 
 ### Overlapping Initial Database Migrations
 
