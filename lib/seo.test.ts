@@ -14,6 +14,8 @@ describe('global SEO metadata', () => {
     expect(globalSeo.en.description).toContain('evidence');
     expect(globalSeo.en.description).toContain('safety');
 
-    expect(JSON.stringify(globalSeo)).not.toMatch(/treats|cures|clinical benefit|beneficio comprobado/i);
+    expect(JSON.stringify(globalSeo)).not.toMatch(
+      /\bcura\b|\btrata\b|garantiza|beneficio comprobado|clinically proven|\btreats?\b|\bcures?\b|clinical benefit/i
+    );
   });
 });

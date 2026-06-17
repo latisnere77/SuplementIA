@@ -3,7 +3,8 @@
  */
 import { buildCategorySeoContent, buildCategorySeoCopy } from './seo';
 
-const unsafePattern = /sirve para|treats|cures|beneficio comprobado|clinical benefit/i;
+const unsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats?\b|\bcures?\b|clinical benefit/i;
 const commonDeficienciesUnsafePattern =
   /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats\b|\bcures\b/i;
 const energyUnsafePattern =

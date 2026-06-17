@@ -12,7 +12,8 @@ import {
   sanitizeSupplementSeoText,
 } from './seo';
 
-const unsafePattern = /sirve para|treats|cures|beneficio comprobado|clinical benefit/i;
+const unsafePattern =
+  /\bcura\b|\btrata\b|garantiza|sirve para|beneficio comprobado|clinically proven|\btreats?\b|\bcures?\b|clinical benefit/i;
 
 describe('supplement page SEO', () => {
   it('generates static params for known supplement slugs and locales', async () => {
