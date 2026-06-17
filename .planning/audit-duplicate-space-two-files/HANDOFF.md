@@ -9,7 +9,7 @@
 
 ## Changes
 
-- Removed six tracked duplicate files with ` 2` suffix after proving they were byte-identical to canonical siblings.
+- Removed ten tracked duplicate paths with ` 2` suffix after proving they were identical to canonical siblings or differed only by whitespace.
 - Updated `OBSERVATIONS.md` to mark the duplicate-file finding resolved.
 - `TASKS.md` marks this task as `DONE (PR #180)`.
 
@@ -18,7 +18,7 @@
 Passed:
 
 ```bash
-rg --files | rg ' 2\.(ts|tsx)$'; test $? -eq 1
+rg --files | rg ' 2($|/|\.)'; test $? -eq 1
 npm run type-check
 npm run lint
 ```
