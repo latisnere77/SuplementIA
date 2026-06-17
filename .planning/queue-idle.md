@@ -5,6 +5,9 @@ Generated: 2026-06-17
 No PENDING SEO cluster tasks remain after reconciliation. The cluster batch was integrated
 through PR #169, and PRs #156-#168 are closed historical branches.
 
+No `TASKS.md` items remain in `TODO` or `IN_PROGRESS`; the assigned governance backlog is
+fully flushed into PR #180.
+
 ## Open PRs Waiting For Review
 
 - #180 Reconcile queue PR state
@@ -24,4 +27,4 @@ through PR #169, and PRs #156-#168 are closed historical branches.
 - No deploy performed.
 - No AWS/Lambda/Bedrock/Terraform touched.
 - No checkout/auth/referrals touched.
-- `.DS_Store` left untracked.
+- `.DS_Store` removed locally and ignored in `.gitignore`.
