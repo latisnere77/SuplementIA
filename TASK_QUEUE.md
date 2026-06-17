@@ -9,6 +9,11 @@ Estados: `PENDING` · `IN_PROGRESS` (transitorio, nunca al cerrar sesión) · `D
 Nota de serialización: las tareas que comparten archivo IN SCOPE llevan etiqueta
 `[serial-group: <archivo>]` y se ejecutan encadenadas, no en paralelo.
 
+Nota de reconciliación 2026-06-17: las tareas T2-T14 quedaron implementadas por la PR
+de integración #169 (`codex/seo-clusters-integration`), mergeada a `main`. Las PRs
+individuales #156-#168 fueron cerradas tras esa consolidación y no representan trabajo
+pendiente.
+
 ---
 
 ## T1 — Discovery: enumerar categorías sin contenido SEO curado  ·  DONE (PR #155)
@@ -32,7 +37,7 @@ sin cambios de producto. Marca T1 como DONE (PR #n).
 
 ---
 
-## T2 — SEO cluster: anxiety  ·  PENDING
+## T2 — SEO cluster: anxiety  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `anxiety`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -57,7 +62,7 @@ otro slug/categoría.
 
 ---
 
-## T3 — SEO cluster: muscle-gain  ·  PENDING
+## T3 — SEO cluster: muscle-gain  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `muscle-gain`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -82,7 +87,7 @@ otro slug/categoría.
 
 ---
 
-## T4 — SEO cluster: cognitive-function  ·  PENDING
+## T4 — SEO cluster: cognitive-function  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `cognitive-function`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -107,7 +112,7 @@ otro slug/categoría.
 
 ---
 
-## T5 — SEO cluster: joint-bone-health  ·  PENDING
+## T5 — SEO cluster: joint-bone-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `joint-bone-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -132,7 +137,7 @@ otro slug/categoría.
 
 ---
 
-## T6 — SEO cluster: skin-hair-health  ·  PENDING
+## T6 — SEO cluster: skin-hair-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `skin-hair-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -157,7 +162,7 @@ otro slug/categoría.
 
 ---
 
-## T7 — SEO cluster: immunity  ·  PENDING
+## T7 — SEO cluster: immunity  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `immunity`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -182,7 +187,7 @@ otro slug/categoría.
 
 ---
 
-## T8 — SEO cluster: mens-health  ·  PENDING
+## T8 — SEO cluster: mens-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `mens-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -207,7 +212,7 @@ otro slug/categoría.
 
 ---
 
-## T9 — SEO cluster: womens-health  ·  PENDING
+## T9 — SEO cluster: womens-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `womens-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -232,7 +237,7 @@ otro slug/categoría.
 
 ---
 
-## T10 — SEO cluster: blood-sugar  ·  PENDING
+## T10 — SEO cluster: blood-sugar  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `blood-sugar`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -257,7 +262,7 @@ otro slug/categoría.
 
 ---
 
-## T11 — SEO cluster: inflammation  ·  PENDING
+## T11 — SEO cluster: inflammation  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `inflammation`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -282,7 +287,7 @@ otro slug/categoría.
 
 ---
 
-## T12 — SEO cluster: sports-performance  ·  PENDING
+## T12 — SEO cluster: sports-performance  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `sports-performance`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -307,7 +312,7 @@ otro slug/categoría.
 
 ---
 
-## T13 — SEO cluster: hormonal-health  ·  PENDING
+## T13 — SEO cluster: hormonal-health  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `hormonal-health`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
@@ -332,7 +337,7 @@ otro slug/categoría.
 
 ---
 
-## T14 — SEO cluster: migraine-headache  ·  PENDING
+## T14 — SEO cluster: migraine-headache  ·  DONE (PR #169)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `migraine-headache`,
 replicando EXACTAMENTE el patrón ya validado de `energy` (#153) y `common-deficiencies` (#147).
