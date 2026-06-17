@@ -8,7 +8,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Medio
   Agente recomendado: Senior repo-ops coding agent with GitHub/PR access.
 
-- [ ] TAREA: Confirm Root Audit Artifacts Ownership. ESTADO: IN_PROGRESS
+- [x] TAREA: Confirm Root Audit Artifacts Ownership. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Bajo
   Agente recomendado: Documentation and governance agent.
 
