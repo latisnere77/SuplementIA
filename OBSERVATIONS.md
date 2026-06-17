@@ -105,7 +105,8 @@ Risk:
 Containment:
 
 - Do not broadly strip logs inside feature tasks.
-- Create a scoped logging audit that classifies structured observability versus debug leftovers.
+- Logging classification completed in `docs/portal-api-logging-classification.md`.
+- Treat `app/[locale]/portal/results/page.tsx`, `app/[locale]/portal/PortalPageClient.tsx`, `app/api/portal/quiz/route.ts`, `app/api/portal/enrich/route.ts`, and `app/api/portal/enrich-async/route.ts` as cleanup-priority files for a future scoped implementation.
 
 ### Mixed Search Backends And Vocabulary Sources
 

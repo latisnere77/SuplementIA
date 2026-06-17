@@ -24,7 +24,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Alto
   Agente recomendado: Backend/data platform agent with SQL migration experience.
 
-- [ ] TAREA: Classify Portal And API Logging. ESTADO: IN_PROGRESS
+- [x] TAREA: Classify Portal And API Logging. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Medio
   Agente recomendado: Observability-focused frontend/full-stack agent.
 
