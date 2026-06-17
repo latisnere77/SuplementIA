@@ -44,6 +44,6 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Medio
   Agente recomendado: Health-copy QA agent plus TypeScript test agent.
 
-- [ ] TAREA: Add `.DS_Store` Hygiene Rule. ESTADO: IN_PROGRESS
+- [x] TAREA: Add `.DS_Store` Hygiene Rule. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Bajo
   Agente recomendado: Repository hygiene agent.
