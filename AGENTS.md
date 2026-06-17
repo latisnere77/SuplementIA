@@ -79,3 +79,10 @@ mergeas ni habilitas auto-merge. AWS solo LECTURA y solo con identidad confirmad
   a `TASK_QUEUE.md` (commiteado en su propio PR) y continúa.
 - Cuando no queden tareas PENDING, escribe un resumen en `.planning/queue-idle.md` con los
   PRs abiertos esperando revisión humana y DETENTE.
+
+## 7. RESET DE CONTEXTO ENTRE TAREAS
+- Tras cada FLUSH, antes de tomar otra tarea, reconstruye el contexto desde `TASK_QUEUE.md`,
+  el estado físico de git/PRs, `.planning/<tarea>/` y los archivos fuente actuales. No arrastres
+  memoria de chat, notas antiguas ni `.refactor-session.md` como autoridad si contradicen el
+  repositorio. Si existe divergencia entre cola, planificación y estado remoto, documenta la
+  reconciliación necesaria antes de ejecutar cambios de producto.

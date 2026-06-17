@@ -12,7 +12,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Bajo
   Agente recomendado: Documentation and governance agent.
 
-- [ ] TAREA: Add Context Reset Governance Rule. ESTADO: IN_PROGRESS
+- [x] TAREA: Add Context Reset Governance Rule. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Bajo
   Agente recomendado: Documentation and governance agent.
 
