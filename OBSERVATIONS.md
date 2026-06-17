@@ -121,6 +121,7 @@ Containment:
 
 - For SEO/category tasks, verify `supplementSlug` values against actual portal/category rendering and existing SEO tests.
 - Avoid adding another abstraction until source-of-truth ownership is decided.
+- Search backend contracts are mapped in `docs/search-backend-contracts.md`; preserve `SEARCH_BACKEND=local` and `USE_LANCEDB=false` for local e2e isolation.
 
 ### Retry Limits Differ Across Layers
 

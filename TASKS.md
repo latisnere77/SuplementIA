@@ -28,7 +28,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   Nivel de Riesgo: Medio
   Agente recomendado: Observability-focused frontend/full-stack agent.
 
-- [ ] TAREA: Map Search Backend Contracts. ESTADO: IN_PROGRESS
+- [x] TAREA: Map Search Backend Contracts. ESTADO: DONE (PR #180)
   Nivel de Riesgo: Medio
   Agente recomendado: Full-stack search/data agent.
 
