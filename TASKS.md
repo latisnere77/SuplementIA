@@ -4,7 +4,15 @@ Generated: 2026-06-17
 
 These tasks come from a read-only governance and architecture audit. They are not active queue work until a human promotes them into `TASK_QUEUE.md` or explicitly assigns them. Each implementation must still follow `AGENTS.md` SPEC -> LOOP -> FLUSH and must not merge to `main`.
 
-- [ ] TAREA: Define Fully Autonomous Deploy Gate Protocol. ESTADO: BLOCKED (`npm run test:e2e` exit 1; 41 portal-flow failures with JSON.parse errors in `/[locale]/portal/**`, outside deploy-gate scope)
+- [x] TAREA: Fix Portal E2E JSON Parse Failure. ESTADO: DONE (local commit)
+  Objetivo: restore the local Playwright portal suite by fixing the shared Internal Server Error / JSON.parse failure that breaks `/[locale]/portal/**` routes.
+  Criterio de Arnés: `npm run validate` and `npm run test:e2e` must return exit 0.
+  Presupuesto de Archivos por Riesgo: Medio, max 10 files before revalidating.
+  Enrutamiento de Modelo: Codex local coding agent.
+  In Scope: `app/[locale]/portal/**`, `components/portal/**`, `lib/portal/**`, `e2e/portal.spec.ts`, `e2e/portal-real-search.spec.ts`, `playwright.config.ts`, portal API routes only if required to fix the reproduced portal e2e failure.
+  Out Of Scope: merge to `main`, deploys, AWS writes, Terraform/EventBridge, Lambda invoke/update, Bedrock, `production-content-enricher`, broad refactors, dependency upgrades, and unrelated governance edits.
+
+- [ ] TAREA: Define Fully Autonomous Deploy Gate Protocol. ESTADO: PENDING (unblocked after `npm run test:e2e` exit 0 in Fix Portal E2E JSON Parse Failure)
   Objetivo: specify the exact governance, command allowlist, execution harness, rollback criteria, and human-stop conditions required before agents can deploy staging or production autonomously without weakening existing review controls.
   Criterio de Arnés: `npm run validate` and `npm run test:e2e` must return exit 0 for any protocol-only implementation; if the task changes deploy commands or AWS automation docs, `AWS_PROFILE=suplementai-admin aws sts get-caller-identity --query Account --output text | grep -q '^643942183354$'` must return exit 0 before any AWS read, and no AWS write command may be executed until the protocol explicitly defines its preflight, smoke, rollback, and audit log.
   Presupuesto de Archivos por Riesgo: Alto, max 20 files with mandatory 10-file pilot batch.
