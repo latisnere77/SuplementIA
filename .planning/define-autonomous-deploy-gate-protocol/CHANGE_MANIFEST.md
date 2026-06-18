@@ -44,6 +44,18 @@ action, or `production-content-enricher` change was executed.
 - `npm run test:e2e` rerun with approved escalation -> exit 0.
   - 44 passed, 78 skipped.
 
+## Validation Refresh - 2026-06-18
+
+- `npm run validate` -> exit 0.
+  - Jest passed: 111 passed suites, 2 skipped; 831 passed tests, 15 skipped.
+- `npm run test:e2e` -> exit 1.
+  - 41 failed, 78 skipped, 3 passed.
+  - Failures are in `e2e/portal.spec.ts` against portal render/search/result flows.
+  - The web server repeatedly emitted `SyntaxError: Unexpected non-whitespace character after
+    JSON at position 2061 (line 1 column 2062)` for `/[locale]/portal/**` pages.
+- Current task state: `BLOCKED`; fixing portal render/runtime behavior is outside this
+  deploy-gate governance task.
+
 ## Gates Observed
 
 - No merge to `main`.
