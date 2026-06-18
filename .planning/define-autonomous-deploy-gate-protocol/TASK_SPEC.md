@@ -5,12 +5,11 @@ Updated: 2026-06-18
 
 ## Status
 
-Blocked during approved harness loop.
+DONE after validation refresh.
 
-The human approved this spec on 2026-06-18. Local `npm run validate` returned exit 0, but
-`npm run test:e2e` returned exit 1 with 41 failures in `e2e/portal.spec.ts`. The failure
-pattern is a portal runtime `JSON.parse` error on `/[locale]/portal/**` routes and missing
-portal UI elements. Fixing those portal routes is outside this deploy-gate governance task.
+The human approved autonomous continuation on 2026-06-18. The prior blocker was the local
+portal Playwright failure. `Fix Portal E2E JSON Parse Failure` restored the harness, and this
+deploy-gate governance task now has both required validation commands returning exit 0.
 
 ## Queue Selection
 
@@ -18,8 +17,8 @@ portal UI elements. Fixing those portal routes is outside this deploy-gate gover
 - `TASKS.md` was read as the active backlog for this turn.
 - The first task that is not `HECHO`, `DONE`, `ESPERA MI GO`, or `ESPERA GATE HUMANO` is:
   - `Define Fully Autonomous Deploy Gate Protocol`
-  - status before this refresh: `IN_PROGRESS`
-  - status after this refresh: `EN CURSO`
+  - status before this refresh: `PENDING`
+  - status after this refresh: `DONE`
 - This task is actionable only as governance/documentation work. It must not execute or
   authorize a deploy, AWS write, Lambda invoke/update, Terraform/EventBridge action, feature
   flag flip, Bedrock action, or `production-content-enricher` change.
@@ -28,16 +27,16 @@ portal UI elements. Fixing those portal routes is outside this deploy-gate gover
 
 - `git fetch origin` completed with exit 0.
 - Current branch: `chore/autonomous-deploy-gate-protocol`.
-- `HEAD`: `12573a8`.
+- `HEAD` before this refresh: `40551fb`.
 - `origin/main`: `283316e`.
-- Branch relation to `origin/main`: 0 behind, 16 ahead.
+- Branch relation to `origin/main`: ahead of `origin/main`; no merge or deploy performed.
 - Existing uncommitted local change before this Spec-Gate refresh:
   - `OBSERVATIONS.md`
 - This refresh must preserve that existing `OBSERVATIONS.md` change and must not treat it as
   newly authored work for this Spec-Gate.
-- Existing planning artifacts indicate the governance implementation was previously completed
-  and validated, with the next safe action recorded as PR handoff. The current human instruction
-  supersedes that flow for this turn: stop after Spec-Gate and wait for `APPROVED`.
+- Existing planning artifacts indicated the governance implementation was previously completed
+  and blocked only by local Playwright failures. The current autonomous instruction permits
+  validating and closing the local task without waiting for another approval.
 
 ## Objective
 
@@ -95,7 +94,7 @@ focused command-map correction:
 - Portal/category/SEO render changes
 - Broad refactors, folder moves, shared utility extraction, or formatting churn
 
-## Planned Harness Loop After APPROVED
+## Harness Loop
 
 1. Re-read `TASKS.md`, the current git state, and this spec.
 2. Preserve unrelated local changes unless they are explicitly in scope and necessary.
@@ -111,24 +110,18 @@ focused command-map correction:
 
 ## Harness Result
 
+- `npm run test:e2e` -> exit 0 after portal e2e harness stabilization.
+  - 44 passed.
+  - 78 skipped.
 - `npm run validate` -> exit 0.
   - type-check passed.
   - build passed.
   - Jest passed: 111 passed suites, 2 skipped; 831 passed tests, 15 skipped.
-- `npm run test:e2e` -> exit 1.
-  - 41 failed.
-  - 78 skipped.
-  - 3 passed.
-  - Representative failure: `SyntaxError: Unexpected non-whitespace character after JSON at
-    position 2061 (line 1 column 2062)` while rendering portal pages such as `/es/portal`,
-    `/en/portal/results`, `/en/portal/category/sleep`, and
-    `/en/portal/supplement/magnesium`.
-- Result: task marked `BLOCKED` because the required e2e arnes did not return exit 0 and the
-  failing surface is outside this task's approved scope.
+- Result: task marked `DONE` locally.
 
 ## Validation Commands
 
-Required after approval:
+Required:
 
 ```bash
 npm run validate
@@ -136,9 +129,7 @@ npm run validate
 
 Expected result: exit 0.
 
-Because this task is governance/documentation work and should not touch portal render,
-`app/[locale]/portal/**`, `seo.ts`, cards, or internal links, Playwright is not required by
-`AGENTS.md` section 4. If the approved work unexpectedly edits those surfaces, also run:
+The task was previously blocked on Playwright, so the refresh also requires:
 
 ```bash
 npm run test:e2e

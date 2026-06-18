@@ -2,9 +2,9 @@
 
 Generated: 2026-06-18
 
-## Blocker
+## Blocker Resolved
 
-`npm run test:e2e` returned exit 1 during the approved harness loop.
+`npm run test:e2e` returned exit 1 during the original approved harness loop.
 
 Summary:
 
@@ -24,3 +24,10 @@ Containment:
   deploy-gate governance task.
 - Keep the task blocked until either the portal e2e regression is fixed by a scoped task or
   the human explicitly changes the harness requirement for this task.
+
+Resolution:
+
+- `Fix Portal E2E JSON Parse Failure` stabilized the Playwright harness.
+- `npm run test:e2e` now returns exit 0 with 44 passed and 78 skipped.
+- `npm run validate` returns exit 0.
+- The deploy-gate governance task can close locally without crossing any human gate.

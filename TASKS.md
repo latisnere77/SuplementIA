@@ -12,7 +12,7 @@ These tasks come from a read-only governance and architecture audit. They are no
   In Scope: `app/[locale]/portal/**`, `components/portal/**`, `lib/portal/**`, `e2e/portal.spec.ts`, `e2e/portal-real-search.spec.ts`, `playwright.config.ts`, portal API routes only if required to fix the reproduced portal e2e failure.
   Out Of Scope: merge to `main`, deploys, AWS writes, Terraform/EventBridge, Lambda invoke/update, Bedrock, `production-content-enricher`, broad refactors, dependency upgrades, and unrelated governance edits.
 
-- [ ] TAREA: Define Fully Autonomous Deploy Gate Protocol. ESTADO: PENDING (unblocked after `npm run test:e2e` exit 0 in Fix Portal E2E JSON Parse Failure)
+- [x] TAREA: Define Fully Autonomous Deploy Gate Protocol. ESTADO: DONE (local commit)
   Objetivo: specify the exact governance, command allowlist, execution harness, rollback criteria, and human-stop conditions required before agents can deploy staging or production autonomously without weakening existing review controls.
   Criterio de Arnés: `npm run validate` and `npm run test:e2e` must return exit 0 for any protocol-only implementation; if the task changes deploy commands or AWS automation docs, `AWS_PROFILE=suplementai-admin aws sts get-caller-identity --query Account --output text | grep -q '^643942183354$'` must return exit 0 before any AWS read, and no AWS write command may be executed until the protocol explicitly defines its preflight, smoke, rollback, and audit log.
   Presupuesto de Archivos por Riesgo: Alto, max 20 files with mandatory 10-file pilot batch.
