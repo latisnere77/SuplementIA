@@ -236,3 +236,49 @@ Risk:
 Containment:
 
 - Add `.DS_Store` to `.gitignore` in a focused hygiene task, or remove only local copies outside product work.
+
+## Read-Only Audit Addendum - 2026-06-18
+
+### Medium
+
+#### Uncommitted Governance Drift On PR #180 Branch
+
+A read-only scan observed the working tree on branch `codex/reconcile-queue-pr-state` (PR #180) with uncommitted modifications to `MASTER_TASK_SPEC.md` and `TASKS.md`. These edits are the planning artifacts for the in-progress `Define Fully Autonomous Deploy Gate Protocol` task (dated 2026-06-18) and are not part of PR #180's committed scope.
+
+Risk:
+
+- Dirty governance edits could be accidentally committed into the wrong PR.
+- The in-progress plan could be lost on a branch switch or reset.
+
+Containment:
+
+- Isolate the deploy-gate protocol planning in its own branch/PR before touching product code.
+- Keep PR #180's committed scope limited to the queue/governance reconciliation it already contains.
+
+#### Local Branch Reconciliation Addendum (2026-06-17) Is Now Stale
+
+The `Local Branch State Requires Reconciliation Before Autonomous Execution` note above references `HEAD` at `831d949` on `codex/reconstruct-content-enricher-source` and `origin/main` at `283316e`. The current physical state is `HEAD` at `2e94059` on `codex/reconcile-queue-pr-state`, 14 commits ahead of `origin/main` and 0 behind, with PR #179 (content-enricher reconstruction) already merged into `main`.
+
+Risk:
+
+- A future agent may reconcile against the obsolete refs in the prior addendum and misread branch ancestry.
+
+Containment:
+
+- Treat physical git/PR state (`git fetch origin` + `gh pr list`) as authority over any dated ref snapshot in this file.
+- Refresh or supersede the 2026-06-17 ref snapshot in a scoped governance task rather than opportunistically.
+
+### Low
+
+#### CI `npm audit` Is An Unpinned Hard Gate
+
+`.github/workflows/quality-gates.yml` runs `npm audit` as a required step with no `--audit-level` threshold. The current scan reported 0 vulnerabilities, so the gate is green.
+
+Risk:
+
+- Any future moderate/low advisory in the dependency tree will fail the entire pipeline regardless of whether the PR touches the affected dependency.
+
+Containment:
+
+- Consider pinning an `--audit-level` (e.g. `high`) or moving advisory triage to a non-blocking job in a scoped CI task.
+- Do not change CI gating opportunistically inside unrelated product work.
