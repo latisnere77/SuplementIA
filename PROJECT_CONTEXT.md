@@ -41,9 +41,19 @@ Governance controls already present:
 - Health copy must avoid unsafe clinical claims.
 - Negative controls such as `gut-health` must remain negative controls.
 
-Governance gap to propose, not apply without approval:
+Autonomous deploy gate protocol:
 
-- Add an explicit `.refactor-session.md` reset rule to `AGENTS.md`: after each task flush, future agents should rebuild context from `TASK_QUEUE.md`, current git state, relevant `.planning/<task>/` files, and current source files; do not trust stale chat memory or stale `.refactor-session.md` contents.
+- The deploy protocol in `AGENTS.md` section 3.1 is a classifier and preflight harness, not
+  standing permission to deploy.
+- Tier 0 local validation is autonomous.
+- Tier 1 remote inspection is read-only and requires AWS identity confirmation before any AWS
+  read: account `643942183354`, profile `suplementai-admin`.
+- Tier 2 staging writes and Tier 3 production actions remain human-gated until a task-specific
+  GO names the command, target SHA, smoke, rollback, and audit record.
+- Tier 4 paths remain blocked unless a dedicated TASK_SPEC and GO cover them: Bedrock,
+  `production-content-enricher`, secrets, destructive scripts, and irreversible infra changes.
+- Any deploy-capable task must prove rollback exists before forward execution. Missing rollback
+  or smoke is a BLOCKED condition, not permission to improvise automation.
 
 ## Application Shape
 

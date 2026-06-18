@@ -2,6 +2,21 @@
 
 Use this checklist after portal releases that touch clinical gating, enrichment, search, or result rendering.
 
+## Agent release gate
+
+This checklist is evidence for review; it does not authorize an agent to deploy. Under
+`AGENTS.md` section 3.1:
+
+- Local validation and Playwright checks are autonomous when in scope.
+- GitHub Actions inspection is allowed, but merge and auto-merge remain human-only.
+- Production smoke commands are allowed only when the TASK_SPEC names the base URL and treats
+  the call as read-only verification.
+- Amplify deploy/redeploy, environment updates, rollback, migration, Lambda invoke/update,
+  Terraform/EventBridge, feature flags, Bedrock, and `production-content-enricher` remain
+  human-gated writes.
+- A deploy GO must include the target SHA, exact deploy command, exact smoke command, exact
+  rollback command, monitoring window, and audit record path.
+
 Last hardening pass:
 
 - Date: 2026-05-20

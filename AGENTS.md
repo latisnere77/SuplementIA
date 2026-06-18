@@ -38,6 +38,42 @@ invoke/update, Terraform/EventBridge, flips de feature flags, y CUALQUIER cambio
 mergeas ni habilitas auto-merge. AWS solo LECTURA y solo con identidad confirmada
 (cuenta 643942183354, `--profile suplementai-admin`); por default ni la toques.
 
+### 3.1 Protocolo de deploy autonomo (NO habilita deploy por si solo)
+Este protocolo define las condiciones minimas para un futuro GO humano de deploy. Mientras
+la tarea aprobada no diga explicitamente que abre el gate de deploy, todos los comandos con
+AWS writes, Amplify `start-job`, Lambda invoke/update, Terraform/EventBridge, migraciones,
+feature flags, Bedrock o `production-content-enricher` siguen bloqueados por §3.
+
+Clasifica cada comando antes de correrlo:
+- Tier 0 — validacion local: `npm run lint`, `npm run type-check`, `npm run build`,
+  `npm test`, `npm run validate`, `npm run test:e2e`. Autonomo.
+- Tier 1 — inspeccion remota solo lectura: `gh run list/view/watch` y AWS `get/list/describe`
+  despues de confirmar identidad con `AWS_PROFILE=suplementai-admin aws sts
+  get-caller-identity --query Account --output text` = `643942183354`. Autonomo solo si el
+  TASK_SPEC lo incluye; no debe mutar recursos.
+- Tier 2 — staging/preview con escritura: cualquier deploy, migracion, Lambda invoke/update,
+  CloudFormation/Terraform/EventBridge, Amplify job, env update o cambio de trafico. Gate
+  humano explicito antes de cada ejecucion.
+- Tier 3 — produccion: `npm run deploy`, `git push origin main`, Amplify `start-job`,
+  `update-branch`, rollback de trafico, smoke contra produccion si la tarea lo trata como
+  release acceptance, o cualquier cambio de configuracion prod. Gate humano explicito.
+- Tier 4 — prohibido salvo GO dedicado y TASK_SPEC propio: Bedrock, `production-content-enricher`,
+  secretos, scripts destructivos (`delete-*`, `rm`, stack deletes), y cambios irreversibles.
+
+Preflight obligatorio para cualquier GO de Tier 2/3:
+- `git fetch origin` exitoso y target SHA documentado contra `origin/main`.
+- PR revisado/mergeado por humano si el deploy depende de codigo nuevo; el agente nunca mergea.
+- CI verde para el SHA objetivo: lint, type-check, build, Jest, audit, Playwright normal y
+  matriz real si aplica.
+- Identidad AWS confirmada en cuenta `643942183354` con `--profile suplementai-admin`.
+- Comando exacto de avance, smoke, rollback y auditoria escritos en el TASK_SPEC.
+- Rollback ejecutable antes del avance; si falta, la tarea queda BLOCKED.
+
+Cortacircuitos de deploy:
+- Mismatch de cuenta AWS, SHA desconocido, salida ambigua, rollback ausente, smoke ausente,
+  health claim inseguro, o ruta Bedrock/`production-content-enricher` no autorizada = STOP.
+- Maximo 3 reintentos del mismo fallo. Tras el tercero, BLOCKED con log en `.planning/<tarea>/`.
+
 ## 4. VALIDACIÓN — REGLA CRÍTICA
 - `npm run validate` = type-check + build + Jest. **NO corre Playwright.**
 - La e2e es un job SEPARADO en CI (`Validate → Browser tests`, `playwright test`).

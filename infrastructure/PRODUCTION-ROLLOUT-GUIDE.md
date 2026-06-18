@@ -2,6 +2,14 @@
 
 This guide provides step-by-step instructions for gradually rolling out the intelligent supplement search system to production with traffic routing.
 
+## Agent gate
+
+Production rollout is human-gated. Agents may not execute these production deploy, traffic,
+CloudFormation, Lambda, migration, monitoring-write, cleanup, or rollback commands without an
+explicit GO for the exact command and target SHA. The approved TASK_SPEC must satisfy
+`AGENTS.md` section 3.1, including AWS account confirmation for `643942183354`, green CI,
+named smoke, named rollback, monitoring window, audit artifact, and stop conditions.
+
 ## Overview
 
 The rollout follows a phased approach:

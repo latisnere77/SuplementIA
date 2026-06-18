@@ -241,6 +241,39 @@ Containment:
 
 ### Medium
 
+#### Deploy Command Surface Requires Human Gate Classification
+
+The deploy protocol inventory found several command surfaces that look convenient but are
+dangerous for autonomous execution:
+
+- `package.json` maps `npm run deploy` to `git push origin main`, which would bypass the
+  repository rule that agents never merge or push `main`.
+- `npm run migrate` runs migration automation and must not be used until migration history is
+  reconciled.
+- `infrastructure/DEPLOYMENT-SCRIPTS-README.md`, `DEPLOYMENT_GUIDE.md`,
+  `STAGING-DEPLOYMENT-GUIDE.md`, `PRODUCTION-ROLLOUT-GUIDE.md`, and
+  `ROLLBACK_PROCEDURES.md` document CloudFormation, traffic routing, rollback, Lambda, cleanup,
+  and database commands that mutate AWS resources.
+- `infrastructure/smoke-tests.sh` includes Lambda invokes and DynamoDB writes/deletes, so it is
+  not equivalent to the read-only portal production smoke.
+- `amplify.yml` can run LanceDB update scripts during Amplify builds if a LanceDB table is
+  present, and those scripts generate Bedrock embeddings.
+
+Risk:
+
+- A future agent could treat a documented runbook command as permission to mutate staging or
+  production.
+- A smoke or validation label may hide AWS writes or Bedrock activity.
+
+Containment:
+
+- `AGENTS.md` section 3.1 now classifies deploy commands by tier.
+- Treat production/staging deploy, rollback, migration, traffic routing, Lambda invoke/update,
+  Amplify job, env update, Terraform/EventBridge, Bedrock, and `production-content-enricher`
+  paths as human-gated writes unless a task-specific GO names the exact command.
+- Require named smoke, named rollback, target SHA, account confirmation, and audit artifact
+  before any future deploy GO.
+
 #### Uncommitted Governance Drift On PR #180 Branch
 
 A read-only scan observed the working tree on branch `codex/reconcile-queue-pr-state` (PR #180) with uncommitted modifications to `MASTER_TASK_SPEC.md` and `TASKS.md`. These edits are the planning artifacts for the in-progress `Define Fully Autonomous Deploy Gate Protocol` task (dated 2026-06-18) and are not part of PR #180's committed scope.

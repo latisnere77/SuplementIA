@@ -1,5 +1,13 @@
 # Rollback Procedures
 
+## Agent gate
+
+Rollback commands mutate production traffic and remain human-gated. Agents may read this
+document to prove rollback coverage before a deploy GO, but may not run rollback, traffic,
+CloudFormation, Lambda, cleanup, or monitoring-write commands without explicit human approval
+for the exact command. If rollback is missing, untested, or stale, the forward deploy is
+BLOCKED.
+
 ## Overview
 
 This document provides comprehensive procedures for rolling back production traffic from the new intelligent search system to the legacy system. Rollback capability is a critical safety mechanism for production deployments.

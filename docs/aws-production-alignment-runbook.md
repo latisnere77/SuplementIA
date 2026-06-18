@@ -2,6 +2,25 @@
 
 Use this when GitHub `main` is green but the public portal behaves differently from the latest release.
 
+## Autonomous agent gate overlay
+
+This runbook contains both read-only diagnostics and production write commands. For agents,
+`AGENTS.md` section 3.1 controls execution:
+
+| Command family | Classification | Agent rule |
+| --- | --- | --- |
+| `git fetch`, `git rev-parse`, `git log` | Local/source inspection | Allowed when scoped by TASK_SPEC. |
+| `gh run list`, `gh run watch --exit-status` | GitHub inspection/watch | Allowed when scoped by TASK_SPEC; must not merge or enable auto-merge. |
+| `curl`, `dig`, production smoke reads | External read/smoke | Allowed only when TASK_SPEC names the endpoint and acceptance signal. |
+| AWS `get-*`, `list-*`, `describe-*` | AWS read-only | Allowed only after account `643942183354` is confirmed with profile `suplementai-admin`. |
+| AWS Amplify `start-job` | Production deploy write | Human GO required for that exact command and target SHA. |
+| AWS Amplify `update-branch` | Production environment write | Human GO required; must include before/after env audit and rollback. |
+| Lambda invoke/update, Terraform, EventBridge, Bedrock, `production-content-enricher` | Governed/prohibited path | Dedicated TASK_SPEC and explicit GO required. |
+
+Before any human-approved deploy or environment write, the TASK_SPEC must name the exact
+forward command, target SHA, smoke command, rollback command, audit artifact, and stop
+conditions. Missing smoke or rollback blocks the deploy.
+
 ## Production endpoints
 
 Checked on 2026-05-21:

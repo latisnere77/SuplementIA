@@ -2,6 +2,14 @@
 
 This guide provides step-by-step instructions for deploying the SuplementIA infrastructure to AWS.
 
+## Agent gate
+
+This guide describes AWS infrastructure writes. Agents may read it for inventory, but must not
+run deploy, migration, Lambda, CloudFormation, cleanup, or rollback commands from this guide
+without an explicit human GO for the exact command. Any approved execution must first satisfy
+`AGENTS.md` section 3.1: fresh `origin/main`, target SHA, account `643942183354` with profile
+`suplementai-admin`, green validation/CI, named smoke, named rollback, and audit artifact.
+
 ## Prerequisites
 
 ### 1. AWS Account Setup

@@ -2,6 +2,14 @@
 
 This guide walks through deploying the complete intelligent supplement search system to the staging environment.
 
+## Agent gate
+
+Staging deploys still create or mutate AWS resources. Agents may read this guide, but every
+`deploy-*`, migration, CloudFormation, Lambda, database, traffic, cleanup, or rollback command
+requires a task-specific human GO. Before any approved AWS read, confirm account
+`643942183354` with `AWS_PROFILE=suplementai-admin`. Before any approved staging write, the
+TASK_SPEC must name the exact command, smoke, rollback, audit artifact, and stop conditions.
+
 ## Prerequisites
 
 1. **AWS CLI** installed and configured

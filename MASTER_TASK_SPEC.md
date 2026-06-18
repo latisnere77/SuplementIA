@@ -1,96 +1,135 @@
-# MASTER_TASK_SPEC
+# MASTER_TASK_SPEC - Fully Autonomous Deploy Gate Protocol
 
-Generated: 2026-06-17
+Generated: 2026-06-18
 
 ## Checkpoint Status
 
-`TASKS.md` contained active work in `ESTADO: TODO`, so the coordinator has claimed all listed items by moving them to `ESTADO: IN_PROGRESS`.
+`TASKS.md` contained one task in `ESTADO: TODO`:
 
-No implementation, delegation, branch creation, commit, push, PR update, deploy, AWS write, Lambda invoke/update, Terraform/EventBridge action, feature flag change, or `production-content-enricher` edit will start until the human checkpoint word `APPROVED` is received.
+- `Define Fully Autonomous Deploy Gate Protocol`
+
+The coordinator has claimed it by moving the task to `ESTADO: IN_PROGRESS`.
+
+No delegation, implementation edits beyond this planning artifact, branch creation, commit, push, PR update, staging deploy, production deploy, AWS write, Lambda invoke/update, Terraform/EventBridge action, feature flag change, Bedrock action, or `production-content-enricher` change will start until the human checkpoint word `APPROVED` is received after this plan.
+
+## Mission
+
+Define the governance and execution protocol that must exist before agents can deploy staging or production autonomously while preserving the current review, audit, rollback, and safety controls.
+
+The deliverable is a protocol and command map, not an immediate production deployment. Any later execution loop must be based on commands that have explicit preflight checks, execution harnesses, smoke tests, rollback paths, and audit records.
 
 ## Governance Reconciliation
 
-- Primary repo protocol remains `AGENTS.md`.
-- `git fetch origin` has been run before planning.
-- Product diffs will be evaluated against `origin/main`, not local `main`.
-- `TASKS.md` says these are proposed backlog tasks, not active queue work by default. The current human instruction explicitly assigns them through `TASKS.md`, so they are planned here as the active batch.
-- `TASK_QUEUE.md` still contains stale-looking `PENDING` SEO cluster entries while `.planning/queue-idle.md` and `PROJECT_CONTEXT.md` report PRs for those clusters. The first execution task must reconcile this before any product work.
-- Production deploy remains a human gate under `AGENTS.md`. The execution loop may prepare validated PRs and run allowed local checks, but it must not merge to `main`, run `npm run deploy`, perform AWS writes, invoke/update Lambda, alter Terraform/EventBridge, flip feature flags, or touch Bedrock without an explicit human gate for that specific action.
+- `AGENTS.md` remains the highest local protocol unless explicitly amended by an approved governance task.
+- Current `AGENTS.md` gates deploys, AWS writes, Lambda invoke/update, Terraform/EventBridge, feature flags, Bedrock, and `production-content-enricher`.
+- The current task is allowed to propose and document a future autonomous deploy protocol.
+- The current task is not allowed to perform production deploys or AWS writes as part of planning.
+- `TASKS.md` is an assigned governance backlog for this run because the human explicitly asked to claim the task.
+- `TASK_QUEUE.md` remains the product execution queue and is out of scope except for read-only consistency checks.
 
-## Global Plan
+## Implementation Plan
 
-Execution order after `APPROVED`:
+1. Inventory current deploy and release paths.
+   - Read `AGENTS.md`, `PROJECT_CONTEXT.md`, `docs/aws-production-alignment-runbook.md`, `docs/portal-release-hardening-checklist.md`, `amplify.yml`, `.github/workflows/quality-gates.yml`, `package.json`, and relevant infrastructure docs/scripts.
+   - Confirm which commands are live production release paths versus stale or blocked infra paths.
 
-1. Reconcile queue and PR state before trusting stale local queue data.
-2. Resolve ownership of root audit artifacts so future agents know which files are authoritative.
-3. Add the approved context-reset governance rule.
-4. Audit duplicate files with ` 2` suffix and make only mechanical, scoped fixes if the audit proves they are unambiguous.
-5. Discover database migration source of truth without changing live data or running migrations.
-6. Classify portal and API logging without changing runtime logging behavior unless required by the task acceptance evidence.
-7. Map search backend contracts as documentation and tests-only work unless defects are directly proven.
-8. Plan content-enricher type-safety recovery as planning only; no source edit, deploy, Bedrock, Lambda, or AWS write.
-9. Review E2E runtime isolation and patch only proven local test isolation gaps.
-10. Review unsafe health claim gates and patch only focused tests/patterns if gaps are proven.
-11. Add `.DS_Store` hygiene, limited to ignore/removal policy and repository hygiene files.
+2. Define command allowlist tiers.
+   - Tier 0: local validation and browser tests.
+   - Tier 1: read-only AWS/GitHub inspection.
+   - Tier 2: staging or preview deploy actions.
+   - Tier 3: production deploy, rollback, and env mutation actions.
+   - Tier 4: prohibited actions that still require human gates, especially destructive operations, Bedrock/content-enricher mutations, and irreversible infra changes.
 
-Each task will get its own task folder under `.planning/<task-slug>/` with a task-level `TASK_SPEC.md`, `CHANGE_MANIFEST.md`, and optional `OBSERVATIONS.md`. Where tasks touch the same file, execution will be serialized and rebased from the prior branch or consolidated into a single governance PR if the diff cannot be split cleanly.
+3. Define preflight gates for every deploy-capable command.
+   - Git state checks against fresh `origin/main`.
+   - CI status checks for the target SHA.
+   - AWS identity check pinned to account `643942183354` and profile `suplementai-admin`.
+   - Environment variable and endpoint checks.
+   - Confirmation that rollback commands exist and are executable before forward deploy.
+
+4. Define execution harnesses.
+   - Local harness: lint, type-check, build, Jest, Playwright.
+   - Preview/staging harness: exact deploy command, smoke command, expected exit-0 signal, and failure log location.
+   - Production harness: exact deploy/redeploy command, production smoke command, monitoring window, rollback trigger thresholds, and audit log path.
+
+5. Define rollback and stop conditions.
+   - Maximum three retries per repeated failure.
+   - Immediate stop on account mismatch, unknown deploy target, missing rollback, missing smoke, unsafe health claim, production-content-enricher/Bedrock path, or ambiguous terminal output.
+   - Required handoff and observation records for blocked states.
+
+6. Update governance docs with the smallest possible diff.
+   - Add the autonomous deploy protocol without rewriting existing governance wholesale.
+   - Preserve the current no-merge rule unless explicitly superseded by the final approved protocol.
+   - Keep existing human-review controls visible.
+
+7. Validate documentation and protocol consistency.
+   - Run validation commands that do not perform deploys or AWS writes.
+   - If any command mapping references missing scripts/templates, record that as debt in `OBSERVATIONS.md` and keep the related deploy path blocked until repaired.
+
+8. Flush the task after approval and implementation.
+   - Write `.planning/define-autonomous-deploy-gate-protocol/CHANGE_MANIFEST.md`.
+   - Write `.planning/define-autonomous-deploy-gate-protocol/HANDOFF.md`.
+   - Mark the task `DONE` or `BLOCKED` in `TASKS.md`.
+   - Commit and prepare a PR only after validation passes.
 
 ## Global IN SCOPE
 
-- `TASKS.md`
-- `TASK_QUEUE.md`
-- `PROJECT_CONTEXT.md`
 - `AGENTS.md`
+- `PROJECT_CONTEXT.md`
+- `TASKS.md`
 - `OBSERVATIONS.md`
-- `.planning/**`
-- `.gitignore`
-- repository hygiene files directly needed for `.DS_Store`
-- `.github/workflows/**` only if needed to confirm validation behavior, not to change CI without task proof
-- `package.json` only for reading script definitions, not dependency or script changes unless a task explicitly proves necessity
-- `app/[locale]/portal/**` read-only for logging, E2E, search, and health-claim audits unless a task proves a focused fix is required
-- `app/api/**` read-only for API logging audit unless a task proves a focused fix is required
-- `lib/search-service.ts`, `lib/lancedb-service.ts`, `lib/portal/**` read-only for search contract mapping unless a task proves a focused fix is required
-- `infrastructure/migrations/**` read-only for migration source-of-truth discovery unless the task is converted into an approved implementation task
-- `e2e/**` for runtime isolation review and focused test fixes
-- `services/content-enricher/**` read-only only for type-safety recovery planning
+- `MASTER_TASK_SPEC.md`
+- `.planning/define-autonomous-deploy-gate-protocol/**`
+- `docs/aws-production-alignment-runbook.md`
+- `docs/portal-release-hardening-checklist.md`
+- `infrastructure/DEPLOYMENT-SCRIPTS-README.md`
+- `infrastructure/DEPLOYMENT_GUIDE.md`
+- `infrastructure/STAGING-DEPLOYMENT-GUIDE.md`
+- `infrastructure/PRODUCTION-ROLLOUT-GUIDE.md`
+- `infrastructure/ROLLBACK_PROCEDURES.md`
+- `package.json` for script mapping
+- `amplify.yml` for Amplify build mapping
+- `.github/workflows/quality-gates.yml` for CI gate mapping
+- deploy, smoke, rollback, and verification scripts under `infrastructure/**` and `scripts/**` for read-only mapping unless the approved implementation spec explicitly authorizes focused edits
 
 ## Global OUT OF SCOPE
 
 - Merge to `main`
-- `npm run deploy`, `git push origin main`, or any production deployment
-- AWS writes, Lambda invoke/update, Terraform/EventBridge changes, feature flag flips
-- Bedrock calls or changes
-- Editing `services/content-enricher/**` during the planning task
+- Enabling auto-merge
+- Running `npm run deploy`
+- Running `npm run migrate`
+- Starting Amplify jobs
+- Production deploys
+- Staging deploys that create/update/delete AWS resources
+- AWS writes of any kind during planning
+- Lambda invoke/update
+- Terraform/EventBridge changes
+- Feature flag flips
+- Bedrock calls or config changes
+- `production-content-enricher` code, config, invocation, deployment, or cache changes
 - Dependency upgrades
-- Broad refactors, folder moves, shared utility extraction, formatting churn
-- Product SEO cluster implementation from stale `TASK_QUEUE.md` before reconciliation
-- Checkout, Stripe, auth, referrals, Cognito, subscriptions, or unrelated portal UX
-- Running migrations or changing database state
-- Rewriting whole files when a small diff is sufficient
+- Broad refactors, folder moves, shared utility extraction, or formatting churn
+- Product feature changes
+- SEO/content changes unrelated to the deploy protocol
 
 ## Delegation Strategy And Context Isolation
 
-Delegation will start only after `APPROVED`. The coordinator will pass each sub-agent only the files listed for that task plus minimal governance excerpts.
+Delegation starts only after `APPROVED`.
 
-| Task | Route / model role dictated by task | Isolated context bundle |
-| --- | --- | --- |
-| Reconcile Queue State With Open PRs | Senior repo-ops coding agent with GitHub/PR access | `TASK_QUEUE.md`, `.planning/queue-idle.md`, `.planning/seo-clusters-integration/**`, `PROJECT_CONTEXT.md`, git/PR metadata |
-| Confirm Root Audit Artifacts Ownership | Documentation and governance agent | `PROJECT_CONTEXT.md`, `OBSERVATIONS.md`, `TASKS.md`, `.planning/queue-idle.md`, `AGENTS.md` |
-| Add Context Reset Governance Rule | Documentation and governance agent | `AGENTS.md`, `PROJECT_CONTEXT.md`, current rule text |
-| Audit Duplicate Files With Space-Two Suffix | Careful TypeScript maintenance agent | `rg --files` duplicate list, only each duplicate pair, nearest imports/tests |
-| Discover Database Migration Source Of Truth | Backend/data platform agent with SQL migration experience | `infrastructure/migrations/**`, migration runner, docs mentioning migrations |
-| Classify Portal And API Logging | Observability-focused frontend/full-stack agent | logging call sites in `app/[locale]/portal/**`, `app/api/**`, monitoring helpers |
-| Map Search Backend Contracts | Full-stack search/data agent | `lib/search-service.ts`, `lib/lancedb-service.ts`, `lib/portal/**`, related API handlers/tests |
-| Plan Content Enricher Type-Safety Recovery | Senior TypeScript/AWS Lambda agent with human supervision | `services/content-enricher/**` read-only, package scripts, build/test output |
-| Review E2E Runtime Isolation | QA automation agent familiar with Playwright | `playwright.config.*`, `e2e/**`, test env setup, portal job/search env paths |
-| Review Unsafe Health Claim Gates | Health-copy QA agent plus TypeScript test agent | SEO/copy tests, unsafe wording pattern tests, portal/category SEO copy files |
-| Add `.DS_Store` Hygiene Rule | Repository hygiene agent | `.gitignore`, git tracked/untracked hygiene state, `TASKS.md` |
+The coordinator will keep the task serialized because it is governance-sensitive. Sub-agents may be used only for bounded read-only analysis or focused document edits, and each receives only the files needed for its slice.
 
-If multi-agent tooling is unavailable or a task is narrow, the coordinator will execute directly but preserve the same context-isolation boundaries.
+| Workstream | Model routing | Isolated context bundle | Output |
+| --- | --- | --- | --- |
+| Governance coordination | Opus | `AGENTS.md`, `PROJECT_CONTEXT.md`, `TASKS.md`, this `MASTER_TASK_SPEC.md` | Final protocol shape and stop conditions |
+| File navigation and command inventory | Haiku | `package.json`, `amplify.yml`, `.github/workflows/quality-gates.yml`, `infrastructure/**` script/doc names, `scripts/**` script/doc names | Command map and missing-artifact list |
+| Implementation edits | Sonnet | Only the specific docs selected by the coordinator after inventory | Minimal diffs to protocol docs |
+| Final governance/code review | GPT-5.2 | Final diff, validation outputs, `OBSERVATIONS.md`, `CHANGE_MANIFEST.md` | Review findings before commit/PR |
+
+No sub-agent may receive secrets, `.env.local`, AWS credentials, presigned URLs, or production logs containing private values.
 
 ## Validation Harness
 
-Pre-execution state checks:
+### Pre-Implementation State
 
 ```bash
 git fetch origin
@@ -98,69 +137,79 @@ git status --short --branch
 git diff --name-only origin/main...HEAD
 ```
 
-Local dependency and script verification:
+### Local Validation
 
-```bash
-npm ci
-npm run lint
-npm run type-check
-npm run build
-npm test -- --passWithNoTests
-```
-
-Combined local validation where appropriate:
+For protocol-only documentation edits:
 
 ```bash
 npm run validate
 ```
 
-Browser/runtime validation for portal, category, SEO render, E2E isolation, search UI, or consumer-facing copy changes:
+If edits touch portal render, release smoke scripts, Playwright config, `app/[locale]/portal/**`, `seo.ts`, or consumer-facing copy:
 
 ```bash
 npm run test:e2e
-npm run test:e2e -- e2e/portal.spec.ts
 ```
 
-Pre-test local environment:
+### Preview Environment Harness
+
+For this planning task, the only preview environment allowed before the protocol is approved is the local Playwright-managed Next.js server:
 
 ```bash
-npm run dev
+npm run test:e2e
 ```
 
-Note: Playwright's configured web server may start its own local test server. If so, `npm run dev` is not a separate required daemon for E2E; the run must still end with explicit `exit 0` or PASS.
-
-Production smoke is read-only intent but still post-production-facing, so it will not be run unless the relevant gate is explicitly opened:
+The Playwright web server command is defined in `playwright.config.ts` and uses:
 
 ```bash
+JOB_STORE_DRIVER=memory SEARCH_BACKEND=local USE_LANCEDB=false npm run dev -- --hostname 127.0.0.1 --port 3100
+```
+
+Any AWS-backed staging deploy command remains blocked until the protocol defines its exact preflight, smoke, rollback, and audit harness.
+
+### AWS Read-Only Identity Preflight
+
+Before any AWS read in the implementation phase:
+
+```bash
+AWS_PROFILE=suplementai-admin aws sts get-caller-identity --query Account --output text | grep -q '^643942183354$'
+```
+
+This command must return exit 0. Account mismatch is an immediate stop condition.
+
+### Production Harness To Document, Not Execute During Planning
+
+Candidate production alignment commands to document and gate:
+
+```bash
+gh run list --branch main --limit 5 --json databaseId,workflowName,status,conclusion,createdAt,headSha
+gh run watch <run-id> --exit-status
+AWS_PROFILE=suplementai-admin aws amplify get-branch --app-id d2yn3faih4ykom --branch-name main --region us-east-1
+AWS_PROFILE=suplementai-admin aws amplify start-job --app-id d2yn3faih4ykom --branch-name main --region us-east-1 --job-type RELEASE --job-reason "Redeploy latest green main"
 npm run smoke:production:portal
+PRODUCTION_BASE_URL=https://www.suplementai.com npm run smoke:production:portal
+PRODUCTION_BASE_URL=https://main.d2yn3faih4ykom.amplifyapp.com npm run smoke:production:portal
 ```
 
-Prohibited without explicit human gate:
+The final protocol must classify which of these are read-only, deploy, smoke, or rollback-adjacent and define exactly when an autonomous agent may run them.
 
-```bash
-npm run deploy
-npm run migrate
-```
+### Retry And Failure Policy
 
-Retry policy:
+- Maximum three retries for the same repeated validation or deploy-harness failure.
+- After the third repeated failure, mark the task `BLOCKED`, record logs in `.planning/define-autonomous-deploy-gate-protocol/OBSERVATIONS.md`, and stop this task.
+- Ambiguous output is failure.
+- Missing script/template for a documented deploy path is `BLOCKED_BY_MISSING_ARTIFACTS` unless the approved spec explicitly includes repairing it.
 
-- Maximum three attempts for the same failing validation error per task.
-- After the third repeated failure, mark that task `BLOCKED`, record the log in `.planning/<task-slug>/OBSERVATIONS.md`, and continue to the next task.
-- Ambiguous validation output is treated as failure.
+## Expected Deliverables After Approval
 
-## Branch, Commit, And Handoff Policy
-
-- Create task branches from `origin/main`, using `codex/` branch prefix unless the task requires a stack.
-- Use Conventional Commits.
-- Push feature branches and open/update ready-for-review PRs against `main`.
-- Never merge and never enable auto-merge.
-- After each task, update `TASKS.md` to `DONE` with PR metadata or `BLOCKED` with the reason.
-- Write `.planning/<task-slug>/CHANGE_MANIFEST.md`.
-- Write a handoff file under `.planning/<task-slug>/HANDOFF.md` with physical state, commands run, PR link, and next safe action.
-- Reconstruct context from disk before the next task.
+- Updated governance docs with a concrete autonomous deploy gate protocol.
+- Updated `OBSERVATIONS.md` for any blocked or stale deploy paths discovered.
+- `.planning/define-autonomous-deploy-gate-protocol/CHANGE_MANIFEST.md`
+- `.planning/define-autonomous-deploy-gate-protocol/HANDOFF.md`
+- `TASKS.md` marked `DONE` or `BLOCKED`.
 
 ## Approval Gate
 
-Required exact word before any implementation or delegation:
+Required exact word before implementation, delegation, validation beyond planning, or any deploy-protocol edits:
 
 `APPROVED`

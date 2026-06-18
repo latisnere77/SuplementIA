@@ -2,6 +2,26 @@
 
 This directory contains scripts for deploying and managing the intelligent supplement search system with gradual traffic rollout.
 
+## Agent gate and source-of-truth warning
+
+These scripts are infrastructure write paths unless explicitly proven otherwise. They are not
+the default release path for the live portal, which is AWS Amplify app `d2yn3faih4ykom` on
+branch `main` as documented in `docs/aws-production-alignment-runbook.md`.
+
+For agents following `AGENTS.md` section 3.1:
+
+- Reading this document and inventorying scripts is allowed.
+- Monitoring or read-only AWS commands require account confirmation first:
+  `AWS_PROFILE=suplementai-admin aws sts get-caller-identity --query Account --output text`
+  must return `643942183354`.
+- `deploy-*`, `rollback-*`, CloudFormation, Lambda, migration, traffic-routing, env update,
+  stack delete, and cleanup commands are human-gated writes.
+- No script in this document may be run autonomously unless the approved TASK_SPEC names the
+  exact command, target environment, preflight, smoke, rollback, audit artifact, and stop
+  conditions.
+- Missing or stale rollback/smoke coverage blocks execution; do not repair it opportunistically
+  inside an unrelated task.
+
 ## Overview
 
 The deployment follows a phased approach with traffic routing:
