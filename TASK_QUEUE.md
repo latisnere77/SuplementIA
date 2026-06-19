@@ -362,6 +362,141 @@ otro slug/categoría.
 
 ---
 
+## T15 — Discovery: global project queue refresh  ·  IN_PROGRESS
+
+**Tipo:** discovery (amplía esta cola).
+**Objetivo:** entender el objetivo actual de SuplementAI desde el código y docs del repo, y
+sembrar una nueva cola autónoma con tareas pequeñas, accionables y compatibles con `AGENTS.md`.
+**IN SCOPE:** `AGENTS.md`, `TASK_QUEUE.md`, `TASKS.md`, `PROJECT_CONTEXT.md`, `OBSERVATIONS.md`,
+`package.json`, `app/[locale]/portal/**`, `app/api/portal/**`, `lib/portal/**`,
+`lib/search-service.ts`, `docs/portal-api-logging-classification.md`,
+`docs/search-backend-contracts.md`, `e2e/portal.spec.ts`,
+`.planning/global-project-queue-refresh/TASK_SPEC.md`,
+`.planning/global-project-queue-refresh/CHANGE_MANIFEST.md`.
+**OUT OF SCOPE:** cambios de producto para esta tarea, merge a `main`, deploy/AWS writes,
+AWS reads, Lambda invoke/update, Terraform/EventBridge, migraciones, feature flags, Bedrock,
+LanceDB mutation, `production-content-enricher`, upgrades de dependencias, refactors amplios,
+ediciones a cambios locales preexistentes de `OBSERVATIONS.md`.
+**Aceptación:**
+- `TASK_QUEUE.md` queda actualizado con tareas `PENDING` ordenadas y con IN/OUT SCOPE exacto.
+- `.planning/global-project-queue-refresh/TASK_SPEC.md` y `CHANGE_MANIFEST.md` existen.
+- `git fetch origin`, `git status --short --branch`, y `rg -n "PENDING|DONE|BLOCKED|IN_PROGRESS" TASK_QUEUE.md`
+  devuelven exit 0.
+- PR ready-for-review contra `main`, SIN merge.
+
+---
+
+## T16 — Portal log hygiene: remove homepage search debug logs  ·  PENDING
+
+**Objetivo:** eliminar logs debug de cliente en la búsqueda principal del portal sin cambiar
+la UX, navegación, tracking GA ni guardrails de validación.
+**IN SCOPE:** `app/[locale]/portal/PortalPageClient.tsx`.
+**OUT OF SCOPE:** `app/[locale]/portal/results/page.tsx`, APIs, SEO/category pages,
+autocompletado backend, copy visual, estilos, GA event payloads, auth, Stripe, AWS/Lambda,
+Bedrock, LanceDB, `production-content-enricher`, dependencias.
+**Aceptación:**
+- No quedan `console.log` en `PortalPageClient.tsx`.
+- `handleSearch`, submit por Enter, selección de sugerencia y `router.push` conservan el
+  comportamiento existente.
+- `npm run lint`, `npm run type-check`, `npm test`, y
+  `npm run test:e2e -- e2e/portal.spec.ts` devuelven exit 0 porque toca render del portal (§4).
+- PR ready-for-review contra `main`, SIN merge.
+
+---
+
+## T17 — Search API log accuracy: stop labeling every backend as Lambda  ·  PENDING
+
+**Objetivo:** corregir el log engañoso de `app/api/portal/search/route.ts` que dice siempre
+"via Lambda" aunque `lib/search-service.ts` decide entre local, LanceDB o Lambda.
+**IN SCOPE:** `app/api/portal/search/route.ts`, `app/api/portal/search/route.test.ts`.
+**OUT OF SCOPE:** cambios al contrato de búsqueda, `lib/search-service.ts`, LanceDB, Bedrock,
+Lambda invoke/update, env vars, portal render, e2e, dependencias.
+**Aceptación:**
+- El log ya no afirma que toda búsqueda va por Lambda.
+- Test enfocado cubre la intención sin requerir red, AWS ni Next server real.
+- `npm run lint`, `npm run type-check`, y `npm test -- app/api/portal/search/route.test.ts`
+  devuelven exit 0.
+- PR ready-for-review contra `main`, SIN merge.
+
+---
+
+## T18 — Portal log hygiene: gate results-page debug traces  ·  PENDING
+
+**Objetivo:** reducir ruido de consola en `results/page.tsx` manteniendo errores/warnings útiles
+y sin alterar estados de carga, cache, async polling, variantes ni render de recomendaciones.
+**IN SCOPE:** `app/[locale]/portal/results/page.tsx`, tests existentes bajo
+`app/[locale]/portal/results/__tests__/**` solo si requieren ajustes por logs removidos/gateados.
+**OUT OF SCOPE:** `PortalPageClient.tsx`, APIs, cambios visuales, algoritmo de recomendación,
+cache storage semantics, async job backend, AWS/Lambda, Bedrock, LanceDB, `production-content-enricher`,
+dependencias.
+**Aceptación:**
+- Logs de trazas (`console.log`) quedan eliminados o gateados por una bandera debug local.
+- `console.error`/`console.warn` operacionales no exponen payloads amplios nuevos.
+- `npm run lint`, `npm run type-check`, `npm test`, y
+  `npm run test:e2e -- e2e/portal.spec.ts` devuelven exit 0 porque toca render del portal (§4).
+- PR ready-for-review contra `main`, SIN merge.
+
+---
+
+## T19 — Dev/debug route guard: prevent accidental production exposure  ·  PENDING
+
+**Objetivo:** revisar y proteger rutas/páginas de test o debug del portal para que no queden
+expuestas en producción por accidente.
+**IN SCOPE:** `app/[locale]/portal/debug-enrich/page.tsx`,
+`app/[locale]/portal/stream-test/page.tsx`, `app/api/test-lancedb/route.ts`,
+`app/api/test-lambda-direct/route.ts`, `app/api/portal/test-config/route.ts`, tests nuevos o
+existentes necesarios para comprobar el guard.
+**OUT OF SCOPE:** borrar rutas sin prueba de uso, ejecutar LanceDB/Lambda/AWS, Bedrock,
+`production-content-enricher`, deploy, env real, migraciones, auth amplio, dependencias.
+**Aceptación:**
+- Cada ruta/página debug queda bloqueada o no disponible en producción mediante condición local
+  verificable por tests.
+- No se ejecuta ningún backend externo durante tests.
+- `npm run lint`, `npm run type-check`, `npm test`, y si toca render de portal
+  `npm run test:e2e -- e2e/portal.spec.ts` devuelven exit 0.
+- PR ready-for-review contra `main`, SIN merge.
+
+---
+
+## T20 — Legacy LanceDB runbook cleanup: remove main-push and Bedrock-write shortcuts  ·  PENDING
+
+**Objetivo:** actualizar docs/scripts de corrección LanceDB/Vitamin B para que no instruyan
+`git push origin main`, pruebas directas en producción, o mutaciones LanceDB/Bedrock sin gate
+humano.
+**IN SCOPE:** `scripts/README-VITAMIN-B-FIX.md`, `scripts/add-vitamin-b-complex-to-lancedb.ts`,
+`scripts/add-vitamins-c-d-to-lancedb.ts`, `scripts/enrich-lancedb-autocomplete.ts`.
+**OUT OF SCOPE:** ejecutar scripts, LanceDB mutation, Bedrock calls, AWS reads/writes, deploy,
+producción, `production-content-enricher`, cambios de catálogo o embeddings, dependencias.
+**Aceptación:**
+- Los textos de "next steps" y warnings clasifican estas acciones como human-gated bajo
+  `AGENTS.md` §3.1.
+- Ningún script recomienda `git push origin main` ni testing manual de producción como paso
+  autónomo.
+- `npm run lint`, `npm run type-check`, y `npm test` devuelven exit 0.
+- PR ready-for-review contra `main`, SIN merge.
+
+---
+
+## T21 — Autocomplete backend contract: align debug docs with SEARCH_BACKEND  ·  PENDING
+
+**Objetivo:** cerrar la brecha documentada entre autocompletado y búsqueda: el autocompletado
+solo mira `USE_LANCEDB`, mientras búsqueda principal usa `SEARCH_BACKEND`; decidir e implementar
+un ajuste mínimo o documentar BLOCKED si requiere diseño de backend.
+**IN SCOPE:** `lib/portal/autocomplete-suggestions-fuzzy.ts`,
+`app/api/portal/autocomplete/route.ts`, tests existentes o nuevos de autocompletado,
+`docs/search-backend-contracts.md`.
+**OUT OF SCOPE:** cambios a `lib/lancedb-service.ts`, Bedrock, LanceDB mutation, Lambda,
+AWS reads/writes, portal render, producción, `production-content-enricher`, dependencias.
+**Aceptación:**
+- El comportamiento de autocompletado queda consistente con `SEARCH_BACKEND=local` y
+  `USE_LANCEDB=false` para e2e local, o la tarea queda `BLOCKED` con razón técnica concreta.
+- No se invoca LanceDB/Bedrock en tests.
+- `npm run lint`, `npm run type-check`, `npm test`, y si toca render de portal
+  `npm run test:e2e -- e2e/portal.spec.ts` devuelven exit 0.
+- PR ready-for-review contra `main`, SIN merge.
+
+---
+
 ## Plantilla para tareas "SEO cluster: <slug>" (que T1 generará)
 
 **Objetivo:** añadir un cluster SEO curado en español-first para la categoría `<slug>`,
