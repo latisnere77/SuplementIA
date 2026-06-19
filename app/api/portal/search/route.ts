@@ -23,8 +23,7 @@ export async function GET(request: Request) {
   const { q, limit } = validation.data;
 
   try {
-    // Execute Search via Serverless Lambda (LanceDB)
-    console.log(`[Search-API] Searching for "${q}" via Lambda`);
+    console.log(`[Search-API] Searching for "${q}" via configured search backend`);
     const formattedResults = await searchSupplements(q, limit);
 
     return NextResponse.json(formattedResults);

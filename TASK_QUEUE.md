@@ -404,7 +404,7 @@ Bedrock, LanceDB, `production-content-enricher`, dependencias.
 
 ---
 
-## T17 — Search API log accuracy: stop labeling every backend as Lambda  ·  PENDING
+## T17 — Search API log accuracy: stop labeling every backend as Lambda  ·  DONE (PR #181)
 
 **Objetivo:** corregir el log engañoso de `app/api/portal/search/route.ts` que dice siempre
 "via Lambda" aunque `lib/search-service.ts` decide entre local, LanceDB o Lambda.

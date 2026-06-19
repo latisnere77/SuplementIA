@@ -1,97 +1,46 @@
 /**
- * Tests for Intelligent Search API Route
- * 
- * Note: These are simplified tests due to Next.js server component limitations.
- * Full E2E tests should be run in a Next.js test environment.
+ * @jest-environment node
  */
+import { GET } from './route';
+import { searchSupplements } from '@/lib/search-service';
 
-describe('Intelligent Search API', () => {
-  describe('API Route Exists', () => {
-    it('should export GET handler', () => {
-      // This test verifies the module can be imported
-      // Full integration tests require Next.js test environment
-      expect(true).toBe(true);
-    });
+jest.mock('@/lib/search-service', () => ({
+  searchSupplements: jest.fn(),
+}));
+
+const mockedSearchSupplements = searchSupplements as jest.MockedFunction<typeof searchSupplements>;
+
+describe('/api/portal/search GET', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
-  describe('Input Validation Logic', () => {
-    it('should validate query length', () => {
-      const validateQuery = (query: string) => {
-        if (!query || query.trim().length < 2) {
-          return { valid: false, error: 'Query too short' };
-        }
-        if (query.length > 200) {
-          return { valid: false, error: 'Query too long' };
-        }
-        return { valid: true };
-      };
+  it('delegates to the configured search backend without labeling every request as Lambda', async () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    mockedSearchSupplements.mockResolvedValue([
+      {
+        name: 'Magnesium',
+        source: 'local_catalog',
+      },
+    ]);
 
-      expect(validateQuery('')).toEqual({ valid: false, error: 'Query too short' });
-      expect(validateQuery('a')).toEqual({ valid: false, error: 'Query too short' });
-      expect(validateQuery('ab')).toEqual({ valid: true });
-      expect(validateQuery('a'.repeat(201))).toEqual({ valid: false, error: 'Query too long' });
-    });
+    const response = await GET(new Request('http://localhost/api/portal/search?q=magnesium&limit=3'));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual([{ name: 'Magnesium', source: 'local_catalog' }]);
+    expect(mockedSearchSupplements).toHaveBeenCalledWith('magnesium', 3);
+    expect(logSpy).toHaveBeenCalledWith('[Search-API] Searching for "magnesium" via configured search backend');
+    expect(logSpy.mock.calls.flat().join('\n')).not.toContain('via Lambda');
   });
 
-  describe('Response Format', () => {
-    it('should define correct response structure', () => {
-      interface SearchResult {
-        success: boolean;
-        supplement?: {
-          id: string;
-          name: string;
-          scientificName?: string;
-          commonNames?: string[];
-          metadata?: Record<string, unknown>;
-          similarity?: number;
-        };
-        similarity?: number;
-        source?: 'dynamodb' | 'redis' | 'postgres' | 'discovery' | 'fallback';
-        cacheHit?: boolean;
-        latency?: number;
-        message?: string;
-      }
+  it('returns 400 for invalid query parameters without calling search', async () => {
+    const response = await GET(new Request('http://localhost/api/portal/search?limit=3'));
+    const body = await response.json();
 
-      const successResult: SearchResult = {
-        success: true,
-        supplement: {
-          id: '123',
-          name: 'Test',
-        },
-        source: 'postgres',
-      };
-
-      const errorResult: SearchResult = {
-        success: false,
-        message: 'Not found',
-      };
-
-      expect(successResult.success).toBe(true);
-      expect(errorResult.success).toBe(false);
-    });
-  });
-
-  describe('Fallback Logic', () => {
-    it('should have fallback mechanism', () => {
-      const shouldFallback = (lambdaError: boolean, fallbackEnabled: boolean) => {
-        return lambdaError && fallbackEnabled;
-      };
-
-      expect(shouldFallback(true, true)).toBe(true);
-      expect(shouldFallback(true, false)).toBe(false);
-      expect(shouldFallback(false, true)).toBe(false);
-    });
-  });
-
-  describe('Timeout Handling', () => {
-    it('should define timeout constant', () => {
-      const LAMBDA_TIMEOUT_MS = 5000;
-      expect(LAMBDA_TIMEOUT_MS).toBe(5000);
-    });
+    expect(response.status).toBe(400);
+    expect(body).toEqual({ error: 'Invalid query parameters' });
+    expect(mockedSearchSupplements).not.toHaveBeenCalled();
   });
 });
-
-// Note: Full integration tests with actual HTTP requests should be run using:
-// - Next.js test environment
-// - Supertest or similar HTTP testing library
-// - E2E testing framework like Playwright or Cypress
