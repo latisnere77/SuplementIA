@@ -7,7 +7,15 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+const debugRoutesEnabled = () =>
+  process.env.NODE_ENV !== 'production' ||
+  process.env.ENABLE_DEBUG_ROUTES === 'true';
+
 export async function GET() {
+  if (!debugRoutesEnabled()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
   try {
     console.log('[Test LanceDB] Starting test...');
 

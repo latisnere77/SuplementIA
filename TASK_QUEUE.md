@@ -438,7 +438,7 @@ dependencias.
 
 ---
 
-## T19 — Dev/debug route guard: prevent accidental production exposure  ·  PENDING
+## T19 — Dev/debug route guard: prevent accidental production exposure  ·  DONE (PR #181)
 
 **Objetivo:** revisar y proteger rutas/páginas de test o debug del portal para que no queden
 expuestas en producción por accidente.

@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 
+const debugRoutesEnabled = () =>
+  process.env.NODE_ENV !== 'production' ||
+  process.env.ENABLE_DEBUG_ROUTES === 'true';
+
 export async function GET() {
+  if (!debugRoutesEnabled()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
   const searchApiUrl = process.env.SEARCH_API_URL ||
     process.env.NEXT_PUBLIC_SEARCH_API_URL ||
     'https://staging-search-api.execute-api.us-east-1.amazonaws.com/search';

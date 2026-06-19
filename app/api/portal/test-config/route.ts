@@ -10,7 +10,15 @@ export const runtime = 'nodejs';
 
 import { PORTAL_API_URL } from '@/lib/portal/api-config';
 
+const debugRoutesEnabled = () =>
+  process.env.NODE_ENV !== 'production' ||
+  process.env.ENABLE_DEBUG_ROUTES === 'true';
+
 export async function GET(request: NextRequest) {
+  if (!debugRoutesEnabled()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
   const testId = 'rec_test_123';
   const testUrl = `${PORTAL_API_URL}/portal/status/${testId}`;
 
@@ -65,4 +73,3 @@ export async function GET(request: NextRequest) {
     }, { status: 500 });
   }
 }
-

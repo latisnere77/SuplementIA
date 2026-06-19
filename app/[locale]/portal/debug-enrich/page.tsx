@@ -2,11 +2,19 @@
 
 import { useState } from 'react';
 
+const debugRoutesEnabled =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.NEXT_PUBLIC_ENABLE_DEBUG_ROUTES === 'true';
+
 export default function DebugEnrichPage() {
     const [status, setStatus] = useState('idle');
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [logs, setLogs] = useState<string[]>([]);
+
+    if (!debugRoutesEnabled) {
+        return null;
+    }
 
     const addLog = (msg: string) => setLogs(prev => [...prev, `${new Date().toISOString().split('T')[1]} - ${msg}`]);
 

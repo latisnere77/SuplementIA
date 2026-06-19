@@ -14,10 +14,18 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 
+const debugRoutesEnabled =
+  process.env.NODE_ENV !== 'production' ||
+  process.env.NEXT_PUBLIC_ENABLE_DEBUG_ROUTES === 'true';
+
 export default function StreamTestPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSearch, setActiveSearch] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
+
+  if (!debugRoutesEnabled) {
+    return null;
+  }
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
