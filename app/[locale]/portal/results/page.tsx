@@ -50,6 +50,12 @@ import {
   getVisibleEvidenceMetadata,
 } from '@/lib/portal/visible-evidence-metadata';
 
+const debugPortalResults = (...args: Parameters<typeof console.log>) => {
+  if (process.env.NEXT_PUBLIC_DEBUG_PORTAL === 'true') {
+    console.log(...args);
+  }
+};
+
 // ====================================
 // CACHE VALIDATION HELPER
 // ====================================
@@ -62,17 +68,17 @@ import {
  * @returns true if cache is valid, false otherwise
  */
 function isValidCache(cachedRecommendation: any): boolean {
-  console.log('[Cache Validation] Starting validation...');
+  debugPortalResults('[Cache Validation] Starting validation...');
 
   // Check 1: Null/undefined recommendation
   if (!cachedRecommendation) {
-    console.log('[Cache Validation] ❌ Recommendation is null or undefined');
+    debugPortalResults('[Cache Validation] ❌ Recommendation is null or undefined');
     return false;
   }
 
   // Check 2: Validate basic structure
   if (!cachedRecommendation.recommendation_id || !cachedRecommendation.category) {
-    console.log('[Cache Validation] ❌ Missing required fields (recommendation_id or category)');
+    debugPortalResults('[Cache Validation] ❌ Missing required fields (recommendation_id or category)');
     return false;
   }
 
@@ -80,7 +86,7 @@ function isValidCache(cachedRecommendation: any): boolean {
   const metadata = cachedRecommendation._enrichment_metadata || {};
   const hasMetadata = Object.keys(metadata).length > 0;
 
-  console.log('[Cache Validation] Metadata check:', {
+  debugPortalResults('[Cache Validation] Metadata check:', {
     hasMetadata,
     metadataKeys: Object.keys(metadata),
   });
@@ -92,7 +98,7 @@ function isValidCache(cachedRecommendation: any): boolean {
   // Valid if either totalStudies > 0 OR studiesUsed > 0
   const hasRealData = totalStudies > 0 || studiesUsed > 0;
 
-  console.log('[Cache Validation] Study data check:', {
+  debugPortalResults('[Cache Validation] Study data check:', {
     totalStudies,
     studiesUsed,
     hasRealData,
@@ -104,13 +110,13 @@ function isValidCache(cachedRecommendation: any): boolean {
   const hasFakeData = totalStudies > 0 && studiesUsed === 0 && !hasMetadata;
 
   if (hasFakeData) {
-    console.log('[Cache Validation] ❌ Detected fake/generated data (totalStudies > 0 but studiesUsed = 0)');
+    debugPortalResults('[Cache Validation] ❌ Detected fake/generated data (totalStudies > 0 but studiesUsed = 0)');
     return false;
   }
 
   // Final result
   const isValid = hasRealData;
-  console.log('[Cache Validation] Final result:', {
+  debugPortalResults('[Cache Validation] Final result:', {
     isValid,
     reason: isValid ? 'Has real study data' : 'No real study data found',
   });
@@ -143,7 +149,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation, langu
   const evidenceSummary = recommendation.evidence_summary || {};
 
   // DEBUG: Log transformation input
-  console.log('[transformRecommendationToEvidence] Input:', {
+  debugPortalResults('[transformRecommendationToEvidence] Input:', {
     category: recommendation.category,
     supplementName: supplement.name,
     hasWorksFor: Array.isArray(supplement.worksFor),
@@ -161,7 +167,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation, langu
 
   // 🔍🔍🔍 CRITICAL DEBUG: Check studies.ranked data
   const evidenceSummaryAny = evidenceSummary as any;
-  console.log('🔍🔍🔍 [FRONTEND_STUDIES_CHECK] evidenceSummary.studies:', {
+  debugPortalResults('🔍🔍🔍 [FRONTEND_STUDIES_CHECK] evidenceSummary.studies:', {
     hasStudies: !!evidenceSummaryAny.studies,
     studiesKeys: evidenceSummaryAny.studies ? Object.keys(evidenceSummaryAny.studies) : [],
     hasRanked: !!evidenceSummaryAny.studies?.ranked,
@@ -171,7 +177,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation, langu
 
   // 🔍 Also check metadata path (legacy)
   const enrichmentMetadata = (recommendation as any)._enrichment_metadata || {};
-  console.log('🔍 [FRONTEND_METADATA_CHECK] _enrichment_metadata:', {
+  debugPortalResults('🔍 [FRONTEND_METADATA_CHECK] _enrichment_metadata:', {
     hasMetadata: !!enrichmentMetadata,
     metadataKeys: enrichmentMetadata ? Object.keys(enrichmentMetadata) : [],
     hasMetadataStudies: !!enrichmentMetadata.studies,
@@ -224,7 +230,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation, langu
   })) : [];
 
   // DEBUG: Log parsed structured data
-  console.log('[transformRecommendationToEvidence] Structured data:', {
+  debugPortalResults('[transformRecommendationToEvidence] Structured data:', {
     worksForCount: worksFor.length,
     doesntWorkForCount: doesntWorkFor.length,
     limitedEvidenceCount: limitedEvidence.length,
@@ -253,7 +259,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation, langu
   } : undefined;
 
   // DEBUG: Log dosage transformation
-  console.log('[transformRecommendationToEvidence] Dosage transformation:', {
+  debugPortalResults('[transformRecommendationToEvidence] Dosage transformation:', {
     inputType: typeof supplement.dosage,
     inputKeys: supplement.dosage ? Object.keys(supplement.dosage) : [],
     outputDefined: !!transformedDosage,
@@ -384,7 +390,7 @@ function transformRecommendationToEvidence(recommendation: Recommendation, langu
   };
 
   // DEBUG: Log final result summary
-  console.log('[transformRecommendationToEvidence] Output summary:', {
+  debugPortalResults('[transformRecommendationToEvidence] Output summary:', {
     overallGrade: result.overallGrade,
     worksForCount: result.worksFor.length,
     hasDosage: !!result.dosage,
@@ -654,7 +660,7 @@ function ResultsPageContent() {
   // LOGGING: State Change Tracking
   // ====================================
   useEffect(() => {
-    console.log('[ResultsPage] State changed:', {
+    debugPortalResults('[ResultsPage] State changed:', {
       hasRecommendation: !!recommendation,
       recommendationId: recommendation?.recommendation_id,
       recommendationCategory: recommendation?.category,
@@ -726,7 +732,7 @@ function ResultsPageContent() {
           // Normalize benefit from Spanish to English
           const normalized = normalizeBenefit(extractedBenefit);
 
-          console.log('[Benefit Extraction] URL benefit detected:', {
+          debugPortalResults('[Benefit Extraction] URL benefit detected:', {
             original: extractedBenefit,
             normalized: normalized.normalized,
             confidence: normalized.confidence,
@@ -752,7 +758,7 @@ function ResultsPageContent() {
       const topSuggestion = getTopSuggestedBenefit(query);
 
       if (topSuggestion) {
-        console.log('[Benefit Auto-Suggestion] Supplement has suggested benefits (UI only):', {
+        debugPortalResults('[Benefit Auto-Suggestion] Supplement has suggested benefits (UI only):', {
           supplement: query,
           topBenefit: topSuggestion.benefit,
           benefitEs: topSuggestion.benefitEs,
@@ -861,7 +867,7 @@ function ResultsPageContent() {
 
     // Log section availability
     const _supplement = (recommendation as any).supplement || {};
-    console.log('[Recommendation Sections]', {
+    debugPortalResults('[Recommendation Sections]', {
       category: recommendation.category,
       hasWorksFor: Array.isArray(transformed.worksFor) && transformed.worksFor.length > 0,
       worksForCount: transformed.worksFor?.length || 0,
@@ -894,7 +900,7 @@ function ResultsPageContent() {
       if (typeof window !== 'undefined') {
         try {
           const cacheKey = `recommendation_${jobId}`;
-          console.log('[Cache Retrieval] Checking cache for shared link:', cacheKey);
+          debugPortalResults('[Cache Retrieval] Checking cache for shared link:', cacheKey);
           const cachedData = localStorage.getItem(cacheKey);
 
           if (cachedData) {
@@ -902,7 +908,7 @@ function ResultsPageContent() {
             const age = Date.now() - timestamp;
 
             if (age < ttl && isValidCache(recommendation)) {
-              console.log('[Cache Retrieval] ✅ Valid cache found for shared link');
+              debugPortalResults('[Cache Retrieval] ✅ Valid cache found for shared link');
               setError(null);
               setRecommendation(recommendation);
               setSearchType('ingredient'); // Set searchType so evidence panel renders
@@ -912,7 +918,7 @@ function ResultsPageContent() {
           }
 
           // Cache miss or expired - redirect to new search
-          console.log('[Cache Retrieval] Cache miss for shared link - redirecting to homepage');
+          debugPortalResults('[Cache Retrieval] Cache miss for shared link - redirecting to homepage');
           setError('Esta recomendación ya no está disponible. Por favor, genera una nueva búsqueda.');
           setIsLoading(false);
           setTimeout(() => routerRef.current.push('/portal'), 2000);
@@ -998,13 +1004,13 @@ function ResultsPageContent() {
 
           // Use the stable page job ID for complete traceability.
           const requestJobId = jobId;
-          console.log(`🔖 Job ID: ${requestJobId} - Query: "${normalizedQuery}" → "${category}"`);
+          debugPortalResults(`🔖 Job ID: ${requestJobId} - Query: "${normalizedQuery}" → "${category}"`);
 
           // Always call the app route. It owns search fallback, async polling,
           // and Lambda orchestration without exposing stale public Lambda URLs.
           const apiUrl = `/api/portal/quiz?t=${Date.now()}`;
 
-          console.log(`🚀 Calling quiz API: ${apiUrl}`);
+          debugPortalResults(`🚀 Calling quiz API: ${apiUrl}`);
 
           const response = await fetch(apiUrl, {
             method: 'POST',
@@ -1036,7 +1042,7 @@ function ResultsPageContent() {
 
             // Handle 404: No scientific data found (NOT a system error)
             if (response.status === 404 && errorData.error === 'insufficient_data') {
-              console.log(`ℹ️  No scientific data found for: ${searchTerm} (original: ${normalizedQuery})`);
+              debugPortalResults(`ℹ️  No scientific data found for: ${searchTerm} (original: ${normalizedQuery})`);
 
               // Log analytics - search failed
               searchAnalytics.logFailure(
@@ -1052,7 +1058,7 @@ function ResultsPageContent() {
                 normalizedQuery: searchTerm,
               });
 
-              console.log('[State Update] Setting error - clearing recommendation first');
+              debugPortalResults('[State Update] Setting error - clearing recommendation first');
               setRecommendation(null); // Clear recommendation before setting error
 
               // Show error message
@@ -1077,7 +1083,7 @@ function ResultsPageContent() {
             let errorMessage = `Backend error: ${response.status}`;
             errorMessage = errorData.message || errorData.error || errorMessage;
 
-            console.log('[State Update] Setting error - clearing recommendation first');
+            debugPortalResults('[State Update] Setting error - clearing recommendation first');
             setRecommendation(null); // Clear recommendation before setting error
             setError(errorMessage);
             setIsLoading(false);
@@ -1088,7 +1094,7 @@ function ResultsPageContent() {
 
           // Handle variant detection data if present
           if (data.variantDetection) {
-            console.log('[Variant Detection] Variants detected:', {
+            debugPortalResults('[Variant Detection] Variants detected:', {
               baseSupplementName: data.variantDetection.baseSupplementName,
               variantCount: data.variantDetection.variants.length,
               hasVariants: data.variantDetection.hasVariants,
@@ -1115,7 +1121,7 @@ function ResultsPageContent() {
 
                 localStorage.setItem(cacheKey, JSON.stringify(cacheData));
 
-                console.log('[Variant Cache] ✅ Cached variant detection:', {
+                debugPortalResults('[Variant Cache] ✅ Cached variant detection:', {
                   cacheKey,
                   supplement: data.variantDetection.baseSupplementName,
                   variantCount: data.variantDetection.variants?.length || 0,
@@ -1131,7 +1137,7 @@ function ResultsPageContent() {
                   .filter(key => key.startsWith(`variant_detection_${normalizedName}_`) && key !== cacheKey)
                   .forEach(oldKey => {
                     localStorage.removeItem(oldKey);
-                    console.log(`[Variant Cache] 🗑️ Cleaned up old cache: ${oldKey}`);
+                    debugPortalResults(`[Variant Cache] 🗑️ Cleaned up old cache: ${oldKey}`);
                   });
 
               } catch (cacheError) {
@@ -1148,10 +1154,10 @@ function ResultsPageContent() {
               !data.variantDetection._selectedVariant;
 
             if (shouldShowVariantModal) {
-              console.log('[Variant Modal] Showing variant selector for:', data.recommendation?.supplement?.name);
+              debugPortalResults('[Variant Modal] Showing variant selector for:', data.recommendation?.supplement?.name);
               setShowVariantSelector(true);
             } else if (data.variantDetection._selectedVariant) {
-              console.log('[Variant Modal] Skipping - variant already selected:', data.variantDetection._selectedVariant.fullName);
+              debugPortalResults('[Variant Modal] Skipping - variant already selected:', data.variantDetection._selectedVariant.fullName);
             }
           }
 
@@ -1162,14 +1168,14 @@ function ResultsPageContent() {
             const startTime = Date.now();
             const statusUrl = `/api/portal/status/${pollJobId}`;
 
-            console.log('[Async Polling] Backend is still enriching recommendation:', {
+            debugPortalResults('[Async Polling] Backend is still enriching recommendation:', {
               jobId: pollJobId,
               hasInitialRecommendation: !!data.recommendation,
             });
 
             const pollStatus = async () => {
               try {
-                console.log('[Async Polling] Fetching status:', statusUrl);
+                debugPortalResults('[Async Polling] Fetching status:', statusUrl);
                 const statusResponse = await fetch(statusUrl);
 
                 // Terminal HTTP failures (job expired / not found / gone / bad
@@ -1200,7 +1206,7 @@ function ResultsPageContent() {
                   return;
                 }
 
-                console.log('[Async Polling] Status update:', {
+                debugPortalResults('[Async Polling] Status update:', {
                   status: statusData.status,
                   hasRecommendation: !!statusData.recommendation,
                 });
@@ -1293,13 +1299,13 @@ function ResultsPageContent() {
               return;
             }
 
-            console.log('[Data Fetch] ✅ Received CONDITION result:', data);
+            debugPortalResults('[Data Fetch] ✅ Received CONDITION result:', data);
             setConditionResult(data);
             setRecommendation(null); // Clear other state
             setSearchType('condition');
           } else if (data.success && data.recommendation) {
             // LEGACY SYNC PATTERN or ingredient search
-            console.log('[Data Fetch] ✅ Received INGREDIENT result:', data.recommendation);
+            debugPortalResults('[Data Fetch] ✅ Received INGREDIENT result:', data.recommendation);
             setRecommendation(attachResponseSource(data.recommendation, data.source));
             setConditionResult(null); // Clear other state
             setSearchType('ingredient');
@@ -1314,14 +1320,14 @@ function ResultsPageContent() {
 
           // ASYNC PATTERN: Backend returned 202 with recommendation_id - start polling
           if (response.status === 202 && data.recommendation_id) {
-            console.log('[Async Polling] Starting polling for recommendation:', data.recommendation_id);
+            debugPortalResults('[Async Polling] Starting polling for recommendation:', data.recommendation_id);
 
             // Update URL immediately with job ID (without navigation)
             if (typeof window !== 'undefined') {
               const newUrl = `/portal/results?id=${data.recommendation_id || data.jobId}`;
               const currentUrl = window.location.pathname + window.location.search;
               if (currentUrl !== newUrl) {
-                console.log('📝 Updating URL for polling:', newUrl);
+                debugPortalResults('📝 Updating URL for polling:', newUrl);
                 window.history.replaceState({}, '', newUrl);
                 // DO NOT call router.push() - it causes unnecessary page reload
               }
@@ -1337,7 +1343,7 @@ function ResultsPageContent() {
 
             const pollStatus = async () => {
               try {
-                console.log('[Async Polling] Fetching status:', statusUrl);
+                debugPortalResults('[Async Polling] Fetching status:', statusUrl);
                 const statusResponse = await fetch(statusUrl);
 
                 // Terminal HTTP failures (job expired / not found / gone / bad
@@ -1368,7 +1374,7 @@ function ResultsPageContent() {
                   return;
                 }
 
-                console.log('[Async Polling] Status update:', {
+                debugPortalResults('[Async Polling] Status update:', {
                   status: statusData.status,
                   progress: statusData.progress,
                   message: statusData.progressMessage,
@@ -1376,13 +1382,13 @@ function ResultsPageContent() {
                 });
 
                 if (statusData.status === 'completed' && statusData.recommendation) {
-                  console.log('[Async Polling] ✅ Recommendation completed:', {
+                  debugPortalResults('[Async Polling] ✅ Recommendation completed:', {
                     id: statusData.recommendation.recommendation_id,
                     category: statusData.recommendation.category,
                   });
-                  console.log('[State Update] Before setting recommendation from polling - clearing error first');
+                  debugPortalResults('[State Update] Before setting recommendation from polling - clearing error first');
                   setError(null); // Clear error before setting recommendation
-                  console.log('[State Update] Setting recommendation from polling');
+                  debugPortalResults('[State Update] Setting recommendation from polling');
 
                   // Apply client-side benefit filter if benefitQuery exists
                   const finalRecommendation = submittedBenefitQuery
@@ -1390,15 +1396,15 @@ function ResultsPageContent() {
                     : statusData.recommendation;
 
                   setRecommendation(finalRecommendation);
-                  console.log('[State Update] Setting isLoading to false');
+                  debugPortalResults('[State Update] Setting isLoading to false');
                   setIsLoading(false);
                   return; // Stop polling
                 } else if (statusData.status === 'failed') {
                   console.error('[Async Polling] ❌ Recommendation failed:', statusData.error);
-                  console.log('[State Update] Setting error from polling - clearing recommendation first');
+                  debugPortalResults('[State Update] Setting error from polling - clearing recommendation first');
                   setRecommendation(null); // Clear recommendation before setting error
                   setError(statusData.error || 'Failed to generate recommendation');
-                  console.log('[State Update] Setting isLoading to false');
+                  debugPortalResults('[State Update] Setting isLoading to false');
                   setIsLoading(false);
                   return; // Stop polling
                 } else if (
@@ -1416,11 +1422,11 @@ function ResultsPageContent() {
                 } else if (statusData.status === 'processing') {
                   // Continue polling if we haven't exceeded max time
                   if (Date.now() - startTime < maxPollTime) {
-                    console.log('[Async Polling] Still processing, will poll again in', pollInterval, 'ms');
+                    debugPortalResults('[Async Polling] Still processing, will poll again in', pollInterval, 'ms');
                     setTimeout(pollStatus, pollInterval);
                   } else {
                     console.error('[Async Polling] ❌ Polling timeout exceeded');
-                    console.log('[State Update] Setting error - clearing recommendation first');
+                    debugPortalResults('[State Update] Setting error - clearing recommendation first');
                     setRecommendation(null); // Clear recommendation before setting error
                     setError('La recomendación está tardando más de lo esperado. Por favor, intenta de nuevo.');
                     setIsLoading(false);
@@ -1437,11 +1443,11 @@ function ResultsPageContent() {
                 console.error('[Async Polling] ❌ Polling error:', pollError);
                 // Continue polling on error (might be transient)
                 if (Date.now() - startTime < maxPollTime) {
-                  console.log('[Async Polling] Error occurred, will retry in', pollInterval, 'ms');
+                  debugPortalResults('[Async Polling] Error occurred, will retry in', pollInterval, 'ms');
                   setTimeout(pollStatus, pollInterval);
                 } else {
                   console.error('[Async Polling] ❌ Max poll time exceeded after error');
-                  console.log('[State Update] Setting error - clearing recommendation first');
+                  debugPortalResults('[State Update] Setting error - clearing recommendation first');
                   setRecommendation(null); // Clear recommendation before setting error
                   setError('Error al verificar el estado de la recomendación');
                   setIsLoading(false);
@@ -1464,7 +1470,7 @@ function ResultsPageContent() {
               data.recommendation.quiz_id = data.quiz_id || `quiz_${Date.now()}`;
             }
 
-            console.log('[Quiz API] ✅ Recommendation received (sync pattern):', {
+            debugPortalResults('[Quiz API] ✅ Recommendation received (sync pattern):', {
               id: data.recommendation.recommendation_id,
               category: data.recommendation.category,
               ingredientsCount: data.recommendation.ingredients?.length || 0,
@@ -1488,9 +1494,9 @@ function ResultsPageContent() {
             });
 
             if (isMounted) {
-              console.log('[State Update] Before setting recommendation - clearing error first');
+              debugPortalResults('[State Update] Before setting recommendation - clearing error first');
               setError(null); // Clear error before setting recommendation
-              console.log('[State Update] Setting recommendation from quiz API');
+              debugPortalResults('[State Update] Setting recommendation from quiz API');
 
               // Apply client-side benefit filter if benefitQuery exists
               const recommendationWithSource = attachResponseSource(data.recommendation, data.source);
@@ -1499,7 +1505,7 @@ function ResultsPageContent() {
                 : recommendationWithSource;
 
               setRecommendation(finalRecommendation);
-              console.log('[State Update] Setting isLoading to false');
+              debugPortalResults('[State Update] Setting isLoading to false');
               setIsLoading(false); // Stop loading spinner
             }
 
@@ -1508,7 +1514,7 @@ function ResultsPageContent() {
             // Use jobId for cache key to match job-store
             const cacheJobId = data.jobId || data.recommendation.recommendation_id || requestJobId;
             if (cacheJobId && typeof window !== 'undefined') {
-              console.log('[Cache Storage] Evaluating cache eligibility for:', {
+              debugPortalResults('[Cache Storage] Evaluating cache eligibility for:', {
                 jobId: cacheJobId,
                 category: data.recommendation.category,
               });
@@ -1531,7 +1537,7 @@ function ResultsPageContent() {
 
                   localStorage.setItem(cacheKey, JSON.stringify(cacheData));
 
-                  console.log('[Cache Storage] ✅ Successfully cached recommendation:', {
+                  debugPortalResults('[Cache Storage] ✅ Successfully cached recommendation:', {
                     cacheKey,
                     jobId: cacheJobId,
                     category: data.recommendation.category,
@@ -1544,7 +1550,7 @@ function ResultsPageContent() {
                   // Don't fail the entire operation if caching fails
                 }
               } else {
-                console.log('[Cache Storage] ⚠️ Skipping cache - validation failed (no real study data)');
+                debugPortalResults('[Cache Storage] ⚠️ Skipping cache - validation failed (no real study data)');
               }
 
               // DISABLED: URL update with ID
@@ -1556,7 +1562,7 @@ function ResultsPageContent() {
               // const newUrl = `/portal/results?id=${data.recommendation.recommendation_id}`;
               // const currentUrl = window.location.pathname + window.location.search;
               // if (currentUrl !== newUrl) {
-              //   console.log('📝 Updating URL without navigation:', newUrl);
+              //   debugPortalResults('📝 Updating URL without navigation:', newUrl);
               //   window.history.replaceState({}, '', newUrl);
               // }
             }
@@ -1564,7 +1570,7 @@ function ResultsPageContent() {
             const errorMessage = data.error || data.message || 'Failed to generate recommendation';
             console.error('❌ Invalid API response:', errorMessage);
             if (isMounted) {
-              console.log('[State Update] Setting error - clearing recommendation first');
+              debugPortalResults('[State Update] Setting error - clearing recommendation first');
               setRecommendation(null); // Clear recommendation before setting error
               setError(errorMessage);
               setIsLoading(false);
@@ -1577,7 +1583,7 @@ function ResultsPageContent() {
 
           console.error('Fetch error:', err);
           if (isMounted) {
-            console.log('[State Update] Setting error - clearing recommendation first');
+            debugPortalResults('[State Update] Setting error - clearing recommendation first');
             setRecommendation(null); // Clear recommendation before setting error
             setError(err.message || 'An unexpected error occurred');
             setIsLoading(false);
@@ -1593,7 +1599,7 @@ function ResultsPageContent() {
       };
     } else {
       if (isMounted) {
-        console.log('[State Update] Setting error - clearing recommendation first');
+        debugPortalResults('[State Update] Setting error - clearing recommendation first');
         setRecommendation(null); // Clear recommendation before setting error
         setError('No search query or recommendation ID provided');
         setIsLoading(false);
@@ -1613,7 +1619,7 @@ function ResultsPageContent() {
   const handleSelectVariant = (variant: SupplementVariant | null) => {
     if (!variant) return;
 
-    console.log('[Variant Selection] User selected variant:', variant);
+    debugPortalResults('[Variant Selection] User selected variant:', variant);
     setShowVariantSelector(false);
 
     // FIX: Instead of triggering a new search (which fails for variants),
@@ -1645,7 +1651,7 @@ function ResultsPageContent() {
         },
       };
 
-      console.log('[Variant Selection] Updated recommendation with variant data:', {
+      debugPortalResults('[Variant Selection] Updated recommendation with variant data:', {
         variantName,
         studyCount: variant.studyCount,
         confidence: variant.confidence,
@@ -1661,7 +1667,7 @@ function ResultsPageContent() {
   };
 
   const handleSelectGeneric = () => {
-    console.log('[Variant Selection] User selected generic search for all variants');
+    debugPortalResults('[Variant Selection] User selected generic search for all variants');
     setShowVariantSelector(false);
     // Continue with the current recommendation (no variant filtering)
   };
@@ -1721,7 +1727,7 @@ function ResultsPageContent() {
   // ====================================
   // LOGGING: Conditional Rendering Decision
   // ====================================
-  console.log('[Render Decision]', {
+  debugPortalResults('[Render Decision]', {
     isLoading,
     hasError: !!error,
     hasRecommendation: !!recommendation,
@@ -1730,7 +1736,7 @@ function ResultsPageContent() {
 
   // STATE 1: Show loading state (only while fetching, not while transforming)
   if (isLoading) {
-    console.log('[Render] Branch: LOADING - Showing IntelligentLoadingSpinner', {
+    debugPortalResults('[Render] Branch: LOADING - Showing IntelligentLoadingSpinner', {
       reason: 'isLoading === true',
       supplementName: query || undefined,
     });
@@ -1741,7 +1747,7 @@ function ResultsPageContent() {
 
   // STATE 2: Show error state ONLY when error !== null
   if (error !== null) {
-    console.log('[Render] Branch: ERROR - Showing ErrorState', {
+    debugPortalResults('[Render] Branch: ERROR - Showing ErrorState', {
       reason: 'error !== null',
       hasError: !!error,
       errorType: typeof error === 'object' ? error.type : 'string',
@@ -1776,7 +1782,7 @@ function ResultsPageContent() {
   // STATE 3: Handle no-data state. If conditionResult exists (even if empty),
   // show the condition display. Otherwise, show the error state.
   if (!recommendation && !conditionResult) {
-    console.log('[Render] Branch: NO_DATA - No data for ingredient or condition.', {
+    debugPortalResults('[Render] Branch: NO_DATA - No data for ingredient or condition.', {
       reason: '!recommendation && !conditionResult && !isLoading && !error',
       isLoading,
       hasError: !!error,
@@ -1793,7 +1799,7 @@ function ResultsPageContent() {
   }
 
   // STATE 4: Show recommendation display when we have valid data
-  console.log('[Render] Branch: RECOMMENDATION - Showing recommendation display', {
+  debugPortalResults('[Render] Branch: RECOMMENDATION - Showing recommendation display', {
     reason: '(recommendation || conditionResult) && !isLoading && !error',
     searchType,
     hasRecommendation: !!recommendation,
@@ -2009,7 +2015,7 @@ function ResultsPageContent() {
                   // Normalize benefit query from Spanish to English
                   const normalized = normalizeBenefit(benefitQuery);
 
-                  console.log('[Benefit Form Submit] Normalizing benefit:', {
+                  debugPortalResults('[Benefit Form Submit] Normalizing benefit:', {
                     original: benefitQuery,
                     normalized: normalized.normalized,
                     confidence: normalized.confidence,

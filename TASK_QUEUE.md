@@ -420,7 +420,7 @@ Lambda invoke/update, env vars, portal render, e2e, dependencias.
 
 ---
 
-## T18 — Portal log hygiene: gate results-page debug traces  ·  PENDING
+## T18 — Portal log hygiene: gate results-page debug traces  ·  DONE (PR #181)
 
 **Objetivo:** reducir ruido de consola en `results/page.tsx` manteniendo errores/warnings útiles
 y sin alterar estados de carga, cache, async polling, variantes ni render de recomendaciones.
