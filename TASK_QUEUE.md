@@ -386,7 +386,7 @@ ediciones a cambios locales preexistentes de `OBSERVATIONS.md`.
 
 ---
 
-## T16 — Portal log hygiene: remove homepage search debug logs  ·  PENDING
+## T16 — Portal log hygiene: remove homepage search debug logs  ·  DONE (PR #181)
 
 **Objetivo:** eliminar logs debug de cliente en la búsqueda principal del portal sin cambiar
 la UX, navegación, tracking GA ni guardrails de validación.

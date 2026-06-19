@@ -159,41 +159,21 @@ export default function PortalPage() {
   ];
 
   const handleSearch = (query: string) => {
-    console.log('[handleSearch] 🔍 Called with query:', query);
-
     if (!query?.trim()) {
-      console.log('[handleSearch] ❌ Empty query, returning');
       return;
     }
 
-    console.log('[handleSearch] ✅ Query is not empty, proceeding with validation');
-
     // VALIDACIÓN DE GUARDRAILS
     const validation = validateSupplementQuery(query.trim());
-    console.log('[handleSearch] 📋 Validation result:', {
-      valid: validation.valid,
-      error: validation.error,
-      severity: validation.severity,
-    });
 
     if (!validation.valid) {
-      console.log('[handleSearch] ❌ Validation failed, showing error');
       setValidationError(validation.error || 'Búsqueda inválida');
       return;
     }
 
-    console.log('[handleSearch] ✅ Validation passed');
-
     // Normalizar query (español → inglés, typos, etc.)
     const normalized = normalizeQuery(query.trim());
     const searchTerm = normalized.confidence >= 0.7 ? normalized.normalized : query.trim();
-
-    console.log('[handleSearch] 🔄 Normalized query:', {
-      original: query.trim(),
-      normalized: normalized.normalized,
-      confidence: normalized.confidence,
-      finalSearchTerm: searchTerm,
-    });
 
     // Limpiar error previo y proceder
     setValidationError(null);
@@ -210,8 +190,6 @@ export default function PortalPage() {
     });
 
     const targetUrl = `/portal/results?q=${encodeURIComponent(searchTerm)}&supplement=${encodeURIComponent(searchTerm)}`;
-    console.log('[handleSearch] 🚀 Navigating to:', targetUrl);
-
     router.push(targetUrl);
   };
 
@@ -326,16 +304,9 @@ export default function PortalPage() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  console.log('[PortalPage] 📝 Form submit triggered');
-                  console.log('[PortalPage] 📝 searchQuery value:', searchQuery);
-                  console.log('[PortalPage] 📝 searchQuery trimmed:', searchQuery.trim());
-                  console.log('[PortalPage] 📝 searchQuery length:', searchQuery.trim().length);
 
                   if (searchQuery.trim()) {
-                    console.log('[PortalPage] ✅ searchQuery is valid, calling handleSearch');
                     handleSearch(searchQuery);
-                  } else {
-                    console.log('[PortalPage] ❌ searchQuery is empty after trim');
                   }
                 }}
               >
@@ -343,13 +314,8 @@ export default function PortalPage() {
                   value={searchQuery}
                   onChange={(value) => {
                     // Solo se llama cuando se selecciona una sugerencia
-                    console.log('[PortalPage] 🎯 Combobox onChange (suggestion selected)');
-                    console.log('[PortalPage] 🎯 Selected value:', value);
                     if (value) {
-                      console.log('[PortalPage] ✅ Value is truthy, calling handleSearch');
                       handleSearch(value);
-                    } else {
-                      console.log('[PortalPage] ❌ Value is falsy, not calling handleSearch');
                     }
                   }}
                 >
