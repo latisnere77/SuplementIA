@@ -362,7 +362,7 @@ otro slug/categoría.
 
 ---
 
-## T15 — Discovery: global project queue refresh  ·  IN_PROGRESS
+## T15 — Discovery: global project queue refresh  ·  DONE (PR #181)
 
 **Tipo:** discovery (amplía esta cola).
 **Objetivo:** entender el objetivo actual de SuplementAI desde el código y docs del repo, y
