@@ -178,7 +178,8 @@ async function enrichLanceDB() {
       // OR use a different approach depending on your LanceDB version
 
       console.log('\n⚠️  WARNING: LanceDB update requires manual recreation');
-      console.log('   Save enriched data to JSON and reload into LanceDB');
+      console.log('   Save enriched data to JSON and reload into LanceDB only after a human GO.');
+      console.log('   Document the target data store, smoke, rollback, and audit artifact first.');
 
       // Save to JSON for manual import
       const fs = await import('fs/promises');

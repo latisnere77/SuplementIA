@@ -458,7 +458,7 @@ existentes necesarios para comprobar el guard.
 
 ---
 
-## T20 — Legacy LanceDB runbook cleanup: remove main-push and Bedrock-write shortcuts  ·  PENDING
+## T20 — Legacy LanceDB runbook cleanup: remove main-push and Bedrock-write shortcuts  ·  DONE (PR #181)
 
 **Objetivo:** actualizar docs/scripts de corrección LanceDB/Vitamin B para que no instruyan
 `git push origin main`, pruebas directas en producción, o mutaciones LanceDB/Bedrock sin gate

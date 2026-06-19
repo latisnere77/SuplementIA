@@ -20,8 +20,10 @@ LanceDB is missing a "Vitamin B Complex" entry. The normalizer has it, but autoc
 - `scripts/enrich-lancedb-autocomplete.ts` - Added vitamin b complex entry
 - `lib/portal/supplements-database.ts` - Added EN/ES entries
 
-### 2. Database Update (⏳ To Do)
-- Run script to add "Vitamin B Complex" to LanceDB
+### 2. Database Update (Human-Gated)
+- Running the LanceDB update script mutates data and generates Bedrock embeddings. Under
+  `AGENTS.md` section 3.1 this is not autonomous work; it requires a task-specific human GO
+  naming the exact command, target data store, smoke test, rollback, and audit record.
 
 ---
 
@@ -36,13 +38,13 @@ Make sure you have:
    - `AWS_REGION` (for Bedrock)
    - `BEDROCK_MODEL_ID` (for embeddings)
 
-### Step 1: Run the Update Script
+### Step 1: Prepare the Update Script Command
 
 ```bash
 # Navigate to project root
 cd /Users/latisnere/Documents/suplementAI
 
-# Run the script
+# Human-gated: do not run without explicit GO
 npx ts-node scripts/add-vitamin-b-complex-to-lancedb.ts
 ```
 
@@ -106,7 +108,7 @@ curl 'http://localhost:3000/api/portal/autocomplete?q=vitamina%20b&lang=es&limit
 # [{"text":"Vitamin B Complex","type":"supplement","score":95.4,...}]
 ```
 
-### Step 3: Deploy to Production
+### Step 3: Prepare a Review PR
 
 ```bash
 # Commit the changes
@@ -122,20 +124,26 @@ git commit -m "fix: add Vitamin B Complex to LanceDB and autocomplete
 
 Resolves: Vitamin B search bug"
 
-# Push to trigger Amplify deployment
-git push origin main
+# Push a feature branch and open a PR against main.
+# Do not push directly to main, enable auto-merge, or deploy autonomously.
+git push origin <feature-branch>
 ```
 
-### Step 4: Wait for Deployment
+### Step 4: Human-Gated Deploy
 
-1. **Amplify Build**: ~5 minutes
+Deployment is blocked until a human reviews/merges the PR and gives a dedicated deploy GO with
+the target SHA, smoke command, rollback command, and audit record.
+
+1. **Amplify Build**: ~5 minutes after approved deploy
    - Check: https://console.aws.amazon.com/amplify/
    - App ID: d2yn3faih4ykom
 
 2. **CDN Cache Expiration**: ~5 minutes (auto-expires)
-   - Or manually invalidate: `aws cloudfront create-invalidation --distribution-id <ID> --paths "/api/portal/autocomplete/*"`
+   - Manual invalidation is an AWS write and requires explicit human GO.
 
-### Step 5: Test on Production
+### Step 5: Production Smoke
+
+Production testing is part of the human-gated deploy/smoke plan, not an autonomous local task.
 
 1. Visit: https://suplementai.com/portal
 2. Type: "vitamina b"
@@ -147,6 +155,9 @@ git push origin main
 ## 🧪 Testing Commands
 
 ### Test LanceDB Directly
+
+This can generate embeddings or reach local LanceDB/Bedrock-backed paths. Treat it as
+human-gated unless the task spec explicitly authorizes the exact command and target data store.
 
 ```bash
 # Test vector search
@@ -220,6 +231,9 @@ export AWS_PROFILE=suplementai
 aws bedrock list-foundation-models --region us-east-1
 ```
 
+AWS and Bedrock inspection/mutation must follow `AGENTS.md` section 3.1. Do not run these
+commands autonomously from this legacy runbook.
+
 ### Issue: "LanceDB path not found"
 
 Set the correct path:
@@ -273,23 +287,25 @@ If you need to update an existing entry:
 
 ## 📝 Notes
 
-1. **LanceDB is local**: Changes only affect your local instance until deployed
-2. **Production LanceDB**: May be in a different location (check AWS Amplify config)
-3. **Embeddings**: Generated using AWS Bedrock Titan V2 (512 dimensions)
-4. **Cache**: CloudFront caches autocomplete for 5 minutes
-5. **Idempotent**: Safe to run script multiple times
+1. **LanceDB mutation is gated**: Do not run update scripts autonomously.
+2. **Production LanceDB**: May be in a different location and requires explicit target confirmation.
+3. **Embeddings**: Generated using AWS Bedrock Titan V2 (512 dimensions), which is human-gated.
+4. **Deploy/cache actions**: Amplify, CloudFront invalidation, and production smoke require GO.
+5. **Idempotent is not permission**: Even idempotent scripts still mutate governed data stores.
 
 ---
 
 ## ✅ Checklist
 
 - [x] Code changes committed
-- [ ] Script executed successfully
+- [ ] Human GO captured for exact LanceDB/Bedrock command
+- [ ] Script executed successfully after GO
 - [ ] Local testing passed
-- [ ] Committed to Git
-- [ ] Pushed to production
-- [ ] Amplify deployment completed
-- [ ] Production testing passed
+- [ ] PR opened against main
+- [ ] Human review/merge completed
+- [ ] Human GO captured for deploy/smoke/rollback
+- [ ] Amplify deployment completed after GO
+- [ ] Production smoke passed after GO
 
 ---
 

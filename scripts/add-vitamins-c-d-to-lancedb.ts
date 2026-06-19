@@ -206,10 +206,10 @@ async function addVitaminsCAndD() {
 
     console.log('🎉 Done! Vitamins successfully processed in LanceDB\n');
     console.log('📌 Next steps:');
-    console.log('   1. Commit changes: git add . && git commit -m "fix: add Vitamin C and D to LanceDB"');
-    console.log('   2. Push to deploy: git push origin main');
-    console.log('   3. Wait for Amplify deployment (~5 min)');
-    console.log('   4. Test on production site: https://suplementai.com/portal\n');
+    console.log('   1. Record the human GO, target LanceDB path, smoke, rollback, and audit artifact.');
+    console.log('   2. Commit any code/doc changes on a feature branch and open a PR against main.');
+    console.log('   3. Do not push main, deploy, or test production without a separate human GO.');
+    console.log('   4. Treat Bedrock, LanceDB mutation, Amplify, and production smoke as gated actions.\n');
 
   } catch (error) {
     console.error('❌ Error adding vitamins to LanceDB:', error);
