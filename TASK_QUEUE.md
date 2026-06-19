@@ -477,7 +477,7 @@ producción, `production-content-enricher`, cambios de catálogo o embeddings, d
 
 ---
 
-## T21 — Autocomplete backend contract: align debug docs with SEARCH_BACKEND  ·  PENDING
+## T21 — Autocomplete backend contract: align debug docs with SEARCH_BACKEND  ·  DONE (PR #181)
 
 **Objetivo:** cerrar la brecha documentada entre autocompletado y búsqueda: el autocompletado
 solo mira `USE_LANCEDB`, mientras búsqueda principal usa `SEARCH_BACKEND`; decidir e implementar

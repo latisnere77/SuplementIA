@@ -116,7 +116,10 @@ Default behavior:
 
 Remote behavior:
 
-- `USE_LANCEDB=true` makes autocomplete call `searchLanceDB()`.
+- `SEARCH_BACKEND=local` forces autocomplete to use the local Fuse database only, even if
+  `USE_LANCEDB=true`.
+- `USE_LANCEDB=true` makes autocomplete call `searchLanceDB()` only when `SEARCH_BACKEND` is not
+  `local`.
 - That can reach Bedrock through `lib/lancedb-service.ts`.
 - On LanceDB error or no results, autocomplete falls back to the local Fuse database.
 
@@ -139,6 +142,4 @@ This contract prevents local browser tests from using DynamoDB, LanceDB, Lambda 
 
 ## Open Follow-Ups
 
-- Fix misleading `app/api/portal/search/route.ts` log text so it does not always say "via Lambda".
-- Decide whether autocomplete should use `SEARCH_BACKEND` rather than only `USE_LANCEDB`.
 - Keep `SEARCH_BACKEND=local` as the required e2e default.

@@ -20,8 +20,12 @@ const PUBMED_API_URL = process.env.STUDIES_API_URL || 'https://ctl2qa3wji.execut
 const FALLBACK_SCORE_THRESHOLD = 75; // Use PubMed if local score < 75% (increased from 60)
 const PUBMED_CACHE_TTL = 3600000; // 1 hour cache
 const PUBMED_MIN_RESULTS = 3; // Try PubMed if we have fewer than 3 good matches
-const useLanceDBAutocomplete = process.env.USE_LANCEDB === 'true';
 const debugPortal = process.env.NEXT_PUBLIC_DEBUG_PORTAL === 'true';
+
+function shouldUseLanceDBAutocomplete(): boolean {
+  const searchBackend = (process.env.SEARCH_BACKEND || 'auto').toLowerCase();
+  return searchBackend !== 'local' && process.env.USE_LANCEDB === 'true';
+}
 
 // In-memory cache for PubMed lookups
 interface CacheEntry {
@@ -163,7 +167,7 @@ export async function getSuggestions(
 
   const localResults = () => searchInDatabase(normalizedQuery.toLowerCase(), lang, limit).slice(0, limit);
 
-  if (!useLanceDBAutocomplete) {
+  if (!shouldUseLanceDBAutocomplete()) {
     return localResults();
   }
 
