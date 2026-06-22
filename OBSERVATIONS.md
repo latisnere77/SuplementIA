@@ -315,3 +315,149 @@ Containment:
 
 - Consider pinning an `--audit-level` (e.g. `high`) or moving advisory triage to a non-blocking job in a scoped CI task.
 - Do not change CI gating opportunistically inside unrelated product work.
+
+## Current Audit Addendum - 2026-06-22
+
+### Critical
+
+No new critical product defect is known from the latest read-only audit. The autonomous queue
+is idle: `TASK_QUEUE.md` exposes no actionable task headings in `PENDING`, `IN_PROGRESS`, or
+`BLOCKED` state. Current work is review-bound in open PRs rather than executable backlog.
+
+Risk:
+
+- A future agent may interpret "queue idle" as "project complete" and skip product planning.
+- Another agent may create speculative work instead of waiting for task promotion or human
+  assignment.
+
+Containment:
+
+- Keep using `TASK_QUEUE.md` as the execution queue.
+- Treat additional work as requiring explicit task promotion or direct human assignment before
+  implementation.
+
+### High
+
+#### Deploy And Migration Runbooks Still Need Reconciliation Before Any GO
+
+The project has a clear deploy classifier in `AGENTS.md`, but the command surface remains
+easy to misuse:
+
+- `npm run deploy` maps directly to `git push origin main`.
+- `npm run migrate` runs migration automation over a migration set that still has overlapping
+  initial schema files.
+- Amplify `start-job`, branch env updates, CloudFormation deploys, traffic rollback, Lambda
+  invoke/update, cleanup scripts, LanceDB updates, and Bedrock-backed embedding scripts remain
+  reachable from docs or scripts.
+- `amplify.yml` conditionally runs LanceDB update scripts when a LanceDB table is present.
+- Several runbooks reference deployment support commands that are not present in the tree,
+  including `monitor-rollout.sh`, `compare-systems.sh`, and `run-smoke-tests.sh`.
+
+Risk:
+
+- A future task could mistake a documented runbook command for autonomous permission to mutate
+  production, staging, database state, or Bedrock-backed data.
+- A deploy GO could be blocked late because the exact smoke, rollback, target SHA, or audit
+  artifact has not been proven executable.
+
+Containment:
+
+- Treat deploy, migration, AWS write, Lambda invoke/update, traffic, Bedrock, LanceDB mutation,
+  and production smoke paths as human-gated until a task-specific GO names the exact command,
+  target, preflight, smoke, rollback, and audit record.
+- Add a scoped runbook reconciliation task before any deploy-oriented execution work.
+
+#### Content Enricher Remains A Governed Reconstructed Source Tree
+
+`services/content-enricher/src/**` still contains broad `@ts-nocheck` and `eslint-disable`
+markers, while `AGENTS.md` gates all `production-content-enricher` and Bedrock work.
+
+Risk:
+
+- Normal TypeScript checks do not provide strong contract protection for this source tree.
+- Cosmetic or opportunistic edits could change production Lambda/Bedrock behavior.
+
+Containment:
+
+- Keep all content-enricher, Bedrock prompt, packaging, invoke, and deploy changes behind a
+  dedicated human-approved TASK_SPEC and GO.
+- Use the existing type-safety recovery plan as the starting point rather than editing this
+  area inside unrelated work.
+
+### Medium
+
+#### Planning Artifacts Contain Stale State Despite Idle Queue
+
+`TASK_QUEUE.md` and `TASKS.md` currently show no actionable pending work, but descriptive
+artifacts still contain older branch, queue, and task-state snapshots. `MASTER_TASK_SPEC.md`
+still describes the deploy-gate task as claimed or in progress, while later physical state
+and task files show that work as closed or review-bound.
+
+Risk:
+
+- Future agents may trust stale descriptive text instead of `TASK_QUEUE.md`, current git state,
+  and GitHub PR state.
+- Queue automation may duplicate already completed work or misread review-bound work as
+  executable backlog.
+
+Containment:
+
+- Before product execution, refresh remote refs in a write-capable session and reconcile
+  `TASK_QUEUE.md`, `TASKS.md`, open PRs, and current branch ancestry.
+- Prefer `AGENTS.md`, explicit human instructions, CI config, physical git/PR state, and
+  `TASK_QUEUE.md` over dated audit snapshots.
+- Avoid adding per-session SHA or ahead-count snapshots unless they are required for a specific
+  handoff; they become stale quickly.
+
+#### Validation Coverage Is Strong But `npm run validate` Is Not A Browser Gate
+
+The repo has a mature validation harness: lint, type-check, build, Jest, Playwright desktop
+and mobile, `npm audit`, and a real supplement browser matrix in CI. Local `npm run validate`
+intentionally excludes Playwright.
+
+Risk:
+
+- Portal, category, SEO, card, internal-link, or route-render changes can pass `npm run validate`
+  while still breaking browser behavior.
+
+Containment:
+
+- Preserve the hard rule that portal/category/SEO render changes run local Playwright in
+  addition to lint, type-check, build, and Jest.
+- Keep local e2e isolated with `JOB_STORE_DRIVER=memory`, `SEARCH_BACKEND=local`, and
+  `USE_LANCEDB=false` unless a task explicitly validates real search.
+
+#### Type-Check Scope Excludes Some Operational And Test Trees
+
+Root `tsconfig.json` excludes `infrastructure`, `scripts`, and `**/*.test.ts(x)` from the main
+type-check command. Jest and focused tests still exercise many tests, but the main type-check
+does not cover all operational TypeScript surfaces.
+
+Risk:
+
+- Script, infrastructure, or test-only type drift may be caught later by runtime execution
+  rather than `npm run type-check`.
+- Deployment/runbook scripts can remain stale while the main app validation stays green.
+
+Containment:
+
+- Add a scoped validation-design task if stronger type coverage is desired.
+- Do not expand root type-check scope opportunistically inside unrelated product tasks.
+
+### Low
+
+#### Root Onboarding Entry Point Is Sparse
+
+There is no root `README.md`. Operational knowledge is spread across `AGENTS.md`,
+`PROJECT_CONTEXT.md`, `TASK_QUEUE.md`, docs, and `.planning/**`.
+
+Risk:
+
+- New humans or agents may discover the wrong starting document first.
+- Repeated audits may spend time rediscovering the same command map.
+
+Containment:
+
+- If desired, add a small root README in a scoped docs task that points to `AGENTS.md`,
+  `PROJECT_CONTEXT.md`, `TASK_QUEUE.md`, and the validation/deploy runbooks without changing
+  governance.
