@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/gsd/pre-tool-policy.mjs",
+            "statusMessage": "Checking SuplementAI GSD command policy"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/gsd/digest.mjs --hook",
+            "timeout": 30,
+            "statusMessage": "Preparing SuplementAI GSD digest"
+          }
+        ]
+      }
+    ]
+  }
+}

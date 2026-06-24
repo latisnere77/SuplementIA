@@ -1,0 +1,3 @@
+display_name: SuplementAI GSD
+short_description: Autonomous SuplementAI SDLC loop with offline certification and strict prod gates.
+default_prompt: Run the SuplementAI GSD loop for the next actionable task, using offline certification, read-only audit fan-out, invariant ratchets, and no merge/deploy/prod action without human GO.

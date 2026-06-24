@@ -79,3 +79,16 @@ mergeas ni habilitas auto-merge. AWS solo LECTURA y solo con identidad confirmad
   a `TASK_QUEUE.md` (commiteado en su propio PR) y continúa.
 - Cuando no queden tareas PENDING, escribe un resumen en `.planning/queue-idle.md` con los
   PRs abiertos esperando revisión humana y DETENTE.
+
+## 7. CAPA GSD — AUTONOMÍA CON AUTO-CERTIFICACIÓN
+- Para trabajo autónomo continuo usa el skill repo-scoped `.agents/skills/suplementai-gsd/`.
+  Esta capa no relaja §3: merge a `main`, deploy, AWS writes, Lambda invoke/update,
+  Terraform/EventBridge, feature flags, Bedrock, LanceDB mutation y
+  `production-content-enricher` siguen requiriendo GO humano explícito.
+- DONE no significa "compila": exige `npm run gsd:invariants`, validación offline aplicable,
+  fan-out read-only (`gsd_reviewer`, `gsd_verifier`, `gsd_smoke_tester`) y
+  `npm run gsd:done -- --audit-pass-file .planning/<tarea>/AUDIT_FANOUT.md`.
+- El escritor nunca se auto-aprueba. Si falta evidencia independiente, la tarea queda abierta
+  o BLOCKED; no la marques DONE.
+- Toda edición que debilite `.agents/skills/suplementai-gsd/`, `.codex/`, `scripts/gsd/`,
+  `docs/done-criteria.md` o `docs/invariants-baseline.md` debe quedar visible en el digest.
