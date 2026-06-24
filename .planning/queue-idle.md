@@ -1,33 +1,19 @@
 # Queue idle
 
-Generated after reconciling stale SEO cluster tasks on 2026-06-24.
+Refreshed on 2026-06-24 after hardening the GSD SDLC layer.
 
 ## Queue state
 
 - No active `PENDING` task headers remain in `TASK_QUEUE.md`.
-- T2-T14 were marked `DONE (PR #169)` because PR #169 already integrated the 13 SEO category clusters.
+- T1 is `DONE (PR #155)`.
+- T2-T14 are `DONE (PR #169)` because PR #169 integrated the 13 SEO category clusters.
 
-## Open PRs awaiting human review/merge
+## Current PR state
 
-- PR #182: Add GSD autonomy layer
-  - Branch: `feat/gsd-autonomy-layer`
-  - Status: ready for review, checks passing
-  - URL: https://github.com/latisnere77/SuplementIA/pull/182
-- PR #181: Refresh autonomous task queue
-  - Branch: `chore/autonomous-deploy-gate-protocol`
-  - Status: ready for review, checks passing
-  - URL: https://github.com/latisnere77/SuplementIA/pull/181
-- PR #180: Flush governance backlog and queue reconciliation
-  - Branch: `codex/reconcile-queue-pr-state`
-  - Status: ready for review, checks passing
-  - URL: https://github.com/latisnere77/SuplementIA/pull/180
-- PR #172: Add category FAQPage structured data
-  - Branch: `codex/category-faqpage-jsonld`
-  - Status: ready for review, checks passing
-  - URL: https://github.com/latisnere77/SuplementIA/pull/172
-- PR #171: Audit curated SEO category coverage
-  - Branch: `codex/seo-category-audit`
-  - Status: ready for review, checks passing
-  - URL: https://github.com/latisnere77/SuplementIA/pull/171
+- `gh pr list --state open` returned no open PRs.
+- PR #169, PR #172, PR #182, and PR #183 are merged into `main`.
+- The local branch was refreshed from `origin/main` before this report.
 
-No merge, deploy, AWS, Lambda, Terraform, Bedrock, LanceDB, or production-content-enricher action was taken.
+## Terminal state
+
+The queue is idle pending new approved tasks. No merge, deploy, AWS, Lambda, Terraform, Bedrock, LanceDB, or `production-content-enricher` action was taken.

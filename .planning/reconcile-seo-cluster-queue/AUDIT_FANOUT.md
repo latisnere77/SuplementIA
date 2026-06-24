@@ -1,5 +1,11 @@
 # Audit Fanout: reconcile stale SEO cluster queue
 
+AUDIT_FANOUT: PASS
+REVIEWER: PASS
+VERIFIER: PASS
+SMOKE_TESTER: PASS
+WRITER_SELF_APPROVAL: NO
+
 ## Read-only reviewer
 
 PASS
@@ -23,4 +29,3 @@ PASS
 - This PR only reconciles queue metadata and planning evidence.
 - No portal render code is changed.
 - No deploy, AWS, Lambda, Terraform, Bedrock, LanceDB, or production-content-enricher action was taken.
-

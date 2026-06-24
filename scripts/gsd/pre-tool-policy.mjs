@@ -35,7 +35,17 @@ const hardBlocks = [
   { name: 'destructive-rm', pattern: /\brm\s+-rf\b/i },
 ];
 
-const createsDeployGo = /\.deploy-go/.test(command) && /\b(touch|tee|printf|echo|cat|>|>>)\b/.test(command);
+const deployGoPath = String.raw`["']?(?:\.\/+)*\.deploy-go["']?`;
+const deployGoPathEnd = String.raw`${deployGoPath}(?=$|[\s;&|)])`;
+const createsDeployGoPatterns = [
+  new RegExp(String.raw`\btouch\b[^\n|;&]*${deployGoPathEnd}`, 'i'),
+  new RegExp(String.raw`\b(?:cp|mv|install)\b[^\n|;&]*\s+${deployGoPathEnd}`, 'i'),
+  new RegExp(String.raw`\btee\b[^\n|;&]*\s+${deployGoPathEnd}`, 'i'),
+  new RegExp(String.raw`(?:^|[\s\S])(?:\d*|&)(?:>>|>\|?|&>>|&>)\s*${deployGoPathEnd}`, 'i'),
+  new RegExp(String.raw`\b(?:printf|echo|cat)\b[^\n|;&]*(?:>>|>\|?)\s*${deployGoPathEnd}`, 'i'),
+];
+
+const createsDeployGo = createsDeployGoPatterns.some((pattern) => pattern.test(command));
 
 if (createsDeployGo) {
   console.error('GSD_POLICY_BLOCK: agent must not create .deploy-go');
