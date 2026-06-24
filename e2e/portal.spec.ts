@@ -299,6 +299,32 @@ test.describe('portal browser flows', () => {
     await expect(page.getByRole('link', { name: 'Back to Search' })).toHaveAttribute('href', '/en/portal');
   });
 
+  test('curated category FAQs expose FAQPage structured data without Product schema', async ({ page }) => {
+    await page.goto('/en/portal/category/energy');
+
+    const structuredData = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluateAll((nodes) => nodes.flatMap((node) => JSON.parse(node.textContent || '[]')));
+
+    const faqPage = structuredData.find((entry) => entry['@type'] === 'FAQPage');
+
+    expect(structuredData.some((entry) => entry['@type'] === 'CollectionPage')).toBe(true);
+    expect(structuredData.some((entry) => entry['@type'] === 'BreadcrumbList')).toBe(true);
+    expect(faqPage).toBeTruthy();
+    expect(faqPage.mainEntity).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          '@type': 'Question',
+          name: 'Which supplement should I review first for tiredness?',
+          acceptedAnswer: expect.objectContaining({
+            '@type': 'Answer',
+          }),
+        }),
+      ])
+    );
+    expect(JSON.stringify(structuredData)).not.toContain('"@type":"Product"');
+  });
+
   test('category pages keep card language consistent in Spanish and English', async ({ page }) => {
     const localizedCases = [
       {
