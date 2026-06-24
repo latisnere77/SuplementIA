@@ -7,6 +7,7 @@
 - Added GSD hooks for command policy and digest visibility.
 - Added local scripts for pre-tool policy, digest, invariant ratchet, offline certification, and DONE oracle.
 - Added documentation for architecture, DONE-CRITERIA, and invariant baseline.
+- Added the reusable Operator Prompt and terminal-state semantics to `docs/gsd-autonomous-sdlc.md`.
 
 ## Validation
 
