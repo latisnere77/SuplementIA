@@ -2,7 +2,7 @@
 
 Canonical phase roadmap for autonomous SDLC loops. The driver reads this file and classifies phases as `HECHO`, `ESPERA_GATE`, or `ABIERTA_REAL`.
 
-Last recon: 2026-06-24
+Last recon: 2026-06-25
 
 ## Product Snapshot
 
@@ -18,16 +18,32 @@ SuplementAI is a Next.js App Router product for evidence-aware supplement search
 
 ## Recon Evidence
 
-- GitHub open PRs: PR #184, `Harden GSD SDLC gates`, ready for review with `Validate` success.
+- GitHub open PRs: PR #184, `Harden GSD SDLC gates`, ready for review with `Validate` success; PR #185, `Add roadmap autonomy driver`, ready for review with `Validate` success.
 - `TASK_QUEUE.md`: T1-T14 are `DONE`; no `PENDING` task headers.
+- Local infra branch `chore/stop-hook-json-output` exists with a focused stop-hook fix and GSD audit files; it still needs a PR before it is review-bound.
 - AWS STS read-only identity: account `643942183354`, assumed role `CrossAccountAdminRole`.
 - AWS Amplify read-only: app `SuplementAI` (`d2yn3faih4ykom`), production branch `main`, status `SUCCEED`, last deploy `2026-06-24T08:00:58-06:00`.
 - Amplify `main` env has production site/search/studies/enricher URLs configured.
 - No `scripts/autonomy-loop.sh`, `scripts/gsd-autonomous`, or prior `ROADMAP.md` existed before this task.
 
+## Anatomical SDLC Order
+
+This is the canonical execution order while product work is paused. Do not start product
+features until heart, brain, and nervous system are closed or review-bound with evidence.
+
+1. Heart: PR #184, `Harden GSD SDLC gates`.
+2. Brain: PR #185, `Add roadmap autonomy driver`.
+3. Nervous system: `stop-hook-json-output`.
+4. Hands: Codex permissions and autonomy controls.
+5. Legs: release and production verification runbooks.
+6. Muscles: research-audit local and report-only execution capacity.
+7. Fingers: narrow cleanup, observability, and monetization verification work.
+
 ## Phase Index
 
 ### Phase 1 — gsd-gate-hardening — ESPERA_GATE
+
+Layer: Heart.
 
 Objective: harden GSD command policy, add invariant CI gate, normalize audit evidence, and refresh queue-idle state.
 
@@ -42,9 +58,33 @@ Closure gate:
 
 Next action:
 
-- Wait for human merge. Do not reimplement this work.
+- REVIEW_BOUND: wait for human review/merge. Do not reimplement this work.
 
-### Phase 2 — stop-hook-json-output — ABIERTA_REAL
+### Phase 2 — roadmap-autonomy-driver — ESPERA_GATE
+
+Layer: Brain.
+
+Objective: create this `ROADMAP.md` and a real local driver for phase classification and batch execution.
+
+Evidence:
+
+- PR #185 exists and is open against `main`.
+- GitHub `Validate` check is successful.
+- This roadmap branch records the anatomical execution order before product work resumes.
+- Driver must parse this roadmap and support `--recon`, `--only N`, and dry-run batch mode.
+
+Closure gate:
+
+- PR ready for review.
+- Human merge only.
+
+Next action:
+
+- REVIEW_BOUND: wait for human review/merge. Do not reimplement this work.
+
+### Phase 3 — stop-hook-json-output — ABIERTA_REAL
+
+Layer: Nervous system.
 
 Objective: fix the Stop hook integration so `node scripts/gsd/digest.mjs --hook` emits hook-compatible output while preserving human CLI output for `npm run gsd:digest`.
 
@@ -68,21 +108,43 @@ Closure gate:
 - read-only fan-out PASS
 - `npm run gsd:done -- --audit-pass-file .planning/<slug>/AUDIT_FANOUT.md`
 
-### Phase 3 — roadmap-autonomy-driver — ESPERA_GATE
+### Phase 4 — codex-permissions-autonomy — ESPERA_GATE
 
-Objective: create this `ROADMAP.md` and a real local driver for phase classification and batch execution.
+Layer: Hands.
 
-Evidence:
+Objective: tighten Codex permission/autonomy controls after the heart, brain, and nervous system are review-bound, without weakening GSD gates or granting broad destructive permissions.
 
-- Implemented by the branch that introduced this file.
-- Driver must parse this roadmap and support `--recon`, `--only N`, and dry-run batch mode.
+Why open:
+
+- This is a posterior infra task, not product work.
+- Exact scope must be derived from current `.codex/**`, `.agents/**`, `scripts/gsd/**`, and approved command-prefix state after the first three layers are review-bound.
+
+In scope:
+
+- Minimal repo-local policy/docs/scripts needed to make Codex autonomy predictable.
+- Focused planning/audit files.
+
+Out of scope:
+
+- Broad permission grants.
+- Destructive command approvals.
+- Merge, deploy, AWS writes, Terraform/EventBridge, feature flags, Bedrock, LanceDB mutation, or `production-content-enricher`.
 
 Closure gate:
 
-- PR ready for review.
-- Human merge only.
+- Create `.planning/codex-permissions-autonomy/TASK_SPEC.md` before edits.
+- `npm run gsd:invariants`
+- applicable offline validation
+- read-only fan-out PASS
+- `npm run gsd:done -- --audit-pass-file .planning/codex-permissions-autonomy/AUDIT_FANOUT.md`
 
-### Phase 4 — portal-production-verification — ESPERA_GATE
+Next action:
+
+- Do not start until heart, brain, and nervous system are closed or REVIEW_BOUND with evidence.
+
+### Phase 5 — portal-production-verification — ESPERA_GATE
+
+Layer: Legs.
 
 Objective: verify current production behavior against the portal release hardening checklist and canary matrix.
 
@@ -102,7 +164,9 @@ Next action:
 
 - Prepare `.deploy-go` pre-list/checklist only after human GO. Never create `.deploy-go` autonomously.
 
-### Phase 5 — research-audit-local-reporting — HECHO
+### Phase 6 — research-audit-local-reporting — HECHO
+
+Layer: Muscles.
 
 Objective: provide local, report-only research-audit tooling for aggregate events and provider simulation.
 
@@ -116,7 +180,9 @@ Remaining edge:
 
 - AWS report-only deployment is a separate gated phase.
 
-### Phase 6 — research-audit-aws-report-only — ESPERA_GATE
+### Phase 7 — research-audit-aws-report-only — ESPERA_GATE
+
+Layer: Muscles.
 
 Objective: deploy or wire the AWS report-only research-audit workflow for aggregate inputs and human-reviewable S3 reports.
 
@@ -135,7 +201,9 @@ Next action:
 
 - Prepare an exact GO block when requested; do not run cloud writes autonomously.
 
-### Phase 7 — research-audit-github-issue-publisher — ABIERTA_REAL
+### Phase 8 — research-audit-github-issue-publisher — ESPERA_GATE
+
+Layer: Muscles.
 
 Objective: certify the report-to-issue publisher as a manual/offline communication layer and decide whether it is ready for gated use.
 
@@ -157,7 +225,13 @@ Closure gate:
 - `npm run gsd:invariants`
 - read-only fan-out PASS
 
-### Phase 8 — portal-debug-and-duplicate-route-cleanup — ABIERTA_REAL
+Next action:
+
+- Wait until heart, brain, nervous system, and hands are closed or REVIEW_BOUND.
+
+### Phase 9 — portal-debug-and-duplicate-route-cleanup — ESPERA_GATE
+
+Layer: Fingers.
 
 Objective: audit and remove or quarantine obvious debug/duplicate artifacts that increase release risk.
 
@@ -172,7 +246,13 @@ Closure gate:
 - If any route is production-reachable and removal is ambiguous, mark blocked with exact ask.
 - Run lint/type-check/Jest and Playwright if portal render changes.
 
-### Phase 9 — analytics-persistence-and-observability — ABIERTA_REAL
+Next action:
+
+- Product cleanup is paused until the infra anatomy gates ahead of fingers are closed or REVIEW_BOUND.
+
+### Phase 10 — analytics-persistence-and-observability — ESPERA_GATE
+
+Layer: Fingers.
 
 Objective: turn portal analytics and structured outcomes into durable, privacy-safe observability inputs.
 
@@ -194,7 +274,13 @@ Closure gate:
 - No provider calls.
 - Unit tests for redaction/aggregation behavior.
 
-### Phase 10 — monetization-funnel-verification — ABIERTA_REAL
+Next action:
+
+- Product/observability work is paused until the infra anatomy gates ahead of fingers are closed or REVIEW_BOUND.
+
+### Phase 11 — monetization-funnel-verification — ESPERA_GATE
+
+Layer: Fingers.
 
 Objective: verify iHerb affiliate and subscription/Stripe funnel behavior without changing checkout or production settings.
 
@@ -215,13 +301,17 @@ Closure gate:
 - Offline tests only unless human GO permits live/payment checks.
 - No checkout mutation, production flag change, or live purchase.
 
+Next action:
+
+- Product funnel work is paused until the infra anatomy gates ahead of fingers are closed or REVIEW_BOUND.
+
 ## Driver Contract
 
 The canonical driver is:
 
 ```bash
 scripts/autonomy-loop.sh --max-phases 3
-scripts/gsd-autonomous --only 2 --dry-run
+scripts/gsd-autonomous --only 3 --dry-run
 ```
 
 Rules:
