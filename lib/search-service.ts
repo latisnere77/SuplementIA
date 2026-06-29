@@ -18,6 +18,7 @@ const LANCEDB_PATH = process.env.LANCEDB_PATH || '/tmp/lancedb-pristine';
 const DEBUG_SEARCH = process.env.DEBUG_SEARCH === 'true';
 const USE_LANCEDB = SEARCH_BACKEND !== 'local' && process.env.USE_LANCEDB !== 'false';
 const USE_LAMBDA = SEARCH_BACKEND !== 'local' && Boolean(SEARCH_API_URL);
+const SEARCH_LAMBDA_TIMEOUT_MS = 5000;
 
 export interface SearchResult {
   title?: string;
@@ -338,6 +339,7 @@ async function searchViaLambda(query: string, limit: number): Promise<SearchResu
     headers: {
       'Content-Type': 'application/json',
     },
+    signal: AbortSignal.timeout(SEARCH_LAMBDA_TIMEOUT_MS),
   });
 
   if (!response.ok) {

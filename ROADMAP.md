@@ -153,11 +153,13 @@ Evidence available:
 - `scripts/portal-production-smoke.mjs`
 - E2E suites in `e2e/portal.spec.ts` and `e2e/portal-real-search.spec.ts`
 - Public/read-only smoke evidence in `.planning/portal-production-verification/PRODUCTION_SMOKE.md`.
+- Scoped 504 hardening evidence in `.planning/phase5-504-investigation-fix/CHANGE_MANIFEST.md`.
 
 Next action:
 
 - Production verification failed on 2026-06-29. Do not create `.deploy-go` autonomously.
-  Prepare a separate scoped fix or a gated production investigation GO before further action.
+  Review/merge the scoped 504 hardening PR, then use a separate production verification
+  gate before any Phase 5 acceptance.
 
 ### Phase 6 — research-audit-local-reporting — HECHO
 

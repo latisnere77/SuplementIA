@@ -965,6 +965,51 @@ describe('/api/portal/quiz POST', () => {
       expect(mockLambdaSend).toHaveBeenCalledTimes(2);
     });
 
+    it('returns processing instead of blocking when studies ranking times out', async () => {
+      const query = 'Boswellia';
+      mockedSearchSupplements
+        .mockResolvedValueOnce([lancedbHit(query)])
+        .mockResolvedValueOnce([lancedbHit(query)]);
+
+      const timeoutError = new Error('The operation was aborted due to timeout');
+      timeoutError.name = 'AbortError';
+
+      mockLambdaSend.mockRejectedValueOnce(timeoutError);
+
+      const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: false,
+            error: 'upstream_unavailable',
+            message: 'No pudimos consultar temporalmente la base de estudios para "Boswellia". Intenta de nuevo en unos minutos.',
+            details: 'Studies service returned 503',
+          }),
+          {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+      const request = new NextRequest('http://localhost/api/portal/quiz', {
+        method: 'POST',
+        body: JSON.stringify({ category: query, searchIntent: 'supplement' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.status).toBe('processing');
+      expect(body.source).toBe('lancedb_enriching_async');
+      expect(body.recommendation.products).toEqual([]);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(mockLambdaSend).toHaveBeenCalledTimes(1);
+      expect(mockLambdaSend.mock.calls[0][1]?.abortSignal).toBeInstanceOf(AbortSignal);
+    });
+
     it.each(criticalInsufficientDataCases)(
       'returns insufficient_data without claims for low human-evidence canary %s',
       async (query) => {
