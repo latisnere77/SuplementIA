@@ -18,7 +18,7 @@ SuplementAI is a Next.js App Router product for evidence-aware supplement search
 
 ## Recon Evidence
 
-- GitHub merged PRs: PR #184, `Harden GSD SDLC gates`; PR #186, `Fix GSD stop hook JSON output`; PR #185, `Add roadmap autonomy driver`; PR #188, `Refresh Codex permissions planning`.
+- GitHub merged PRs: PR #184, `Harden GSD SDLC gates`; PR #186, `Fix GSD stop hook JSON output`; PR #185, `Add roadmap autonomy driver`; PR #188, `Refresh Codex permissions planning`; PR #190, `Certify research audit issue publisher`.
 - GitHub PR #187, `Plan Codex permissions autonomy layer`, was closed as superseded after PR #188 replaced it from current `ROADMAP.md`.
 - `TASK_QUEUE.md`: T1-T14 are `DONE`; no `PENDING` task headers.
 - PR #188 closed the Hands planning replacement on `main`.
@@ -194,7 +194,7 @@ Next action:
 
 - Prepare an exact GO block when requested; do not run cloud writes autonomously.
 
-### Phase 8 — research-audit-github-issue-publisher — ESPERA_GATE
+### Phase 8 — research-audit-github-issue-publisher — HECHO
 
 Layer: Muscles.
 
@@ -206,6 +206,8 @@ Evidence:
 - Real GitHub issue creation requires the explicit confirmation phrase
   `CREATE_REAL_RESEARCH_AUDIT_GITHUB_ISSUE`; default/local paths remain dry-run.
 - Tests cover mocked issue creation and fail-closed behavior without manual authorization.
+- PR #190 merged to `main`.
+- GitHub `Validate` check was successful before merge.
 
 In scope:
 
@@ -222,8 +224,7 @@ Closure gate:
 
 Next action:
 
-- REVIEW_BOUND after this certification PR is ready for review. Do not open real GitHub
-  issues without a separate human GO.
+- No action. Do not open real GitHub issues without a separate human GO.
 
 ### Phase 9 — portal-debug-and-duplicate-route-cleanup — ESPERA_GATE
 
