@@ -18,10 +18,10 @@ SuplementAI is a Next.js App Router product for evidence-aware supplement search
 
 ## Recon Evidence
 
-- GitHub merged PRs: PR #184, `Harden GSD SDLC gates`; PR #186, `Fix GSD stop hook JSON output`; PR #185, `Add roadmap autonomy driver`.
-- GitHub open PRs: PR #187, `Plan Codex permissions autonomy layer`, was stopped before merge because it became stale after PR #185 introduced `ROADMAP.md`.
+- GitHub merged PRs: PR #184, `Harden GSD SDLC gates`; PR #186, `Fix GSD stop hook JSON output`; PR #185, `Add roadmap autonomy driver`; PR #188, `Refresh Codex permissions planning`.
+- GitHub PR #187, `Plan Codex permissions autonomy layer`, was closed as superseded after PR #188 replaced it from current `ROADMAP.md`.
 - `TASK_QUEUE.md`: T1-T14 are `DONE`; no `PENDING` task headers.
-- This branch replaces PR #187 with current ROADMAP-aware Hands planning.
+- PR #188 closed the Hands planning replacement on `main`.
 - AWS STS read-only identity: account `643942183354`, assumed role `CrossAccountAdminRole`.
 - AWS Amplify read-only: app `SuplementAI` (`d2yn3faih4ykom`), production branch `main`, status `SUCCEED`, last deploy `2026-06-24T08:00:58-06:00`.
 - Amplify `main` env has production site/search/studies/enricher URLs configured.
@@ -30,12 +30,12 @@ SuplementAI is a Next.js App Router product for evidence-aware supplement search
 ## Anatomical SDLC Order
 
 This is the canonical execution order while product work is paused. Do not start product
-features until heart, brain, and nervous system are closed or review-bound with evidence.
+features until heart, brain, nervous system, and hands are closed or review-bound with evidence.
 
 1. Heart: PR #184, `Harden GSD SDLC gates` — merged.
 2. Brain: PR #185, `Add roadmap autonomy driver` — merged.
 3. Nervous system: PR #186, `Fix GSD stop hook JSON output` — merged.
-4. Hands: Codex permissions and autonomy controls — current replacement branch.
+4. Hands: Codex permissions and autonomy controls — merged.
 5. Legs: release and production verification runbooks.
 6. Muscles: research-audit local and report-only execution capacity.
 7. Fingers: narrow cleanup, observability, and monetization verification work.
@@ -103,17 +103,18 @@ Closure gate:
 
 - Closed by human-approved merge.
 
-### Phase 4 — codex-permissions-autonomy — ESPERA_GATE
+### Phase 4 — codex-permissions-autonomy — HECHO
 
 Layer: Hands.
 
 Objective: tighten Codex permission/autonomy controls after the heart, brain, and nervous system are review-bound, without weakening GSD gates or granting broad destructive permissions.
 
-Why open:
+Evidence:
 
-- This is a posterior infra task, not product work.
-- Exact scope must be derived from current `.codex/**`, `.agents/**`, `scripts/gsd/**`, and approved command-prefix state after the first three layers are review-bound.
-- PR #187 attempted this planning before `ROADMAP.md` landed and is now stale; this replacement branch refreshes the Hands planning from current `origin/main`.
+- PR #188 merged to `main`.
+- GitHub `Validate` check was successful before merge.
+- PR #187 was closed as superseded/stale after PR #188 replaced it.
+- Hands planning is current with `ROADMAP.md` and preserves the no-deploy/no-AWS/no-destructive-gate posture.
 
 In scope:
 
@@ -128,15 +129,11 @@ Out of scope:
 
 Closure gate:
 
-- Create `.planning/codex-permissions-autonomy/TASK_SPEC.md` before edits.
-- `npm run gsd:invariants`
-- applicable offline validation
-- read-only fan-out PASS
-- `npm run gsd:done -- --audit-pass-file .planning/codex-permissions-autonomy/AUDIT_FANOUT.md`
+- Closed by human-approved merge of PR #188.
 
 Next action:
 
-- REVIEW_BOUND after this replacement PR is ready for review. Do not proceed to Legs until this phase is merged or explicitly superseded.
+- No action.
 
 ### Phase 5 — portal-production-verification — ESPERA_GATE
 
@@ -197,7 +194,7 @@ Next action:
 
 - Prepare an exact GO block when requested; do not run cloud writes autonomously.
 
-### Phase 8 — research-audit-github-issue-publisher — ESPERA_GATE
+### Phase 8 — research-audit-github-issue-publisher — ABIERTA_REAL
 
 Layer: Muscles.
 
@@ -223,7 +220,8 @@ Closure gate:
 
 Next action:
 
-- Wait until heart, brain, nervous system, and hands are closed or REVIEW_BOUND.
+- Create a focused GSD task to certify the manual/offline issue publisher without opening
+  issues automatically and without using AWS, Bedrock, LanceDB, or production-content-enricher.
 
 ### Phase 9 — portal-debug-and-duplicate-route-cleanup — ESPERA_GATE
 
