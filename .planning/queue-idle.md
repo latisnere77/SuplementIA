@@ -22,6 +22,5 @@ Brain, and Hands layers.
 
 The legacy task queue is idle. `ROADMAP.md` now gates post-queue phases: production and
 AWS phases remain human-gated, and the Phase 8 offline/manual issue-publisher
-certification is review-bound in a normal GSD PR. No deploy, AWS, Lambda, Terraform,
-Bedrock, LanceDB, real GitHub issue creation, or `production-content-enricher` action was
-taken.
+certification has merged. No deploy, AWS, Lambda, Terraform, Bedrock, LanceDB, real
+GitHub issue creation, or `production-content-enricher` action was taken.
