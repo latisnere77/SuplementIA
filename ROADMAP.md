@@ -152,10 +152,12 @@ Evidence available:
 - `docs/portal-critical-supplement-smoke-matrix.md`
 - `scripts/portal-production-smoke.mjs`
 - E2E suites in `e2e/portal.spec.ts` and `e2e/portal-real-search.spec.ts`
+- Public/read-only smoke evidence in `.planning/portal-production-verification/PRODUCTION_SMOKE.md`.
 
 Next action:
 
-- Prepare `.deploy-go` pre-list/checklist only after human GO. Never create `.deploy-go` autonomously.
+- Production verification failed on 2026-06-29. Do not create `.deploy-go` autonomously.
+  Prepare a separate scoped fix or a gated production investigation GO before further action.
 
 ### Phase 6 — research-audit-local-reporting — HECHO
 
