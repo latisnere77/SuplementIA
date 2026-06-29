@@ -2,7 +2,7 @@
 
 Canonical phase roadmap for autonomous SDLC loops. The driver reads this file and classifies phases as `HECHO`, `ESPERA_GATE`, or `ABIERTA_REAL`.
 
-Last recon: 2026-06-25
+Last recon: 2026-06-29
 
 ## Product Snapshot
 
@@ -18,9 +18,10 @@ SuplementAI is a Next.js App Router product for evidence-aware supplement search
 
 ## Recon Evidence
 
-- GitHub open PRs: PR #184, `Harden GSD SDLC gates`, ready for review with `Validate` success; PR #185, `Add roadmap autonomy driver`, ready for review with `Validate` success.
+- GitHub merged PRs: PR #184, `Harden GSD SDLC gates`; PR #186, `Fix GSD stop hook JSON output`; PR #185, `Add roadmap autonomy driver`.
+- GitHub open PRs: PR #187, `Plan Codex permissions autonomy layer`, was stopped before merge because it became stale after PR #185 introduced `ROADMAP.md`.
 - `TASK_QUEUE.md`: T1-T14 are `DONE`; no `PENDING` task headers.
-- Local infra branch `chore/stop-hook-json-output` exists with a focused stop-hook fix and GSD audit files; it still needs a PR before it is review-bound.
+- This branch replaces PR #187 with current ROADMAP-aware Hands planning.
 - AWS STS read-only identity: account `643942183354`, assumed role `CrossAccountAdminRole`.
 - AWS Amplify read-only: app `SuplementAI` (`d2yn3faih4ykom`), production branch `main`, status `SUCCEED`, last deploy `2026-06-24T08:00:58-06:00`.
 - Amplify `main` env has production site/search/studies/enricher URLs configured.
@@ -31,17 +32,17 @@ SuplementAI is a Next.js App Router product for evidence-aware supplement search
 This is the canonical execution order while product work is paused. Do not start product
 features until heart, brain, and nervous system are closed or review-bound with evidence.
 
-1. Heart: PR #184, `Harden GSD SDLC gates`.
-2. Brain: PR #185, `Add roadmap autonomy driver`.
-3. Nervous system: `stop-hook-json-output`.
-4. Hands: Codex permissions and autonomy controls.
+1. Heart: PR #184, `Harden GSD SDLC gates` — merged.
+2. Brain: PR #185, `Add roadmap autonomy driver` — merged.
+3. Nervous system: PR #186, `Fix GSD stop hook JSON output` — merged.
+4. Hands: Codex permissions and autonomy controls — current replacement branch.
 5. Legs: release and production verification runbooks.
 6. Muscles: research-audit local and report-only execution capacity.
 7. Fingers: narrow cleanup, observability, and monetization verification work.
 
 ## Phase Index
 
-### Phase 1 — gsd-gate-hardening — ESPERA_GATE
+### Phase 1 — gsd-gate-hardening — HECHO
 
 Layer: Heart.
 
@@ -49,18 +50,18 @@ Objective: harden GSD command policy, add invariant CI gate, normalize audit evi
 
 Evidence:
 
-- PR #184 exists and is open against `main`.
-- GitHub `Validate` check is successful.
+- PR #184 merged to `main`.
+- GitHub `Validate` check was successful before merge.
 
 Closure gate:
 
-- Human review and merge only.
+- Closed by human-approved merge.
 
 Next action:
 
-- REVIEW_BOUND: wait for human review/merge. Do not reimplement this work.
+- No action.
 
-### Phase 2 — roadmap-autonomy-driver — ESPERA_GATE
+### Phase 2 — roadmap-autonomy-driver — HECHO
 
 Layer: Brain.
 
@@ -68,31 +69,30 @@ Objective: create this `ROADMAP.md` and a real local driver for phase classifica
 
 Evidence:
 
-- PR #185 exists and is open against `main`.
-- GitHub `Validate` check is successful.
+- PR #185 merged to `main`.
+- GitHub `Validate` check was successful before merge.
 - This roadmap branch records the anatomical execution order before product work resumes.
 - Driver must parse this roadmap and support `--recon`, `--only N`, and dry-run batch mode.
 
 Closure gate:
 
-- PR ready for review.
-- Human merge only.
+- Closed by human-approved merge.
 
 Next action:
 
-- REVIEW_BOUND: wait for human review/merge. Do not reimplement this work.
+- No action.
 
-### Phase 3 — stop-hook-json-output — ABIERTA_REAL
+### Phase 3 — stop-hook-json-output — HECHO
 
 Layer: Nervous system.
 
 Objective: fix the Stop hook integration so `node scripts/gsd/digest.mjs --hook` emits hook-compatible output while preserving human CLI output for `npm run gsd:digest`.
 
-Why open:
+Evidence:
 
-- `.codex/hooks.json` calls `node scripts/gsd/digest.mjs --hook`.
-- `scripts/gsd/digest.mjs` currently prints plain text for all modes.
-- The hook runner reported `hook returned invalid stop hook JSON output`.
+- PR #186 merged to `main`.
+- GitHub `Validate` check was successful before merge.
+- `scripts/gsd/digest.mjs --hook` emits hook-compatible output while preserving human CLI output.
 
 In scope:
 
@@ -101,12 +101,7 @@ In scope:
 
 Closure gate:
 
-- `node --check scripts/gsd/digest.mjs`
-- `node scripts/gsd/digest.mjs`
-- `node scripts/gsd/digest.mjs --hook`
-- `npm run gsd:invariants`
-- read-only fan-out PASS
-- `npm run gsd:done -- --audit-pass-file .planning/<slug>/AUDIT_FANOUT.md`
+- Closed by human-approved merge.
 
 ### Phase 4 — codex-permissions-autonomy — ESPERA_GATE
 
@@ -118,6 +113,7 @@ Why open:
 
 - This is a posterior infra task, not product work.
 - Exact scope must be derived from current `.codex/**`, `.agents/**`, `scripts/gsd/**`, and approved command-prefix state after the first three layers are review-bound.
+- PR #187 attempted this planning before `ROADMAP.md` landed and is now stale; this replacement branch refreshes the Hands planning from current `origin/main`.
 
 In scope:
 
@@ -140,7 +136,7 @@ Closure gate:
 
 Next action:
 
-- Do not start until heart, brain, and nervous system are closed or REVIEW_BOUND with evidence.
+- REVIEW_BOUND after this replacement PR is ready for review. Do not proceed to Legs until this phase is merged or explicitly superseded.
 
 ### Phase 5 — portal-production-verification — ESPERA_GATE
 
