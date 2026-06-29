@@ -41,6 +41,9 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: GSD invariants
+        run: npm run gsd:invariants
+
       - name: Lint
         run: npm run lint
 
