@@ -7,6 +7,7 @@ import {
   loadResearchAuditGitHubIssueToken,
 } from '../../lib/research-audit/aws-secret-loader';
 import {
+  RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION,
   createResearchAuditGitHubClient,
   loadProviderAuditReportFromFile,
   publishResearchAuditWeeklyIssue,
@@ -22,6 +23,7 @@ interface CliOptions {
   repository: string;
   outputDir: string;
   createGithubIssue: boolean;
+  createGithubIssueConfirmation?: string;
   useAwsSecret: boolean;
   githubTokenSecretId: string;
   awsRegion?: string;
@@ -60,6 +62,9 @@ function parseArgs(argv: string[]): CliOptions {
       index += 1;
     } else if (arg === '--create-github-issue') {
       options.createGithubIssue = true;
+    } else if (arg === '--confirm-create-github-issue') {
+      options.createGithubIssueConfirmation = requireValue(arg, next);
+      index += 1;
     } else if (arg === '--use-aws-secret') {
       options.useAwsSecret = true;
     } else if (arg === '--github-token-secret-id') {
@@ -78,6 +83,14 @@ function parseArgs(argv: string[]): CliOptions {
 
   if (!options.jsonReport) {
     throw new Error('--json-report is required');
+  }
+  if (
+    options.createGithubIssue &&
+    options.createGithubIssueConfirmation !== RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION
+  ) {
+    throw new Error(
+      `--create-github-issue requires --confirm-create-github-issue ${RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION}`
+    );
   }
 
   return options;
@@ -98,7 +111,8 @@ function printHelp() {
     'Default behavior is dry-run/local only. It renders a proposed GitHub Issue Markdown file and never calls GitHub.',
     '',
     'Real GitHub issue creation is manual-only:',
-    '  --create-github-issue',
+    '  --create-github-issue \\',
+    `  --confirm-create-github-issue ${RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION}`,
     '',
     'Credentials are loaded from GITHUB_ISSUE_TOKEN/GITHUB_TOKEN, or from AWS Secrets Manager only when',
     'explicitly passing --use-aws-secret. Default secret:',
@@ -123,6 +137,7 @@ async function main() {
     repository: options.repository,
     dryRun: !options.createGithubIssue,
     createIssue: options.createGithubIssue,
+    manualAuthorization: options.createGithubIssueConfirmation,
     reports: {
       json: options.jsonReport,
       markdown: options.markdownReport,

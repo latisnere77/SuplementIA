@@ -1,7 +1,9 @@
 import { mkdtempSync, readFileSync, writeFileSync } from 'fs';
+import { spawnSync } from 'child_process';
 import path from 'path';
 import { tmpdir } from 'os';
 import {
+  RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION,
   buildResearchAuditIssuePlan,
   createResearchAuditGitHubClient,
   loadProviderAuditReportFromObjectStore,
@@ -173,7 +175,11 @@ describe('github issue publisher', () => {
     });
 
     const result = await publishResearchAuditWeeklyIssue({
-      input: input({ dryRun: false, createIssue: true }),
+      input: input({
+        dryRun: false,
+        createIssue: true,
+        manualAuthorization: RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION,
+      }),
       report: report(),
       github,
     });
@@ -198,7 +204,11 @@ describe('github issue publisher', () => {
     });
 
     const result = await publishResearchAuditWeeklyIssue({
-      input: input({ dryRun: false, createIssue: true }),
+      input: input({
+        dryRun: false,
+        createIssue: true,
+        manualAuthorization: RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION,
+      }),
       report: report(),
       github,
     });
@@ -319,7 +329,11 @@ describe('github issue publisher', () => {
     });
 
     const result = await publishResearchAuditWeeklyIssue({
-      input: input({ dryRun: false, createIssue: true }),
+      input: input({
+        dryRun: false,
+        createIssue: true,
+        manualAuthorization: RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION,
+      }),
       report: report(),
       github,
     });
@@ -365,7 +379,11 @@ describe('github issue publisher', () => {
     });
 
     const result = await publishResearchAuditWeeklyIssue({
-      input: input({ dryRun: false, createIssue: true }),
+      input: input({
+        dryRun: false,
+        createIssue: true,
+        manualAuthorization: RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION,
+      }),
       report: report(),
       github,
     });
@@ -392,7 +410,11 @@ describe('github issue publisher', () => {
     });
 
     const result = await publishResearchAuditWeeklyIssue({
-      input: input({ dryRun: false, createIssue: true }),
+      input: input({
+        dryRun: false,
+        createIssue: true,
+        manualAuthorization: RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION,
+      }),
       report: report(),
       github,
     });
@@ -401,5 +423,48 @@ describe('github issue publisher', () => {
     expect(result.error?.httpStatus).toBe(401);
     expect(JSON.stringify(result.error)).not.toContain('ghp_sensitive_token');
     expect(JSON.stringify(result.error)).not.toContain('account_metadata');
+  });
+
+  it('fails closed before GitHub calls when real issue creation lacks manual authorization', async () => {
+    const github = githubClient();
+
+    const result = await publishResearchAuditWeeklyIssue({
+      input: input({ dryRun: false, createIssue: true }),
+      report: report(),
+      github,
+    });
+
+    expect(result.action).toBe('failed');
+    expect(result.error?.message).toBe('manual GitHub issue creation confirmation is required');
+    expect(result.error?.errorType).toBe('manual_authorization_required');
+    expect(github.findIssueByTitle).not.toHaveBeenCalled();
+    expect(github.createIssue).not.toHaveBeenCalled();
+    expect(github.updateIssue).not.toHaveBeenCalled();
+  });
+
+  it('refuses CLI issue creation without the explicit confirmation phrase', () => {
+    const result = spawnSync(process.execPath, [
+      '--import',
+      'tsx',
+      'scripts/research-audit/render-weekly-issue.ts',
+      '--json-report',
+      '.research-audit-reports/missing-provider-audit.json',
+      '--create-github-issue',
+    ], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        GITHUB_TOKEN: 'ghp_should_not_be_loaded',
+        GITHUB_ISSUE_TOKEN: 'ghp_should_not_be_loaded',
+      },
+    });
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(
+      `--create-github-issue requires --confirm-create-github-issue ${RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION}`
+    );
+    expect(result.stderr).not.toContain('missing-provider-audit.json');
+    expect(result.stdout).toBe('');
   });
 });

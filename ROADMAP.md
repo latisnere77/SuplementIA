@@ -194,16 +194,18 @@ Next action:
 
 - Prepare an exact GO block when requested; do not run cloud writes autonomously.
 
-### Phase 8 — research-audit-github-issue-publisher — ABIERTA_REAL
+### Phase 8 — research-audit-github-issue-publisher — ESPERA_GATE
 
 Layer: Muscles.
 
 Objective: certify the report-to-issue publisher as a manual/offline communication layer and decide whether it is ready for gated use.
 
-Why open:
+Evidence:
 
-- Code and tests exist, but roadmap closure evidence is not recorded as a phase.
-- The phase must verify it cannot open issues automatically without explicit human-controlled invocation.
+- This branch certifies the manual/offline publisher guardrail.
+- Real GitHub issue creation requires the explicit confirmation phrase
+  `CREATE_REAL_RESEARCH_AUDIT_GITHUB_ISSUE`; default/local paths remain dry-run.
+- Tests cover mocked issue creation and fail-closed behavior without manual authorization.
 
 In scope:
 
@@ -220,8 +222,8 @@ Closure gate:
 
 Next action:
 
-- Create a focused GSD task to certify the manual/offline issue publisher without opening
-  issues automatically and without using AWS, Bedrock, LanceDB, or production-content-enricher.
+- REVIEW_BOUND after this certification PR is ready for review. Do not open real GitHub
+  issues without a separate human GO.
 
 ### Phase 9 — portal-debug-and-duplicate-route-cleanup — ESPERA_GATE
 
