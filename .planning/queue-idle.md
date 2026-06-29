@@ -1,19 +1,23 @@
 # Queue idle
 
-Refreshed on 2026-06-24 after hardening the GSD SDLC layer.
+Refreshed on 2026-06-29 after the human-approved merges of the Heart, Nervous system,
+and Brain layers.
 
 ## Queue state
 
 - No active `PENDING` task headers remain in `TASK_QUEUE.md`.
 - T1 is `DONE (PR #155)`.
 - T2-T14 are `DONE (PR #169)` because PR #169 integrated the 13 SEO category clusters.
+- `ROADMAP.md` is present on `main` and is now the phase index for post-queue work.
 
 ## Current PR state
 
-- `gh pr list --state open` returned no open PRs.
-- PR #169, PR #172, PR #182, and PR #183 are merged into `main`.
-- The local branch was refreshed from `origin/main` before this report.
+- PR #184, PR #186, and PR #185 were merged into `main` by explicit human GO.
+- PR #187 remains open but is stale/dirty because it was authored before `ROADMAP.md`
+  landed on `main`; it must not be merged as-is.
+- This branch replaces #187 with current ROADMAP-aware Hands planning.
 
 ## Terminal state
 
-The queue is idle pending new approved tasks. No merge, deploy, AWS, Lambda, Terraform, Bedrock, LanceDB, or `production-content-enricher` action was taken.
+The queue is idle pending review of the replacement Hands planning PR. No deploy, AWS,
+Lambda, Terraform, Bedrock, LanceDB, or `production-content-enricher` action was taken.
