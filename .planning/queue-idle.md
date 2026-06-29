@@ -20,7 +20,8 @@ Brain, and Hands layers.
 
 ## Terminal state
 
-The legacy task queue is idle. `ROADMAP.md` now gates post-queue phases: production and
-AWS phases remain human-gated, and the Phase 8 offline/manual issue-publisher
-certification has merged. No deploy, AWS, Lambda, Terraform, Bedrock, LanceDB, real
-GitHub issue creation, or `production-content-enricher` action was taken.
+The legacy task queue is idle. `ROADMAP.md` now gates post-queue phases: Phase 5 public
+production verification has current smoke evidence but did not pass, production/AWS
+actions remain human-gated, and Phase 8 has merged. No deploy, AWS, Lambda, Terraform,
+Bedrock, LanceDB, real GitHub issue creation, or `production-content-enricher` action was
+taken.
