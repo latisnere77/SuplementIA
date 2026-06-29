@@ -12,6 +12,9 @@ export const DEFAULT_RESEARCH_AUDIT_ISSUE_LABELS = [
   'needs-review',
 ] as const;
 
+export const RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION =
+  'CREATE_REAL_RESEARCH_AUDIT_GITHUB_ISSUE';
+
 export interface ResearchAuditIssueReportRefs {
   json?: string;
   markdown?: string;
@@ -33,6 +36,7 @@ export interface ResearchAuditIssuePublisherInput {
   reports: ResearchAuditIssueReportRefs;
   dryRun?: boolean;
   createIssue?: boolean;
+  manualAuthorization?: string;
 }
 
 export interface ResearchAuditIssuePublisherOptions {
@@ -271,6 +275,19 @@ export async function publishResearchAuditWeeklyIssue(
       createIssue,
       action: 'skipped',
       plan,
+    };
+  }
+
+  if (options.input.manualAuthorization !== RESEARCH_AUDIT_ISSUE_CREATE_CONFIRMATION) {
+    return {
+      dryRun,
+      createIssue,
+      action: 'failed',
+      plan,
+      error: {
+        message: 'manual GitHub issue creation confirmation is required',
+        errorType: 'manual_authorization_required',
+      },
     };
   }
 

@@ -74,7 +74,8 @@ The manual publisher event should reference existing report-only artifacts:
 }
 ```
 
-Defaults must be dry-run/report-only. A real issue should require an explicit manual `createIssue=true` or equivalent flag.
+Defaults must be dry-run/report-only. A real issue requires both `createIssue=true` and
+the exact manual authorization phrase `CREATE_REAL_RESEARCH_AUDIT_GITHUB_ISSUE`.
 
 ## Issue Title
 
@@ -318,8 +319,11 @@ Expected behavior:
    [Frontier Audit] Weekly findings - 2026-W23
    ```
 2. If it exists, update the body or add one rerun comment.
-3. If it does not exist and `createIssue=true`, create it.
+3. If it does not exist and `createIssue=true` plus
+   `manualAuthorization=CREATE_REAL_RESEARCH_AUDIT_GITHUB_ISSUE`, create it.
 4. If `dryRun=true`, render the proposed issue body without calling GitHub.
+5. If `createIssue=true` is requested without the manual authorization phrase, fail closed
+   before calling GitHub.
 
 The issue body should include:
 
@@ -410,7 +414,8 @@ The next PR may implement a local/manual Issue Publisher only if it:
 - Renders the GitHub Issue title/body deterministically.
 - Applies idempotency by week ID.
 - Uses mocks for GitHub API calls by default.
-- Does not create real issues unless explicitly authorized.
+- Does not create real issues unless explicitly authorized with both `createIssue=true`
+  and `CREATE_REAL_RESEARCH_AUDIT_GITHUB_ISSUE`.
 - Does not call LLMs.
 - Does not call PubMed.
 - Does not write DB.
@@ -430,3 +435,16 @@ npx tsx scripts/research-audit/render-weekly-issue.ts \
 ```
 
 Output Markdown is written to `.research-audit-reports/` by default and remains report-only/dry-run.
+
+Real GitHub issue creation is manual-only and requires a separate human GO plus both flags:
+
+```sh
+npx tsx scripts/research-audit/render-weekly-issue.ts \
+  --json-report .research-audit-reports/provider-audit-2026-06-05T13-40-17-546Z.json \
+  --week-id 2026-W23 \
+  --create-github-issue \
+  --confirm-create-github-issue CREATE_REAL_RESEARCH_AUDIT_GITHUB_ISSUE
+```
+
+The confirmation phrase is intentionally verbose so scheduled or accidental CLI invocations
+do not create issues from a single flag.
