@@ -141,6 +141,13 @@ describe('search service fallback chain', () => {
     const results = await searchSupplements('Collagen', 5);
 
     expect(global.fetch).toHaveBeenCalled();
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('q=Collagen'),
+      expect.objectContaining({
+        method: 'POST',
+        signal: expect.any(AbortSignal),
+      })
+    );
     expect(results[0]).toMatchObject({
       name: 'Collagen',
       source: 'local_catalog',

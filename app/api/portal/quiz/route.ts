@@ -41,6 +41,8 @@ export const runtime = 'nodejs';
 export const maxDuration = 180; // 3 minutes to allow for complex supplements with many studies
 
 const ENRICH_V2_PREFLIGHT_TIMEOUT_MS = 8000;
+const STUDIES_FETCHER_TIMEOUT_MS = 6000;
+const ASYNC_ENRICHMENT_INVOKE_TIMEOUT_MS = 3000;
 
 // Check if we're in demo mode
 const isDemoMode = process.env.PORTAL_DEMO_MODE === 'true';
@@ -76,6 +78,19 @@ function logQuizOutcome(data: {
     source: data.source,
     elapsedTime: Date.now() - data.startTime,
   });
+}
+
+function isTimeoutLikeError(error: unknown): boolean {
+  const value = error as { name?: string; message?: string } | undefined;
+  const message = value?.message || '';
+
+  return (
+    value?.name === 'AbortError' ||
+    value?.name === 'TimeoutError' ||
+    message.includes('aborted') ||
+    message.includes('timed out') ||
+    message.includes('timeout')
+  );
 }
 
 /**
@@ -207,11 +222,17 @@ async function invokeLambdaEnrichmentAsync(
         FunctionName: process.env.ENRICHER_LAMBDA || 'production-content-enricher',
         InvocationType: 'Event', // Async invocation - fire and forget
         Payload: Buffer.from(JSON.stringify(payload)),
-      })
+      }),
+      { abortSignal: AbortSignal.timeout(ASYNC_ENRICHMENT_INVOKE_TIMEOUT_MS) }
     );
 
     console.log(`🚀 [LAMBDA_INVOKED] jobId=${jobId} supplement="${supplementName}" forceRefresh=${forceRefresh} hasRanking=${!!ranking} invocationType=Event`);
   } catch (error: any) {
+    if (isTimeoutLikeError(error)) {
+      console.warn(`⚠️ [LAMBDA_INVOKE_TIMEOUT] jobId=${jobId} supplement="${supplementName}" async enrichment invocation timed out; returning processing response without blocking request`);
+      return;
+    }
+
     console.error(`❌ [LAMBDA_INVOKE_ERROR] jobId=${jobId} supplement="${supplementName}"`, error);
     // Mark job as failed if we can't even invoke the Lambda
     await storeJobResult(jobId, 'failed', {
@@ -358,7 +379,8 @@ async function invokeStudiesFetcher(
         FunctionName: process.env.STUDIES_FETCHER_LAMBDA || 'suplementia-studies-fetcher-prod',
         InvocationType: 'RequestResponse', // Synchronous call - wait for response
         Payload: Buffer.from(JSON.stringify(payload)),
-      })
+      }),
+      { abortSignal: AbortSignal.timeout(STUDIES_FETCHER_TIMEOUT_MS) }
     );
 
     if (!response.Payload) {
@@ -412,6 +434,17 @@ async function invokeStudiesFetcher(
 
     return ranking;
   } catch (error: any) {
+    if (isTimeoutLikeError(error)) {
+      console.warn(`⚠️ [STUDIES_FETCHER_TIMEOUT] Timed out after ${STUDIES_FETCHER_TIMEOUT_MS}ms for "${supplementName}", continuing with controlled fallback`);
+      logStructured('warn', 'STUDIES_FETCHER_TIMEOUT', {
+        endpoint: 'studies-fetcher',
+        supplementName,
+        timeoutMs: STUDIES_FETCHER_TIMEOUT_MS,
+        fallback: 'async_enrichment_without_ranking',
+      });
+      return null;
+    }
+
     console.error(`❌ [STUDIES_FETCHER] Error:`, error.message);
     logStructured('warn', 'STUDIES_FETCHER_FAILURE', {
       endpoint: 'studies-fetcher',
