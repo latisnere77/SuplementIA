@@ -47,7 +47,7 @@ Formato canonico para Fase 2. Cada tarea debe ejecutarse bajo AGENTS.md, SDD y G
   - Condicion de exito: diseno define agregacion, redaccion, retencion, schema y limites de no PII antes de writes.
   - Stop rule: no guardar payloads crudos, IPs, user agents, session IDs, emails, URLs completas ni historias medicas.
 
-- [ ] TAREA: Verificar Funnel Monetizacion Offline. ESTADO: TODO
+- [ ] TAREA: Verificar Funnel Monetizacion Offline. ESTADO: DONE
   - Riesgo: Alto.
   - Presupuesto de Archivos por Riesgo: Alto, max 20 archivos con Lote Piloto de 10 archivos.
   - Criterio de Arnes: `npm test -- --runInBand --runTestsByPath lib/portal/iherb-affiliate.test.ts`
