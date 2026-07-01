@@ -33,7 +33,7 @@ Formato canonico para Fase 2. Cada tarea debe ejecutarse bajo AGENTS.md, SDD y G
   - Condicion de exito: duplicados comparados contra originales y eliminados/quarantinados solo si no afectan build/test.
   - Stop rule: si un duplicado tiene diferencias semanticas no explicadas, registrar en OBSERVATIONS.md y no borrar.
 
-- [ ] TAREA: Crear Matriz De Scripts Infra Permitidos Y Prohibidos. ESTADO: TODO
+- [ ] TAREA: Crear Matriz De Scripts Infra Permitidos Y Prohibidos. ESTADO: DONE
   - Riesgo: Medio.
   - Presupuesto de Archivos por Riesgo: Medio, max 50 archivos.
   - Criterio de Arnes: `npm run gsd:invariants`
