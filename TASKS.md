@@ -19,7 +19,7 @@ Formato canonico para Fase 2. Cada tarea debe ejecutarse bajo AGENTS.md, SDD y G
   - Condicion de exito: TASK_SPEC incluye rollback, costos, PII, IAM, S3, Lambda, input/output S3, safe defaults y stop rules antes de cualquier write.
   - Stop rule: no EventBridge/scheduling, no portal deploy, no `.deploy-go`, no Bedrock, no LanceDB, no `production-content-enricher`.
 
-- [ ] TAREA: Inventariar Y Clasificar Rutas Debug/Test. ESTADO: TODO
+- [ ] TAREA: Inventariar Y Clasificar Rutas Debug/Test. ESTADO: DONE
   - Riesgo: Alto.
   - Presupuesto de Archivos por Riesgo: Alto, max 20 archivos con Lote Piloto de 10 archivos.
   - Criterio de Arnes: `npm run test:e2e -- e2e/portal.spec.ts --workers=1`
