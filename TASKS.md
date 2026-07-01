@@ -54,7 +54,7 @@ Formato canonico para Fase 2. Cada tarea debe ejecutarse bajo AGENTS.md, SDD y G
   - Condicion de exito: afiliados y suscripcion quedan cubiertos por tests offline sin compra live ni mutacion de checkout.
   - Stop rule: no live purchase, no Stripe mutation, no production flag change.
 
-- [ ] TAREA: Ratchet Incremental De Coverage Por Area. ESTADO: TODO
+- [ ] TAREA: Ratchet Incremental De Coverage Por Area. ESTADO: DONE
   - Riesgo: Medio.
   - Presupuesto de Archivos por Riesgo: Medio, max 50 archivos.
   - Criterio de Arnes: `npm test -- --runInBand --coverage`

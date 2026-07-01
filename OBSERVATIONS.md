@@ -104,3 +104,13 @@ Este registro captura deuda tecnica y riesgos observados. No intenta corregirlos
 - Riesgo: autonomia total sin identidad y rollback abre posibilidad de cambios irreversibles.
 - Proxima accion segura: toda tarea remota debe empezar con STS, TASK_SPEC, rollback,
   presupuesto de costo, limites de PII y audit fan-out.
+
+## O11 — Fixtures Eval Emiten Warnings De Source Map En Coverage
+
+- Severidad: Baja.
+- Evidencia: `npm test -- --runInBand --coverage` pasa, pero SWC advierte que faltan
+  `eval/fixtures/enricher-live-dist/prompts.js.map` y
+  `eval/fixtures/enricher-live-dist/toolSchema.js.map`.
+- Riesgo: ruido en runs de coverage y posible confusion al leer reportes de cobertura.
+- Proxima accion segura: tratarlo en tarea separada; no mezclar fixture/source-map cleanup
+  con ratchets de coverage o producto.
