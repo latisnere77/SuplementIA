@@ -154,12 +154,13 @@ Evidence available:
 - E2E suites in `e2e/portal.spec.ts` and `e2e/portal-real-search.spec.ts`
 - Public/read-only smoke evidence in `.planning/portal-production-verification/PRODUCTION_SMOKE.md`.
 - Scoped 504 hardening evidence in `.planning/phase5-504-investigation-fix/CHANGE_MANIFEST.md`.
+- Post-merge public/read-only smoke evidence in `.planning/phase5-post-merge-public-verification/PRODUCTION_SMOKE_POST_MERGE.md`.
 
 Next action:
 
 - Production verification failed on 2026-06-29. Do not create `.deploy-go` autonomously.
-  Review/merge the scoped 504 hardening PR, then use a separate production verification
-  gate before any Phase 5 acceptance.
+  Post-merge public smoke passed, but use a separate production acceptance gate before
+  any Phase 5 closure.
 
 ### Phase 6 — research-audit-local-reporting — HECHO
 
