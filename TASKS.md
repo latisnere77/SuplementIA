@@ -61,7 +61,7 @@ Formato canonico para Fase 2. Cada tarea debe ejecutarse bajo AGENTS.md, SDD y G
   - Condicion de exito: propuesta de ratchet por modulo sin bajar coverage ni romper `jest.config.js`.
   - Stop rule: no mezclar ratchet de coverage con cambios de producto.
 
-- [ ] TAREA: Confirmar Paridad Local CI. ESTADO: TODO
+- [ ] TAREA: Confirmar Paridad Local CI. ESTADO: DONE
   - Riesgo: Bajo.
   - Presupuesto de Archivos por Riesgo: Bajo, max 200 archivos.
   - Criterio de Arnes: `npm run gsd:invariants && npm run lint && npm run type-check && npm run build && npm test -- --runInBand && npm run test:e2e`
