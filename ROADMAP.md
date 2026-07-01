@@ -198,10 +198,15 @@ Evidence available:
 - `docs/research-audit-manual-infra-runbook.md`
 - `lib/research-audit/aws-report-runner.ts`
 - `lib/research-audit/aws-lambda-handler.ts`
+- `.planning/phase7-aws-report-only-spec/VERIFY.md` records that the AWS identity
+  check could not execute from the current session.
 
 Next action:
 
-- Prepare an exact GO block when requested; do not run cloud writes autonomously.
+- Re-run Phase 7 only in a session where
+  `aws sts get-caller-identity --profile suplementai-admin --output json` can confirm
+  account `643942183354` before any AWS write, Lambda invoke/update, IAM/S3/EventBridge,
+  or scheduling action.
 
 ### Phase 8 — research-audit-github-issue-publisher — HECHO
 
