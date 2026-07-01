@@ -26,7 +26,7 @@ Formato canonico para Fase 2. Cada tarea debe ejecutarse bajo AGENTS.md, SDD y G
   - Condicion de exito: cada ruta debug/test queda clasificada como conservar, proteger, remover o bloquear con evidencia.
   - Stop rule: si una ruta puede ser production-reachable y su uso es ambiguo, documentar bloqueo antes de borrar.
 
-- [ ] TAREA: Quarantinar Archivos Duplicados Con Sufijo 2. ESTADO: TODO
+- [ ] TAREA: Quarantinar Archivos Duplicados Con Sufijo 2. ESTADO: DONE
   - Riesgo: Medio.
   - Presupuesto de Archivos por Riesgo: Medio, max 50 archivos.
   - Criterio de Arnes: `npm run validate`
