@@ -1,7 +1,6 @@
 # SuplementAI STATE
 
-Current operating mode: Oracle-first GSD v2 retrofit on top of the existing SuplementAI
-GSD loop.
+Current operating mode: Oracle-first GSD v2 on top of the existing SuplementAI GSD loop.
 
 ## Product
 
@@ -21,8 +20,18 @@ production verification gates.
 ## Current Queue Posture
 
 `TASK_QUEUE.md` has no active `PENDING` items. `ROADMAP.md` controls post-queue phases.
-Open PRs must be reviewed/merged by a human before their evidence is considered part of
-`main`.
+Phase 5 production verification is documentally closed from already-merged public/read-only
+evidence after explicit human GO. Open PRs must be reviewed/merged by a human before their
+evidence is considered part of `main`.
+
+## Current Evidence
+
+- PR #193 merged scoped 504 hardening to `main`.
+- PR #194 merged post-merge public/read-only Phase 5 smoke evidence to `main`.
+- PR #195 merged Oracle-first GSD v2 governance to `main`.
+- Phase 5 closure used no deploy, `.deploy-go`, AWS reads/writes, Lambda,
+  Terraform/EventBridge, feature flags, Bedrock, LanceDB, checkout/live purchase, real
+  GitHub issues, or `production-content-enricher`.
 
 ## Gates
 
