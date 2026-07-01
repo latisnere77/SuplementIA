@@ -114,3 +114,45 @@ Este registro captura deuda tecnica y riesgos observados. No intenta corregirlos
 - Riesgo: ruido en runs de coverage y posible confusion al leer reportes de cobertura.
 - Proxima accion segura: tratarlo en tarea separada; no mezclar fixture/source-map cleanup
   con ratchets de coverage o producto.
+
+## O12 — Produccion Requiere GO-Gate Air-Gapped
+
+- Severidad: Alta.
+- Evidencia: `AGENTS.md`, `docs/invariants-baseline.md` y el skill GSD reservan merge,
+  deploy, `.deploy-go`, AWS writes, Lambda invoke/update, Terraform/EventBridge,
+  Bedrock, LanceDB mutation, checkout/live purchase y `production-content-enricher` para
+  GO humano explicito.
+- Riesgo: un ejecutor que interprete autonomia local como permiso de produccion podria
+  saltar la barrera de prod.
+- Proxima accion segura: mantener Fase 2 limitada a codigo local, tests, commits, push y
+  PRs; todo pase a prod debe requerir token air-gapped, rollback, canary y stop-on-failure.
+
+## O13 — PR #198 Esta Review-Bound Hasta Que CI Termine
+
+- Severidad: Media.
+- Evidencia: `gh pr view 198` reporta PR abierto, ready-for-review, con checks `Validate`
+  en progreso durante esta auditoria.
+- Riesgo: nuevas tareas sobre la misma rama pueden mezclar calibracion con el handoff EDO
+  ya enviado a revision.
+- Proxima accion segura: la primera tarea de Fase 2 debe verificar CI de PR #198 y decidir
+  si queda `review_bound` o si requiere fix scoped.
+
+## O14 — Debounce/LimitToolCounts Aun No Existen Como Hook Fisico
+
+- Severidad: Alta.
+- Evidencia: `.codex/hooks.json` conecta `scripts/gsd/pre-tool-policy.mjs` y
+  `scripts/gsd/digest.mjs --hook`, pero no hay implementacion fisica de `DebounceHook` ni
+  `LimitToolCounts`.
+- Riesgo: los limites de iteracion/tokens/herramientas quedan documentados pero no
+  enforced por infraestructura dura.
+- Proxima accion segura: implementar hook local determinista con estado temporal por sesion,
+  tests unitarios y fail-closed para comandos repetidos o exceso de herramientas.
+
+## O15 — Oraculo DONE Tiene Cobertura Funcional Limitada
+
+- Severidad: Media.
+- Evidencia: `scripts/gsd/done-oracle.mjs` valida tokens de fan-out e invariants, pero no
+  hay tests dedicados del propio script en `scripts/gsd/**`.
+- Riesgo: cambios futuros podrian debilitar el cierre DONE sin que Jest lo detecte.
+- Proxima accion segura: agregar tests de scripts GSD con fixtures de `AUDIT_FANOUT.md`
+  validos/invalidos y comandos policy permitidos/bloqueados.
