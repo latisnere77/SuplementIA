@@ -40,7 +40,7 @@ Formato canonico para Fase 2. Cada tarea debe ejecutarse bajo AGENTS.md, SDD y G
   - Condicion de exito: cada script en `infrastructure/**` y `scripts/**` con potencial deploy/write queda mapeado a gate, rollback y arnes.
   - Stop rule: no ejecutar scripts de deploy, migracion, LanceDB, Bedrock o cleanup durante esta tarea.
 
-- [ ] TAREA: Disenar Persistencia Analytics Privacy-Safe. ESTADO: TODO
+- [ ] TAREA: Disenar Persistencia Analytics Privacy-Safe. ESTADO: DONE
   - Riesgo: Alto.
   - Presupuesto de Archivos por Riesgo: Alto, max 20 archivos con Lote Piloto de 10 archivos.
   - Criterio de Arnes: `npm test -- --runInBand --runTestsByPath lib/research-audit/events.test.ts lib/research-audit/redaction.test.ts`
