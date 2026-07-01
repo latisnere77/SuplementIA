@@ -5,6 +5,10 @@ A task is DONE only when all required evidence is present. The writer's judgment
 ## Required Evidence
 
 - Scope matches the task spec.
+- SDD artifacts exist for the task phase: specify, plan/tasks when applicable, implement
+  evidence, and verify evidence.
+- Product behavior changes include a TDD red/green checkpoint, or the task documents why
+  TDD is not applicable.
 - Substitution test passes: if an edit were removed, the task would fail.
 - In-scope files only, unless the spec was updated before execution.
 - `npm run gsd:invariants` passes.
@@ -28,6 +32,7 @@ A task is DONE only when all required evidence is present. The writer's judgment
 | Safety | Gates and health-claim protections remain stronger or equal | Gate weakening or unsafe copy |
 | Independence | Non-writer audit PASS recorded | Writer self-approves |
 | Tamper visibility | Any rubric/invariant/hook change is shown in digest | Safety layer changed silently |
+| SDD/TDD | Required artifacts and red/green evidence are present | Feature work starts without oracle-backed tests/spec |
 
 ## Closure Rule
 

@@ -65,6 +65,18 @@ mergeas ni habilitas auto-merge. AWS solo LECTURA y solo con identidad confirmad
    con el número de PR. Reanuda leyendo SOLO `TASK_QUEUE.md` + el estado físico (no arrastres
    el chat viejo). Toma la siguiente tarea PENDING y repite. NO mergeas.
 
+## 5.1 ORACLE-FIRST GSD v2 (SDD + TDD)
+- Regla rectora: la autonomia solo es confiable contra el oraculo que la certifica. El juez
+  es `docs/done-criteria.md` + `scripts/gsd/*`, no el modelo.
+- Ciclo SDD obligatorio: specify → plan → tasks → implement → verify. El minimo versionado es
+  `TASK_SPEC.md`, `CHANGE_MANIFEST.md` y `AUDIT_FANOUT.md`; tareas amplias agregan `PLAN.md`
+  y `TASKS.md` segun `docs/sdd-task-template.md`.
+- TDD para cambios de comportamiento: escribe tests primero, registra el fallo esperado,
+  haz checkpoint si la tarea lo requiere, implementa hasta verde y no edites tests solo para pasar.
+- Codex y Claude comparten contrato: `CLAUDE.md` referencia este archivo; no hay reglas paralelas.
+- Escalera de autonomia: L1 para propuestas nuevas, L2 para cola/roadmap aprobado, L3 solo si
+  hay scopes disjuntos y verificador read-only. No subir nivel sin mini-benchmark documentado.
+
 ## 6. BUCLE DE COLA (cómo trabajas sin parar)
 - Lee `TASK_QUEUE.md`. Toma la primera tarea con estado PENDING (orden de arriba a abajo).
 - Tareas que editan un archivo compartido (p. ej. `seo.ts`) NO se ejecutan en ramas paralelas:
