@@ -68,7 +68,7 @@ Formato canonico para Fase 2. Cada tarea debe ejecutarse bajo AGENTS.md, SDD y G
   - Condicion de exito: documentar diferencias entre CI y local, incluyendo `npm audit` y `RUN_REAL_SEARCHES=1`.
   - Stop rule: no cambiar CI sin TASK_SPEC separado.
 
-- [ ] TAREA: Generar Benchmark L2 A L3 Para Agentes. ESTADO: TODO
+- [ ] TAREA: Generar Benchmark L2 A L3 Para Agentes. ESTADO: DONE
   - Riesgo: Bajo.
   - Presupuesto de Archivos por Riesgo: Bajo, max 200 archivos.
   - Criterio de Arnes: `node scripts/gsd-autonomous.mjs --recon`
