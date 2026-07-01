@@ -2,7 +2,7 @@
 
 Canonical phase roadmap for autonomous SDLC loops. The driver reads this file and classifies phases as `HECHO`, `ESPERA_GATE`, or `ABIERTA_REAL`.
 
-Last recon: 2026-06-29
+Last recon: 2026-07-01
 
 ## Product Snapshot
 
@@ -18,7 +18,7 @@ SuplementAI is a Next.js App Router product for evidence-aware supplement search
 
 ## Recon Evidence
 
-- GitHub merged PRs: PR #184, `Harden GSD SDLC gates`; PR #186, `Fix GSD stop hook JSON output`; PR #185, `Add roadmap autonomy driver`; PR #188, `Refresh Codex permissions planning`; PR #190, `Certify research audit issue publisher`.
+- GitHub merged PRs: PR #184, `Harden GSD SDLC gates`; PR #186, `Fix GSD stop hook JSON output`; PR #185, `Add roadmap autonomy driver`; PR #188, `Refresh Codex permissions planning`; PR #190, `Certify research audit issue publisher`; PR #193, `Fix portal remote smoke latency bounds`; PR #194, `Record Phase 5 post-merge public smoke`; PR #195, `Adapt Oracle-first GSD v2 method`.
 - GitHub PR #187, `Plan Codex permissions autonomy layer`, was closed as superseded after PR #188 replaced it from current `ROADMAP.md`.
 - `TASK_QUEUE.md`: T1-T14 are `DONE`; no `PENDING` task headers.
 - PR #188 closed the Hands planning replacement on `main`.
@@ -135,18 +135,13 @@ Next action:
 
 - No action.
 
-### Phase 5 — portal-production-verification — ESPERA_GATE
+### Phase 5 — portal-production-verification — HECHO
 
 Layer: Legs.
 
 Objective: verify current production behavior against the portal release hardening checklist and canary matrix.
 
-Why gated:
-
-- Production smoke and release acceptance are human-owned production actions.
-- AWS Amplify read-only confirms production `main` is deployed and green, but smoke acceptance is not implied.
-
-Evidence available:
+Evidence:
 
 - `docs/portal-release-hardening-checklist.md`
 - `docs/portal-critical-supplement-smoke-matrix.md`
@@ -155,12 +150,21 @@ Evidence available:
 - Public/read-only smoke evidence in `.planning/portal-production-verification/PRODUCTION_SMOKE.md`.
 - Scoped 504 hardening evidence in `.planning/phase5-504-investigation-fix/CHANGE_MANIFEST.md`.
 - Post-merge public/read-only smoke evidence in `.planning/phase5-post-merge-public-verification/PRODUCTION_SMOKE_POST_MERGE.md`.
+- PR #193 merged to `main`, landing scoped 504 hardening.
+- PR #194 merged to `main`, landing post-merge public/read-only smoke evidence.
+- PR #195 merged to `main`, landing Oracle-first GSD v2 governance.
+- Human GO on 2026-07-01 accepted closure using only already-merged public/read-only evidence.
+
+Closure gate:
+
+- Closed by documentation-only PR after explicit human GO.
+- No deploy, `.deploy-go`, AWS reads/writes, Lambda invoke/update, Terraform/EventBridge,
+  feature flags, Bedrock, LanceDB, checkout/live purchase, real GitHub issues, or
+  `production-content-enricher` action.
 
 Next action:
 
-- Production verification failed on 2026-06-29. Do not create `.deploy-go` autonomously.
-  Post-merge public smoke passed, but use a separate production acceptance gate before
-  any Phase 5 closure.
+- No action.
 
 ### Phase 6 — research-audit-local-reporting — HECHO
 
