@@ -29,4 +29,8 @@ These invariants must not be weakened silently.
 
 - The writer never self-approves.
 - DONE requires offline validation, read-only fan-out PASS, and invariant ratchet PASS.
+- Oracle-first GSD v2 requires Codex and Claude to share `AGENTS.md`.
+- SDD artifacts must follow specify → plan → tasks → implement → verify.
+- Product behavior work requires a TDD red/green checkpoint unless explicitly not applicable.
+- Autonomy levels L0-L4 must not be raised without benchmark evidence.
 - Changes to this file, `docs/done-criteria.md`, `.codex/hooks.json`, `.agents/skills/suplementai-gsd/`, or `scripts/gsd/` must appear in the digest.
