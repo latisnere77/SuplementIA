@@ -18,6 +18,15 @@ function makeOracleFixture() {
   const files = {
     'AGENTS.md': 'ORACLE-FIRST GSD v2',
     'CLAUDE.md': '@AGENTS.md',
+    'DEAD_ENDS.md': [
+      '# DEAD_ENDS',
+      '### D1 — Example',
+      '- Contexto: example',
+      '- Intento: example',
+      '- Fallo: example',
+      '- No Repetir: example',
+      '- Alternativa: example',
+    ].join('\n'),
     'STATE.md': 'Oracle-first GSD v2',
     '.agents/skills/suplementai-gsd/SKILL.md': 'The writer never self-approves',
     '.codex/agents/gsd-reviewer.toml': 'reviewer',
@@ -103,5 +112,40 @@ describe('invariant-ratchet', () => {
 
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('.deploy-go is present');
+  });
+
+  it('fails closed when a DEAD_ENDS entry misses a required field', () => {
+    const root = makeOracleFixture();
+    writeFile(root, 'DEAD_ENDS.md', [
+      '# DEAD_ENDS',
+      '### D1 — Missing Fields',
+      '- Contexto: example',
+      '- Intento: example',
+      '- Fallo: example',
+    ].join('\n'));
+
+    const result = runInvariant(root);
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('DEAD_ENDS.md D1 missing field: No Repetir');
+    expect(result.stderr).toContain('DEAD_ENDS.md D1 missing field: Alternativa');
+  });
+
+  it('fails closed when a DEAD_ENDS Dn heading uses the wrong separator', () => {
+    const root = makeOracleFixture();
+    writeFile(root, 'DEAD_ENDS.md', [
+      '# DEAD_ENDS',
+      '### D1 - Wrong Separator',
+      '- Contexto: example',
+      '- Intento: example',
+      '- Fallo: example',
+      '- No Repetir: example',
+      '- Alternativa: example',
+    ].join('\n'));
+
+    const result = runInvariant(root);
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('DEAD_ENDS.md D1 heading must use');
   });
 });

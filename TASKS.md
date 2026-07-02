@@ -37,7 +37,7 @@ air-gapped.
   - Tipo de Tarea: BUGFIX
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=18, apply_patch<=6, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 3; max tokens 45000; max tiempo 90m.
 
-- [ ] TAREA: Documentar Y Validar DEAD_ENDS Como Entrada Del Loop. ESTADO: TODO
+- [ ] TAREA: Documentar Y Validar DEAD_ENDS Como Entrada Del Loop. ESTADO: DONE
   - Criterio de Arnes: `npm run gsd:invariants`
   - Tipo de Tarea: REFACTOR
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=10, apply_patch<=4, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 3; max tokens 25000; max tiempo 45m.

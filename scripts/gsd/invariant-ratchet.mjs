@@ -4,6 +4,7 @@ import fs from 'node:fs';
 const requiredFiles = [
   'AGENTS.md',
   'CLAUDE.md',
+  'DEAD_ENDS.md',
   'STATE.md',
   '.agents/skills/suplementai-gsd/SKILL.md',
   '.codex/agents/gsd-reviewer.toml',
@@ -65,6 +66,8 @@ if (fs.existsSync('.deploy-go')) {
   failures.push('.deploy-go is present; production gate must be resolved by a human GO workflow');
 }
 
+validateDeadEnds();
+
 if (failures.length) {
   console.error('GSD_INVARIANTS: FAIL');
   for (const failure of failures) {
@@ -74,3 +77,37 @@ if (failures.length) {
 }
 
 console.log('GSD_INVARIANTS: PASS');
+
+function validateDeadEnds() {
+  if (!fs.existsSync('DEAD_ENDS.md')) {
+    return;
+  }
+
+  const content = fs.readFileSync('DEAD_ENDS.md', 'utf8');
+  const headingPattern = /^###\s+(D\d+)\b(.*)$/gm;
+  const requiredFields = ['Contexto', 'Intento', 'Fallo', 'No Repetir', 'Alternativa'];
+  const headings = [...content.matchAll(headingPattern)];
+
+  if (headings.length === 0) {
+    failures.push('DEAD_ENDS.md must include at least one Dn entry');
+    return;
+  }
+
+  for (const [index, heading] of headings.entries()) {
+    const label = heading[1];
+    const suffix = heading[2] || '';
+    const start = heading.index + heading[0].length;
+    const end = headings[index + 1]?.index ?? content.length;
+    const entry = content.slice(start, end);
+
+    if (!/^\s+—\s+.+/.test(suffix)) {
+      failures.push(`DEAD_ENDS.md ${label} heading must use "### ${label} — <title>"`);
+    }
+
+    for (const field of requiredFields) {
+      if (!entry.includes(`- ${field}:`)) {
+        failures.push(`DEAD_ENDS.md ${label} missing field: ${field}`);
+      }
+    }
+  }
+}
