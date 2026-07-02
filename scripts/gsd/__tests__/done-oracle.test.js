@@ -48,10 +48,29 @@ describe('done-oracle', () => {
     const result = runDoneOracle(['--audit-pass-file', auditFile]);
 
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('GSD_DONE: FAIL audit evidence missing VERIFIER: PASS');
+    expect(result.stderr).toContain('VERIFIER: PASS');
+    expect(result.stderr).toContain('REVIEWER_ISOLATED: YES');
   });
 
   it('passes when all required audit fan-out tokens are present', () => {
+    const auditFile = writeAudit([
+      'AUDIT_FANOUT: PASS',
+      'REVIEWER: PASS',
+      'REVIEWER_ISOLATED: YES',
+      'VERIFIER: PASS',
+      'VERIFIER_ISOLATED: YES',
+      'SMOKE_TESTER: PASS',
+      'SMOKE_TESTER_ISOLATED: YES',
+      'WRITER_SELF_APPROVAL: NO',
+    ].join('\n'));
+
+    const result = runDoneOracle(['--audit-pass-file', auditFile]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('GSD_DONE: PASS');
+  });
+
+  it('fails when fan-out pass tokens lack isolation evidence', () => {
     const auditFile = writeAudit([
       'AUDIT_FANOUT: PASS',
       'REVIEWER: PASS',
@@ -62,7 +81,9 @@ describe('done-oracle', () => {
 
     const result = runDoneOracle(['--audit-pass-file', auditFile]);
 
-    expect(result.status).toBe(0);
-    expect(result.stdout).toContain('GSD_DONE: PASS');
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('REVIEWER_ISOLATED: YES');
+    expect(result.stderr).toContain('VERIFIER_ISOLATED: YES');
+    expect(result.stderr).toContain('SMOKE_TESTER_ISOLATED: YES');
   });
 });

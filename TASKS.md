@@ -32,7 +32,7 @@ air-gapped.
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=20, apply_patch<=8, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 60000; max tiempo 120m.
 
-- [ ] TAREA: Exigir Fan-Out Worktree-Aislado En DONE Oracle. ESTADO: TODO
+- [ ] TAREA: Exigir Fan-Out Worktree-Aislado En DONE Oracle. ESTADO: DONE
   - Criterio de Arnes: `npm test -- --runInBand --runTestsByPath scripts/gsd/__tests__/done-oracle.test.js && npm run gsd:invariants`
   - Tipo de Tarea: BUGFIX
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=18, apply_patch<=6, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 3; max tokens 45000; max tiempo 90m.

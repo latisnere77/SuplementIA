@@ -19,8 +19,11 @@ A task is DONE only when all required evidence is present. The writer's judgment
 - No live/prod/AWS write/Bedrock/LanceDB mutation/content-enricher action occurred unless the spec and human GO explicitly allowed it.
 - Read-only audit fan-out evidence exists with:
   - `REVIEWER: PASS`
+  - `REVIEWER_ISOLATED: YES`
   - `VERIFIER: PASS`
+  - `VERIFIER_ISOLATED: YES`
   - `SMOKE_TESTER: PASS`
+  - `SMOKE_TESTER_ISOLATED: YES`
   - `WRITER_SELF_APPROVAL: NO`
 
 ## Rubric

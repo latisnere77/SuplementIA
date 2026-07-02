@@ -15,8 +15,11 @@ if (!fixturesPath) {
 const requiredTokens = [
   'AUDIT_FANOUT: PASS',
   'REVIEWER: PASS',
+  'REVIEWER_ISOLATED: YES',
   'VERIFIER: PASS',
+  'VERIFIER_ISOLATED: YES',
   'SMOKE_TESTER: PASS',
+  'SMOKE_TESTER_ISOLATED: YES',
   'WRITER_SELF_APPROVAL: NO',
 ];
 
