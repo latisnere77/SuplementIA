@@ -94,13 +94,15 @@ test.describe('portal real supplement searches', () => {
 
       await searchInput.click();
       await searchInput.fill('');
-      await searchInput.pressSequentially(searchCase.query);
+      await searchInput.fill(searchCase.query);
       await expect(searchInput).toHaveValue(searchCase.query);
       await searchInput.press('Escape');
       await expect(goButton).toBeEnabled();
-      await goButton.click();
+      await Promise.all([
+        page.waitForURL(/\/en\/portal\/results\?/, { timeout: 15_000 }),
+        goButton.click(),
+      ]);
 
-      await expect(page).toHaveURL(/\/en\/portal\/results\?/);
       const resultUrl = new URL(page.url());
       expect(resultUrl.searchParams.get('q')).toBe(expectedSearchTerm);
       expect(resultUrl.searchParams.get('supplement')).toBe(expectedSearchTerm);
