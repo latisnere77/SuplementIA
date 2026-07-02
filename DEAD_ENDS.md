@@ -52,3 +52,26 @@ Cada entrada debe incluir:
   incluyan todos los archivos activos de la tarea.
 - Alternativa: actualizar primero TASK_SPEC/CHANGE_MANIFEST/AUDIT_FANOUT y luego revalidar
   con fan-out read-only.
+
+### D5 — Esperar Nombre De Bloque Incorrecto En Reglas Solapadas
+
+- Contexto: `gsd-pre-tool-policy-coverage`.
+- Intento: exigir que comandos como `gh pr merge --auto` reportaran `auto-merge` y
+  `aws bedrock-runtime invoke-model` reportara `bedrock-or-enricher`.
+- Fallo: `pre-tool-policy.mjs` evalua reglas en orden; esos comandos caen primero en
+  `merge-main` y `aws-write`.
+- No Repetir: no usar comandos con multiples matches para probar el nombre exacto de una
+  regla especifica.
+- Alternativa: probar cada regla con un comando no solapado, y reservar comandos solapados
+  para tests de bloqueo generico.
+
+### D6 — Codificar Allow-Path De Produccion En Tests Local-Only
+
+- Contexto: `gsd-pre-tool-policy-coverage`.
+- Intento: crear `.deploy-go` en un directorio temporal y afirmar que `npm run deploy`
+  puede pasar con `SUPLEMENTAI_PROD_GO=1`.
+- Fallo: el reviewer marco el caso como fuera de scope porque esta tarea debe probar
+  comandos locales seguros y bloqueos de comandos peligrosos, no codificar permisos de prod.
+- No Repetir: no agregar allow-paths de produccion a tareas local-only del oraculo.
+- Alternativa: limitar esta cobertura a comandos seguros/read-only permitidos y comandos
+  prod-class bloqueados; cualquier allow de prod requiere task spec y GO-gate separado.

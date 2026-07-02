@@ -12,7 +12,7 @@ air-gapped.
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=20, apply_patch<=8, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 60000; max tiempo 120m.
 
-- [ ] TAREA: Cubrir Policy Hook Contra Comandos Permitidos Y Bloqueados. ESTADO: TODO
+- [ ] TAREA: Cubrir Policy Hook Contra Comandos Permitidos Y Bloqueados. ESTADO: DONE
   - Criterio de Arnes: `npm test -- --runInBand --runTestsByPath scripts/gsd/__tests__/pre-tool-policy.test.js`
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=18, apply_patch<=7, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 50000; max tiempo 90m.
