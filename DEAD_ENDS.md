@@ -75,3 +75,13 @@ Cada entrada debe incluir:
 - No Repetir: no agregar allow-paths de produccion a tareas local-only del oraculo.
 - Alternativa: limitar esta cobertura a comandos seguros/read-only permitidos y comandos
   prod-class bloqueados; cualquier allow de prod requiere task spec y GO-gate separado.
+
+### D7 — Usar `cwd` Como Session Key Del DebounceHook
+
+- Contexto: `gsd-debounce-hook`.
+- Intento: usar `process.cwd()` como fallback cuando no existia `GSD_TOOL_BUDGET_SESSION`
+  ni session id del runtime.
+- Fallo: reviewer marco que eso convierte el estado en repo-global, no session-scoped.
+- No Repetir: no usar cwd como session key para presupuestos/hard hooks.
+- Alternativa: usar `GSD_TOOL_BUDGET_SESSION`, `CODEX_SESSION_ID`, `CODEX_THREAD_ID` o
+  `CLAUDE_SESSION_ID`; si ninguna existe, fallar cerrado.

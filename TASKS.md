@@ -17,7 +17,7 @@ air-gapped.
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=18, apply_patch<=7, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 50000; max tiempo 90m.
 
-- [ ] TAREA: Implementar DebounceHook Fisico Para Comandos Repetidos. ESTADO: TODO
+- [ ] TAREA: Implementar DebounceHook Fisico Para Comandos Repetidos. ESTADO: DONE
   - Criterio de Arnes: `npm test -- --runInBand --runTestsByPath scripts/gsd/__tests__/tool-budget-policy.test.js && npm run gsd:invariants`
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=22, apply_patch<=8, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 65000; max tiempo 120m.
