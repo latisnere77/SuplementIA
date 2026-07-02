@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "description": "Deterministic mini-benchmark for GSD DONE oracle audit evidence.",
+  "cases": [
+    {
+      "name": "complete-audit-passes",
+      "expectedPass": true,
+      "expectedMissing": [],
+      "audit": "AUDIT_FANOUT: PASS\nREVIEWER: PASS\nREVIEWER_ISOLATED: YES\nVERIFIER: PASS\nVERIFIER_ISOLATED: YES\nSMOKE_TESTER: PASS\nSMOKE_TESTER_ISOLATED: YES\nWRITER_SELF_APPROVAL: NO\n"
+    },
+    {
+      "name": "missing-smoke-fails",
+      "expectedPass": false,
+      "expectedMissing": [
+        "SMOKE_TESTER: PASS",
+        "SMOKE_TESTER_ISOLATED: YES"
+      ],
+      "audit": "AUDIT_FANOUT: PASS\nREVIEWER: PASS\nREVIEWER_ISOLATED: YES\nVERIFIER: PASS\nVERIFIER_ISOLATED: YES\nWRITER_SELF_APPROVAL: NO\n"
+    },
+    {
+      "name": "writer-self-approval-fails",
+      "expectedPass": false,
+      "expectedMissing": [
+        "WRITER_SELF_APPROVAL: NO"
+      ],
+      "audit": "AUDIT_FANOUT: PASS\nREVIEWER: PASS\nREVIEWER_ISOLATED: YES\nVERIFIER: PASS\nVERIFIER_ISOLATED: YES\nSMOKE_TESTER: PASS\nSMOKE_TESTER_ISOLATED: YES\nWRITER_SELF_APPROVAL: YES\n"
+    },
+    {
+      "name": "pending-audit-fails",
+      "expectedPass": false,
+      "expectedMissing": [
+        "AUDIT_FANOUT: PASS",
+        "REVIEWER: PASS",
+        "REVIEWER_ISOLATED: YES",
+        "VERIFIER: PASS",
+        "VERIFIER_ISOLATED: YES",
+        "SMOKE_TESTER: PASS",
+        "SMOKE_TESTER_ISOLATED: YES"
+      ],
+      "audit": "AUDIT_FANOUT: PENDING\nREVIEWER: PENDING\nVERIFIER: PENDING\nSMOKE_TESTER: PENDING\nWRITER_SELF_APPROVAL: NO\n"
+    }
+  ]
+}

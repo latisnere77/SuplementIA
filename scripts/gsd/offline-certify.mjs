@@ -24,6 +24,7 @@ function changedFiles() {
 run('npm', ['run', 'gsd:invariants']);
 
 if (args.has('--quick')) {
+  run('node', ['scripts/gsd/oracle-benchmark.mjs', '--fixtures', 'docs/oracle-benchmark-fixtures.json']);
   console.log('GSD_OFFLINE_CERTIFY: PASS quick');
   process.exit(0);
 }
