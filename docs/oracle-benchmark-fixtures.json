@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "description": "Deterministic mini-benchmark for GSD DONE oracle audit evidence.",
+  "cases": [
+    {
+      "name": "complete-audit-passes",
+      "expectedPass": true,
+      "expectedMissing": [],
+      "audit": "AUDIT_FANOUT: PASS\nREVIEWER: PASS\nVERIFIER: PASS\nSMOKE_TESTER: PASS\nWRITER_SELF_APPROVAL: NO\n"
+    },
+    {
+      "name": "missing-smoke-fails",
+      "expectedPass": false,
+      "expectedMissing": [
+        "SMOKE_TESTER: PASS"
+      ],
+      "audit": "AUDIT_FANOUT: PASS\nREVIEWER: PASS\nVERIFIER: PASS\nWRITER_SELF_APPROVAL: NO\n"
+    },
+    {
+      "name": "writer-self-approval-fails",
+      "expectedPass": false,
+      "expectedMissing": [
+        "WRITER_SELF_APPROVAL: NO"
+      ],
+      "audit": "AUDIT_FANOUT: PASS\nREVIEWER: PASS\nVERIFIER: PASS\nSMOKE_TESTER: PASS\nWRITER_SELF_APPROVAL: YES\n"
+    },
+    {
+      "name": "pending-audit-fails",
+      "expectedPass": false,
+      "expectedMissing": [
+        "AUDIT_FANOUT: PASS",
+        "REVIEWER: PASS",
+        "VERIFIER: PASS",
+        "SMOKE_TESTER: PASS"
+      ],
+      "audit": "AUDIT_FANOUT: PENDING\nREVIEWER: PENDING\nVERIFIER: PENDING\nSMOKE_TESTER: PENDING\nWRITER_SELF_APPROVAL: NO\n"
+    }
+  ]
+}

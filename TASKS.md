@@ -27,7 +27,7 @@ air-gapped.
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=24, apply_patch<=8, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 65000; max tiempo 120m.
 
-- [ ] TAREA: Crear Mini-Benchmark De Respuestas Del Oraculo. ESTADO: TODO
+- [ ] TAREA: Crear Mini-Benchmark De Respuestas Del Oraculo. ESTADO: DONE
   - Criterio de Arnes: `node scripts/gsd/oracle-benchmark.mjs --fixtures docs/oracle-benchmark-fixtures.json`
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=20, apply_patch<=8, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 60000; max tiempo 120m.
