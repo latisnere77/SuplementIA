@@ -42,7 +42,7 @@ air-gapped.
   - Tipo de Tarea: REFACTOR
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=10, apply_patch<=4, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 3; max tokens 25000; max tiempo 45m.
 
-- [ ] TAREA: Integrar Oracle Benchmark A Offline Certify Quick. ESTADO: TODO
+- [ ] TAREA: Integrar Oracle Benchmark A Offline Certify Quick. ESTADO: DONE
   - Criterio de Arnes: `npm run gsd:offline-certify -- --quick && node scripts/gsd/oracle-benchmark.mjs --fixtures docs/oracle-benchmark-fixtures.json`
   - Tipo de Tarea: BUGFIX
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=16, apply_patch<=6, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 3; max tokens 40000; max tiempo 75m.

@@ -56,6 +56,7 @@ function makeOracleFixture() {
     'scripts/gsd/pre-tool-policy.mjs': 'policy',
     'scripts/gsd/digest.mjs': 'digest',
     'scripts/gsd/offline-certify.mjs': 'offline',
+    'scripts/gsd/oracle-benchmark.mjs': 'benchmark',
     'scripts/gsd/done-oracle.mjs': 'done',
   };
 
