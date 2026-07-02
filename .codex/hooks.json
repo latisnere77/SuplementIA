@@ -15,6 +15,16 @@
             "statusMessage": "Checking SuplementAI GSD tool budget policy"
           }
         ]
+      },
+      {
+        "matcher": "apply_patch|Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/gsd/tool-budget-policy.mjs",
+            "statusMessage": "Checking SuplementAI GSD edit budget policy"
+          }
+        ]
       }
     ],
     "Stop": [

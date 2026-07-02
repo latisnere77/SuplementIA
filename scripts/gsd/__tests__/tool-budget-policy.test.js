@@ -5,6 +5,7 @@ const { spawnSync } = require('node:child_process');
 
 const repoRoot = path.resolve(__dirname, '../../..');
 const scriptPath = path.join(repoRoot, 'scripts/gsd/tool-budget-policy.mjs');
+const hooksPath = path.join(repoRoot, '.codex/hooks.json');
 
 function runBudgetPolicy(payload, options = {}) {
   const stateDir = options.stateDir || fs.mkdtempSync(path.join(os.tmpdir(), 'gsd-budget-state-'));
@@ -110,5 +111,84 @@ describe('tool-budget-policy debounce', () => {
 
     expect(result.status).toBe(2);
     expect(result.stderr).toContain('GSD_TOOL_BUDGET_BLOCK: missing session key');
+  });
+});
+
+describe('tool-budget-policy tool counts', () => {
+  it('blocks the fifth git command while counting git commands separately', () => {
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gsd-budget-git-limit-'));
+
+    for (let index = 1; index <= 4; index += 1) {
+      expect(runBudgetPolicy({ command: `git status --short -- ${index}` }, { stateDir }).status)
+        .toBe(0);
+    }
+
+    const fifth = runBudgetPolicy({ command: 'git status --short -- 5' }, { stateDir });
+    expect(fifth.status).toBe(2);
+    expect(fifth.stderr).toContain('git exceeded max 4');
+  });
+
+  it('does not allow env configuration to loosen the hard git limit', () => {
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gsd-budget-git-hard-limit-'));
+    const options = {
+      stateDir,
+      env: { GSD_TOOL_COUNT_LIMITS: 'git=5' },
+    };
+
+    for (let index = 1; index <= 4; index += 1) {
+      expect(runBudgetPolicy({ command: `git diff --stat -- ${index}` }, options).status)
+        .toBe(0);
+    }
+
+    const fifth = runBudgetPolicy({ command: 'git diff --stat -- 5' }, options);
+    expect(fifth.status).toBe(2);
+    expect(fifth.stderr).toContain('git exceeded max 4');
+  });
+
+  it('honors stricter exec limits for distinct shell commands', () => {
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gsd-budget-exec-strict-'));
+    const options = {
+      stateDir,
+      env: { GSD_TOOL_COUNT_LIMITS: 'exec=1' },
+    };
+
+    expect(runBudgetPolicy({ command: 'npm run gsd:invariants' }, options).status).toBe(0);
+
+    const second = runBudgetPolicy({ command: 'npm test -- --runInBand' }, options);
+    expect(second.status).toBe(2);
+    expect(second.stderr).toContain('exec exceeded max 1');
+  });
+
+  it('counts explicit apply_patch tool payloads without a shell command', () => {
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gsd-budget-patch-limit-'));
+
+    for (let index = 1; index <= 8; index += 1) {
+      expect(runBudgetPolicy({ tool_name: 'apply_patch' }, { stateDir }).status).toBe(0);
+    }
+
+    const ninth = runBudgetPolicy({ tool_name: 'apply_patch' }, { stateDir });
+    expect(ninth.status).toBe(2);
+    expect(ninth.stderr).toContain('apply_patch exceeded max 8');
+  });
+
+  it('wires the budget policy for shell and edit pre-tool hooks', () => {
+    const hooksConfig = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
+    const preToolUse = hooksConfig.hooks.PreToolUse;
+
+    const bashHook = preToolUse.find((entry) => entry.matcher === 'Bash');
+    expect(bashHook.hooks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ command: 'node scripts/gsd/tool-budget-policy.mjs' }),
+      ])
+    );
+
+    const editHook = preToolUse.find((entry) => /apply_patch/.test(entry.matcher));
+    expect(editHook.matcher).toContain('apply_patch');
+    expect(editHook.matcher).toContain('Edit');
+    expect(editHook.matcher).toContain('MultiEdit');
+    expect(editHook.matcher).toContain('Write');
+    expect(editHook.hooks).toEqual([
+      expect.objectContaining({ command: 'node scripts/gsd/tool-budget-policy.mjs' }),
+    ]);
   });
 });

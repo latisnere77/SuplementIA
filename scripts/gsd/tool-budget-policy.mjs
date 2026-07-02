@@ -26,12 +26,14 @@ const command = [
   .join('\n');
 
 const normalizedCommand = normalizeCommand(command);
+const countedTools = toolKeys(payload, normalizedCommand);
 
-if (!normalizedCommand) {
+if (!normalizedCommand && countedTools.length === 0) {
   process.exit(0);
 }
 
 const maxIdentical = readDebounceLimit(process.env.GSD_DEBOUNCE_MAX_IDENTICAL);
+const toolLimits = readToolLimits(process.env.GSD_TOOL_COUNT_LIMITS);
 const session = sessionKey();
 
 if (!session) {
@@ -40,14 +42,35 @@ if (!session) {
 }
 
 const state = readState();
-const nextCount = (state.commands[normalizedCommand] || 0) + 1;
-state.commands[normalizedCommand] = nextCount;
+let nextCommandCount = 0;
+
+if (normalizedCommand) {
+  nextCommandCount = (state.commands[normalizedCommand] || 0) + 1;
+  state.commands[normalizedCommand] = nextCommandCount;
+}
+
+const exceededToolLimits = [];
+
+for (const tool of countedTools) {
+  const nextToolCount = (state.tools[tool] || 0) + 1;
+  state.tools[tool] = nextToolCount;
+
+  if (nextToolCount > toolLimits[tool]) {
+    exceededToolLimits.push(`${tool} exceeded max ${toolLimits[tool]} (${nextToolCount})`);
+  }
+}
+
 writeState(state);
 
-if (nextCount > maxIdentical) {
+if (nextCommandCount > maxIdentical) {
   console.error(
     `GSD_TOOL_BUDGET_BLOCK: repeated command exceeded max ${maxIdentical}: ${normalizedCommand}`
   );
+  process.exit(2);
+}
+
+if (exceededToolLimits.length) {
+  console.error(`GSD_TOOL_BUDGET_BLOCK: ${exceededToolLimits.join(', ')}`);
   process.exit(2);
 }
 
@@ -63,9 +86,74 @@ function readDebounceLimit(value) {
   return Math.min(parsed, hardMax);
 }
 
+function readToolLimits(value) {
+  const hardLimits = {
+    exec: 24,
+    apply_patch: 8,
+    git: 4,
+  };
+  const limits = { ...hardLimits };
+
+  for (const item of String(value || '').split(',')) {
+    const match = item.trim().match(/^([a-z_]+)\s*(?:<=|=)\s*(\d+)$/i);
+    if (!match) {
+      continue;
+    }
+
+    const key = normalizeToolName(match[1]);
+    if (!Object.prototype.hasOwnProperty.call(hardLimits, key)) {
+      continue;
+    }
+
+    limits[key] = Math.min(readPositiveInt(match[2], hardLimits[key]), hardLimits[key]);
+  }
+
+  return limits;
+}
+
 function readPositiveInt(value, fallback) {
   const parsed = Number.parseInt(String(value || ''), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function toolKeys(payload, normalizedCommand) {
+  const keys = new Set();
+  const toolName = normalizeToolName(
+    payload.tool_name
+      || payload.tool
+      || payload.name
+      || payload.matcher
+      || payload.hook_event_name
+      || ''
+  );
+
+  if (normalizedCommand) {
+    keys.add('exec');
+
+    if (/^git(?:\s|$)/i.test(normalizedCommand)) {
+      keys.add('git');
+    }
+  }
+
+  if (toolName) {
+    if (['bash', 'shell', 'exec', 'exec_command'].includes(toolName)) {
+      keys.add('exec');
+    }
+
+    if (['apply_patch', 'edit', 'write', 'multi_edit'].includes(toolName)) {
+      keys.add('apply_patch');
+    }
+
+    if (toolName === 'git') {
+      keys.add('git');
+    }
+  }
+
+  return [...keys];
+}
+
+function normalizeToolName(value) {
+  return String(value || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
 }
 
 function statePath() {
@@ -89,9 +177,10 @@ function readState() {
     const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     return {
       commands: parsed && typeof parsed.commands === 'object' && parsed.commands ? parsed.commands : {},
+      tools: parsed && typeof parsed.tools === 'object' && parsed.tools ? parsed.tools : {},
     };
   } catch {
-    return { commands: {} };
+    return { commands: {}, tools: {} };
   }
 }
 

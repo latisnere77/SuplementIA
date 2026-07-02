@@ -22,7 +22,7 @@ air-gapped.
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=22, apply_patch<=8, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 65000; max tiempo 120m.
 
-- [ ] TAREA: Implementar LimitToolCounts Fisico Por Sesion. ESTADO: TODO
+- [ ] TAREA: Implementar LimitToolCounts Fisico Por Sesion. ESTADO: DONE
   - Criterio de Arnes: `npm test -- --runInBand --runTestsByPath scripts/gsd/__tests__/tool-budget-policy.test.js && npm run gsd:done -- --check-config-only`
   - Tipo de Tarea: GREEN-FIELD
   - GOBERNANZA POR HOOKS: `LimitToolCounts(exec<=24, apply_patch<=8, git<=4)`; `DebounceHook(max_same_command=2)`; max iteraciones 5; max tokens 65000; max tiempo 120m.
